@@ -22,7 +22,7 @@ var
 begin
   Randomize;
   with Screen, Keyboard do begin
-    WriteLn('Zavádìní ChronOS...');
+    WriteLn('Zavádìní systému ChronOS...');
     TextColor := clSilver;
     ClearEol;
     Sleep(500);

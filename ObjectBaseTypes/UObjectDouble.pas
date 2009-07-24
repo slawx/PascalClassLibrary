@@ -1,7 +1,6 @@
-unit UClasses;
+unit UObjectDouble;
 
 interface
-
 
 implementation
 
