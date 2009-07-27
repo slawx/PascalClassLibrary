@@ -9,7 +9,9 @@ uses
   UObjectBoolean in 'UObjectBoolean.pas',
   UObjectByte in 'UObjectByte.pas',
   UInterfacedBits in 'UInterfacedBits.pas',
-  UObjectDouble in 'UObjectDouble.pas';
+  UObjectDouble in 'UObjectDouble.pas',
+  UObjectPoint in 'UObjectPoint.pas',
+  UObjectNumber in 'UObjectNumber.pas';
 
 {$R *.res}
 

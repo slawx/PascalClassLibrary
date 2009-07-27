@@ -56,15 +56,6 @@ begin
     Result.EqualTo(Operand1);
     Add(BoolToStr(Result.Value) + ' := ' + BoolToStr(Operand1.Value));
 
-    // Ordinal
-    Result.Value := False;
-    Int := TInteger(Result.Ordinal);
-    Add(IntToStr(Int.Value) + ' := ordinal ' + BoolToStr(Result.Value));
-
-    Result.Value := True;
-    Int := TInteger(Result.Ordinal);
-    Add(IntToStr(Int.Value) + ' := ordinal ' + BoolToStr(Result.Value));
-
     // OrTo
     Result.Value := True;
     Operand1.Value := True;
@@ -97,6 +88,17 @@ begin
     Operand1.Value := 'Ab12d=';
     Bool := Result.EqualTo(Operand1);
     Add(BoolToStr(Bool.Value) + ' := ' + Result.Value + '.EqualTo(' + Operand1.Value + ')');
+
+    // Length
+    Result.Value := 'ABCD';
+    Int := Result.Length;
+    Add(IntToStr(Int.Value) + ' := ' + Result.Value + '.Length');
+
+    // Reverse
+    Operand1.Value := 'ABCD';
+    Result.Assign(Operand1);
+    Result.Reverse;
+    Add(Result.Value + ' := ' + Operand1.Value + '.Reverse');
   end;
 end;
 

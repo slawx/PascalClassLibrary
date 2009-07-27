@@ -3,7 +3,7 @@ unit UObjectString;
 interface
 
 uses
-  SysUtils, UObjectTypeBase, UObjectBoolean, UObjectInteger;
+  SysUtils, UObjectTypeBase, UObjectBoolean, UObjectInteger, StrUtils;
 
 type
   TString = class(TInterfacedObject, IAssignable, IComparable)
@@ -18,6 +18,9 @@ type
     procedure Delete(Index: TInteger; Count: TInteger);
     procedure Insert(Index: TInteger; SubString: TString);
     function Pos(SubString: TString): TInteger;
+    procedure Reverse;
+    function LeftString(Count: TInteger): TString;
+    function RightString(Count: TInteger): TString;
   end;
 
 implementation
@@ -52,6 +55,12 @@ begin
   System.Insert(SubString.Value, Value, Index.Value);
 end;
 
+function TString.LeftString(Count: TInteger): TString;
+begin
+  Result := TString.Create;
+  Result.Value := StrUtils.LeftStr(Value, Count.Value);
+end;
+
 function TString.Length: TInteger;
 begin
   Result.Value := System.Length(Value);
@@ -69,7 +78,19 @@ end;
 
 function TString.Pos(SubString: TString): TInteger;
 begin
+  Result := TInteger.Create;
   Result.Value := System.Pos(SubString.Value, Value);
+end;
+
+procedure TString.Reverse;
+begin
+  Value := StrUtils.ReverseString(Value);
+end;
+
+function TString.RightString(Count: TInteger): TString;
+begin
+  Result := TString.Create;
+  Result.Value := StrUtils.RightStr(Value, Count.Value);
 end;
 
 procedure TString.UpperCase;

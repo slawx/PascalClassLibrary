@@ -10,17 +10,10 @@ type
 
   IComparable = interface
     function EqualTo(Operand: TInterfacedObject): TBoolean;
-    function HigherThen(Operand: TInterfacedObject): TBoolean;
-    function LowerThan(Operand: TInterfacedObject): TBoolean;
   end;
 
-  TBoolean = class(TInterfacedObject, IAssignable, IComparable, IOrdinal)
+  TBoolean = class(TInterfacedObject, IComparable, IAssignable)
     Value: Boolean;
-    function Ordinal: IOrdinal;
-    function Predecessor: IOrdinal;
-    function Successor: IOrdinal;
-    function Low: IOrdinal;
-    function High: IOrdinal;
     procedure Invert;
     function EqualTo(Operand: TInterfacedObject): TBoolean;
     function HigherThen(Operand: TInterfacedObject): TBoolean;
@@ -60,12 +53,6 @@ begin
   end else raise EInvalidCast.Create('Typecast error');
 end;
 
-function TBoolean.High: IOrdinal;
-begin
-  Result := TBoolean.Create;
-  TBoolean(Result).Value := True;
-end;
-
 function TBoolean.HigherThen(Operand: TInterfacedObject): TBoolean;
 begin
   if Operand is TBoolean then begin
@@ -79,24 +66,12 @@ begin
   Value := not Value;
 end;
 
-function TBoolean.Low: IOrdinal;
-begin
-  Result := TBoolean.Create;
-  TBoolean(Result).Value := False;
-end;
-
 function TBoolean.LowerThan(Operand: TInterfacedObject): TBoolean;
 begin
   if Operand is TBoolean then begin
     Result := TBoolean.Create;
     Result.Value := Value < TBoolean(Operand).Value;
   end else raise EInvalidCast.Create('Typecast error');
-end;
-
-function TBoolean.Ordinal: IOrdinal;
-begin
-  Result := TInteger.Create;
-  TInteger(Result).Value := Integer(Value);
 end;
 
 function TBoolean.OrTo(Operand: TBoolean): TBoolean;
@@ -107,14 +82,5 @@ begin
   end else raise EInvalidCast.Create('Typecast error');
 end;
 
-function TBoolean.Predecessor: IOrdinal;
-begin
-  raise ENotImplemented.Create('Not implemented');
-end;
-
-function TBoolean.Successor: IOrdinal;
-begin
-
-end;
 
 end.

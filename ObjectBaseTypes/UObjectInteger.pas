@@ -3,10 +3,10 @@ unit UObjectInteger;
 interface
 
 uses
-  SysUtils, Classes, UObjectTypeBase, UObjectBoolean;
+  SysUtils, Classes, UObjectTypeBase, UObjectBoolean, UObjectNumber;
 
 type
-  TInteger = class(TInterfacedObject, IAssignable, IComparable, IOrdinal)
+  TInteger = class(TInterfacedObject, IAssignable, IOrdinal)
   private
   public
     Value: Integer;

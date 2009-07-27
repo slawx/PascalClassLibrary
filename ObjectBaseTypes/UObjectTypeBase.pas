@@ -12,12 +12,13 @@ type
     procedure Assign(Source: TInterfacedObject);
   end;
 
-  IOrdinal = interface
-    function Ordinal: IOrdinal;
-    function Predecessor: IOrdinal;
-    function Successor: IOrdinal;
-    function Low: IOrdinal;
-    function High: IOrdinal;
+  ISortable = interface
+    procedure Sort;
+  end;
+
+  IStreamable = interface
+    function GetStream: TStream;
+    procedure SetStrem(Stream: TStream);
   end;
 
 implementation
