@@ -17,45 +17,46 @@ type
   end;
 
   { TPBItem }
-
   TPBItem = class
     Name: string;
     Tag: Integer;
     ItemType: TPBItemType;
     ItemMode: TPBItemMode;
+    procedure SaveVariantToStream(Stream: TStream; Value: Integer);
     procedure SaveToStream(Stream: TStream); virtual;
+    procedure LoadFromStream(Stream: TStream); virtual;
+    function LoadVariantFromStream(Stream: TStream);
   end;
 
-  TPBMessage = class;
+  TPBMessageItem = class;
 
+  { TPBStringItem }
   TPBStringItem = class(TPBItem)
     Value: string;
   end;
 
+  { TPBIntegerItem }
   TPBIntegerItem = class(TPBItem)
     Value: Integer;
-  end;
-
-  TPBMessageItem = class(TPBItem)
-    Tag: Integer;
-    Name: string;
-    ItemType: TPBItemType;
-  end;
-
-  { TPBMessage }
-
-  TPBMessage = class(TPBItem)
-    Items: TList; // TList<TPBItem>;
     procedure SaveToStream(Stream: TStream); override;
     constructor Create;
   end;
 
-  { TProtocolBuffer }
+  { TPBMessageItem }
+  TPBMessageItem = class(TPBItem)
+    Items: TList; // TList<TPBItem>;
+    procedure SaveToStream(Stream: TStream); override;
+    procedure LoadFromStream(Stream: TStream); override;
+    constructor Create;
+    destructor Destroy; override;
+  end;
 
+  { TProtocolBuffer }
   TProtocolBuffer = class
-    BaseMessage: TPBMessage;
+    BaseMessage: TPBMessageItem;
     procedure LoadFromStream(Stream: TStream);
     procedure SaveToStream(Stream: TStream);
+    constructor Create;
     destructor Destroy; override;
   end;
 
@@ -68,12 +69,17 @@ uses
 
 procedure TProtocolBuffer.LoadFromStream(Stream: TStream);
 begin
-
+  BaseMessage.LoadFromStream(Stream);
 end;
 
 procedure TProtocolBuffer.SaveToStream(Stream: TStream);
 begin
   BaseMessage.SaveToStream(Stream);
+end;
+
+constructor TProtocolBuffer.Create;
+begin
+  BaseMessage := TPBMessageItem.Create;
 end;
 
 destructor TProtocolBuffer.Destroy;
@@ -82,19 +88,56 @@ begin
   inherited Destroy;
 end;
 
-{ TPBMessage }
+{ TPBMessageItem }
 
-procedure TPBMessage.SaveToStream(Stream: TStream);
+procedure TPBMessageItem.SaveToStream(Stream: TStream);
+var
+  I: Integer;
 begin
   inherited SaveToStream(Stream);
+  for I := 0 to Items.Count - 1 do
+    TPBItem(Items[I]).SaveToStream(Stream);
 end;
 
-constructor TPBMessage.Create;
+procedure TPBMessageItem.LoadFromStream(Stream: TStream);
+begin
+  inherited LoadFromStream(Stream);
+end;
+
+constructor TPBMessageItem.Create;
 begin
   ItemType := itLengthDelimited;
+  Items := TList.Create;
+end;
+
+destructor TPBMessageItem.Destroy;
+var
+  I: Integer;
+begin
+  for I := 0 to Items.Count - 1 do
+    TPBItem(Items[I]).Free;
+  Items.Free;
+  inherited Destroy;
 end;
 
 { TPBItem }
+
+procedure TPBItem.SaveVariantToStream(Stream: TStream; Value: Integer);
+var
+  ByteIndex: Byte;
+  Data: Byte;
+begin
+  with TMemoryStreamEx(Stream) do begin
+    Data := Value and $7f;
+    ByteIndex := 1;
+    while Value > (1 shl (ByteIndex * 7)) do begin
+      WriteByte(Data or $80);
+      Data := (Value shr (ByteIndex * 7)) and $7f;
+      Inc(ByteIndex);
+    end;
+    WriteByte(Data);
+  end
+end;
 
 procedure TPBItem.SaveToStream(Stream: TStream);
 var
@@ -104,13 +147,57 @@ begin
   with TMemoryStreamEx(Stream) do begin
     Data := ((Tag and $f) shl 3) or (Integer(ItemType) and $7);
     ByteIndex := 0;
-    while Tag > (1 shl (ByteIndex * 8 + 4)) do begin
+    while Tag > (1 shl (ByteIndex * 7 + 4)) do begin
       WriteByte(Data or $80);
-      Data := (Tag shr (ByteIndex * 8 + 4)) and $7f;
+      Data := (Tag shr (ByteIndex * 7 + 4)) and $7f;
       Inc(ByteIndex);
     end;
     WriteByte(Data);
   end
+end;
+
+procedure TPBItem.LoadFromStream(Stream: TStream);
+var
+  Data: Byte;
+  ByteIndex: Byte;
+begin
+  Data := TMemoryStreamEx(Stream).ReadByte;
+  ItemType := TPBItemType(Data and 3);
+  Tag := (Data shr 3) and $f;
+  ByteIndex := 0;
+  while Data > $7f do begin
+    Data := TMemoryStreamEx(Stream).ReadByte;
+    Tag := Tag or ((Data and $7f) shl (ByteIndex * 7 + 4))
+    Inc(ByteIndex);
+  end;
+end;
+
+function TPBItem.LoadVariantFromStream(Stream: TStream);
+var
+  Data: Byte;
+  ByteIndex: Byte;
+begin
+  Data := TMemoryStreamEx(Stream).ReadByte;
+  Tag := Data and $7f;
+  ByteIndex := 1;
+  while Data > $7f do begin
+    Data := TMemoryStreamEx(Stream).ReadByte;
+    Tag := Tag or ((Data and $7f) shl (ByteIndex * 7))
+    Inc(ByteIndex);
+  end;
+end;
+
+{ TPBIntegerItem }
+
+procedure TPBIntegerItem.SaveToStream(Stream: TStream);
+begin
+  inherited SaveToStream(Stream);
+  SaveVariantToStream(Stream, Value);
+end;
+
+constructor TPBIntegerItem.Create;
+begin
+  ItemType := itVariant;
 end;
 
 end.

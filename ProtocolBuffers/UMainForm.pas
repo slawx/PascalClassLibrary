@@ -32,13 +32,17 @@ var
   Stream: TMemoryStreamEx;
   Text: string;
   I: Integer;
+  NewItem: TPBItem;
 begin
   Stream := TMemoryStreamEx.Create;
   PB := TProtocolBuffer.Create;
   with PB do begin
-    BaseMessage := TPBMessage.Create;
-    BaseMessage.Name := 'SampleMessage';
-    BaseMessage.Tag := $aaaa;
+    with BaseMessage do begin
+      Name := 'SampleMessage';
+      NewItem := TPBIntegerItem.Create;
+      TPBIntegerItem(NewItem).Value := $5555555;
+      Items.Add(NewItem);
+    end;
     SaveToStream(Stream);
   end;
 
