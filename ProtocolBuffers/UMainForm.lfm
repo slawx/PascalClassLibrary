@@ -1,8 +1,19 @@
 object MainForm: TMainForm
-  Left = 288
-  Height = 300
-  Top = 154
-  Width = 400
+  Left = 281
+  Height = 319
+  Top = 189
+  Width = 448
   Caption = 'Demo ProtocolBuffers'
+  ClientHeight = 319
+  ClientWidth = 448
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
   LCLVersion = '0.9.29'
+  object Memo1: TMemo
+    Left = 9
+    Height = 272
+    Top = 9
+    Width = 433
+    TabOrder = 0
+  end
 end
