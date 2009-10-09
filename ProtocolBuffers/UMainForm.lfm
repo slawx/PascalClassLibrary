@@ -1,0 +1,8 @@
+object MainForm: TMainForm
+  Left = 288
+  Height = 300
+  Top = 154
+  Width = 400
+  Caption = 'Demo ProtocolBuffers'
+  LCLVersion = '0.9.29'
+end
