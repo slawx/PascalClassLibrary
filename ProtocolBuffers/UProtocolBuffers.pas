@@ -24,6 +24,8 @@ type
     ItemMode: TPBItemMode;
     procedure SaveVariantToStream(Stream: TStream; Value: Integer);
     function LoadVariantFromStream(Stream: TStream): Integer;
+    procedure SaveLengthDelimitedToStream(Stream: TStream; Block: TStream);
+    procedure LoadLengthDelimitedFromStream(Stream: TStream; Block: TStream);
     procedure SaveHeadToStream(Stream: TStream);
     procedure LoadHeadFromStream(Stream: TStream);
     procedure SaveToStream(Stream: TStream); virtual;
@@ -50,6 +52,7 @@ type
 
   { TPBMessageItem }
   TPBMessageItem = class(TPBItem)
+    GenerateHead: Boolean;
     Items: TList; // TList<TPBItem>;
     function SearchItemByTag(Tag: Integer): TPBItem;
     procedure SaveToStream(Stream: TStream); override;
@@ -77,12 +80,13 @@ uses
 
 procedure TProtocolBuffer.LoadFromStream(Stream: TStream);
 begin
-  BaseMessage.LoadHeadFromStream(Stream);
+  BaseMessage.GenerateHead := False;
   BaseMessage.LoadFromStream(Stream);
 end;
 
 procedure TProtocolBuffer.SaveToStream(Stream: TStream);
 begin
+  BaseMessage.GenerateHead := False;
   BaseMessage.SaveToStream(Stream);
 end;
 
@@ -117,11 +121,21 @@ end;
 procedure TPBMessageItem.SaveToStream(Stream: TStream);
 var
   I: Integer;
+  TempStream: TMemoryStream;
 begin
   inherited;
-  SaveHeadToStream(Stream);
+  // Generate message content to temporary stream
+  TempStream := TMemoryStream.Create;
   for I := 0 to Items.Count - 1 do
-    TPBItem(Items[I]).SaveToStream(Stream);
+    TPBItem(Items[I]).SaveToStream(TempStream);
+  // if head is used than write lenght-delimited head type with block byte length
+  if GenerateHead then begin
+    SaveHeadToStream(Stream);
+    SaveVariantToStream(Stream, TempStream.Size);
+  end;
+  TempStream.Position := 0;
+  TempStream.SaveToStream(Stream);
+  TempStream.Free;
 end;
 
 procedure TPBMessageItem.LoadFromStream(Stream: TStream);
@@ -129,10 +143,19 @@ var
   I: Integer;
   TempItem: TPBItem;
   SearchItem: TPBItem;
+  EndIndex: Integer;
+  TempStream: TMemoryStream;
 begin
   inherited;
+  TempStream := TMemoryStream.Create;
+
+  if GenerateHead then begin
+    I := LoadVariantFromStream(Stream);
+    EndIndex := Stream.Position + I;
+  end else EndIndex := Stream.Size;
+
   TempItem := TPBItem.Create;
-  for I := 0 to Items.Count - 1 do begin
+  while Stream.Position < EndIndex do begin
     TempItem.LoadHeadFromStream(Stream);
     SearchItem := SearchItemByTag(TempItem.Tag);
     if Assigned(SearchItem) then begin
@@ -145,14 +168,21 @@ begin
         TPBStringItem(SearchItem).LoadFromStream(Stream)
       else if SearchItem is TPBMessageItem then
         TPBMessageItem(SearchItem).LoadFromStream(Stream);
+    end else begin
+      if TempItem.ItemType = itVariant then
+        TempItem.LoadVariantFromStream(Stream)
+      else if TempItem.ItemType = itLengthDelimited then
+        TempItem.LoadLengthDelimitedFromStream(Stream, TempStream);
     end;
   end;
+  TempStream.Free;
 end;
 
 constructor TPBMessageItem.Create;
 begin
   ItemType := itLengthDelimited;
   Items := TList.Create;
+  GenerateHead := True;
 end;
 
 destructor TPBMessageItem.Destroy;
@@ -240,6 +270,22 @@ begin
     Result := Result or ((Data and $7f) shl (ByteIndex * 7));
     Inc(ByteIndex);
   end;
+end;
+
+procedure TPBItem.SaveLengthDelimitedToStream(Stream: TStream; Block: TStream);
+begin
+  SaveVariantToStream(Stream, Block.Size);
+  Block.Position := 0;
+  TMemoryStreamEx(Block).ReadStream(Stream, Block.Size);
+end;
+
+procedure TPBItem.LoadLengthDelimitedFromStream(Stream: TStream; Block: TStream
+  );
+var
+  Size: Integer;
+begin
+  Size := LoadVariantFromStream(Stream);
+  TMemoryStreamEx(Stream).ReadStream(Block, Size);
 end;
 
 { TPBIntegerItem }

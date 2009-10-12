@@ -8,7 +8,7 @@
       <TargetFileExt Value=".exe"/>
       <Icon Value="0"/>
       <UseXPManifest Value="True"/>
-      <ActiveEditorIndexAtStart Value="1"/>
+      <ActiveEditorIndexAtStart Value="0"/>
     </General>
     <VersionInfo>
       <ProjectVersion Value=""/>
@@ -32,15 +32,15 @@
         <PackageName Value="LCL"/>
       </Item1>
     </RequiredPackages>
-    <Units Count="9">
+    <Units Count="10">
       <Unit0>
         <Filename Value="Demo.lpr"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="Demo"/>
-        <CursorPos X="75" Y="10"/>
+        <CursorPos X="23" Y="11"/>
         <TopLine Value="1"/>
         <EditorIndex Value="6"/>
-        <UsageCount Value="30"/>
+        <UsageCount Value="34"/>
         <Loaded Value="True"/>
       </Unit0>
       <Unit1>
@@ -49,38 +49,38 @@
         <ComponentName Value="MainForm"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UMainForm"/>
-        <CursorPos X="42" Y="112"/>
-        <TopLine Value="79"/>
+        <CursorPos X="19" Y="137"/>
+        <TopLine Value="124"/>
         <EditorIndex Value="0"/>
-        <UsageCount Value="30"/>
+        <UsageCount Value="34"/>
         <Loaded Value="True"/>
       </Unit1>
       <Unit2>
         <Filename Value="UProtocolBuffers.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="UProtocolBuffers"/>
-        <CursorPos X="45" Y="137"/>
-        <TopLine Value="131"/>
+        <CursorPos X="30" Y="223"/>
+        <TopLine Value="217"/>
         <EditorIndex Value="1"/>
-        <UsageCount Value="30"/>
+        <UsageCount Value="34"/>
         <Loaded Value="True"/>
       </Unit2>
       <Unit3>
         <Filename Value="UMemoryStreamEx.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="UMemoryStreamEx"/>
-        <CursorPos X="1" Y="1"/>
-        <TopLine Value="1"/>
-        <EditorIndex Value="5"/>
-        <UsageCount Value="30"/>
+        <CursorPos X="3" Y="60"/>
+        <TopLine Value="56"/>
+        <EditorIndex Value="2"/>
+        <UsageCount Value="34"/>
         <Loaded Value="True"/>
       </Unit3>
       <Unit4>
         <Filename Value="..\..\..\Programy\Lazarus_0.9.27\fpc\2.2.4\source\rtl\objpas\classes\classesh.inc"/>
-        <CursorPos X="19" Y="826"/>
-        <TopLine Value="810"/>
-        <EditorIndex Value="4"/>
-        <UsageCount Value="14"/>
+        <CursorPos X="15" Y="806"/>
+        <TopLine Value="790"/>
+        <EditorIndex Value="5"/>
+        <UsageCount Value="16"/>
         <Loaded Value="True"/>
       </Unit4>
       <Unit5>
@@ -88,8 +88,8 @@
         <IsPartOfProject Value="True"/>
         <CursorPos X="20" Y="4"/>
         <TopLine Value="1"/>
-        <EditorIndex Value="3"/>
-        <UsageCount Value="28"/>
+        <EditorIndex Value="4"/>
+        <UsageCount Value="32"/>
         <Loaded Value="True"/>
         <SyntaxHighlighter Value="None"/>
       </Unit5>
@@ -99,8 +99,8 @@
         <UnitName Value="UParser"/>
         <CursorPos X="66" Y="26"/>
         <TopLine Value="2"/>
-        <EditorIndex Value="2"/>
-        <UsageCount Value="27"/>
+        <EditorIndex Value="3"/>
+        <UsageCount Value="31"/>
         <Loaded Value="True"/>
       </Unit6>
       <Unit7>
@@ -116,127 +116,133 @@
         <TopLine Value="342"/>
         <UsageCount Value="10"/>
       </Unit8>
+      <Unit9>
+        <Filename Value="..\..\..\Programy\Lazarus_0.9.27\fpc\2.2.4\source\rtl\objpas\classes\streams.inc"/>
+        <CursorPos X="47" Y="533"/>
+        <TopLine Value="530"/>
+        <UsageCount Value="10"/>
+      </Unit9>
     </Units>
     <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
         <Filename Value="UProtocolBuffers.pas"/>
-        <Caret Line="219" Column="1" TopLine="203"/>
+        <Caret Line="158" Column="1" TopLine="142"/>
       </Position1>
       <Position2>
         <Filename Value="UProtocolBuffers.pas"/>
-        <Caret Line="29" Column="15" TopLine="13"/>
+        <Caret Line="159" Column="1" TopLine="143"/>
       </Position2>
       <Position3>
         <Filename Value="UProtocolBuffers.pas"/>
-        <Caret Line="227" Column="5" TopLine="195"/>
+        <Caret Line="160" Column="1" TopLine="144"/>
       </Position3>
       <Position4>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="156" Column="9" TopLine="135"/>
+        <Filename Value="UProtocolBuffers.pas"/>
+        <Caret Line="161" Column="1" TopLine="145"/>
       </Position4>
       <Position5>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="155" Column="16" TopLine="134"/>
+        <Filename Value="UProtocolBuffers.pas"/>
+        <Caret Line="162" Column="1" TopLine="146"/>
       </Position5>
       <Position6>
         <Filename Value="UProtocolBuffers.pas"/>
-        <Caret Line="136" Column="27" TopLine="120"/>
+        <Caret Line="165" Column="1" TopLine="149"/>
       </Position6>
       <Position7>
         <Filename Value="UProtocolBuffers.pas"/>
-        <Caret Line="112" Column="9" TopLine="121"/>
+        <Caret Line="166" Column="1" TopLine="150"/>
       </Position7>
       <Position8>
         <Filename Value="UProtocolBuffers.pas"/>
-        <Caret Line="134" Column="1" TopLine="118"/>
+        <Caret Line="159" Column="1" TopLine="143"/>
       </Position8>
       <Position9>
         <Filename Value="UProtocolBuffers.pas"/>
-        <Caret Line="135" Column="1" TopLine="119"/>
+        <Caret Line="160" Column="1" TopLine="144"/>
       </Position9>
       <Position10>
         <Filename Value="UProtocolBuffers.pas"/>
-        <Caret Line="136" Column="1" TopLine="120"/>
+        <Caret Line="161" Column="1" TopLine="145"/>
       </Position10>
       <Position11>
         <Filename Value="UProtocolBuffers.pas"/>
-        <Caret Line="137" Column="1" TopLine="121"/>
+        <Caret Line="172" Column="1" TopLine="156"/>
       </Position11>
       <Position12>
         <Filename Value="UProtocolBuffers.pas"/>
-        <Caret Line="135" Column="1" TopLine="119"/>
+        <Caret Line="173" Column="1" TopLine="157"/>
       </Position12>
       <Position13>
         <Filename Value="UProtocolBuffers.pas"/>
-        <Caret Line="136" Column="1" TopLine="120"/>
+        <Caret Line="159" Column="1" TopLine="143"/>
       </Position13>
       <Position14>
         <Filename Value="UProtocolBuffers.pas"/>
-        <Caret Line="137" Column="1" TopLine="121"/>
+        <Caret Line="160" Column="1" TopLine="144"/>
       </Position14>
       <Position15>
         <Filename Value="UProtocolBuffers.pas"/>
-        <Caret Line="138" Column="1" TopLine="122"/>
+        <Caret Line="161" Column="1" TopLine="145"/>
       </Position15>
       <Position16>
         <Filename Value="UProtocolBuffers.pas"/>
-        <Caret Line="141" Column="1" TopLine="125"/>
+        <Caret Line="162" Column="1" TopLine="146"/>
       </Position16>
       <Position17>
         <Filename Value="UProtocolBuffers.pas"/>
-        <Caret Line="142" Column="1" TopLine="126"/>
+        <Caret Line="165" Column="1" TopLine="149"/>
       </Position17>
       <Position18>
         <Filename Value="UProtocolBuffers.pas"/>
-        <Caret Line="135" Column="1" TopLine="119"/>
+        <Caret Line="166" Column="1" TopLine="150"/>
       </Position18>
       <Position19>
-        <Filename Value="UProtocolBuffers.pas"/>
-        <Caret Line="136" Column="1" TopLine="120"/>
+        <Filename Value="Demo.lpr"/>
+        <Caret Line="10" Column="75" TopLine="1"/>
       </Position19>
       <Position20>
-        <Filename Value="UProtocolBuffers.pas"/>
-        <Caret Line="137" Column="1" TopLine="121"/>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="107" Column="11" TopLine="92"/>
       </Position20>
       <Position21>
         <Filename Value="UProtocolBuffers.pas"/>
-        <Caret Line="138" Column="1" TopLine="122"/>
+        <Caret Line="132" Column="42" TopLine="118"/>
       </Position21>
       <Position22>
         <Filename Value="UProtocolBuffers.pas"/>
-        <Caret Line="141" Column="1" TopLine="125"/>
+        <Caret Line="128" Column="1" TopLine="112"/>
       </Position22>
       <Position23>
         <Filename Value="UProtocolBuffers.pas"/>
-        <Caret Line="142" Column="1" TopLine="126"/>
+        <Caret Line="129" Column="1" TopLine="113"/>
       </Position23>
       <Position24>
         <Filename Value="UProtocolBuffers.pas"/>
-        <Caret Line="149" Column="1" TopLine="133"/>
+        <Caret Line="132" Column="22" TopLine="114"/>
       </Position24>
       <Position25>
         <Filename Value="UProtocolBuffers.pas"/>
-        <Caret Line="81" Column="39" TopLine="65"/>
+        <Caret Line="128" Column="1" TopLine="112"/>
       </Position25>
       <Position26>
         <Filename Value="UProtocolBuffers.pas"/>
-        <Caret Line="134" Column="1" TopLine="118"/>
+        <Caret Line="129" Column="1" TopLine="113"/>
       </Position26>
       <Position27>
         <Filename Value="UProtocolBuffers.pas"/>
-        <Caret Line="135" Column="1" TopLine="119"/>
+        <Caret Line="130" Column="1" TopLine="114"/>
       </Position27>
       <Position28>
         <Filename Value="UProtocolBuffers.pas"/>
-        <Caret Line="136" Column="6" TopLine="120"/>
+        <Caret Line="132" Column="12" TopLine="120"/>
       </Position28>
       <Position29>
         <Filename Value="UProtocolBuffers.pas"/>
-        <Caret Line="82" Column="19" TopLine="78"/>
+        <Caret Line="185" Column="24" TopLine="181"/>
       </Position29>
       <Position30>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="112" Column="39" TopLine="88"/>
+        <Filename Value="UProtocolBuffers.pas"/>
+        <Caret Line="316" Column="5" TopLine="302"/>
       </Position30>
     </JumpHistory>
   </ProjectOptions>
@@ -246,6 +252,14 @@
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)\"/>
     </SearchPaths>
+    <CodeGeneration>
+      <Checks>
+        <IOChecks Value="True"/>
+        <RangeChecks Value="True"/>
+        <OverflowChecks Value="True"/>
+        <StackChecks Value="True"/>
+      </Checks>
+    </CodeGeneration>
     <Linking>
       <Options>
         <Win32>
@@ -258,12 +272,6 @@
     </Other>
   </CompilerOptions>
   <Debugging>
-    <BreakPoints Count="1">
-      <Item1>
-        <Source Value="UProtocolBuffers.pas"/>
-        <Line Value="135"/>
-      </Item1>
-    </BreakPoints>
     <Exceptions Count="3">
       <Item1>
         <Name Value="EAbort"/>

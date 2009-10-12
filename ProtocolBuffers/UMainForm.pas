@@ -21,6 +21,7 @@ type
     TreeView2: TTreeView;
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
+    procedure Button3Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
   private
@@ -60,6 +61,11 @@ begin
   Stream.Free;
 end;
 
+procedure TMainForm.Button3Click(Sender: TObject);
+begin
+
+end;
+
 procedure TMainForm.Button1Click(Sender: TObject);
 var
   Stream: TMemoryStreamEx;
@@ -72,20 +78,39 @@ begin
     with BaseMessage do begin
       Name := 'SampleMessage';
       NewItem := TPBIntegerItem.Create;
-      TPBIntegerItem(NewItem).Name := 'Height';
-      TPBIntegerItem(NewItem).Tag := 1;
-      TPBIntegerItem(NewItem).Value := 12;
+      with TPBIntegerItem(NewItem) do begin
+        Name := 'Height';
+        Tag := 1;
+        Value := 12;
+      end;
+      Items.Add(NewItem);
+      NewItem := TPBStringItem.Create;
+      with TPBStringItem(NewItem) do begin
+        Name := 'Name';
+        Tag := 2;
+        Value := 'John Doe';
+      end;
       Items.Add(NewItem);
       NewItem := TPBIntegerItem.Create;
-      TPBIntegerItem(NewItem).Name := 'Width';
-      TPBIntegerItem(NewItem).Tag := 2;
-      TPBIntegerItem(NewItem).Value := 34;
+      with TPBIntegerItem(NewItem) do begin
+        Name := 'Age';
+        Tag := 3;
+        Value := 45;
+      end;
       Items.Add(NewItem);
-      NewItem := TPBIntegerItem.Create;
-      TPBIntegerItem(NewItem).Name := 'Age';
-      TPBIntegerItem(NewItem).Tag := 3;
-      TPBIntegerItem(NewItem).Value := 45;
+      NewItem := TPBMessageItem.Create;
       Items.Add(NewItem);
+      with TPBMessageItem(Items[Items.Count - 1]) do begin
+        Name := 'Address';
+        Tag := 5;
+        NewItem := TPBIntegerItem.Create;
+        with TPBIntegerItem(NewItem) do begin
+          Name := 'Street';
+          Tag := 1;
+          Value := 67;
+        end;
+        Items.Add(NewItem);
+      end;
     end;
     DisplayTree(PB, TreeView1);
     SaveToStream(Stream);
@@ -100,17 +125,36 @@ begin
     with BaseMessage do begin
       Name := 'SampleMessage';
       NewItem := TPBIntegerItem.Create;
-      TPBIntegerItem(NewItem).Name := 'Height';
-      TPBIntegerItem(NewItem).Tag := 1;
+      with TPBIntegerItem(NewItem) do begin
+        Name := 'Height';
+        Tag := 1;
+      end;
+      Items.Add(NewItem);
+      NewItem := TPBStringItem.Create;
+      with TPBStringItem(NewItem) do begin
+        Name := 'Name';
+        Tag := 2;
+        Value := '';
+      end;
       Items.Add(NewItem);
       NewItem := TPBIntegerItem.Create;
-      TPBIntegerItem(NewItem).Name := 'Age';
-      TPBIntegerItem(NewItem).Tag := 3;
+      with TPBIntegerItem(NewItem) do begin
+        Name := 'Weight';
+        Tag := 4;
+      end;
       Items.Add(NewItem);
-      NewItem := TPBIntegerItem.Create;
-      TPBIntegerItem(NewItem).Name := 'Weight';
-      TPBIntegerItem(NewItem).Tag := 4;
+      NewItem := TPBMessageItem.Create;
       Items.Add(NewItem);
+      with TPBMessageItem(Items[Items.Count - 1]) do begin
+        Name := 'Address';
+        Tag := 5;
+        NewItem := TPBIntegerItem.Create;
+        with TPBIntegerItem(NewItem) do begin
+          Name := 'Street';
+          Tag := 1;
+        end;
+        Items.Add(NewItem);
+      end;
     end;
     LoadFromStream(Stream);
     DisplayTree(PB, TreeView2);
