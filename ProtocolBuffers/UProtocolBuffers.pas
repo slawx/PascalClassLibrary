@@ -24,6 +24,8 @@ type
     ItemMode: TPBItemMode;
     procedure SaveVariantToStream(Stream: TStream; Value: Integer);
     function LoadVariantFromStream(Stream: TStream): Integer;
+    procedure SaveHeadToStream(Stream: TStream);
+    procedure LoadHeadFromStream(Stream: TStream);
     procedure SaveToStream(Stream: TStream); virtual;
     procedure LoadFromStream(Stream: TStream); virtual;
   end;
@@ -49,6 +51,7 @@ type
   { TPBMessageItem }
   TPBMessageItem = class(TPBItem)
     Items: TList; // TList<TPBItem>;
+    function SearchItemByTag(Tag: Integer): TPBItem;
     procedure SaveToStream(Stream: TStream); override;
     procedure LoadFromStream(Stream: TStream); override;
     constructor Create;
@@ -74,6 +77,7 @@ uses
 
 procedure TProtocolBuffer.LoadFromStream(Stream: TStream);
 begin
+  BaseMessage.LoadHeadFromStream(Stream);
   BaseMessage.LoadFromStream(Stream);
 end;
 
@@ -100,11 +104,22 @@ end;
 
 { TPBMessageItem }
 
+function TPBMessageItem.SearchItemByTag(Tag: Integer): TPBItem;
+var
+  I: Integer;
+begin
+  I := 0;
+  while (I < Items.Count) and (TPBItem(Items[I]).Tag <> Tag) do Inc(I);
+  if I < Items.Count then Result := Items[I]
+    else Result := nil;
+end;
+
 procedure TPBMessageItem.SaveToStream(Stream: TStream);
 var
   I: Integer;
 begin
-  inherited SaveToStream(Stream);
+  inherited;
+  SaveHeadToStream(Stream);
   for I := 0 to Items.Count - 1 do
     TPBItem(Items[I]).SaveToStream(Stream);
 end;
@@ -112,10 +127,26 @@ end;
 procedure TPBMessageItem.LoadFromStream(Stream: TStream);
 var
   I: Integer;
+  TempItem: TPBItem;
+  SearchItem: TPBItem;
 begin
-  inherited LoadFromStream(Stream);
-  for I := 0 to Items.Count - 1 do
-    TPBItem(Items[I]).LoadFromStream(Stream);
+  inherited;
+  TempItem := TPBItem.Create;
+  for I := 0 to Items.Count - 1 do begin
+    TempItem.LoadHeadFromStream(Stream);
+    SearchItem := SearchItemByTag(TempItem.Tag);
+    if Assigned(SearchItem) then begin
+      if SearchItem.ItemType <> TempItem.ItemType then
+        raise Exception.Create('Bad type for item "' + SearchItem.Name +
+          '" with tag ' + IntToStr(SearchItem.Tag));
+      if SearchItem is TPBIntegerItem then
+        TPBIntegerItem(SearchItem).LoadFromStream(Stream)
+      else if SearchItem is TPBStringItem then
+        TPBStringItem(SearchItem).LoadFromStream(Stream)
+      else if SearchItem is TPBMessageItem then
+        TPBMessageItem(SearchItem).LoadFromStream(Stream);
+    end;
+  end;
 end;
 
 constructor TPBMessageItem.Create;
@@ -153,7 +184,7 @@ begin
   end
 end;
 
-procedure TPBItem.SaveToStream(Stream: TStream);
+procedure TPBItem.SaveHeadToStream(Stream: TStream);
 var
   ByteIndex: Byte;
   Data: Byte;
@@ -170,7 +201,7 @@ begin
   end
 end;
 
-procedure TPBItem.LoadFromStream(Stream: TStream);
+procedure TPBItem.LoadHeadFromStream(Stream: TStream);
 var
   Data: Byte;
   ByteIndex: Byte;
@@ -184,6 +215,16 @@ begin
     Tag := Tag or ((Data and $7f) shl (ByteIndex * 7 + 4));
     Inc(ByteIndex);
   end;
+end;
+
+procedure TPBItem.SaveToStream(Stream: TStream);
+begin
+
+end;
+
+procedure TPBItem.LoadFromStream(Stream: TStream);
+begin
+
 end;
 
 function TPBItem.LoadVariantFromStream(Stream: TStream): Integer;
@@ -205,14 +246,15 @@ end;
 
 procedure TPBIntegerItem.SaveToStream(Stream: TStream);
 begin
-  inherited SaveToStream(Stream);
+  inherited;
+  SaveHeadToStream(Stream);
   SaveVariantToStream(Stream, Value);
 end;
 
 procedure TPBIntegerItem.LoadFromStream(Stream: TStream);
 begin
-  inherited LoadFromStream(Stream);
-  LoadVariantFromStream(Stream);
+  inherited;
+  Value := LoadVariantFromStream(Stream);
 end;
 
 constructor TPBIntegerItem.Create;
@@ -224,14 +266,15 @@ end;
 
 procedure TPBStringItem.SaveToStream(Stream: TStream);
 begin
-  inherited SaveToStream(Stream);
+  inherited;
+  SaveHeadToStream(Stream);
   SaveVariantToStream(Stream, Length(Value));
   TMemoryStreamEx(Stream).Write(Value[1], Length(Value));
 end;
 
 procedure TPBStringItem.LoadFromStream(Stream: TStream);
 begin
-  inherited LoadFromStream(Stream);
+  inherited;
   SetLength(Value, LoadVariantFromStream(Stream));
   TMemoryStreamEx(Stream).Read(Value[1], Length(Value));
 end;

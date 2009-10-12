@@ -1,19 +1,20 @@
 object MainForm: TMainForm
-  Left = 281
-  Height = 319
-  Top = 189
-  Width = 448
+  Left = 254
+  Height = 446
+  Top = 150
+  Width = 597
   Caption = 'Demo ProtocolBuffers'
-  ClientHeight = 319
-  ClientWidth = 448
+  ClientHeight = 446
+  ClientWidth = 597
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   LCLVersion = '0.9.29'
   object Memo1: TMemo
-    Left = 9
-    Height = 272
-    Top = 9
-    Width = 433
+    Left = 7
+    Height = 123
+    Top = 320
+    Width = 587
+    Anchors = [akTop, akLeft, akRight, akBottom]
     TabOrder = 0
   end
   object Button1: TButton
@@ -28,10 +29,26 @@ object MainForm: TMainForm
   object Button2: TButton
     Left = 88
     Height = 25
-    Top = 289
+    Top = 288
     Width = 75
     Caption = 'From file'
     OnClick = Button2Click
     TabOrder = 2
+  end
+  object TreeView1: TTreeView
+    Left = 9
+    Height = 272
+    Top = 7
+    Width = 293
+    DefaultItemHeight = 15
+    TabOrder = 3
+  end
+  object TreeView2: TTreeView
+    Left = 312
+    Height = 272
+    Top = 7
+    Width = 279
+    DefaultItemHeight = 15
+    TabOrder = 4
   end
 end
