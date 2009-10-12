@@ -16,4 +16,22 @@ object MainForm: TMainForm
     Width = 433
     TabOrder = 0
   end
+  object Button1: TButton
+    Left = 7
+    Height = 25
+    Top = 288
+    Width = 75
+    Caption = 'Runtime'
+    OnClick = Button1Click
+    TabOrder = 1
+  end
+  object Button2: TButton
+    Left = 88
+    Height = 25
+    Top = 289
+    Width = 75
+    Caption = 'From file'
+    OnClick = Button2Click
+    TabOrder = 2
+  end
 end

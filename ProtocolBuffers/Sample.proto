@@ -1,0 +1,4 @@
+message Sample {
+  uint32 command = 1;
+  uint32 parameter = 2;
+}

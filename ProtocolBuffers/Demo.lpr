@@ -7,7 +7,7 @@ uses
   cthreads,
   {$ENDIF}{$ENDIF}
   Interfaces, // this includes the LCL widgetset
-  Forms, UMainForm, LResources, UProtocolBuffers, UMemoryStreamEx
+  Forms, UMainForm, LResources, UProtocolBuffers, UMemoryStreamEx, UParser
   { you can add units after this };
 
 {$IFDEF WINDOWS}{$R Demo.rc}{$ENDIF}
