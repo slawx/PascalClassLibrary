@@ -244,7 +244,7 @@ begin
         end;
 
         if ItemMode = imRepeated then begin
-          TPBRepeatedItem(Items[ItemIndex]).Items.Add(NewItem);
+          TPBRepeatedItem(Self.Items[ItemIndex]).Items.Add(NewItem);
         end else begin
           TPBItem(Self.Items[ItemIndex]).Assign(NewItem);
           NewItem.Free;
@@ -489,8 +489,21 @@ procedure TPBRepeatedItem.Clear(Definition: TPBDefinition);
 var
   I: Integer;
 begin
-  for I := 0 to Items.Count - 1 do
+  for I := 0 to Items.Count - 1 do begin
     TPBItem(Items[I]).Free;
+    if Definition.ItemType = itInteger then begin
+      Items[I] := TPBIntegerItem.Create;
+      TPBIntegerItem(Items[I]).Value := Definition.DefaultInteger;
+    end else
+    if Definition.ItemType = itString then begin
+      Items[I] := TPBStringItem.Create;
+      TPBStringItem(Items[I]).Value := Definition.DefaultString;
+    end else
+    if Definition.ItemType = itMessage then begin
+      Items[I] := TPBMessageItem.Create;
+      TPBMessageItem(Items[I]).Clear(Definition);
+    end;
+  end;
   inherited;
 end;
 

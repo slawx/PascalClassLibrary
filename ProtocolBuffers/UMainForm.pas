@@ -93,7 +93,7 @@ begin
         Name := 'Name';
         Tag := 2;
         ItemType := itString;
-        ItemMode := imOptional;
+        ItemMode := imRepeated;
       end;
       Items.Add(NewItem);
 
@@ -127,6 +127,15 @@ begin
     TPBIntegerItem(PB.BaseMessage.Items[0]).Value := 12;
     TPBStringItem(TPBMessageItem(PB.BaseMessage.Items[3]).
       Items[0]).Value := 'Vsetínská';
+//    TPBStringItem(PB.BaseMessage.Items[1]).Value := 'Abc';
+    with TPBRepeatedItem(PB.BaseMessage.Items[1]) do begin
+      Items.Add(nil);
+      Items.Add(nil);
+      Clear(TPBDefinition(Definition.Items[1]));
+      TPBStringItem(Items[0]).Value := 'Test';
+      TPBStringItem(Items[1]).Value := 'Hops';
+    end;
+
     DisplayTree(PB, TreeView1);
     SaveToStream(Stream);
     Free;
@@ -153,6 +162,7 @@ begin
         Name := 'Name';
         Tag := 2;
         ItemType := itString;
+        //ItemMode := imRepeated;
         DefaultString := 'Billy Joe';
       end;
       Items.Add(NewItem);
@@ -226,8 +236,8 @@ var
   I: Integer;
   NewNode: TTreeNode;
 begin
-  for I := 0 to Definition.Items.Count - 1 do
-  with TPBDefinition(Definition) do begin
+  for I := 0 to PBRepeated.Items.Count - 1 do
+  with Definition do begin
     NewNode := Node.Owner.AddChild(Node, '');
     if ItemType = itString then begin
       NewNode.Text := IntToStr(Tag) + ': string ' + Name + ' = ' +
