@@ -27,7 +27,10 @@ type
   private
     procedure DisplayStream(Stream: TStream);
     procedure DisplayTree(ProtocolBuffer: TProtocolBuffer; TreeView: TTreeView);
-    procedure MessageToNode(PBMessage: TPBMessageItem; Node: TTreeNode);
+    procedure ListToNode(PBRepeated: TPBRepeatedItem; Node: TTreeNode;
+      Definition: TPBDefinition);
+    procedure MessageToNode(PBMessage: TPBMessageItem; Node: TTreeNode;
+      Definition: TPBDefinition);
   public
   end;
 
@@ -69,49 +72,61 @@ end;
 procedure TMainForm.Button1Click(Sender: TObject);
 var
   Stream: TMemoryStreamEx;
-  NewItem: TPBItem;
+  NewItem: TPBDefinition;
   PB: TProtocolBuffer;
 begin
   Stream := TMemoryStreamEx.Create;
   PB := TProtocolBuffer.Create;
   with PB do begin
-    with BaseMessage do begin
+    with Definition do begin
       Name := 'SampleMessage';
-      NewItem := TPBIntegerItem.Create;
-      with TPBIntegerItem(NewItem) do begin
+      NewItem := TPBDefinition.Create;
+      with TPBDefinition(NewItem) do begin
         Name := 'Height';
         Tag := 1;
-        Value := 12;
+        ItemType := itInteger;
       end;
       Items.Add(NewItem);
-      NewItem := TPBStringItem.Create;
-      with TPBStringItem(NewItem) do begin
+
+      NewItem := TPBDefinition.Create;
+      with TPBDefinition(NewItem) do begin
         Name := 'Name';
         Tag := 2;
-        Value := 'John Doe';
+        ItemType := itString;
+        ItemMode := imOptional;
       end;
       Items.Add(NewItem);
-      NewItem := TPBIntegerItem.Create;
-      with TPBIntegerItem(NewItem) do begin
+
+      NewItem := TPBDefinition.Create;
+      with TPBDefinition(NewItem) do begin
         Name := 'Age';
         Tag := 3;
-        Value := 45;
+        ItemType := itInteger;
+        ItemMode := imOptional;
       end;
       Items.Add(NewItem);
-      NewItem := TPBMessageItem.Create;
+
+      NewItem := TPBDefinition.Create;
       Items.Add(NewItem);
-      with TPBMessageItem(Items[Items.Count - 1]) do begin
+      with TPBDefinition(Items[Items.Count - 1]) do begin
         Name := 'Address';
         Tag := 5;
-        NewItem := TPBIntegerItem.Create;
-        with TPBIntegerItem(NewItem) do begin
+        ItemType := itMessage;
+        NewItem := TPBDefinition.Create;
+        ItemMode := imOptional;
+        with TPBDefinition(NewItem) do begin
           Name := 'Street';
           Tag := 1;
-          Value := 67;
+          ItemType := itString;
+          ItemMode := imOptional;
         end;
         Items.Add(NewItem);
       end;
     end;
+    BaseMessage.Clear(Definition);
+    TPBIntegerItem(PB.BaseMessage.Items[0]).Value := 12;
+    TPBStringItem(TPBMessageItem(PB.BaseMessage.Items[3]).
+      Items[0]).Value := 'Vsetínská';
     DisplayTree(PB, TreeView1);
     SaveToStream(Stream);
     Free;
@@ -122,40 +137,52 @@ begin
 
   PB := TProtocolBuffer.Create;
   with PB do begin
-    with BaseMessage do begin
+    with Definition do begin
       Name := 'SampleMessage';
-      NewItem := TPBIntegerItem.Create;
-      with TPBIntegerItem(NewItem) do begin
+      NewItem := TPBDefinition.Create;
+      with TPBDefinition(NewItem) do begin
         Name := 'Height';
         Tag := 1;
+        ItemType := itInteger;
+        DefaultInteger := 32;
       end;
       Items.Add(NewItem);
-      NewItem := TPBStringItem.Create;
-      with TPBStringItem(NewItem) do begin
+
+      NewItem := TPBDefinition.Create;
+      with TPBDefinition(NewItem) do begin
         Name := 'Name';
         Tag := 2;
-        Value := '';
+        ItemType := itString;
+        DefaultString := 'Billy Joe';
       end;
       Items.Add(NewItem);
-      NewItem := TPBIntegerItem.Create;
-      with TPBIntegerItem(NewItem) do begin
-        Name := 'Weight';
+
+      NewItem := TPBDefinition.Create;
+      with TPBDefinition(NewItem) do begin
+        Name := 'Work';
         Tag := 4;
+        ItemType := itString;
+        DefaultString := 'EasyCompany';
       end;
       Items.Add(NewItem);
-      NewItem := TPBMessageItem.Create;
+
+      NewItem := TPBDefinition.Create;
       Items.Add(NewItem);
-      with TPBMessageItem(Items[Items.Count - 1]) do begin
+      with TPBDefinition(Items[Items.Count - 1]) do begin
         Name := 'Address';
         Tag := 5;
-        NewItem := TPBIntegerItem.Create;
-        with TPBIntegerItem(NewItem) do begin
+        ItemType := itMessage;
+        NewItem := TPBDefinition.Create;
+        with TPBDefinition(NewItem) do begin
           Name := 'Street';
           Tag := 1;
+          ItemType := itString;
+          DefaultString := 'Ruská';
         end;
         Items.Add(NewItem);
       end;
     end;
+    BaseMessage.Clear(Definition);
     LoadFromStream(Stream);
     DisplayTree(PB, TreeView2);
     Free;
@@ -187,35 +214,61 @@ begin
     BeginUpdate;
     Items.Clear;
     TopItem := Items.Add(nil, 'message');
-    MessageToNode(ProtocolBuffer.BaseMessage, TopItem);
+    MessageToNode(ProtocolBuffer.BaseMessage, TopItem, ProtocolBuffer.Definition);
     TopItem.Expand(True);
     EndUpdate;
   end;
 end;
 
-procedure TMainForm.MessageToNode(PBMessage: TPBMessageItem; Node: TTreeNode);
+procedure TMainForm.ListToNode(PBRepeated: TPBRepeatedItem; Node: TTreeNode;
+  Definition: TPBDefinition);
 var
   I: Integer;
   NewNode: TTreeNode;
 begin
-  for I := 0 to PBMessage.Items.Count - 1 do begin
+  for I := 0 to Definition.Items.Count - 1 do
+  with TPBDefinition(Definition) do begin
     NewNode := Node.Owner.AddChild(Node, '');
-    if TPBItem(PBMessage.Items[I]) is TPBStringItem then begin
-      NewNode.Text := IntToStr(TPBItem(PBMessage.Items[I]).Tag) + ': string ' +
-        TPBItem(PBMessage.Items[I]).Name + ' = ' +
+    if ItemType = itString then begin
+      NewNode.Text := IntToStr(Tag) + ': string ' + Name + ' = ' +
+        TPBStringItem(PBRepeated.Items[I]).Value;
+    end else
+    if ItemType = itInteger then begin
+      NewNode.Text := IntToStr(Tag) + ': uint32 ' + Name + ' = ' +
+        IntToStr(TPBIntegerItem(PBRepeated.Items[I]).Value);
+    end else
+    if ItemType = itMessage then begin
+      NewNode.Text := IntToStr(Tag) + ': message ' + Name;
+      MessageToNode(TPBMessageItem(PBRepeated.Items[I]), NewNode, Definition);
+    end;
+  end;
+end;
+
+procedure TMainForm.MessageToNode(PBMessage: TPBMessageItem; Node: TTreeNode;
+  Definition: TPBDefinition);
+var
+  I: Integer;
+  NewNode: TTreeNode;
+begin
+  for I := 0 to Definition.Items.Count - 1 do
+  with TPBDefinition(Definition.Items[I]) do begin
+    NewNode := Node.Owner.AddChild(Node, '');
+    if ItemMode = imRepeated then begin
+      NewNode.Text := 'repeated';
+      ListToNode(TPBRepeatedItem(PBMessage.Items[I]), NewNode, Definition.Items[I]);
+    end else
+    if ItemType = itString then begin
+      NewNode.Text := IntToStr(Tag) + ': string ' + Name + ' = ' +
         TPBStringItem(PBMessage.Items[I]).Value;
     end else
-    if TPBItem(PBMessage.Items[I]) is TPBIntegerItem then begin
-      NewNode.Text := IntToStr(TPBItem(PBMessage.Items[I]).Tag) + ': uint32 ' +
-        TPBItem(PBMessage.Items[I]).Name + ' = ' +
+    if ItemType = itInteger then begin
+      NewNode.Text := IntToStr(Tag) + ': uint32 ' + Name + ' = ' +
         IntToStr(TPBIntegerItem(PBMessage.Items[I]).Value);
     end else
-    if TPBItem(PBMessage.Items[I]) is TPBMessageItem then begin
-      NewNode.Text := IntToStr(TPBItem(PBMessage.Items[I]).Tag) + ': message ' +
-        TPBItem(PBMessage.Items[I]).Name;
-      MessageToNode(TPBMessageItem(PBMessage.Items[I]), NewNode);
+    if ItemType = itMessage then begin
+      NewNode.Text := IntToStr(Tag) + ': message ' + Name;
+      MessageToNode(TPBMessageItem(PBMessage.Items[I]), NewNode, Definition.Items[I]);
     end;
-
   end;
 end;
 

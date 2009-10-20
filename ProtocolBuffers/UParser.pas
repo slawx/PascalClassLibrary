@@ -8,9 +8,7 @@ uses
   Classes, DateUtils;
 
 type
-
   { TParser }
-
   TParser = class
     WhiteSpaces: string;
     Text: string;
