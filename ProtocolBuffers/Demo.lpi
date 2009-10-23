@@ -49,7 +49,7 @@
         <ComponentName Value="MainForm"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UMainForm"/>
-        <CursorPos X="42" Y="159"/>
+        <CursorPos X="35" Y="159"/>
         <TopLine Value="146"/>
         <EditorIndex Value="0"/>
         <UsageCount Value="42"/>

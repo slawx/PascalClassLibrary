@@ -29,6 +29,7 @@ type
     Items: TList; // TList<TPBDefinition>
     DefaultString: string;
     DefaultInteger: Integer;
+    DefaultDouble: Double;
     constructor Create;
     destructor Destroy; override;
     function SearchItemByTag(Tag: Integer): Integer;
@@ -45,6 +46,10 @@ type
   TPBItem = class
     procedure SaveVariantToStream(Stream: TStream; Value: Integer);
     function LoadVariantFromStream(Stream: TStream): Integer;
+    procedure SaveFixed32ToStream(Stream: TStream; Value: Cardinal);
+    function LoadFixed32FromStream(Stream: TStream): Cardinal;
+    procedure SaveFixed64ToStream(Stream: TStream; Value: QWord);
+    function LoadFixed64FromStream(Stream: TStream): QWord;
     procedure SaveLengthDelimitedToStream(Stream: TStream; Block: TStream);
     procedure LoadLengthDelimitedFromStream(Stream: TStream; Block: TStream);
     procedure SaveHeadToStream(Stream: TStream; Definition: TPBDefinition);
@@ -69,6 +74,24 @@ type
   { TPBIntegerItem }
   TPBIntegerItem = class(TPBItem)
     Value: Integer;
+    procedure SaveToStream(Stream: TStream; Definition: TPBDefinition); override;
+    procedure LoadFromStream(Stream: TStream; Definition: TPBDefinition); override;
+    constructor Create;
+    procedure Assign(Source: TPBItem); override;
+  end;
+
+  { TPBFloatItem }
+  TPBFloatItem = class(TPBItem)
+    Value: Single;
+    procedure SaveToStream(Stream: TStream; Definition: TPBDefinition); override;
+    procedure LoadFromStream(Stream: TStream; Definition: TPBDefinition); override;
+    constructor Create;
+    procedure Assign(Source: TPBItem); override;
+  end;
+
+  { TPBDoubleItem }
+  TPBDoubleItem = class(TPBItem)
+    Value: Double;
     procedure SaveToStream(Stream: TStream; Definition: TPBDefinition); override;
     procedure LoadFromStream(Stream: TStream; Definition: TPBDefinition); override;
     constructor Create;
@@ -167,6 +190,14 @@ begin
       Items[I] := TPBIntegerItem.Create;
       TPBIntegerItem(Items[I]).Value := TPBDefinition(Definition.Items[I]).DefaultInteger;
     end else
+    if TPBDefinition(Definition.Items[I]).ItemType = itFloat then begin
+      Items[I] := TPBFloatItem.Create;
+      TPBFloatItem(Items[I]).Value := TPBDefinition(Definition.Items[I]).DefaultDouble;
+    end else
+    if TPBDefinition(Definition.Items[I]).ItemType = itDouble then begin
+      Items[I] := TPBDoubleItem.Create;
+      TPBDoubleItem(Items[I]).Value := TPBDefinition(Definition.Items[I]).DefaultDouble;
+    end else
     if TPBDefinition(Definition.Items[I]).ItemType = itString then begin
       Items[I] := TPBStringItem.Create;
       TPBStringItem(Items[I]).Value := TPBDefinition(Definition.Items[I]).DefaultString;
@@ -238,6 +269,14 @@ begin
           NewItem := TPBStringItem.Create;
           TPBStringItem(NewItem).LoadFromStream(Stream, Definition.Items[ItemIndex])
         end else
+        if TPBDefinition(Definition.Items[ItemIndex]).ItemType = itFloat then begin
+          NewItem := TPBFloatItem.Create;
+          TPBFloatItem(NewItem).LoadFromStream(Stream, Definition.Items[ItemIndex])
+        end else
+        if TPBDefinition(Definition.Items[ItemIndex]).ItemType = itDouble then begin
+          NewItem := TPBDoubleItem.Create;
+          TPBDoubleItem(NewItem).LoadFromStream(Stream, Definition.Items[ItemIndex])
+        end else
         if TPBDefinition(Definition.Items[ItemIndex]).ItemType = itMessage then begin
           NewItem := TPBMessageItem.Create;
           TPBMessageItem(NewItem).LoadFromStream(Stream, Definition.Items[ItemIndex]);
@@ -253,6 +292,10 @@ begin
       // Skip item data
       if ItemHead.WireType = wtVariant then
         TempItem.LoadVariantFromStream(Stream)
+      else if ItemHead.WireType = wt32bit then
+        TempItem.LoadFixed32FromStream(Stream)
+      else if ItemHead.WireType = wt64bit then
+        TempItem.LoadFixed64FromStream(Stream)
       else if ItemHead.WireType = wtLengthDelimited then
         TempItem.LoadLengthDelimitedFromStream(Stream, TempStream);
     end;
@@ -374,6 +417,26 @@ begin
   end;
 end;
 
+procedure TPBItem.SaveFixed32ToStream(Stream: TStream; Value: Cardinal);
+begin
+  TMemoryStreamEx(Stream).WriteCardinal(Value);
+end;
+
+function TPBItem.LoadFixed32FromStream(Stream: TStream): Cardinal;
+begin
+  Result := TMemoryStreamEx(Stream).ReadCardinal;
+end;
+
+procedure TPBItem.SaveFixed64ToStream(Stream: TStream; Value: QWord);
+begin
+  TMemoryStreamEx(Stream).WriteInt64(Value);
+end;
+
+function TPBItem.LoadFixed64FromStream(Stream: TStream): QWord;
+begin
+  Result := TMemoryStreamEx(Stream).ReadInt64;
+end;
+
 procedure TPBItem.SaveLengthDelimitedToStream(Stream: TStream; Block: TStream);
 begin
   SaveVariantToStream(Stream, Block.Size);
@@ -461,8 +524,8 @@ function TPBDefinition.GetWireType: TPBWireType;
 begin
   case ItemType of
     itInteger: Result := wtVariant;
-    itFloat: Result := wt64bit;
-    itDouble: Result := wt32bit;
+    itFloat: Result := wt32bit;
+    itDouble: Result := wt64bit;
     itString: Result := wtLengthDelimited;
     itMessage: Result := wtLengthDelimited;
   end;
@@ -494,6 +557,14 @@ begin
     if Definition.ItemType = itInteger then begin
       Items[I] := TPBIntegerItem.Create;
       TPBIntegerItem(Items[I]).Value := Definition.DefaultInteger;
+    end else
+    if Definition.ItemType = itFloat then begin
+      Items[I] := TPBFloatItem.Create;
+      TPBFloatItem(Items[I]).Value := Definition.DefaultDouble;
+    end else
+    if Definition.ItemType = itDouble then begin
+      Items[I] := TPBDoubleItem.Create;
+      TPBDoubleItem(Items[I]).Value := Definition.DefaultDouble;
     end else
     if Definition.ItemType = itString then begin
       Items[I] := TPBStringItem.Create;
@@ -547,6 +618,60 @@ begin
       TPBItem(Items[I]).Assign(TPBRepeatedItem(Source).Items[I]);
   end;
   inherited Assign(Source);
+end;
+
+{ TPBFloatItem }
+
+procedure TPBFloatItem.SaveToStream(Stream: TStream; Definition: TPBDefinition
+  );
+begin
+  SaveHeadToStream(Stream, Definition);
+  SaveFixed32ToStream(Stream, Cardinal(Value));
+end;
+
+procedure TPBFloatItem.LoadFromStream(Stream: TStream; Definition: TPBDefinition
+  );
+begin
+  inherited;
+  Value := Single(LoadFixed32FromStream(Stream));
+end;
+
+constructor TPBFloatItem.Create;
+begin
+
+end;
+
+procedure TPBFloatItem.Assign(Source: TPBItem);
+begin
+  if Source is TPBFloatItem then
+    Value := TPBFloatItem(Source).Value;
+end;
+
+{ TPBDoubleItem }
+
+procedure TPBDoubleItem.SaveToStream(Stream: TStream; Definition: TPBDefinition
+  );
+begin
+  SaveHeadToStream(Stream, Definition);
+  SaveFixed64ToStream(Stream, QWord(Value));
+end;
+
+procedure TPBDoubleItem.LoadFromStream(Stream: TStream;
+  Definition: TPBDefinition);
+begin
+  inherited;
+  Value := Double(LoadFixed64FromStream(Stream));
+end;
+
+constructor TPBDoubleItem.Create;
+begin
+
+end;
+
+procedure TPBDoubleItem.Assign(Source: TPBItem);
+begin
+  if Source is TPBDoubleItem then
+    Value := TPBDoubleItem(Source).Value;
 end;
 
 end.
