@@ -3,22 +3,22 @@ unit UObjectInteger;
 interface
 
 uses
-  SysUtils, Classes, UObjectTypeBase, UObjectBoolean, UObjectNumber;
+  SysUtils, Classes, UObjectTypeBase, UObjectBoolean;
 
 type
-  TInteger = class(TInterfacedObject, IAssignable, IOrdinal)
-  private
+  TInteger = class(TInterfacedObject, IAssignable, IOrderable)
   public
     Value: Integer;
-    function Ordinal: IOrdinal;
-    function Predecessor: IOrdinal;
-    function Successor: IOrdinal;
-    function Low: IOrdinal;
-    function High: IOrdinal;
+    function Predecessor: IOrderable;
+    function Successor: IOrderable;
+    function Low: IOrderable;
+    function High: IOrderable;
     procedure Assign(Source: TInterfacedObject);
     function EqualTo(Operand: TInterfacedObject): TBoolean;
-    function HigherThen(Operand: TInterfacedObject): TBoolean;
-    function LowerThan(Operand: TInterfacedObject): TBoolean;
+    function HigherThen(Operand: IOrderable): TBoolean;
+    function LowerThan(Operand: IOrderable): TBoolean;
+    function Max(Operand1, Operand2: IOrderable): IOrderable;
+    function Min(Operand1, Operand2: IOrderable): IOrderable;
   end;
 
 implementation
@@ -43,44 +43,49 @@ begin
   end else raise EInvalidCast.Create('Typecast error.');
 end;
 
-function TInteger.High: IOrdinal;
+function TInteger.High: IOrderable;
 begin
 
 end;
 
-function TInteger.HigherThen(Operand: TInterfacedObject): TBoolean;
+function TInteger.HigherThen(Operand: IOrderable): TBoolean;
 begin
-  if Operand is TInteger then begin
+  if TInterfacedObject(Operand) is TInteger then begin
     Result := TBoolean.Create;
     Result.Value := Value > TInteger(Operand).Value;
   end else raise EInvalidCast.Create('Typecast error.');
 end;
 
-function TInteger.Low: IOrdinal;
+function TInteger.Low: IOrderable;
 begin
 
 end;
 
-function TInteger.LowerThan(Operand: TInterfacedObject): TBoolean;
+function TInteger.LowerThan(Operand: IOrderable): TBoolean;
 begin
-  if Operand is TInteger then begin
+  if TInterfacedObject(Operand) is TInteger then begin
     Result := TBoolean.Create;
     Result.Value := Value < TInteger(Operand).Value;
   end else raise EInvalidCast.Create('Typecast error.');
 end;
 
-function TInteger.Ordinal: IOrdinal;
+function TInteger.Max(Operand1, Operand2: IOrderable): IOrderable;
 begin
 
 end;
 
-function TInteger.Predecessor: IOrdinal;
+function TInteger.Min(Operand1, Operand2: IOrderable): IOrderable;
+begin
+
+end;
+
+function TInteger.Predecessor: IOrderable;
 begin
   Result := TInteger.Create;
   TInteger(Result).Value := Pred(Value);
 end;
 
-function TInteger.Successor: IOrdinal;
+function TInteger.Successor: IOrderable;
 begin
   Result := TInteger.Create;
   TInteger(Result).Value := Succ(Value);

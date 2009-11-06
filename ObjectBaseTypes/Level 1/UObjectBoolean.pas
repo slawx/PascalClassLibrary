@@ -9,19 +9,31 @@ type
   TBoolean = class;
 
   IComparable = interface
-    function EqualTo(Operand: TInterfacedObject): TBoolean;
+    function EqualTo(Operand: IComparable): TBoolean;
   end;
 
   TBoolean = class(TInterfacedObject, IComparable, IAssignable)
     Value: Boolean;
     procedure Invert;
-    function EqualTo(Operand: TInterfacedObject): TBoolean;
+    function EqualTo(Operand: IComparable): TBoolean;
     function HigherThen(Operand: TInterfacedObject): TBoolean;
     function LowerThan(Operand: TInterfacedObject): TBoolean;
     procedure Assign(Source: TInterfacedObject);
     function AndTo(Operand: TBoolean): TBoolean;
     function OrTo(Operand: TBoolean): TBoolean;
   end;
+
+  IOrderable = interface
+    function HigherThen(Operand: IOrderable): TBoolean;
+    function LowerThan(Operand: IOrderable): TBoolean;
+    function Max(Operand1, Operand2: IOrderable): IOrderable;
+    function Min(Operand1, Operand2: IOrderable): IOrderable;
+    function Predecessor: IOrderable;
+    function Successor: IOrderable;
+    function Low: IOrderable;
+    function High: IOrderable;
+  end;
+
 
 implementation
 
@@ -45,9 +57,9 @@ begin
   end;
 end;
 
-function TBoolean.EqualTo(Operand: TInterfacedObject): TBoolean;
+function TBoolean.EqualTo(Operand: IComparable): TBoolean;
 begin
-  if Operand is TBoolean then begin
+  if TInterfacedObject(Operand) is TBoolean then begin
     Result := TBoolean.Create;
     Result.Value := Value = TBoolean(Operand).Value;
   end else raise EInvalidCast.Create('Typecast error');

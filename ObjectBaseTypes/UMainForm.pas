@@ -99,6 +99,12 @@ begin
     Result.Assign(Operand1);
     Result.Reverse;
     Add(Result.Value + ' := ' + Operand1.Value + '.Reverse');
+
+    // Pos
+    Operand1.Value := 'ABCD';
+    Operand2.Value := 'C';
+    Int := Operand1.Pos(Operand2);
+    Add(IntToStr(Int.Value) + ' := ' + Operand1.Value + '.Pos(' + Operand2.Value + ')');
   end;
 end;
 

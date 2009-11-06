@@ -3,10 +3,10 @@ unit UObjectByte;
 interface
 
 uses
-  Classes, SysUtils, UObjectTypeBase, UInterfacedBits, UObjectNumber, UObjectBoolean;
+  Classes, SysUtils, UObjectTypeBase, UInterfacedBits, UObjectBoolean;
 
 type
-  TByte = class(TInterfacedObject, IAssignable, IOrderable)
+  TByte = class(TInterfacedObject, IAssignable, IOrderable, IComparable)
   private
     function GetAsBits: TInterfacedBits;
     procedure SetAsBits(const Value: TInterfacedBits);
@@ -18,6 +18,11 @@ type
     function Max(Operand1, Operand2: IOrderable): IOrderable;
     function Min(Operand1, Operand2: IOrderable): IOrderable;
     property AsBits: TInterfacedBits read GetAsBits write SetAsBits;
+    function EqualTo(Operand: IComparable): TBoolean;
+    function Predecessor: IOrderable;
+    function Successor: IOrderable;
+    function Low: IOrderable;
+    function High: IOrderable;
   end;
 
 implementation
@@ -30,6 +35,11 @@ begin
   else raise EConvertError.Create('');
 end;
 
+function TByte.EqualTo(Operand: IComparable): TBoolean;
+begin
+
+end;
+
 function TByte.GetAsBits: TInterfacedBits;
 var
   I: Integer;
@@ -40,7 +50,17 @@ begin
     Result[I] := ((Value shr I) and 1) = 1;
 end;
 
+function TByte.High: IOrderable;
+begin
+
+end;
+
 function TByte.HigherThen(Operand: IOrderable): TBoolean;
+begin
+
+end;
+
+function TByte.Low: IOrderable;
 begin
 
 end;
@@ -60,6 +80,11 @@ begin
 
 end;
 
+function TByte.Predecessor: IOrderable;
+begin
+
+end;
+
 procedure TByte.SetAsBits(const Value: TInterfacedBits);
 var
   Count: Integer;
@@ -71,6 +96,11 @@ begin
   Self.Value := 0;
   for I := 0 to Count - 1 do
     Self.Value := Self.Value or (Ord(Value[I]) shl I);
+end;
+
+function TByte.Successor: IOrderable;
+begin
+
 end;
 
 end.

@@ -9,7 +9,7 @@ type
   TString = class(TInterfacedObject, IAssignable, IComparable)
     Value: string;
     procedure Assign(Source: TInterfacedObject);
-    function EqualTo(Operand: TInterfacedObject): TBoolean;
+    function EqualTo(Operand: IComparable): TBoolean;
     function HigherThen(Operand: TInterfacedObject): TBoolean;
     function LowerThan(Operand: TInterfacedObject): TBoolean;
     function Length: TInteger;
@@ -37,9 +37,9 @@ begin
   System.Delete(Value, Index.Value, Count.Value);
 end;
 
-function TString.EqualTo(Operand: TInterfacedObject): TBoolean;
+function TString.EqualTo(Operand: IComparable): TBoolean;
 begin
-  if Operand is TString then begin
+  if TInterfacedObject(Operand) is TString then begin
     Result := TBoolean.Create;
     Result.Value := Value = TString(Operand).Value;
   end else raise EInvalidCast.Create('Typecast error.');
