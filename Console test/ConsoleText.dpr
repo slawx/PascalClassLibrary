@@ -3,12 +3,10 @@ program ConsoleText;
 uses
   Forms,
   UTextScreen in 'UTextScreen.pas',
-  UClasses in 'UClasses.pas',
   UConsole in 'UConsole.pas',
   UConsoleApp in 'UConsoleApp.pas',
   UFileSystem in 'UFileSystem.pas',
   UMainForm in 'UMainForm.pas' {MainForm},
-  UObjectType in 'UObjectType.pas',
   UMyConsoleApp in 'UMyConsoleApp.pas',
   UKeyboard in 'UKeyboard.pas';
 

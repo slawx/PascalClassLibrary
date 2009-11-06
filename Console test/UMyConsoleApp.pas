@@ -3,7 +3,7 @@ unit UMyConsoleApp;
 interface
 
 uses
-  SysUtils, Forms, UConsoleApp, UObjectType, UConsole, UFileSystem, UClasses,
+  SysUtils, Forms, UConsoleApp, UObjectType, UConsole, UFileSystem,
   UTextScreen, Graphics;
 
 type
