@@ -7,7 +7,8 @@ uses
 
 type
   TArrayOfByte = array of Byte;
-
+  TArrayOfString = array of string;
+  
 function IntToBin(Data: Cardinal; Count: Byte): string;
 function TryHexToInt(Data: string; var Value: Integer): Boolean;
 function TryBinToInt(Data: string; var Value: Integer): Boolean;
@@ -98,5 +99,16 @@ begin
   end else Result := False;
 end;
 
+function Explode(Separator: char; Data: string): TArrayOfString;
+begin
+  SetLength(Result, 0);
+  while Pos(Separator, Data) > 0 do begin
+    SetLength(Result, Length(Result) + 1);
+    Result[High(Result)] := Copy(Data, 1, Pos(Separator, Data) - 1);
+    Delete(Data, 1, Pos(Separator, Data));
+  end;
+  SetLength(Result, Length(Result) + 1);
+  Result[High(Result)] := Data;
+end;
 
 end.
