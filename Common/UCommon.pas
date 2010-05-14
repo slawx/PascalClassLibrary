@@ -15,6 +15,7 @@ function TryBinToInt(Data: string; var Value: Integer): Boolean;
 function GetSpecialFolderPath(Folder: Integer): string;
 function BCDToInt(Value: Byte): Byte;
 function CompareByteArray(Data1, Data2: TArrayOfByte): Boolean;
+function GetUserName: string;
 
 implementation
 
@@ -109,6 +110,19 @@ begin
   end;
   SetLength(Result, Length(Result) + 1);
   Result[High(Result)] := Data;
+end;
+
+function GetUserName: string;
+const
+  MAX_USERNAME_LENGTH = 256;
+var
+  L: LongWord;
+begin
+  L := MAX_USERNAME_LENGTH + 2;
+  SetLength(Result, L);
+  if Windows.GetUserName(PChar(Result), L) and (L > 0) then
+    SetLength(Result, StrLen(PChar(Result))) else
+    Result := '';
 end;
 
 end.
