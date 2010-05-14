@@ -59,27 +59,27 @@ function TMemoryStreamEx.ReadAnsiString: string;
 var
   StringLength: Longint;
 begin
-  Read(StringLength, SizeOf(StringLength));
+  ReadBuffer(StringLength, SizeOf(StringLength));
   SetLength(Result, StringLength);
   if StringLength > 0 then begin
-    Read(Result[1], StringLength);
+    ReadBuffer(Result[1], StringLength);
   end;
 end;
 
 function TMemoryStreamEx.ReadByte: Byte;
 begin
-  Read(Result, SizeOf(Byte));
+  ReadBuffer(Result, SizeOf(Byte));
 end;
 
 function TMemoryStreamEx.ReadCardinal: Cardinal;
 begin
-  Read(Result, SizeOf(Cardinal));
+  ReadBuffer(Result, SizeOf(Cardinal));
   if SwapData then Result := Swap(Result);
 end;
 
 function TMemoryStreamEx.ReadInt64: Int64;
 begin
-  Read(Result, SizeOf(Int64));
+  ReadBuffer(Result, SizeOf(Int64));
   if SwapData then Result := Swap(Result);
 end;
 
@@ -87,9 +87,9 @@ function TMemoryStreamEx.ReadShortString: string;
 var
   Count: Byte;
 begin
-  Read(Count, 1);
+  ReadBuffer(Count, 1);
   SetLength(Result, Count);
-  Read(Result[1], Count);
+  ReadBuffer(Result[1], Count);
 end;
 
 procedure TMemoryStreamEx.ReadStream(var Stream: TStream; Count: Integer);
@@ -98,7 +98,7 @@ var
 begin
   if Count > 0 then begin
     SetLength(Buffer, Count);
-    Read(Buffer[0], Count);
+    ReadBuffer(Buffer[0], Count);
     Stream.Size := Count;
     Stream.Position := 0;
     Stream.Write(Buffer[0], Count);
@@ -117,17 +117,17 @@ end;
 
 function TMemoryStreamEx.ReadDouble: Double;
 begin
-  Read(Result, SizeOf(Double));
+  ReadBuffer(Result, SizeOf(Double));
 end;
 
 function TMemoryStreamEx.ReadSingle: Single;
 begin
-  Read(Result, SizeOf(Single));
+  ReadBuffer(Result, SizeOf(Single));
 end;
 
 function TMemoryStreamEx.ReadWord: Word;
 begin
-  Read(Result, SizeOf(Word));
+  ReadBuffer(Result, SizeOf(Word));
   if SwapData then Result := Swap(Result);
 end;
 
