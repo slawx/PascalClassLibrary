@@ -2,7 +2,10 @@
 
 unit UVarIntSerializer;
 
-{$mode delphi}{$H+}
+{$mode Delphi}{$H+}
+
+// One recursive VarInt size level supported
+// Biggest UInt type is QWord (64-bit)
 
 interface
 
@@ -17,11 +20,17 @@ type
   { TVarIntSerializer }
 
   TVarIntSerializer = class(TMemoryStreamEx)
+  private
+    procedure TrimLeft;
+    function GetUnaryLengthMask(Length: Integer): Byte;
+    function DecodeUnaryLength(Data: Byte): Integer;
+  public
     // Base
     procedure WriteVarUInt(Value: QWord);
     function ReadVarUInt: QWord;
-    procedure WriteVarIntStream(Stream: TMemoryStream);
-    procedure ReadVarIntStream(Stream: TMemoryStream);
+    procedure WriteVarBlock(Stream: TStream);
+    procedure ReadVarBlock(Stream: TStream);
+    function GetVarSize: Integer;
 
     // Advanced data types
     procedure WriteVarSInt(Value: Int64);
@@ -31,7 +40,11 @@ type
     procedure WriteVarString(Value: string);
     function ReadVarString: string;
 
+    // Misc methods
     function TestMask(Mask, BitIndex: Integer): Boolean;
+    procedure ReadItemByMaskIndex(Index: Integer; Data: TVarIntSerializer);
+    procedure BlockEnclose;
+    procedure BlockUnclose;
     constructor Create;
   end;
 
@@ -39,28 +52,65 @@ implementation
 
 { TVarIntSerializer }
 
+procedure TVarIntSerializer.TrimLeft;
+var
+  Temp: TVarIntSerializer;
+  Length: Integer;
+  Data: Byte;
+begin
+  Temp := TVarIntSerializer.Create;
+  Position := 0;
+  Length := Size * 8;
+  Data := 0;
+  while (Length > 0) and
+  (((Data shr (Length and 7)) and 1) = 0) do begin
+    Data := ReadByte;
+    Dec(Length); // set 7. bit in byte
+    while (((Data shr (Length and 7)) and 1) = 0) and ((Length and 7) > 0) do
+      Dec(Length);
+  end;
+  Inc(Length);
+  Length := Ceil(Length / 8);
+  Position := Size - Length;
+  ReadStream(TStream(Temp), Length);
+  Clear;
+  Position := 0;
+  WriteStream(Temp, Temp.Size);
+end;
+
+function TVarIntSerializer.GetUnaryLengthMask(Length: Integer): Byte;
+begin
+  Result := ((1 shl (BitAlignment - Length)) - 1) xor $ff;
+end;
+
+function TVarIntSerializer.DecodeUnaryLength(Data:Byte):Integer;
+begin
+  Result := 1;
+  while (((Data shr (BitAlignment - Result)) and 1) = 1) and
+    (Result < (BitAlignment + 1)) do Inc(Result);
+end;
+
 procedure TVarIntSerializer.WriteVarUInt(Value: QWord);
 var
   Length: Byte;
   Data: Byte;
   I: Integer;
+  LengthMask: Byte;
 begin
   // Get bit length
-  Length := 31;
+  Length := SizeOf(QWord) * BitAlignment;
   while (((Value shr Length) and 1) = 0) and (Length > 0) do
     Dec(Length);
   Inc(Length);
   Length := Ceil(Length / (BitAlignment - 1));
+  LengthMask := GetUnaryLengthMask(Length);
 
   // Copy data
   for I := Length downto 1 do begin
-    Data := (Value shr (8 * (I - 1))) and $ff;
-    //ShowMessage(IntToStr(Length) + ' ' + IntToHex(Data, 2));
-    if I = Length then Data := Data and
-      ((1 shl (BitAlignment - Length)) - 1)
-      or (((1 shl (BitAlignment - Length + 1)) - 1) xor $ff);
+    Data := (Value shr (BitAlignment * (I - 1))) and $ff;
+    if I = Length then Data := (Data and
+      (LengthMask xor $ff)) or ((LengthMask shl 1) and $ff);
     WriteByte(Data);
-    //ShowMessage(IntToStr(Length) + ' ' + IntToHex(Data, 2));
   end;
 end;
 
@@ -69,6 +119,7 @@ var
   Data: Byte;
   Length: Integer;
   I: Integer;
+  LengthMask: Byte;
 begin
   Result := 0;
   Length := 1;
@@ -76,13 +127,12 @@ begin
   while I < Length do begin
     Data := ReadByte;
     if I = 0 then begin
-      Length := 1;
-      while ((Data shr (BitAlignment - Length)) = 1) and (Length < 9) do
-        Inc(Length);
-      if Length > 8 then raise Exception.Create('VarInt 64-bit read overflow');
-      Data := Data and ((1 shl (BitAlignment - Length)) - 1);
+      Length := DecodeUnaryLength(Data);
+      if Length > (BitAlignment - 1) then raise Exception.Create('64-bit UInt read overflow');
+      LengthMask := GetUnaryLengthMask(Length);
+      Data := Data and (LengthMask xor $ff);
     end;
-    Result := Result or (Data shl ((Length - I - 1) * 8));
+    Result := Result or (Data shl ((Length - I - 1) * BitAlignment));
     Inc(I);
   end;
 end;
@@ -123,7 +173,7 @@ begin
   Stream := TVarIntSerializer.Create;
   for I := 1 to Length(Value) do
     Stream.WriteVarUInt(Integer(Value[I]));
-  WriteVarIntStream(Stream);
+  WriteVarBlock(Stream);
   Stream.Destroy;
 end;
 
@@ -133,7 +183,7 @@ var
   Character: Integer;
 begin
   Stream := TVarIntSerializer.Create;
-  ReadVarIntStream(Stream);
+  ReadVarBlock(Stream);
   Stream.Position := 0;
   while Stream.Position < Stream.Size do begin
     Character := Stream.ReadVarUInt;
@@ -142,83 +192,115 @@ begin
   Stream.Destroy;
 end;
 
-procedure TVarIntSerializer.WriteVarIntStream(Stream: TMemoryStream);
+procedure TVarIntSerializer.WriteVarBlock(Stream: TStream);
 var
-  Length: Byte; // Count of data bytes
+  Length: Integer; // Count of data bytes
   Data: Byte;
-  I: Cardinal;
+  I: Integer;
+  LengthMask: Byte;
 begin
-  // Get bit length
   Stream.Position := 0;
-  if Stream.Size < 8 then begin
-    // Unary length
-    Length := Stream.Size * 8;
-    Data := 0;
-    while (Length > 0) and
-    (((Data shr (Length and 7)) and 1) = 0) do begin
-      Data := Stream.ReadByte;
-      Dec(Length); // set 7. bit in byte
-      while (((Data shr (Length and 7)) and 1) = 0) and ((Length and 7) > 0) do
-        Dec(Length);
-    end;
-    Inc(Length);
-    Length := Ceil(Length / (BitAlignment - 1));
-  end else Length := Stream.Size + 1; // Recursive length
+  Length := Stream.Size;
 
   // Copy data
-  Stream.Position := 0;
-  for I := Length downto 1 do begin
-    if I <= Stream.Size then Data := Stream.ReadByte
+  if Length = 0 then WriteByte(0)
+  else begin
+    if Stream.Size > 0 then Data := Stream.ReadByte
       else Data := 0;
-    if I = Length then begin
-      if Length < 8 then begin
-        Data := Data and
-        ((1 shl (BitAlignment - Length)) - 1)
-        or (((1 shl (BitAlignment - Length + 1)) - 1) xor $ff);
+    if (Length < BitAlignment) then begin
+      LengthMask := GetUnaryLengthMask(Length);
+      if ((Data and (LengthMask xor $ff)) <> Data) or (Data = 0) then begin
+        // First data starts by zero or
+        // first data byte not fit to length byte
+        Inc(Length);
+        if Length < 8 then begin
+          LengthMask := GetUnaryLengthMask(Length);
+          WriteByte((LengthMask shl 1) and $ff);
+          WriteByte(Data);
+        end;
       end else begin
-        // Recursive length
-        WriteByte($ff);
-        WriteVarUInt(Length - 8);
-        Continue;
+        // First data byte fit to length byte
+        WriteByte((Data and (LengthMask xor $ff)) or ((LengthMask shl 1) and $ff));
       end;
     end;
-    WriteByte(Data);
+    if Length >= BitAlignment then begin
+      // Recursive length
+      WriteByte($ff);
+      WriteVarUInt(Stream.Size);
+      WriteByte(Data);
+    end;
+
+    // Copy rest of data
+    for I := 1 to Stream.Size - 1 do begin
+      if I < Stream.Size then Data := Stream.ReadByte
+        else Data := 0;
+      WriteByte(Data);
+    end;
   end;
 end;
 
-procedure TVarIntSerializer.ReadVarIntStream(Stream: TMemoryStream);
+procedure TVarIntSerializer.ReadVarBlock(Stream: TStream);
 var
   Data: Byte;
   Length: Cardinal;
   I: Cardinal;
+  LengthMask: Byte;
 begin
-  Stream.Clear;
-  Length := 1;
+  Stream.Size := 0;
   I := 0;
+  Length := 1;
   while I < Length do begin
     Data := ReadByte;
     if I = 0 then begin
-      Length := 1;
-      while (((Data shr (BitAlignment - Length)) and 1) = 1) and (Length < 9) do
-        Inc(Length);
-      if Length > 8 then begin
+      if Data = $ff then begin
         // Read recursive length
-        Length := ReadVarUInt + 8;
-        Inc(I);
-        Continue;
-      end else Data := Data and ((1 shl (BitAlignment - Length)) - 1);
-      Stream.Size := Length;
-    end;
-    Stream.WriteByte(Data);
+        Length := ReadVarUInt;
+        Stream.Size := Length;
+        Data := ReadByte;
+        Stream.WriteByte(Data);
+      end else begin
+        // Read unary length
+        Length := DecodeUnaryLength(Data);
+        Stream.Size := Length;
+        LengthMask := GetUnaryLengthMask(Length);
+        Data := Data and (LengthMask xor $ff);
+        // Drop first byte if first data zero
+        if Data <> 0 then Stream.WriteByte(Data)
+          else begin
+            Dec(Length);
+            Stream.Size := Length;
+            if Length > 0 then begin
+              Data := ReadByte;
+              Stream.WriteByte(Data);
+            end;
+          end;
+      end;
+    end else Stream.WriteByte(Data);
     Inc(I);
   end;
   Stream.Position := 0;
 end;
 
+function TVarIntSerializer.GetVarSize: Integer;
+var
+  Data: Byte;
+  I: Cardinal;
+  StoredPosition: Integer;
+begin
+  StoredPosition := Position;
+  Result := 1; // Byte block length
+  Data := ReadByte;
+  if Data = $ff then Result := ReadVarUInt + 2
+  else begin
+    Result := DecodeUnaryLength(Data);
+  end;
+  Position := StoredPosition;
+end;
+
 procedure TVarIntSerializer.WriteVarSInt(Value: Int64);
 begin
-  if Value < 0 then WriteVarUInt((Abs(Value) shl 1) - 1)
-    else WriteVarUInt((Abs(Value) shl 1))
+  if Value < 0 then WriteVarUInt(((-Value) shl 1) - 1)
+    else WriteVarUInt((Value shl 1))
 end;
 
 function TVarIntSerializer.ReadVarSInt: Int64;
@@ -231,6 +313,46 @@ end;
 function TVarIntSerializer.TestMask(Mask, BitIndex: Integer): Boolean;
 begin
   Result := ((Mask shr BitIndex) and 1) = 1;
+end;
+
+procedure TVarIntSerializer.ReadItemByMaskIndex(Index:Integer;Data:
+  TVarIntSerializer);
+var
+  Mask: Integer;
+  I: Integer;
+begin
+  Position := 0;
+  Mask := ReadVarUInt;
+  I := 0;
+  while (Position < Size) and (I < Index) do begin
+    if TestMask(Mask, I) then Position := Position + GetVarSize;
+    Inc(I);
+  end;
+  if TestMask(Mask, Index) then
+    ReadStream(TStream(Data), GetVarSize);
+end;
+
+procedure TVarIntSerializer.BlockEnclose;
+var
+  Temp: TVarIntSerializer;
+begin
+  Temp := TVarIntSerializer.Create;
+  Temp.WriteStream(Self, Size);
+  Clear;
+  WriteVarBlock(Temp);
+  Temp.Destroy;
+end;
+
+procedure TVarIntSerializer.BlockUnclose;
+var
+  Temp: TVarIntSerializer;
+begin
+  Temp := TVarIntSerializer.Create;
+  ReadVarBlock(Temp);
+  Clear;
+  WriteStream(Temp, Temp.Size);
+  Temp.Destroy;
+  Position := 0;
 end;
 
 constructor TVarIntSerializer.Create;
