@@ -12,6 +12,7 @@ type
     Identification: Byte;
     MajorVersion: Byte;
     MinorVersion: Byte;
+    BugFixVersion: Byte;
     CompanyName: string;
     CompanyHomePage: string;
     HomePage: string;
@@ -32,6 +33,7 @@ with ApplicationInfo do begin
   Identification := 1;
   MajorVersion := 1;
   MinorVersion := 0;
+  BugFixVersion := 0;
   CompanyName := 'Company';
   CompanyHomepage := 'http://www.company.cz/';
   HomePage := 'http://www.company.cz/index.html';

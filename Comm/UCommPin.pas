@@ -1,4 +1,4 @@
-unit UPin;
+unit UCommPin;
 
 {$mode Delphi}{$H+}{$M+}
 
@@ -12,17 +12,17 @@ type
   TOnLogDataEvent = procedure (Stream: TStream; Direction: TDataDiretion) of object;
   TOnStreamEvent = procedure (Stream: TStream) of object;
 
-  { TPin }
+  { TCommPin }
 
-  TPin = class
+  TCommPin = class
   private
     FOnLogData: TOnLogDataEvent;
     FOnReceive: TOnStreamEvent;
     function GetConnected: Boolean;
   public
-    Pin: TPin;
+    RemotePin: TCommPin;
     destructor Destroy; override;
-    procedure Connect(Pin: TPin);
+    procedure Connect(Pin: TCommPin);
     procedure Disconnect;
     procedure Send(Stream: TStream);
     procedure Receive(Stream: TStream);
@@ -34,45 +34,45 @@ type
 
 implementation
 
-{ TPin }
+{ TCommPin }
 
-procedure TPin.Connect(Pin: TPin);
+procedure TCommPin.Connect(Pin: TCommPin);
 begin
   if Assigned(Pin) then Disconnect;
-  Self.Pin := Pin;
-  Pin.Pin := Self;
+  Self.RemotePin := Pin;
+  Pin.RemotePin := Self;
 end;
 
-destructor TPin.Destroy;
+destructor TCommPin.Destroy;
 begin
   Disconnect;
   inherited;
 end;
 
-procedure TPin.Disconnect;
+procedure TCommPin.Disconnect;
 begin
-  if Assigned(Pin) then begin
-    Pin.Pin := nil;
-    Pin := nil;
+  if Assigned(RemotePin) then begin
+    RemotePin.RemotePin := nil;
+    RemotePin := nil;
   end;
 end;
 
-function TPin.GetConnected: Boolean;
+function TCommPin.GetConnected: Boolean;
 begin
-  Result := Assigned(Pin);
+  Result := Assigned(RemotePin);
 end;
 
-procedure TPin.Receive(Stream: TStream);
+procedure TCommPin.Receive(Stream: TStream);
 begin
   if Assigned(FOnLogData) then FOnLogData(Stream, ddReceive);
   Stream.Position := 0;
   if Assigned(FOnReceive) then FOnReceive(Stream);
 end;
 
-procedure TPin.Send(Stream: TStream);
+procedure TCommPin.Send(Stream: TStream);
 begin
   if Assigned(FOnLogData) then FOnLogData(Stream, ddSend);
-  if Assigned(Pin) then Pin.Receive(Stream);
+  if Assigned(RemotePin) then RemotePin.Receive(Stream);
 end;
 
 

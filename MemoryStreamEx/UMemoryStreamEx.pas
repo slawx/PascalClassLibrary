@@ -5,7 +5,7 @@ unit UMemoryStreamEx;
 interface
 
 uses
-  Classes, DateUtils;
+  Classes, DateUtils, syncobjs;
 
 type
   TEndianness = (enBig, enLittle);
@@ -22,38 +22,44 @@ type
     procedure WriteWord(Data: Word);
     procedure WriteCardinal(Data: Cardinal);
     procedure WriteInt64(Data: Int64);
+    procedure WriteString(Data: string);
     procedure WriteShortString(Data: ShortString);
     procedure WriteAnsiString(Data: string);
     procedure WriteUnixTime(Data: TDateTime);
-    procedure WriteStream(Stream: TStream; Count: Integer);
     procedure WriteDouble(Value: Double);
     procedure WriteSingle(Value: Single);
+    procedure WriteStream(Stream: TStream; Count: Integer);
+    procedure WriteStreamPart(Stream: TStream; Count: Integer);
     function ReadByte: Byte;
     function ReadWord: Word;
     function ReadCardinal: Cardinal;
     function ReadInt64: Int64;
+    function ReadString: string;
     function ReadShortString: string;
     function ReadAnsiString: string;
+    function ReadStringTerminated(Terminator: string = #0): string;
     function ReadUnixTime: TDateTime;
     function ReadDouble: Double;
     function ReadSingle: Single;
     procedure ReadStream(var Stream: TStream; Count: Integer);
+    procedure ReadStreamPart(var Stream: TStream; Count: Integer);
+    function Sum: Byte;
+    procedure FillByte(Data: Byte; Count: Integer);
     constructor Create;
     property Endianness: TEndianness read FEndianness write SetEndianness;
+  end;
+
+  { TThreadMemoryStreamEx }
+
+  TThreadMemoryStreamEx = class(TMemoryStreamEx)
+    Lock: TCriticalSection;
+    constructor Create;
+    destructor Destroy; override;
   end;
 
 implementation
 
 { TMemoryStreamEx }
-
-procedure TMemoryStreamEx.WriteAnsiString(Data: string);
-var
-  StringLength: Longint;
-begin
-  StringLength := Length(Data);
-  Write(StringLength, SizeOf(StringLength));
-  Write(Data[1], StringLength);
-end;
 
 function TMemoryStreamEx.ReadAnsiString: string;
 var
@@ -63,6 +69,27 @@ begin
   SetLength(Result, StringLength);
   if StringLength > 0 then begin
     ReadBuffer(Result[1], StringLength);
+  end;
+end;
+
+function TMemoryStreamEx.ReadStringTerminated(Terminator: string = #0): string;
+var
+  Data: Char;
+  I: Integer;
+  OldPosition: Integer;
+begin
+  OldPosition := Position;
+  Result := '';
+  I := 1;
+  repeat
+    if Position >= Size then Break;
+    Data := Chr(ReadByte);
+    if Data <> Terminator[I] then Result := Result + Data
+      else Inc(I);
+  until I > Length(Terminator);
+  if not (I > Length(Terminator)) then begin
+    Result := '';
+    Position := OldPosition;
   end;
 end;
 
@@ -81,6 +108,14 @@ function TMemoryStreamEx.ReadInt64: Int64;
 begin
   ReadBuffer(Result, SizeOf(Int64));
   if SwapData then Result := Swap(Result);
+end;
+
+function TMemoryStreamEx.ReadString:string;
+begin
+  SetLength(Result, Size - Position);
+  if (Size - Position) > 0 then
+    Read(Result[1], Size - Position)
+    else Result := '';
 end;
 
 function TMemoryStreamEx.ReadShortString: string;
@@ -105,6 +140,31 @@ begin
   end;
 end;
 
+procedure TMemoryStreamEx.ReadStreamPart(var Stream:TStream;Count:Integer);
+var
+  Buffer: array of Byte;
+begin
+  if Count > 0 then begin
+    SetLength(Buffer, Count);
+    ReadBuffer(Buffer[0], Count);
+    if Stream.Size < (Stream.Position + Count) then
+      Stream.Size := Stream.Position + Count;
+    Stream.Write(Buffer[0], Count);
+  end;
+end;
+
+procedure TMemoryStreamEx.WriteStreamPart(Stream:TStream;Count:Integer);
+var
+  Buffer: array of Byte;
+begin
+  if Count > Stream.Size then Count := Stream.Size; // Limit max. stream size
+  if Count > 0 then begin
+    SetLength(Buffer, Count);
+    Stream.Read(Buffer[0], Count);
+    Write(Buffer[0], Count);
+  end;
+end;
+
 constructor TMemoryStreamEx.Create;
 begin
   Endianness := enLittle;
@@ -125,6 +185,22 @@ begin
   ReadBuffer(Result, SizeOf(Single));
 end;
 
+function TMemoryStreamEx.Sum: Byte;
+begin
+  Result := 0;
+  Position := 0;
+  while Position < Size do
+    Result := (Result + ReadByte) and $ff;
+end;
+
+procedure TMemoryStreamEx.FillByte(Data:Byte;Count:Integer);
+var
+  I: Integer;
+begin
+  for I := 0 to Count - 1 do
+    WriteByte(Data);
+end;
+
 function TMemoryStreamEx.ReadWord: Word;
 begin
   ReadBuffer(Result, SizeOf(Word));
@@ -134,11 +210,20 @@ end;
 procedure TMemoryStreamEx.SetEndianness(const AValue: TEndianness);
 begin
   FEndianness := AValue;
-  {$ifdef FPC_LITTLE_ENDIAN}
+  {$if defined(FPC_LITTLE_ENDIAN)}
   SwapData := FEndianness = enBig;
-  {$elseifdef FPC_BIG_ENDIAN}
+  {$elseif defined(FPC_BIG_ENDIAN)}
   SwapData := FEndianness = enLittle;
   {$endif}
+end;
+
+procedure TMemoryStreamEx.WriteAnsiString(Data: string);
+var
+  StringLength: Longint;
+begin
+  StringLength := Length(Data);
+  Write(StringLength, SizeOf(StringLength));
+  Write(Data[1], StringLength);
 end;
 
 procedure TMemoryStreamEx.WriteByte(Data: Byte);
@@ -156,6 +241,12 @@ procedure TMemoryStreamEx.WriteInt64(Data: Int64);
 begin
   if SwapData then Data := Swap(Data);
   Write(Data, SizeOf(Int64));
+end;
+
+procedure TMemoryStreamEx.WriteString(Data:string);
+begin
+  if Length(Data) > 0 then
+    Write(Data[1], Length(Data));
 end;
 
 procedure TMemoryStreamEx.WriteShortString(Data: ShortString);
@@ -199,6 +290,20 @@ procedure TMemoryStreamEx.WriteWord(Data: Word);
 begin
   if SwapData then Data := Swap(Data);
   Write(Data, SizeOf(Word));
+end;
+
+{ TThreadMemoryStreamEx }
+
+constructor TThreadMemoryStreamEx.Create;
+begin
+  inherited Create;
+  Lock := TCriticalSection.Create;
+end;
+
+destructor TThreadMemoryStreamEx.Destroy;
+begin
+  Lock.Destroy;
+  inherited Destroy;
 end;
 
 end.

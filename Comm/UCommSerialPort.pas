@@ -5,7 +5,7 @@ unit UCommSerialPort;
 interface
 
 uses
-  Classes, USerialPort, UPin, SysUtils;
+  Classes, USerialPort, UCommPin, SysUtils;
 
 type
   TCommSerialPort = class(TSerialPort)
@@ -15,7 +15,7 @@ type
     procedure Receive(Stream: TStream);
     procedure ReceiveData(Stream: TMemoryStream);
   public
-    DataPin: TPin;
+    DataPin: TCommPin;
     destructor Destroy; override;
     constructor Create;
     property TxCount: Integer read FTxCount;
@@ -37,7 +37,7 @@ end;
 constructor TCommSerialPort.Create;
 begin
   inherited;
-  DataPin := TPin.Create;
+  DataPin := TCommPin.Create;
   DataPin.OnReceive := Receive;
   OnReceiveData := ReceiveData;
 end;

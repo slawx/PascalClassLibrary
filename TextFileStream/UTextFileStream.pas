@@ -3,9 +3,11 @@
 
 unit UTextFileStream;
 
+{$mode Delphi}{$H+}
+
 interface
 
-uses Classes, Dialogs, SysUtils;
+uses Classes, SysUtils;
 
 type
 

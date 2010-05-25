@@ -47,6 +47,7 @@ type
     FReceiveThread: TSerialPortReceiveThread;
     function GetBaudRateNumeric: Integer;
     function GetName: string;
+    function GetReceiveBuffer:TMemoryStream;
     procedure SetBaudRate(const AValue: TBaudRate);
     procedure SetBaudRateNumeric(const AValue: Integer);
     procedure SetDataBits(const AValue: TDataBits);
@@ -69,6 +70,7 @@ type
     property Active: Boolean read FActive write SetActive;
     property RTS: Boolean read FRTS write SetRTS;
     property DTR: Boolean read FDTR write SetDTR;
+    property ReceiveBuffer: TMemoryStream read GetReceiveBuffer;
 
     property BaudRateNumeric: Integer read GetBaudRateNumeric write SetBaudRateNumeric;
     property OnReceiveData: TReceiveDataEvent read FOnReceiveData write FOnReceiveData;
@@ -131,10 +133,6 @@ begin
 end;
 
 procedure TSerialPort.Open;
-var
-  DefaultCommConfig: COMMCONFIG;
-  Size: LongWord;
-  Port: PChar;
 begin
   Connect(FName);
   SetBaudRate(FBaudRate);
@@ -196,6 +194,11 @@ end;
 function TSerialPort.GetName: string;
 begin
   Result := FName;
+end;
+
+function TSerialPort.GetReceiveBuffer:TMemoryStream;
+begin
+  Result := FReceiveThread.Stream;
 end;
 
 procedure TSerialPort.SetBaudRateNumeric(const AValue: Integer);

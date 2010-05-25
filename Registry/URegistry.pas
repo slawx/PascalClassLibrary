@@ -1,5 +1,7 @@
 unit URegistry;
 
+{$MODE Delphi}
+
 interface
 
 uses

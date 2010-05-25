@@ -1,9 +1,11 @@
 unit UStringListEx;
-  
 // Date: 2010-04-14
 
+{$mode Delphi}{$H+}
 interface
-  
+
+uses Classes;
+
 type
   
   { TStringListEx }

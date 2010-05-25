@@ -284,7 +284,6 @@ end;
 function TVarIntSerializer.GetVarSize: Integer;
 var
   Data: Byte;
-  I: Cardinal;
   StoredPosition: Integer;
 begin
   StoredPosition := Position;

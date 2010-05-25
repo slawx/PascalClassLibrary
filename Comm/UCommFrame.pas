@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, UMemoryStreamEx, Dialogs, SysUtils,
-  Forms, UPin;
+  Forms, UCommPin;
 
 const
   SpecialChar = $fe;
@@ -27,8 +27,8 @@ type
     FCRCErrorCount: Integer;
     function GetStreamCRC8(Stream: TStream): Byte;
   public
-    RawDataPin: TPin;
-    FrameDataPin: TPin;
+    RawDataPin: TCommPin;
+    FrameDataPin: TCommPin;
     PacketLoss: Real;
     procedure RawDataReceive(Stream: TStream);
     procedure FrameDataReceive(Stream: TStream);
@@ -46,9 +46,9 @@ implementation
 constructor TCommFrame.Create;
 begin
   ReceiveBuffer := TMemoryStreamEx.Create;
-  RawDataPin := TPin.Create;
+  RawDataPin := TCommPin.Create;
   RawDataPin.OnReceive := RawDataReceive;
-  FrameDataPin := TPin.Create;
+  FrameDataPin := TCommPin.Create;
   FrameDataPin.OnReceive := FrameDataReceive;
   PacketLoss := 0.005;
 end;

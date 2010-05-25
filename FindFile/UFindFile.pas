@@ -18,7 +18,7 @@ email: delphi.guide@about.com
 
 }
 
-unit FindFile;
+unit UFindFile;
 
 interface
 
@@ -81,7 +81,7 @@ begin
   if fPath <> Value then
   begin
     if Value <> '' then
-      if DirectoryExists(Value) then
+      if DirectoryExists(UTF8Decode(Value)) then
         fPath := IncludeTrailingBackslash(Value);
   end;
 end;
@@ -109,10 +109,10 @@ begin
   if ffaArchive in FileAttr then Attr := Attr + faArchive;
   if ffaAnyFile in FileAttr then Attr := Attr + faAnyFile;
 
-  if SysUtils.FindFirst(inPath + FileMask, Attr, Rec) = 0 then
+  if SysUtils.FindFirst(UTF8Decode(inPath + FileMask), Attr, Rec) = 0 then
   try
     repeat
-      s.Add(inPath + Rec.Name);
+      s.Add(inPath + UTF8Encode(Rec.Name));
     until SysUtils.FindNext(Rec) <> 0;
   finally
     SysUtils.FindClose(Rec);
@@ -120,13 +120,12 @@ begin
 
   If not InSubFolders then Exit;
 
-  if SysUtils.FindFirst(inPath + '*.*', faDirectory, Rec) = 0 then
+  if SysUtils.FindFirst(UTF8Decode(inPath + '*.*'), faDirectory, Rec) = 0 then
   try
     repeat
-      if ((Rec.Attr and faDirectory) > 0) and (Rec.Name<>'.') and (Rec.Name<>'..') then
-      begin
-        FileSearch(IncludeTrailingBackslash(inPath + Rec.Name));
-      end;
+      if ((Rec.Attr and faDirectory) > 0) and (Rec.Name <> '.')
+      and (Rec.Name <> '..') then
+        FileSearch(IncludeTrailingBackslash(inPath + UTF8Encode(Rec.Name)));
     until SysUtils.FindNext(Rec) <> 0;
   finally
     SysUtils.FindClose(Rec);
