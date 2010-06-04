@@ -2,10 +2,12 @@ unit UPersistentForm;
 
 {$mode delphi}
 
+// Date: 2010-06-01
+
 interface
 
 uses
-  Classes, SysUtils, Forms, URegistry, Windows;
+  Classes, SysUtils, Forms, URegistry, LCLIntf, Registry;
 
 type
 
@@ -14,7 +16,7 @@ type
   TPersistentForm = class
   public
     RegistryKey: string;
-    RegistryRootKey: Cardinal;
+    RegistryRootKey: HKEY;
     procedure Load(Form: TForm);
     procedure Save(Form: TForm);
     constructor Create;
@@ -26,41 +28,32 @@ implementation
 
 procedure TPersistentForm.Load(Form: TForm);
 var
-  Pl : TWindowPlacement;  // used for API call
-  R : TRect;               // used for wdw pos
-  Width, Height, Top, Left : Integer;
+  RestoredLeft, RestoredTop, RestoredWidth, RestoredHeight: Integer;
 begin
   with TRegistryEx.Create do
     try
       RootKey := RegistryRootKey;
       OpenKey (RegistryKey + '\Forms\' + Form.Name, True);
 
-      Width := ReadIntegerWithDefault ('Width', Form.Width);
-      Height := ReadIntegerWithDefault ('Height', Form.Height);
-      Top := ReadIntegerWithDefault ('Top', (Screen.Height - Form.Height) div 2);
-      Left := ReadIntegerWithDefault ('Left', (Screen.Width - Form.Width) div 2);
-      if Left < 0 then
-        Left := 0;
-      if Left > (Screen.Width - 50) then
-        Left := Screen.Width - 50;
-      if Top < 0 then
-        Top := 0;
-      if Top > (Screen.Height - 50) then
-        Top := Screen.Height - 50;
+      Form.Width := ReadIntegerWithDefault('Width', Form.Width);
+      Form.Height := ReadIntegerWithDefault('Height', Form.Height);
+      Form.Top := ReadIntegerWithDefault('Top', (Screen.Height - Form.Height) div 2);
+      Form.Left := ReadIntegerWithDefault('Left', (Screen.Width - Form.Width) div 2);
+      if Form.Left < 0 then
+        Form.Left := 0;
+      if Form.Left > (Screen.Width - 50) then
+        Form.Left := Screen.Width - 50;
+      if Form.Top < 0 then
+        Form.Top := 0;
+      if Form.Top > (Screen.Height - 50) then
+        Form.Top := Screen.Height - 50;
+      RestoredWidth := ReadIntegerWithDefault('RestoredWidth', Form.RestoredWidth);
+      RestoredHeight := ReadIntegerWithDefault ('RestoredHeight', Form.RestoredHeight);
+      RestoredTop := ReadIntegerWithDefault ('RestoredTop', (Screen.Height - Form.RestoredHeight) div 2);
+      RestoredLeft := ReadIntegerWithDefault ('RestoredLeft', (Screen.Width - Form.RestoredWidth) div 2);
+      Form.SetRestoredBounds(RestoredLeft, RestoredTop, RestoredWidth, RestoredHeight);
 
-      // Restore position using WinAPI
-      Pl.Length := SizeOf (TWindowPlacement);
-      GetWindowPlacement (Form.Handle, @Pl);
-      R := Pl.rcNormalPosition;
-      R.Left := Left;
-      R.Top := Top;
-      R.Right := Left + Width;
-      R.Bottom := Top + Height;
-      Pl.rcNormalPosition := R;
-      if ReadBoolWithDefault('Maximized', False) then
-        Pl.showCmd := SW_SHOWMAXIMIZED else Pl.showCmd := SW_HIDE;
-      SetWindowPlacement(Form.Handle, @Pl);
-
+      Form.WindowState := TWindowState(ReadIntegerWithDefault('WindowState', Integer(wsNormal)));
       if ReadBoolWithDefault('Visible', False) then Form.Show;
     finally
       Free;
@@ -68,27 +61,20 @@ begin
 end;
 
 procedure TPersistentForm.Save(Form: TForm);
-var
-  Pl: TWindowPlacement;  // used for API call
-  R: TRect;               // used for wdw pos
 begin
-  {Calculate window's normal size and position using
-  Windows API call - the form's Width, Height, Top and
-  Left properties will give maximized window size if
-  form is maximised, which is not what we want here}
-  Pl.Length := SizeOf (TWindowPlacement);
-  GetWindowPlacement (Form.Handle, @Pl);
-  R := Pl.rcNormalPosition;
-
   with Form, TRegistryEx.Create do
     try
       RootKey := RegistryRootKey;
       OpenKey(RegistryKey + '\Forms\' + Form.Name, True);
-      WriteInteger('Width', R.Right - R.Left);
-      WriteInteger('Height', R.Bottom - R.Top);
-      WriteInteger('Top', R.Top);
-      WriteInteger('Left', R.Left);
-      WriteBool('Maximized', WindowState = wsMaximized);
+      WriteInteger('Width', Form.Width);
+      WriteInteger('Height', Form.Height);
+      WriteInteger('Top', Form.Top);
+      WriteInteger('Left', Form.Left);
+      WriteInteger('RestoredWidth', Form.RestoredWidth);
+      WriteInteger('RestoredHeight', Form.RestoredHeight);
+      WriteInteger('RestoredTop', Form.RestoredTop);
+      WriteInteger('RestoredLeft', Form.RestoredLeft);
+      WriteInteger('WindowState', Integer(Form.WindowState));
       WriteBool('Visible', Form.Visible);
     finally
       Free;
@@ -101,4 +87,4 @@ begin
 end;
 
 end.
-
+
