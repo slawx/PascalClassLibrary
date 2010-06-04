@@ -47,13 +47,15 @@ begin
         Form.Top := 0;
       if Form.Top > (Screen.Height - 50) then
         Form.Top := Screen.Height - 50;
-      RestoredWidth := ReadIntegerWithDefault('RestoredWidth', Form.RestoredWidth);
-      RestoredHeight := ReadIntegerWithDefault ('RestoredHeight', Form.RestoredHeight);
-      RestoredTop := ReadIntegerWithDefault ('RestoredTop', (Screen.Height - Form.RestoredHeight) div 2);
-      RestoredLeft := ReadIntegerWithDefault ('RestoredLeft', (Screen.Width - Form.RestoredWidth) div 2);
-      Form.SetRestoredBounds(RestoredLeft, RestoredTop, RestoredWidth, RestoredHeight);
-
       Form.WindowState := TWindowState(ReadIntegerWithDefault('WindowState', Integer(wsNormal)));
+      if Form.WindowState = wsMaximized then begin
+        RestoredWidth := ReadIntegerWithDefault('RestoredWidth', Form.RestoredWidth);
+        RestoredHeight := ReadIntegerWithDefault ('RestoredHeight', Form.RestoredHeight);
+        RestoredTop := ReadIntegerWithDefault ('RestoredTop', (Screen.Height - Form.RestoredHeight) div 2);
+        RestoredLeft := ReadIntegerWithDefault ('RestoredLeft', (Screen.Width - Form.RestoredWidth) div 2);
+        Form.SetRestoredBounds(RestoredLeft, RestoredTop, RestoredWidth, RestoredHeight);
+      end;
+
       if ReadBoolWithDefault('Visible', False) then Form.Show;
     finally
       Free;
@@ -70,11 +72,11 @@ begin
       WriteInteger('Height', Form.Height);
       WriteInteger('Top', Form.Top);
       WriteInteger('Left', Form.Left);
+      WriteInteger('WindowState', Integer(Form.WindowState));
       WriteInteger('RestoredWidth', Form.RestoredWidth);
       WriteInteger('RestoredHeight', Form.RestoredHeight);
       WriteInteger('RestoredTop', Form.RestoredTop);
       WriteInteger('RestoredLeft', Form.RestoredLeft);
-      WriteInteger('WindowState', Integer(Form.WindowState));
       WriteBool('Visible', Form.Visible);
     finally
       Free;
@@ -87,4 +89,4 @@ begin
 end;
 
 end.
-
+
