@@ -1,0 +1,250 @@
+<?xml version="1.0"?>
+<CONFIG>
+  <ProjectOptions>
+    <PathDelim Value="\"/>
+    <Version Value="7"/>
+    <General>
+      <Flags>
+        <MainUnitHasCreateFormStatements Value="False"/>
+        <MainUnitHasTitleStatement Value="False"/>
+        <UseDefaultCompilerOptions Value="True"/>
+      </Flags>
+      <MainUnit Value="0"/>
+      <TargetFileExt Value=".exe"/>
+      <ResourceType Value="res"/>
+      <UseXPManifest Value="True"/>
+      <Icon Value="0"/>
+      <ActiveWindowIndexAtStart Value="0"/>
+    </General>
+    <VersionInfo>
+      <Language Value=""/>
+      <CharSet Value=""/>
+      <StringTable Comments="" CompanyName="" FileDescription="" FileVersion="" InternalName="" LegalCopyright="" LegalTrademarks="" OriginalFilename="" ProductName="" ProductVersion=""/>
+    </VersionInfo>
+    <PublishOptions>
+      <Version Value="2"/>
+      <IgnoreBinaries Value="False"/>
+      <IncludeFileFilter Value="*.(pas|pp|inc|lfm|lpr|lrs|lpi|lpk|sh|xml)"/>
+      <ExcludeFileFilter Value="*.(bak|ppu|ppw|o|so);*~;backup"/>
+    </PublishOptions>
+    <RunParams>
+      <local>
+        <FormatVersion Value="1"/>
+        <LaunchingApplication PathPlusParams="/usr/X11R6/bin/xterm -T 'Lazarus Run Output' -e $(LazarusDir)/tools/runwait.sh $(TargetCmdLine)"/>
+      </local>
+    </RunParams>
+    <Units Count="5">
+      <Unit0>
+        <Filename Value="test.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="test"/>
+        <EditorIndex Value="0"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="42"/>
+        <CursorPos X="26" Y="56"/>
+        <UsageCount Value="20"/>
+        <Loaded Value="True"/>
+      </Unit0>
+      <Unit1>
+        <Filename Value="E:\Programy\Lazarus_0.9.29\fpc\2.4.1\source\packages\fcl-base\src\custapp.pp"/>
+        <UnitName Value="CustApp"/>
+        <EditorIndex Value="4"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="284"/>
+        <CursorPos X="3" Y="286"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="UBitStream.pas"/>
+        <UnitName Value="UBitStream"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="1"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="82"/>
+        <CursorPos X="29" Y="85"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="E:\Programy\Lazarus_0.9.29\fpc\2.4.1\source\rtl\objpas\classes\classesh.inc"/>
+        <EditorIndex Value="2"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="778"/>
+        <CursorPos X="1" Y="783"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="E:\Programy\Lazarus_0.9.29\fpc\2.4.1\source\rtl\objpas\classes\streams.inc"/>
+        <EditorIndex Value="3"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="140"/>
+        <CursorPos X="24" Y="166"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit4>
+    </Units>
+    <JumpHistory Count="30" HistoryIndex="29">
+      <Position1>
+        <Filename Value="UBitStream.pas"/>
+        <Caret Line="158" Column="1" TopLine="141"/>
+      </Position1>
+      <Position2>
+        <Filename Value="UBitStream.pas"/>
+        <Caret Line="159" Column="1" TopLine="141"/>
+      </Position2>
+      <Position3>
+        <Filename Value="UBitStream.pas"/>
+        <Caret Line="160" Column="1" TopLine="141"/>
+      </Position3>
+      <Position4>
+        <Filename Value="UBitStream.pas"/>
+        <Caret Line="161" Column="1" TopLine="141"/>
+      </Position4>
+      <Position5>
+        <Filename Value="UBitStream.pas"/>
+        <Caret Line="162" Column="1" TopLine="141"/>
+      </Position5>
+      <Position6>
+        <Filename Value="UBitStream.pas"/>
+        <Caret Line="163" Column="1" TopLine="141"/>
+      </Position6>
+      <Position7>
+        <Filename Value="UBitStream.pas"/>
+        <Caret Line="165" Column="1" TopLine="142"/>
+      </Position7>
+      <Position8>
+        <Filename Value="UBitStream.pas"/>
+        <Caret Line="161" Column="1" TopLine="142"/>
+      </Position8>
+      <Position9>
+        <Filename Value="UBitStream.pas"/>
+        <Caret Line="162" Column="1" TopLine="142"/>
+      </Position9>
+      <Position10>
+        <Filename Value="UBitStream.pas"/>
+        <Caret Line="161" Column="19" TopLine="142"/>
+      </Position10>
+      <Position11>
+        <Filename Value="UBitStream.pas"/>
+        <Caret Line="165" Column="1" TopLine="142"/>
+      </Position11>
+      <Position12>
+        <Filename Value="UBitStream.pas"/>
+        <Caret Line="161" Column="1" TopLine="142"/>
+      </Position12>
+      <Position13>
+        <Filename Value="UBitStream.pas"/>
+        <Caret Line="162" Column="1" TopLine="142"/>
+      </Position13>
+      <Position14>
+        <Filename Value="UBitStream.pas"/>
+        <Caret Line="163" Column="1" TopLine="142"/>
+      </Position14>
+      <Position15>
+        <Filename Value="UBitStream.pas"/>
+        <Caret Line="165" Column="1" TopLine="142"/>
+      </Position15>
+      <Position16>
+        <Filename Value="UBitStream.pas"/>
+        <Caret Line="161" Column="1" TopLine="142"/>
+      </Position16>
+      <Position17>
+        <Filename Value="UBitStream.pas"/>
+        <Caret Line="162" Column="1" TopLine="142"/>
+      </Position17>
+      <Position18>
+        <Filename Value="UBitStream.pas"/>
+        <Caret Line="163" Column="1" TopLine="142"/>
+      </Position18>
+      <Position19>
+        <Filename Value="UBitStream.pas"/>
+        <Caret Line="165" Column="1" TopLine="142"/>
+      </Position19>
+      <Position20>
+        <Filename Value="UBitStream.pas"/>
+        <Caret Line="161" Column="1" TopLine="142"/>
+      </Position20>
+      <Position21>
+        <Filename Value="UBitStream.pas"/>
+        <Caret Line="162" Column="1" TopLine="142"/>
+      </Position21>
+      <Position22>
+        <Filename Value="UBitStream.pas"/>
+        <Caret Line="163" Column="1" TopLine="142"/>
+      </Position22>
+      <Position23>
+        <Filename Value="UBitStream.pas"/>
+        <Caret Line="165" Column="1" TopLine="142"/>
+      </Position23>
+      <Position24>
+        <Filename Value="UBitStream.pas"/>
+        <Caret Line="161" Column="1" TopLine="142"/>
+      </Position24>
+      <Position25>
+        <Filename Value="UBitStream.pas"/>
+        <Caret Line="162" Column="1" TopLine="142"/>
+      </Position25>
+      <Position26>
+        <Filename Value="UBitStream.pas"/>
+        <Caret Line="163" Column="1" TopLine="142"/>
+      </Position26>
+      <Position27>
+        <Filename Value="UBitStream.pas"/>
+        <Caret Line="165" Column="1" TopLine="142"/>
+      </Position27>
+      <Position28>
+        <Filename Value="UBitStream.pas"/>
+        <Caret Line="161" Column="1" TopLine="142"/>
+      </Position28>
+      <Position29>
+        <Filename Value="UBitStream.pas"/>
+        <Caret Line="166" Column="62" TopLine="142"/>
+      </Position29>
+      <Position30>
+        <Filename Value="test.lpr"/>
+        <Caret Line="56" Column="26" TopLine="42"/>
+      </Position30>
+    </JumpHistory>
+  </ProjectOptions>
+  <CompilerOptions>
+    <Version Value="8"/>
+    <PathDelim Value="\"/>
+    <SearchPaths>
+      <IncludeFiles Value="$(ProjOutDir)\"/>
+      <OtherUnitFiles Value="Comm\;DockForms\;Forms\"/>
+      <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
+    </SearchPaths>
+    <Parsing>
+      <SyntaxOptions>
+        <SyntaxMode Value="Delphi"/>
+        <UseAnsiStrings Value="True"/>
+      </SyntaxOptions>
+    </Parsing>
+    <CodeGeneration>
+      <Checks>
+        <IOChecks Value="True"/>
+        <RangeChecks Value="True"/>
+        <OverflowChecks Value="True"/>
+      </Checks>
+    </CodeGeneration>
+    <Other>
+      <CompilerPath Value="$(CompPath)"/>
+    </Other>
+  </CompilerOptions>
+  <Debugging>
+    <Exceptions Count="3">
+      <Item1>
+        <Name Value="EAbort"/>
+      </Item1>
+      <Item2>
+        <Name Value="ECodetoolError"/>
+      </Item2>
+      <Item3>
+        <Name Value="EFOpenError"/>
+      </Item3>
+    </Exceptions>
+  </Debugging>
+</CONFIG>
