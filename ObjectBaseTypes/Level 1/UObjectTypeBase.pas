@@ -17,7 +17,7 @@ type
   end;
 
   IStreamable = interface
-    function GetStream: TStream;
+    procedure GetStream(Stream: TStream);
     procedure SetStrem(Stream: TStream);
   end;
 

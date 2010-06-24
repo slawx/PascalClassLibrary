@@ -3,13 +3,10 @@ unit UObjectByte;
 interface
 
 uses
-  Classes, SysUtils, UObjectTypeBase, UInterfacedBits, UObjectBoolean;
+  Classes, SysUtils, UObjectTypeBase, UObjectBoolean;
 
 type
   TByte = class(TInterfacedObject, IAssignable, IOrderable, IComparable)
-  private
-    function GetAsBits: TInterfacedBits;
-    procedure SetAsBits(const Value: TInterfacedBits);
   public
     Value: Byte;
     procedure Assign(Source: TInterfacedObject);
@@ -17,7 +14,6 @@ type
     function LowerThan(Operand: IOrderable): TBoolean;
     function Max(Operand1, Operand2: IOrderable): IOrderable;
     function Min(Operand1, Operand2: IOrderable): IOrderable;
-    property AsBits: TInterfacedBits read GetAsBits write SetAsBits;
     function EqualTo(Operand: IComparable): TBoolean;
     function Predecessor: IOrderable;
     function Successor: IOrderable;
@@ -38,16 +34,6 @@ end;
 function TByte.EqualTo(Operand: IComparable): TBoolean;
 begin
 
-end;
-
-function TByte.GetAsBits: TInterfacedBits;
-var
-  I: Integer;
-begin
-  Result := TInterfacedBits.Create;
-  Result.Size := 8;
-  for I := 0 to Result.Size - 1 do
-    Result[I] := ((Value shr I) and 1) = 1;
 end;
 
 function TByte.High: IOrderable;
@@ -83,19 +69,6 @@ end;
 function TByte.Predecessor: IOrderable;
 begin
 
-end;
-
-procedure TByte.SetAsBits(const Value: TInterfacedBits);
-var
-  Count: Integer;
-  I: Integer;
-begin
-  Count := 8;
-  if Value.Size > 8 then Count := 8;
-  if Value.Size < 8 then Count := Value.Size;
-  Self.Value := 0;
-  for I := 0 to Count - 1 do
-    Self.Value := Self.Value or (Ord(Value[I]) shl I);
 end;
 
 function TByte.Successor: IOrderable;
