@@ -84,8 +84,10 @@ begin
   repeat
     if Position >= Size then Break;
     Data := Chr(ReadByte);
-    if Data <> Terminator[I] then Result := Result + Data
-      else Inc(I);
+    if Data <> Terminator[I] then begin
+      Result := Result + Data;
+      I := 1;
+    end else Inc(I);
   until I > Length(Terminator);
   if not (I > Length(Terminator)) then begin
     Result := '';

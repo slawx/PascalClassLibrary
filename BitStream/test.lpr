@@ -15,6 +15,8 @@ type
   { TTest }
 
   TTest = class(TCustomApplication)
+  private
+    procedure PrintBitStream(Stream:TBitStream);
   protected
     procedure DoRun; override;
   public
@@ -38,24 +40,38 @@ var
   Buffer[1] := $34;
   Buffer[2] := $56;
   Buffer[3] := $78;
+  WriteLn('Source data:');
   PrintData(Buffer);
 
-  BitStream.Write(Buffer[0], 27);
+  BitStream.Write(Buffer[0], 28);
+  WriteLn('Write data to stream:');
+  PrintBitStream(BitStream);
   // Write second bit array after first which lead to store data as shifted
-  BitStream.Write(Buffer[0], 27);
-
-  BitStream.Stream.Position := 0;
-  PrintStream(BitStream.Stream);
+  BitStream.Write(Buffer[0], 28);
+  WriteLn('Append shifted data to stream:');
+  PrintBitStream(BitStream);
 
   // Read test of sub bit array
-  BitStream.Position := 5;
-  BitStream.Read(Buffer[0], 18);
+  BitStream.Position := 1;
+  BitStream.Read(Buffer[0], 32);
+  WriteLn('Read bit data part:');
   PrintData(Buffer);
 
   // Test stream copy
-  BitStream.Position := 2;
-  BitStream2.CopyFrom(BitStream, BitStream.Size);
-  PrintStream(BitStream2.Stream);
+  WriteLn('Copy bit block to another stream:');
+  for I := 0 to BitStream.Size do begin
+    BitStream.Position := I;
+    BitStream2.Size := 0;
+    BitStream2.CopyFrom(BitStream, BitStream.Size);
+    PrintBitStream(BitStream2);
+  end;
+  for I := 0 to BitStream.Size do begin
+    BitStream.Position := 0;
+    BitStream2.Size := 0;
+    BitStream2.Position := I;
+    BitStream2.CopyFrom(BitStream, BitStream.Size);
+    PrintBitStream(BitStream2);
+  end;
 
   BitStream.Destroy;
   BitStream2.Destroy;
@@ -67,19 +83,39 @@ end;
 procedure TTest.PrintData(Data:TByteArray);
 var
   I: Integer;
+  B: Integer;
+  OneByte: Byte;
 begin
-  for I := 0 to High(Data) do
-    Write(IntToHex(Data[I], 2) + ' ');
+  for I := 0 to High(Data) do begin
+    OneByte := Data[I];
+    for B := 0 to 7 do
+      Write(IntToStr((OneByte shr B) and 1));
+  end;
   WriteLn;
 end;
 
 procedure TTest.PrintStream(Stream: TStream);
 var
   I: Integer;
+  B: Integer;
+  Data: Byte;
+begin
+  Stream.Position := 0;
+  for I := 0 to Stream.Size - 1 do begin
+    Data := Stream.ReadByte;
+    for B := 0 to 7 do
+      Write(IntToStr((Data shr B) and 1));
+  end;
+  WriteLn;
+end;
+
+procedure TTest.PrintBitStream(Stream: TBitStream);
+var
+  I: Integer;
 begin
   Stream.Position := 0;
   for I := 0 to Stream.Size - 1 do
-    Write(IntToHex(Stream.ReadByte, 2) + ' ');
+    Write(IntToStr(Integer(Stream.ReadBit)));
   WriteLn;
 end;
 

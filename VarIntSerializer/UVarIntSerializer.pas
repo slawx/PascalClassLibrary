@@ -10,7 +10,7 @@ unit UVarIntSerializer;
 interface
 
 uses
-  Classes, DateUtils, UMemoryStreamEx, Math, Dialogs, SysUtils;
+  Classes, DateUtils, UMemoryStreamEx, Math, Dialogs, SysUtils, USubStream;
 
 const
   BitAlignment = 8;
@@ -41,8 +41,9 @@ type
     function ReadVarString: string;
 
     // Misc methods
-    function TestMask(Mask, BitIndex: Integer): Boolean;
+    function TestMask(Mask: QWord; BitIndex: Byte): Boolean;
     procedure ReadItemByMaskIndex(Index: Integer; Data: TVarIntSerializer);
+    procedure ReadItemRefByMaskIndex(Index: Integer; Data: TSubStream);
     procedure BlockEnclose;
     procedure BlockUnclose;
     constructor Create;
@@ -309,7 +310,7 @@ begin
     else Result := -((Result + 1) shr 1);
 end;
 
-function TVarIntSerializer.TestMask(Mask, BitIndex: Integer): Boolean;
+function TVarIntSerializer.TestMask(Mask: QWord; BitIndex: Byte): Boolean;
 begin
   Result := ((Mask shr BitIndex) and 1) = 1;
 end;
@@ -321,6 +322,7 @@ var
   I: Integer;
 begin
   Position := 0;
+  Data.Size := 0;
   Mask := ReadVarUInt;
   I := 0;
   while (Position < Size) and (I < Index) do begin
@@ -329,6 +331,35 @@ begin
   end;
   if TestMask(Mask, Index) then
     ReadStream(TStream(Data), GetVarSize);
+  Data.Position := 0;
+end;
+
+procedure TVarIntSerializer.ReadItemRefByMaskIndex(Index:Integer;Data:TSubStream
+  );
+var
+  Mask: Integer;
+  I: Integer;
+begin
+  Position := 0;
+  Data.Size := 0;
+  Mask := ReadVarUInt;
+  I := 0;
+  while (Position < Size) and (I < Index) do begin
+    if TestMask(Mask, I) then Position := Position + GetVarSize;
+    Inc(I);
+  end;
+  if TestMask(Mask, Index) then begin
+    if TStream(Self) is TSubStream then begin
+      // Recalculate substream
+      Data.Source := TSubStream(Self).Source;
+      Data.SourcePosition := TSubStream(Self).SourcePosition + Position;
+    end else begin
+      Data.Source := Self;
+      Data.SourcePosition := Position;
+    end;
+    Data.Size := GetVarSize;
+  end;
+  Data.Position := 0;
 end;
 
 procedure TVarIntSerializer.BlockEnclose;

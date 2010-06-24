@@ -3,12 +3,13 @@ unit UCommon;
 interface
 
 uses
-  Windows, SysUtils, ShFolder;
+  Windows, SysUtils, ShFolder, ShellAPI;
 
 type
   TArrayOfByte = array of Byte;
   TArrayOfString = array of string;
-  
+
+function DelTree(DirName : string): Boolean;
 function IntToBin(Data: Cardinal; Count: Byte): string;
 function TryHexToInt(Data: string; var Value: Integer): Boolean;
 function TryBinToInt(Data: string; var Value: Integer): Boolean;
@@ -17,8 +18,37 @@ function BCDToInt(Value: Byte): Byte;
 function CompareByteArray(Data1, Data2: TArrayOfByte): Boolean;
 function GetUserName: string;
 function SplitString(var Text: string; Count: Word): string;
+function GetBit(Variable: QWord; Index: Byte): Boolean;
+procedure SetBit(var Variable: QWord; Index: Byte; State: Boolean);
+procedure SetBit(var Variable: Cardinal; Index: Byte; State: Boolean);
+procedure SetBit(var Variable: Word; Index: Byte; State: Boolean);
+function AddLeadingZeroes(const aNumber, Length : integer) : string;
 
 implementation
+
+function DelTree(DirName : string): Boolean;
+var
+  SHFileOpStruct : TSHFileOpStruct;
+  DirBuf : array [0..255] of char;
+begin
+  DirName := UTF8Decode(DirName);
+  try
+    Fillchar(SHFileOpStruct,Sizeof(SHFileOpStruct),0) ;
+    FillChar(DirBuf, Sizeof(DirBuf), 0 ) ;
+    StrPCopy(DirBuf, DirName) ;
+    with SHFileOpStruct do begin
+      Wnd := 0;
+      pFrom := @DirBuf;
+      wFunc := FO_DELETE;
+      fFlags := FOF_ALLOWUNDO;
+      fFlags := fFlags or FOF_NOCONFIRMATION;
+      fFlags := fFlags or FOF_SILENT;
+    end;
+    Result := (SHFileOperation(SHFileOpStruct) = 0) ;
+  except
+     Result := False;
+  end;
+end;
 
 function BCDToInt(Value: Byte): Byte;
 begin
@@ -31,6 +61,7 @@ const
 var
   Path: array[0..MAX_PATH] of Char;
 begin
+  Result := 'C:\Test';
   if SUCCEEDED(SHGetFolderPath(0, Folder, 0, SHGFP_TYPE_CURRENT, @path[0])) then
     Result := path
   else
@@ -130,6 +161,31 @@ function SplitString(var Text: string; Count: Word): string;
 begin
   Result := Copy(Text, 1, Count);
   Delete(Text, 1, Count);
+end;
+
+function GetBit(Variable:QWord;Index:Byte):Boolean;
+begin
+  Result := ((Variable shr Index) and 1) = 1;
+end;
+
+procedure SetBit(var Variable:QWord;Index:Byte;State:Boolean); overload;
+begin
+  Variable := (Variable and ((1 shl Index) xor QWord($ffffffffffffffff))) or (QWord(State) shl Index);
+end;
+
+procedure SetBit(var Variable:Cardinal;Index:Byte;State:Boolean); overload;
+begin
+  Variable := (Variable and ((1 shl Index) xor Cardinal($ffffffff))) or (Cardinal(State) shl Index);
+end;
+
+procedure SetBit(var Variable:Word;Index:Byte;State:Boolean); overload;
+begin
+  Variable := (Variable and ((1 shl Index) xor Word($ffff))) or (Word(State) shl Index);
+end;
+
+function AddLeadingZeroes(const aNumber, Length : integer) : string;
+begin
+  Result := SysUtils.Format('%.*d', [Length, aNumber]) ;
 end;
 
 end.

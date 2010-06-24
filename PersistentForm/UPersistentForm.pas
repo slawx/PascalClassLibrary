@@ -29,6 +29,7 @@ implementation
 procedure TPersistentForm.Load(Form: TForm);
 var
   RestoredLeft, RestoredTop, RestoredWidth, RestoredHeight: Integer;
+  RestoredWindowState: TWindowState;
 begin
   with TRegistryEx.Create do
     try
@@ -47,14 +48,15 @@ begin
         Form.Top := 0;
       if Form.Top > (Screen.Height - 50) then
         Form.Top := Screen.Height - 50;
-      Form.WindowState := TWindowState(ReadIntegerWithDefault('WindowState', Integer(wsNormal)));
-      if Form.WindowState = wsMaximized then begin
+      RestoredWindowState := TWindowState(ReadIntegerWithDefault('WindowState', Integer(wsNormal)));
+      if RestoredWindowState = wsMaximized then begin
         RestoredWidth := ReadIntegerWithDefault('RestoredWidth', Form.RestoredWidth);
         RestoredHeight := ReadIntegerWithDefault ('RestoredHeight', Form.RestoredHeight);
         RestoredTop := ReadIntegerWithDefault ('RestoredTop', (Screen.Height - Form.RestoredHeight) div 2);
         RestoredLeft := ReadIntegerWithDefault ('RestoredLeft', (Screen.Width - Form.RestoredWidth) div 2);
         Form.SetRestoredBounds(RestoredLeft, RestoredTop, RestoredWidth, RestoredHeight);
       end;
+      Form.WindowState := RestoredWindowState;
 
       if ReadBoolWithDefault('Visible', False) then Form.Show;
     finally

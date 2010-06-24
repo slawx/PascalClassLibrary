@@ -76,6 +76,7 @@ type
     property OnReceiveData: TReceiveDataEvent read FOnReceiveData write FOnReceiveData;
     constructor Create;
     destructor Destroy; override;
+    procedure Assign(Source: TObject);
   end;
 
 const
@@ -174,6 +175,20 @@ begin
   FReceiveThread.WaitFor;
   FReceiveThread.Destroy;
   inherited Destroy;
+end;
+
+procedure TSerialPort.Assign(Source:TObject);
+begin
+  if Source is TSerialPort then begin
+    Name := TSerialPort(Source).Name;
+    BaudRate := TSerialPort(Source).BaudRate;
+    Parity := TSerialPort(Source).Parity;
+    StopBits := TSerialPort(Source).StopBits;
+    DataBits := TSerialPort(Source).DataBits;
+    FlowControl := TSerialPort(Source).FlowControl;
+    DTR := TSerialPort(Source).DTR;
+    RTS := TSerialPort(Source).RTS;
+  end else raise Exception.Create('Assignment error');
 end;
 
 procedure TSerialPort.SetBaudRate(const AValue: TBaudRate);

@@ -26,6 +26,8 @@ uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs, FileCtrl;
 
 type
+  EDirNotFound = class(Exception);
+
   TFileAttrKind = (ffaReadOnly, ffaHidden, ffaSysFile, ffaVolumeID, ffaDirectory, ffaArchive, ffaAnyFile);
   TFileAttr = set of TFileAttrKind;
 
@@ -82,7 +84,8 @@ begin
   begin
     if Value <> '' then
       if DirectoryExists(UTF8Decode(Value)) then
-        fPath := IncludeTrailingBackslash(Value);
+        fPath := IncludeTrailingBackslash(Value)
+        else raise EDirNotFound.Create('Adresář nenalezen');
   end;
 end;
 

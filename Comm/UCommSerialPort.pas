@@ -44,7 +44,8 @@ end;
 
 destructor TCommSerialPort.Destroy;
 begin
-  FreeAndNil(DataPin);
+  OnReceiveData := nil;
+  DataPin.Destroy;
   inherited;
 end;
 

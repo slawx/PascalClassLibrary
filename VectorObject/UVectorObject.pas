@@ -5,7 +5,7 @@ unit UVectorObject;
 interface
 
 uses
-  Classes, SysUtils, Graphics;
+  Classes, SysUtils, Graphics, Contnrs;
 
 type
   TVectorGroup = class;
@@ -35,7 +35,7 @@ type
   { TVectorMultiLine }
 
   TVectorLine = class(TVectorObject)
-    Points: TList; // of TVectorDot
+    Points: TObjectList; // of TVectorDot
     procedure Add(Position: TPoint);
     procedure Draw; override;
     constructor Create(Owner: TVectorGroup = nil);
@@ -79,7 +79,7 @@ type
     procedure SetScale(const AValue: Double); override;
   public
     Brush: TBrush;
-    Objects: TList; // of TVectorObject
+    Objects: TObjectList; // of TVectorObject
     BitmapCanvas: TCanvas;
     Pen: TPen;
     Font: TFont;
@@ -135,6 +135,7 @@ var
 begin
   NewPoint := TVectorDot.Create;
   NewPoint.Position := Position;
+  Points.Add(NewPoint);
 end;
 
 procedure TVectorLine.Draw;
@@ -154,15 +155,11 @@ end;
 constructor TVectorLine.Create(Owner: TVectorGroup);
 begin
   inherited;
-  Points := TList.Create;
+  Points := TObjectList.Create;
 end;
 
 destructor TVectorLine.Destroy;
-var
-  I: Integer;
 begin
-  for I := 0 to Points.Count - 1 do
-    TVectorObject(Points[I]).Destroy;
   Points.Destroy;
   inherited Destroy;
 end;
@@ -209,7 +206,7 @@ end;
 constructor TVectorGroup.Create(Owner: TVectorGroup = nil);
 begin
   inherited;
-  Objects := TList.Create;
+  Objects := TObjectList.Create;
   Brush := TBrush.Create;
   Pen := TPen.Create;
   Font := TFont.Create;
@@ -222,8 +219,6 @@ begin
   Font.Destroy;
   Pen.Destroy;
   Brush.Destroy;
-  for I := 0 to Objects.Count - 1 do
-    TVectorObject(Objects[I]).Destroy;
   Objects.Destroy;
   inherited Destroy;
 end;
