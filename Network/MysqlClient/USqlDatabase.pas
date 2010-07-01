@@ -1,13 +1,16 @@
 unit USqlDatabase;
 
-// Upraveno: 24.2.2008
+{$mode Delphi}{$H+}
+// Upraveno: 16.12.2009
 
 interface
 
 uses
-  SysUtils, Classes, Dialogs, mysql, TypInfo;
+  SysUtils, Classes, Dialogs, mysql50, TypInfo;
 
 type
+  EQueryError = Exception;
+
   TClientCapabilities = (_CLIENT_LONG_PASSWORD, _CLIENT_FOUND_ROWS,
     _CLIENT_LONG_FLAG, _CLIENT_CONNECT_WITH_DB, _CLIENT_NO_SCHEMA,
     _CLIENT_COMPRESS, _CLIENT_ODBC, _CLIENT_LOCAL_FILES, _CLIENT_IGNORE_SPACE,
@@ -43,7 +46,6 @@ type
   private
     FSession: PMYSQL;
     FConnected: Boolean;
-    FOnError: TNotifyEvent;
     FDatabase: string;
     function GetConnected: Boolean;
     function GetLastErrorMessage: string;
@@ -56,6 +58,7 @@ type
     Hostname: string;
     UserName: string;
     Password: string;
+    Encoding: string;
     Table: string;
     RepeatLastAction: Boolean;
     LastQuery: string;
@@ -74,7 +77,6 @@ type
     property LastErrorMessage: string read GetLastErrorMessage;
     property LastErrorNumber: Integer read GetLastErrorNumber;
     property Connected: Boolean read GetConnected;
-    property OnError: TNotifyEvent read FOnError write FOnError;
     constructor Create;
     destructor Destroy; override;
     property Charset: string read GetCharset;
@@ -110,13 +112,13 @@ var
   S: string;
 begin
   S := FloatToStr(F);
-  if Pos(',',S) > 0 then S[Pos(',',S)] := '.';
+  if Pos(',', S) > 0 then S[Pos(',',S)] := '.';
   Result := S;
 end;
 
 function MySQLStrToFloat(S: string): Real;
 begin
-  if Pos('.',S) > 0 then  S[Pos('.',S)] := ',';
+  if Pos('.', S) > 0 then S[Pos('.',S)] := ',';
   Result := StrToFloat(S);
 end;
 
@@ -136,7 +138,7 @@ begin
     FSession := NewSession;
   end else FConnected := False;
   CheckError;
-  Rows := Query('SET NAMES cp1250');
+  Rows := Query('SET NAMES ' + Encoding);
   Rows.Free;
 end;
 
@@ -151,7 +153,7 @@ begin
   Table := ATable;
   DbNames := '';
   DbValues := '';
-  for I := 0 to Data.Count-1 do begin
+  for I := 0 to Data.Count - 1 do begin
     Value := Data.ValuesAtIndex[I];
     StringReplace(Value, '"', '\"', [rfReplaceAll]);
     if Value = 'NOW()' then DbValues := DbValues + ',' + Value
@@ -168,7 +170,7 @@ function TSqlDatabase.Query(Data: string): TDbRows;
 var
   I, II: Integer;
   DbResult: PMYSQL_RES;
-  DbRow: PMYSQL_ROW;
+  DbRow: MYSQL_ROW;
 begin
   //DebugLog('SqlDatabase query: '+Data);
   RepeatLastAction := False;
@@ -184,12 +186,13 @@ begin
     DbResult := mysql_store_result(FSession);
     if Assigned(DbResult) then begin
       Result.Count := mysql_num_rows(DbResult);
-      for I := 0 to Result.Count-1 do begin
+      for I := 0 to Result.Count - 1 do begin
         DbRow := mysql_fetch_row(DbResult);
         Result[I] := TAssociativeArray.Create;
         with Result[I] do begin
-          for II := 0 to mysql_num_fields(DbResult)-1 do begin
-            Add(mysql_fetch_field_direct(DbResult, II)^.name + NameValueSeparator + DbRow^[II]);
+          for II := 0 to mysql_num_fields(DbResult) - 1 do begin
+            Add(mysql_fetch_field_direct(DbResult, II)^.Name +
+              NameValueSeparator + PChar((DbRow + II)^));
           end;
         end;
       end;
@@ -216,7 +219,7 @@ begin
   Table := ATable;
   DbNames := '';
   DbValues := '';
-  for I := 0 to Data.Count-1 do begin
+  for I := 0 to Data.Count - 1 do begin
     Value := Data.ValuesAtIndex[I];
     StringReplace(Value, '"', '\"', [rfReplaceAll]);
     if Value = 'NOW()' then DbValues := DbValues + ',' + Value
@@ -244,7 +247,7 @@ var
 begin
   Table := ATable;
   DbValues := '';
-  for I := 0 to Data.Count-1 do begin
+  for I := 0 to Data.Count - 1 do begin
     Value := Data.ValuesAtIndex[I];
     StringReplace(Value, '"', '\"', [rfReplaceAll]);
     if Value = 'NOW()' then DbValues := DbValues + ',' + Value
@@ -282,7 +285,7 @@ var
   I: Integer;
 begin
   Result := '';
-  for I := 0 to Count-1 do begin
+  for I := 0 to Count - 1 do begin
     Result := Result + Names[I] + '=' + ValuesAtIndex[I] + ',';
   end;
 end;
@@ -318,6 +321,7 @@ constructor TSqlDatabase.Create;
 begin
   inherited;
   FSession := nil;
+  Encoding := 'utf8';
 end;
 
 procedure TAssociativeArray.SetValues(Index: string; const Value: string);
@@ -331,7 +335,8 @@ destructor TDbRows.Destroy;
 var
   I: Integer;
 begin
-  for I := 0 to Count - 1 do Data[I].Free;
+  for I := 0 to Count - 1 do
+    Data[I].Free;
   inherited;
 end;
 
@@ -363,7 +368,8 @@ end;
 function TSqlDatabase.CheckError: Boolean;
 begin
   Result := LastErrorNumber <> 0;
-  if Result and Assigned(OnError) then OnError(Self);
+  if Result then
+    raise EQueryError.Create('Database query error: "' + LastErrorMessage + '"');
 end;
 
 procedure TSqlDatabase.CreateDatabase;
@@ -379,9 +385,12 @@ begin
 end;
 
 procedure TSqlDatabase.CreateTable(Name: string);
+var
+  DbRows: TDbRows;
 begin
-  Query('CREATE TABLE `' + Name + '`' +
-  ' (`id` INT NOT NULL AUTO_INCREMENT, PRIMARY KEY (`id`));');
+  DbRows := Query('CREATE TABLE `' + Name + '`' +
+  ' (`Id` INT NOT NULL AUTO_INCREMENT, PRIMARY KEY (`Id`));');
+  DbRows.Destroy;
 end;
 
 procedure TSqlDatabase.CreateColumn(Table, ColumnName: string;
