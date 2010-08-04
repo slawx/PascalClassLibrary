@@ -7,6 +7,7 @@ object MainForm: TMainForm
   ClientHeight = 240
   ClientWidth = 319
   OnCreate = FormCreate
+  OnDestroy = FormDestroy
   OnShow = FormShow
   LCLVersion = '0.9.29'
   object Memo1: TMemo
