@@ -3,6 +3,8 @@
 { (c) Boris Loboda  2:461/256       }
 {     barry@audit.kharkov.com       }
 
+// Modified date: 2010-07-29
+
 unit CommPort;
 
 interface
@@ -10,6 +12,9 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls,
   Forms, Dialogs, ExtCtrls;
+
+const
+  WaitTime = 10; 
 
 type
   TC32Event = procedure(Sender: TObject; Status: dword) of object;
@@ -469,9 +474,9 @@ begin
       end;
       LeaveCriticalSection(FComPort.WriteSection);
       if FComPort.FKillThreads then Break;
-      Sleep(10);
+      Sleep(WaitTime);
     end
-    else Sleep(10);
+    else Sleep(WaitTime);
   until FComPort.FKillThreads or Terminated;
   SetEvent(FComPort.wEvent);
 end;
@@ -508,7 +513,7 @@ var
 begin
   SetEvent(FComPort.rEvent);
   Repeat
-    if WaitForSingleObject(FcomPort.ReadReadyEvent, 500) = WAIT_OBJECT_0 then begin
+    if WaitForSingleObject(FcomPort.ReadReadyEvent, WaitTime) = WAIT_OBJECT_0 then begin
       if FComPort.FKillThreads then Break;
       if FComPort.Enabled then
         ClearCommError(FComHandle, lpErrors, @lpStat)
@@ -594,7 +599,7 @@ begin
   repeat
     if FcomPort.FKillThreads then Break;
     OK := WaitCommEvent(FComHandle, FStatus, @SOL);
-    if Not OK then Sleep(10);
+    if Not OK then Sleep(WaitTime);
     if FcomPort.FKillThreads then Break;
     if (not OK) and (GetLastError = ERROR_IO_PENDING) then begin
       OK := GetOverlappedResult(FComHandle, SOL,
@@ -724,13 +729,13 @@ begin
     
     FKillThreads := False;
     StatusThread := TStatusThread.Create(Self, FMonitorEvents);
-    WaitForSingleObject(sEvent, 10);
+    WaitForSingleObject(sEvent, WaitTime);
     SetCommMask(FComHandle, EV_BREAK or EV_CTS or EV_DSR or EV_ERR or
                        EV_RING or EV_RLSD or EV_RXCHAR or EV_TXEMPTY);
     ReadThread := TReadThread.Create(Self);
-    WaitForSingleObject(rEvent, 10);
+    WaitForSingleObject(rEvent, WaitTime);
     WriteThread := TWriteThread.Create(Self);
-    WaitForSingleObject(wEvent, 10);
+    WaitForSingleObject(wEvent, WaitTime);
     FOpen := True;
     if Assigned(FOnOpen) then
       FOnOpen(Self, GetLastError);
@@ -882,14 +887,14 @@ end;
 
 {Errorflags for OnErrorSignal
  CE_BREAK       The hardware detected a break condition.
- CE_DNS	        Windows 95 only: A parallel device is not selected.
+ CE_DNS         Windows 95 only: A parallel device is not selected.
  CE_FRAME       The hardware detected a framing error.
- CE_IOE	        An I/O error occurred during communications with the device.
+ CE_IOE         An I/O error occurred during communications with the device.
  CE_MODE        The requested mode is not supported, or the hFile parameter
                 is invalid. If this value is specified, it is the only valid error.
- CE_OOP	        Windows 95 only: A parallel device signaled that it is out of paper.
+ CE_OOP         Windows 95 only: A parallel device signaled that it is out of paper.
  CE_OVERRUN     A character-buffer overrun has occurred. The next character is lost.
- CE_PTO	        Windows 95 only: A time-out occurred on a parallel device.
+ CE_PTO         Windows 95 only: A time-out occurred on a parallel device.
  CE_RXOVER      An input buffer overflow has occurred. There is either no
                 room in the input buffer, or a character was received after
                 the end-of-file (EOF) character.

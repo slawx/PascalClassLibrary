@@ -1,0 +1,20 @@
+object MainForm: TMainForm
+  Left = 614
+  Height = 240
+  Top = 198
+  Width = 319
+  Caption = 'MainForm'
+  ClientHeight = 240
+  ClientWidth = 319
+  OnCreate = FormCreate
+  OnShow = FormShow
+  LCLVersion = '0.9.29'
+  object Memo1: TMemo
+    Left = 9
+    Height = 200
+    Top = 8
+    Width = 302
+    Anchors = [akTop, akLeft, akRight, akBottom]
+    TabOrder = 0
+  end
+end
