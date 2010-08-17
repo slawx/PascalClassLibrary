@@ -1,0 +1,22 @@
+object MainForm: TMainForm
+  Left = 288
+  Height = 414
+  Top = 117
+  Width = 613
+  Caption = 'BitStream test'
+  ClientHeight = 414
+  ClientWidth = 613
+  OnShow = FormShow
+  LCLVersion = '0.9.29'
+  object Memo1: TMemo
+    Left = 7
+    Height = 372
+    Top = 8
+    Width = 599
+    Anchors = [akTop, akLeft, akRight, akBottom]
+    Font.Name = 'Courier'
+    ParentFont = False
+    ScrollBars = ssAutoBoth
+    TabOrder = 0
+  end
+end

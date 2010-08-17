@@ -1,6 +1,6 @@
 unit UBitStream;
 
-// Date: 2010-06-14
+// Date: 2010-08-17
 
 {$mode delphi}
 
@@ -109,20 +109,20 @@ begin
   Result := 0;
 end;
 
-function TBitStream.CopyFrom(Source:TBitStream;Count:LongInt):LongInt;
+function TBitStream.CopyFrom(Source: TBitStream; Count: LongInt): LongInt;
 var
-  I: LongInt;
+  BlockSize: LongInt;
   Buffer: array[0..1023] of Byte;
 begin
   Result := 0;
   while Count > 0 do begin
-    if Count > (SizeOf(Buffer) * 8) then I := SizeOf(Buffer) * 8
-      else I := Count;
-    I := Source.Read(Buffer, I);
-    I := Write(Buffer, I);
-    if I = 0 then Break;
-    Dec(Count, I);
-    Result := Result + I;
+    if Count > (SizeOf(Buffer) * 8) then BlockSize := SizeOf(Buffer) * 8
+      else BlockSize := Count;
+    BlockSize := Source.Read(Buffer, BlockSize);
+    BlockSize := Write(Buffer, BlockSize);
+    if BlockSize = 0 then Break;
+    Dec(Count, BlockSize);
+    Result := Result + BlockSize;
   end;
 end;
 
@@ -200,24 +200,25 @@ function TMemoryBitStream.Read(var Buffer;Count:Longint):Longint;
 var
   ByteCount: LongInt;
   I: LongInt;
-  BytePos: Byte;
+  PosInByte: Byte;
   Data: Byte;
 begin
   Result := 0;
   if (FSize > 0) and (FPosition < FSize) and (FPosition >= 0) then begin
     if (FPosition + Count) > FSize then Count := FSize - FPosition;
     ByteCount := Ceil(Count / 8);
-    BytePos := FPosition mod 8;
+    PosInByte := FPosition mod 8;
     Stream.Position := Trunc(FPosition / 8);
-    Data := Stream.ReadByte;
+    Data := Stream.ReadByte; // Read first byte
     for I := 0 to ByteCount - 1 do begin
-      TBytes(Buffer)[I] := (Data shr BytePos) and ((1 shl (8 - BytePos)) - 1);
-      if I <> (ByteCount - 1) then
-        Data := Stream.ReadByte;
-      if BytePos > 0 then
-        TBytes(Buffer)[I] := TBytes(Buffer)[I] or (Data and ((1 shl BytePos) - 1)) shl (8 - BytePos);
-      if (I = (ByteCount - 1)) and (BytePos > 0) then
-        TBytes(Buffer)[I] := TBytes(Buffer)[I] and ((1 shl (Count mod 8)) - 1);
+      TBytes(Buffer)[I] := (Data shr PosInByte) and ((1 shl (8 - PosInByte)) - 1);
+      if (I < ByteCount) and (Stream.Position < Stream.Size) then
+        Data := Stream.ReadByte else Data := 0;
+      if PosInByte > 0 then
+        TBytes(Buffer)[I] := TBytes(Buffer)[I] or
+          ((Integer(Data) and ((1 shl PosInByte) - 1)) shl (8 - PosInByte));
+      //if (I = (ByteCount - 1)) and (PosInByte > 0) then
+      //  TBytes(Buffer)[I] := TBytes(Buffer)[I] and ((1 shl (Count mod 8)) - 1);
     end;
     Inc(FPosition, Count);
     Result := Count;
@@ -231,9 +232,11 @@ var
   I: LongInt;
   BytePos: Byte;
   Data: Byte;
+
 function Min(Value1, Value2: Integer): Integer;
 begin
-  if Value1 < Value2 then Result := Value1 else Result := Value2;
+  if Value1 < Value2 then Result := Value1
+    else Result := Value2;
 end;
 
 begin
@@ -282,7 +285,7 @@ end;
 
 destructor TMemoryBitStream.Destroy;
 begin
-  FStream.Destroy;
+  FStream.Free;
   inherited Destroy;
 end;
 

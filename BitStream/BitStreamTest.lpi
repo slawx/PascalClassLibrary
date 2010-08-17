@@ -1,0 +1,277 @@
+<?xml version="1.0"?>
+<CONFIG>
+  <ProjectOptions>
+    <PathDelim Value="\"/>
+    <Version Value="8"/>
+    <General>
+      <Flags>
+        <UseDefaultCompilerOptions Value="True"/>
+      </Flags>
+      <MainUnit Value="0"/>
+      <TargetFileExt Value=".exe"/>
+      <Title Value="BitStreamTest"/>
+      <ResourceType Value="res"/>
+      <UseXPManifest Value="True"/>
+      <Icon Value="0"/>
+      <ActiveWindowIndexAtStart Value="0"/>
+    </General>
+    <i18n>
+      <EnableI18N LFM="False"/>
+    </i18n>
+    <VersionInfo>
+      <Language Value=""/>
+      <CharSet Value=""/>
+      <StringTable Comments="" CompanyName="" FileDescription="" FileVersion="" InternalName="" LegalCopyright="" LegalTrademarks="" OriginalFilename="" ProductName="" ProductVersion=""/>
+    </VersionInfo>
+    <PublishOptions>
+      <Version Value="2"/>
+      <IgnoreBinaries Value="False"/>
+      <IncludeFileFilter Value="*.(pas|pp|inc|lfm|lpr|lrs|lpi|lpk|sh|xml)"/>
+      <ExcludeFileFilter Value="*.(bak|ppu|ppw|o|so);*~;backup"/>
+    </PublishOptions>
+    <RunParams>
+      <local>
+        <FormatVersion Value="1"/>
+      </local>
+    </RunParams>
+    <RequiredPackages Count="1">
+      <Item1>
+        <PackageName Value="LCL"/>
+      </Item1>
+    </RequiredPackages>
+    <Units Count="5">
+      <Unit0>
+        <Filename Value="BitStreamTest.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="BitStreamTest"/>
+        <EditorIndex Value="3"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="32" Y="16"/>
+        <UsageCount Value="20"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit0>
+      <Unit1>
+        <Filename Value="UMainForm.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="MainForm"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="UMainForm"/>
+        <EditorIndex Value="0"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="80"/>
+        <CursorPos X="35" Y="94"/>
+        <UsageCount Value="20"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="UBitStream.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="UBitStream"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="1"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="202"/>
+        <CursorPos X="9" Y="221"/>
+        <UsageCount Value="20"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="E:\Programy\Lazarus\lcl\controls.pp"/>
+        <UnitName Value="Controls"/>
+        <EditorIndex Value="4"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1207"/>
+        <CursorPos X="14" Y="1220"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="E:\Programy\Lazarus\fpc\2.4.0\source\rtl\objpas\math.pp"/>
+        <UnitName Value="math"/>
+        <EditorIndex Value="2"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="929"/>
+        <CursorPos X="5" Y="932"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit4>
+    </Units>
+    <JumpHistory Count="30" HistoryIndex="29">
+      <Position1>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="101" Column="1" TopLine="85"/>
+      </Position1>
+      <Position2>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="94" Column="1" TopLine="85"/>
+      </Position2>
+      <Position3>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="95" Column="1" TopLine="85"/>
+      </Position3>
+      <Position4>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="98" Column="1" TopLine="85"/>
+      </Position4>
+      <Position5>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="99" Column="1" TopLine="85"/>
+      </Position5>
+      <Position6>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="92" Column="13" TopLine="85"/>
+      </Position6>
+      <Position7>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="99" Column="1" TopLine="85"/>
+      </Position7>
+      <Position8>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="101" Column="1" TopLine="85"/>
+      </Position8>
+      <Position9>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="94" Column="1" TopLine="85"/>
+      </Position9>
+      <Position10>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="95" Column="1" TopLine="85"/>
+      </Position10>
+      <Position11>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="98" Column="1" TopLine="85"/>
+      </Position11>
+      <Position12>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="99" Column="1" TopLine="85"/>
+      </Position12>
+      <Position13>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="101" Column="1" TopLine="85"/>
+      </Position13>
+      <Position14>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="94" Column="1" TopLine="85"/>
+      </Position14>
+      <Position15>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="95" Column="1" TopLine="85"/>
+      </Position15>
+      <Position16>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="99" Column="1" TopLine="85"/>
+      </Position16>
+      <Position17>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="119" Column="27" TopLine="109"/>
+      </Position17>
+      <Position18>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="99" Column="32" TopLine="78"/>
+      </Position18>
+      <Position19>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="98" Column="29" TopLine="78"/>
+      </Position19>
+      <Position20>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="102" Column="14" TopLine="78"/>
+      </Position20>
+      <Position21>
+        <Filename Value="BitStreamTest.lpr"/>
+        <Caret Line="19" Column="1" TopLine="1"/>
+      </Position21>
+      <Position22>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="101" Column="12" TopLine="85"/>
+      </Position22>
+      <Position23>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="111" Column="49" TopLine="111"/>
+      </Position23>
+      <Position24>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="24" Column="59" TopLine="23"/>
+      </Position24>
+      <Position25>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="58" Column="21" TopLine="45"/>
+      </Position25>
+      <Position26>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="72" Column="9" TopLine="59"/>
+      </Position26>
+      <Position27>
+        <Filename Value="UBitStream.pas"/>
+        <Caret Line="209" Column="21" TopLine="201"/>
+      </Position27>
+      <Position28>
+        <Filename Value="UBitStream.pas"/>
+        <Caret Line="210" Column="6" TopLine="201"/>
+      </Position28>
+      <Position29>
+        <Filename Value="BitStreamTest.lpr"/>
+        <Caret Line="19" Column="1" TopLine="1"/>
+      </Position29>
+      <Position30>
+        <Filename Value="BitStreamTest.lpr"/>
+        <Caret Line="18" Column="29" TopLine="1"/>
+      </Position30>
+    </JumpHistory>
+  </ProjectOptions>
+  <CompilerOptions>
+    <Version Value="9"/>
+    <PathDelim Value="\"/>
+    <Target>
+      <Filename Value="BitStreamTest"/>
+    </Target>
+    <SearchPaths>
+      <IncludeFiles Value="$(ProjOutDir)\"/>
+      <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
+    </SearchPaths>
+    <Parsing>
+      <SyntaxOptions>
+        <SyntaxMode Value="Delphi"/>
+      </SyntaxOptions>
+    </Parsing>
+    <CodeGeneration>
+      <Checks>
+        <IOChecks Value="True"/>
+        <RangeChecks Value="True"/>
+        <OverflowChecks Value="True"/>
+        <StackChecks Value="True"/>
+      </Checks>
+    </CodeGeneration>
+    <Linking>
+      <Options>
+        <Win32>
+          <GraphicApplication Value="True"/>
+        </Win32>
+      </Options>
+    </Linking>
+    <Other>
+      <CompilerMessages>
+        <UseMsgFile Value="True"/>
+      </CompilerMessages>
+      <CompilerPath Value="$(CompPath)"/>
+    </Other>
+  </CompilerOptions>
+  <Debugging>
+    <Exceptions Count="3">
+      <Item1>
+        <Name Value="EAbort"/>
+      </Item1>
+      <Item2>
+        <Name Value="ECodetoolError"/>
+      </Item2>
+      <Item3>
+        <Name Value="EFOpenError"/>
+      </Item3>
+    </Exceptions>
+  </Debugging>
+</CONFIG>
