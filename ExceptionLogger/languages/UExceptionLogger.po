@@ -1,0 +1,27 @@
+msgid ""
+msgstr "Content-Type: text/plain; charset=UTF-8"
+
+#: uexceptionlogger.sapplication
+msgid "Application"
+msgstr ""
+
+#: uexceptionlogger.sexceptionclass
+msgid "Class"
+msgstr ""
+
+#: uexceptionlogger.smessage
+msgid "Message"
+msgstr ""
+
+#: uexceptionlogger.sprocessid
+msgid "Process ID"
+msgstr ""
+
+#: uexceptionlogger.sthreadid
+msgid "Thread ID"
+msgstr ""
+
+#: uexceptionlogger.stime
+msgid "Time"
+msgstr ""
+

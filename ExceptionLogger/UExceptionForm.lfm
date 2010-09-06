@@ -1,0 +1,101 @@
+object ExceptionForm: TExceptionForm
+  Left = 217
+  Height = 316
+  Top = 171
+  Width = 682
+  Caption = 'Exception info'
+  ClientHeight = 316
+  ClientWidth = 682
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  OnShow = FormShow
+  LCLVersion = '0.9.29'
+  object ButtonClose: TButton
+    Left = 602
+    Height = 25
+    Top = 286
+    Width = 75
+    Anchors = [akRight, akBottom]
+    Caption = 'Close'
+    OnClick = ButtonCloseClick
+    TabOrder = 0
+  end
+  object ButtonKill: TButton
+    Left = 512
+    Height = 25
+    Top = 286
+    Width = 75
+    Anchors = [akRight, akBottom]
+    Caption = 'Terminate'
+    OnClick = ButtonKillClick
+    TabOrder = 1
+  end
+  object PageControl1: TPageControl
+    Left = 8
+    Height = 277
+    Top = 3
+    Width = 669
+    ActivePage = TabSheet2
+    Anchors = [akTop, akLeft, akRight, akBottom]
+    TabIndex = 1
+    TabOrder = 2
+    object TabSheet1: TTabSheet
+      Caption = 'General'
+      ClientHeight = 251
+      ClientWidth = 661
+      object MemoExceptionInfo: TMemo
+        Left = 4
+        Height = 236
+        Top = 3
+        Width = 655
+        Anchors = [akTop, akLeft, akRight, akBottom]
+        ReadOnly = True
+        ScrollBars = ssAutoBoth
+        TabOrder = 0
+        WordWrap = False
+      end
+    end
+    object TabSheet2: TTabSheet
+      Caption = 'Call stack'
+      ClientHeight = 251
+      ClientWidth = 661
+      object ListView1: TListView
+        Left = 4
+        Height = 241
+        Top = 7
+        Width = 655
+        Anchors = [akTop, akLeft, akRight, akBottom]
+        Columns = <        
+          item
+            Caption = 'Index'
+            Width = 40
+          end        
+          item
+            Caption = 'Address'
+            Width = 75
+          end        
+          item
+            Caption = 'Class'
+            Width = 100
+          end        
+          item
+            Caption = 'Procedure/method'
+            Width = 150
+          end        
+          item
+            Caption = 'Unit'
+            Width = 150
+          end        
+          item
+            Caption = 'Line'
+            Width = 71
+          end>
+        ItemIndex = -1
+        ReadOnly = True
+        RowSelect = True
+        TabOrder = 0
+        ViewStyle = vsReport
+      end
+    end
+  end
+end
