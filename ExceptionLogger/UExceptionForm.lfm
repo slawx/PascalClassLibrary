@@ -2,16 +2,16 @@ object ExceptionForm: TExceptionForm
   Left = 217
   Height = 316
   Top = 171
-  Width = 682
+  Width = 691
   Caption = 'Exception info'
   ClientHeight = 316
-  ClientWidth = 682
+  ClientWidth = 691
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
   LCLVersion = '0.9.29'
   object ButtonClose: TButton
-    Left = 602
+    Left = 611
     Height = 25
     Top = 286
     Width = 75
@@ -21,7 +21,7 @@ object ExceptionForm: TExceptionForm
     TabOrder = 0
   end
   object ButtonKill: TButton
-    Left = 512
+    Left = 521
     Height = 25
     Top = 286
     Width = 75
@@ -34,7 +34,7 @@ object ExceptionForm: TExceptionForm
     Left = 8
     Height = 277
     Top = 3
-    Width = 669
+    Width = 678
     ActivePage = TabSheet2
     Anchors = [akTop, akLeft, akRight, akBottom]
     TabIndex = 1
@@ -58,12 +58,12 @@ object ExceptionForm: TExceptionForm
     object TabSheet2: TTabSheet
       Caption = 'Call stack'
       ClientHeight = 251
-      ClientWidth = 661
+      ClientWidth = 670
       object ListView1: TListView
         Left = 4
         Height = 241
         Top = 7
-        Width = 655
+        Width = 664
         Anchors = [akTop, akLeft, akRight, akBottom]
         Columns = <        
           item
@@ -76,7 +76,7 @@ object ExceptionForm: TExceptionForm
           end        
           item
             Caption = 'Class'
-            Width = 100
+            Width = 150
           end        
           item
             Caption = 'Procedure/method'
@@ -97,5 +97,14 @@ object ExceptionForm: TExceptionForm
         ViewStyle = vsReport
       end
     end
+  end
+  object CheckBoxIgnore: TCheckBox
+    Left = 10
+    Height = 17
+    Top = 298
+    Width = 169
+    Anchors = [akLeft, akBottom]
+    Caption = 'Next time ignore this exception'
+    TabOrder = 3
   end
 end

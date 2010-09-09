@@ -93,7 +93,7 @@ begin
       if not OpenExeFile(e,dbgfn) then
         exit;
     end;
-  e.processaddress:=ptruint(baseaddr)-e.processaddress;
+  e.processaddress := ptruint(baseaddr) - e.processaddress;
   StabsFunctionRelative := E.FunctionRelative;
   if FindExeSection(e,'.stab',stabofs,stablen) and
      FindExeSection(e,'.stabstr',stabstrofs,stabstrlen) then
@@ -108,12 +108,10 @@ begin
     end;
 end;
 
-
 procedure CloseStabs;
 begin
   CloseExeFile(e);
 end;
-
 
 function GetLineInfo(addr:ptruint;var func,source:shortstring;var line:longint) : boolean;
 var
@@ -247,7 +245,6 @@ begin
   GetLineInfo:=true;
 end;
 
-
 function StabBackTraceStr(addr:Pointer):shortstring;
 var
   func,
@@ -290,9 +287,8 @@ begin
     BackTraceStrFunc:=Store;
 end;
 
-
 initialization
-  BackTraceStrFunc:=@StabBackTraceStr;
+  BackTraceStrFunc := @StabBackTraceStr;
 
 finalization
   if e.isopen then

@@ -17,6 +17,7 @@ type
   TExceptionForm = class(TForm)
     ButtonKill: TButton;
     ButtonClose: TButton;
+    CheckBoxIgnore: TCheckBox;
     ListView1: TListView;
     MemoExceptionInfo: TMemo;
     PageControl1: TPageControl;
@@ -41,6 +42,8 @@ implementation
 
 procedure TExceptionForm.FormShow(Sender: TObject);
 begin
+  PageControl1.ActivePageIndex := 0;
+  CheckBoxIgnore.Checked := False;
 end;
 
 procedure TExceptionForm.FormCreate(Sender: TObject);
@@ -55,7 +58,8 @@ end;
 
 procedure TExceptionForm.ButtonKillClick(Sender: TObject);
 begin
-  Halt;
+  //Halt;
+  Application.Terminate;
 end;
 
 procedure TExceptionForm.FormDestroy(Sender: TObject);

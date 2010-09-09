@@ -20,6 +20,7 @@ type
   public
     StackTrace: TStackTrace;
     LastException: Exception;
+    IgnoreList: TStringList;
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure ExceptionHandler(Sender: TObject; E: Exception);
@@ -53,12 +54,12 @@ begin
   RegisterComponents('Sample', [TExceptionLogger]);
 end;
 
-
 { TExceptionLogger }
 
 constructor TExceptionLogger.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
+  IgnoreList := TStringList.Create;
   StackTrace := TStackTrace.Create;
   MaxCallStackDepth := 20;
   Application.OnException := ExceptionHandler;
@@ -68,6 +69,7 @@ end;
 destructor TExceptionLogger.Destroy;
 begin
   StackTrace.Free;
+  IgnoreList.Free;
   inherited Destroy;
 end;
 
@@ -154,17 +156,21 @@ procedure TExceptionLogger.MakeReport;
 var
   Report: TStringList;
 begin
-  Report := TStringList.Create;
-  try
-    CreateTextReport(Report);
-    if FLogFileName <> '' then begin
-      LogToFile(Report);
-      LogStackTraceToFile(StackTrace);
+  if IgnoreList.IndexOf(LastException.ClassName) = -1 then begin
+    Report := TStringList.Create;
+    try
+      CreateTextReport(Report);
+      if FLogFileName <> '' then begin
+        LogToFile(Report);
+        LogStackTraceToFile(StackTrace);
+      end;
+      ExceptionForm.MemoExceptionInfo.Lines.Assign(Report);
+      ShowReportForm;
+    finally
+      Report.Free;
     end;
-    ExceptionForm.MemoExceptionInfo.Lines.Assign(Report);
-    ShowReportForm;
-  finally
-    Report.Free;
+    if ExceptionForm.CheckBoxIgnore.Checked then
+      IgnoreList.Add(LastException.ClassName);
   end;
 end;
 
