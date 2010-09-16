@@ -90,18 +90,18 @@ var
   Control: TControl;
   R: TRect;
 begin
-  for I := 0 to FDockSite.ControlCount - 1 do
-          begin
-            Control := FDockSite.Controls[I];
-            if Control.Visible and (Control.HostDockSite = FDockSite) then
-            begin
-              R := Control.BoundsRect;
-              //Control.SetBounds(0, GrabberSize, FDockSite.Width - Control.Left,
-              //  FDockSite.Height - Control.Top);
-              //Canvas.FillRect(R);
-              DrawGrabber(FDockPanel.Canvas, Control);
-            end;
-          end;
+  CloseButton.Visible := FDockSite.DockClientCount > 0;
+  for I := 0 to FDockSite.DockClientCount - 1 do begin
+    Control := FDockSite.DockClients[I];
+    if Control.Visible and (Control.HostDockSite = FDockSite) then
+    begin
+      R := Control.BoundsRect;
+      //Control.SetBounds(0, GrabberSize, FDockSite.Width - Control.Left,
+      //  FDockSite.Height - Control.Top);
+      //Canvas.FillRect(R);
+      DrawGrabber(FDockPanel.Canvas, Control);
+    end;
+  end;
 end;
 
 procedure TCustomDockManager.DockPanelMouseDown(Sender: TObject;
@@ -167,11 +167,13 @@ end;
 procedure TCustomDockManager.InsertControl(ADockObject: TDragDockObject);
 begin
   inherited InsertControl(ADockObject);
+  FDockPanel.Repaint;
 end;
 
 procedure TCustomDockManager.InsertControl(Control: TControl; InsertAt: TAlign;
   DropCtl: TControl);
 begin
+  inherited;
 end;
 
 procedure TCustomDockManager.LoadFromStream(Stream: TStream);
@@ -238,6 +240,9 @@ end;
 
 procedure TCustomDockManager.RemoveControl(Control: TControl);
 begin
+  inherited;
+  //FDockPanel.Invalidate;
+  FDockSite.Invalidate;
 end;
 
 procedure TCustomDockManager.ResetBounds(Force: Boolean);

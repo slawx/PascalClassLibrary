@@ -19,11 +19,13 @@ object MainForm: TMainForm
     TabOrder = 0
   end
   object Panel1: TPanel
-    Left = 20
-    Height = 179
-    Top = 45
-    Width = 292
+    Left = 0
+    Height = 200
+    Top = 40
+    Width = 320
+    Align = alBottom
     Anchors = [akTop, akLeft, akRight, akBottom]
+    BevelOuter = bvNone
     DockSite = True
     TabOrder = 1
     OnMouseDown = Panel1MouseDown
