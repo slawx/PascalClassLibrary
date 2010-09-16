@@ -1,0 +1,18 @@
+object DockForm: TDockForm
+  Left = 391
+  Height = 240
+  Top = 125
+  Width = 320
+  Caption = 'DockForm'
+  ClientHeight = 240
+  ClientWidth = 320
+  LCLVersion = '0.9.29'
+  object Memo1: TMemo
+    Left = 0
+    Height = 240
+    Top = 0
+    Width = 320
+    Align = alClient
+    TabOrder = 0
+  end
+end
