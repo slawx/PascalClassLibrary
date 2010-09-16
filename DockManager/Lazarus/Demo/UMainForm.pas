@@ -43,9 +43,22 @@ begin
 end;
 
 procedure TMainForm.FormShow(Sender: TObject);
+var
+  DockForm1: TDockForm;
+  DockForm2: TDockForm;
+  DockForm3: TDockForm;
 begin
   Button1Click(Self);
-  LastDockForm.ManualDock(Panel1);
+  DockForm1 := LastDockForm;
+  DockForm1.ManualDock(Panel1);
+
+  Button1Click(Self);
+  DockForm2 := LastDockForm;
+  DockForm2.ManualDock(Panel1);
+
+  Button1Click(Self);
+  DockForm3 := LastDockForm;
+  DockForm3.ManualDock(DockForm2);
 end;
 
 procedure TMainForm.ListView1EndDrag(Sender, Target: TObject; X, Y: Integer);
@@ -74,6 +87,8 @@ begin
   NewForm.Memo1.Text := NewForm.Name;
   NewForm.DragKind := dkDock;
   NewForm.DragMode := dmAutomatic;
+  NewForm.DockSite := True;
+  NewForm.UseDockManager := True;
   Inc(FormIndex);
   NewForm.Show;
   LastDockForm := NewForm;

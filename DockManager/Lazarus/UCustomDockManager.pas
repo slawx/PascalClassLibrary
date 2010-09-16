@@ -6,25 +6,45 @@ interface
 
 uses
   Classes, SysUtils, Controls, LCLType, LMessages, Graphics, StdCtrls,
-  Buttons, ExtCtrls;
+  Buttons, ExtCtrls, Contnrs, Forms;
 
 const
   GrabberSize = 18;
 
 type
+  TDockDirection = (ddNone, ddHorizontal, ddVertical);
+
+  TCustomDockManager = class;
+
+  TConjoinDockForm = class(TForm)
+
+  end;
+
+  { TDockClientPanel }
+
+  TDockClientPanel = class(TPanel)
+    OwnerDockManager: TCustomDockManager;
+    CloseButton: TSpeedButton;
+    Control: TControl;
+    Splitter: TSplitter;
+    constructor Create(TheOwner: TComponent); override;
+    destructor Destroy; override;
+    procedure DockPanelPaint(Sender: TObject);
+    procedure DockPanelMouseDown(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
+    procedure DrawGrabber(Canvas: TCanvas; AControl: TControl);
+    procedure CloseButtonClick(Sender: TObject);
+    procedure ResizeExecute(Sender: TObject);
+  end;
 
   { TCustomDockManager }
 
   TCustomDockManager = class(TDockManager)
   private
+    FDockDirection: TDockDirection;
     FDockSite: TWinControl;
-    FDockPanel: TPanel;
-    CloseButton: TSpeedButton;
-    procedure DrawGrabber(Canvas: TCanvas; AControl: TControl);
-    procedure CloseButtonClick(Sender: TObject);
-    procedure DockPanelPaint(Sender: TObject);
-    procedure DockPanelMouseDown(Sender: TObject; Button: TMouseButton;
-      Shift: TShiftState; X, Y: Integer);
+    FDockPanels: TObjectList; // of TDockClientPanel
+    function FindControlInPanels(Control: TControl): TDockClientPanel;
   public
     constructor Create(ADockSite: TWinControl); override;
     destructor Destroy; override;
@@ -53,94 +73,28 @@ implementation
 
 { TCustomDockManager }
 
-procedure TCustomDockManager.DrawGrabber(Canvas: TCanvas; AControl: TControl);
-begin
-  with Canvas do begin
-    Brush.Color := clBtnFace;
-    Pen.Color := clBlack;
-    FillRect(0, 0, AControl.Width, GrabberSize);
-    Rectangle(1, 1, AControl.Width - 1, GrabberSize - 1);
-    TextOut(6, 2, AControl.Caption);
-
-    CloseButton.Left := AControl.Width - CloseButton.Width - 2;
-    CloseButton.Top := 2;
-  end;
-end;
-
-procedure TCustomDockManager.CloseButtonClick(Sender: TObject);
+function TCustomDockManager.FindControlInPanels(Control: TControl
+  ): TDockClientPanel;
 var
   I: Integer;
-  Control: TControl;
-  R: TRect;
 begin
-  for I := 0 to FDockSite.ControlCount - 1 do
-    begin
-      Control := FDockSite.Controls[I];
-      if Control.Visible and (Control.HostDockSite = FDockSite) then
-      begin
-        Control.Hide;
-      end;
-    end;
-  FDockPanel.Hide;
-end;
-
-procedure TCustomDockManager.DockPanelPaint(Sender: TObject);
-var
-  I: Integer;
-  Control: TControl;
-  R: TRect;
-begin
-  CloseButton.Visible := FDockSite.DockClientCount > 0;
-  for I := 0 to FDockSite.DockClientCount - 1 do begin
-    Control := FDockSite.DockClients[I];
-    if Control.Visible and (Control.HostDockSite = FDockSite) then
-    begin
-      R := Control.BoundsRect;
-      //Control.SetBounds(0, GrabberSize, FDockSite.Width - Control.Left,
-      //  FDockSite.Height - Control.Top);
-      //Canvas.FillRect(R);
-      DrawGrabber(FDockPanel.Canvas, Control);
-    end;
-  end;
-end;
-
-procedure TCustomDockManager.DockPanelMouseDown(Sender: TObject;
-  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
-begin
-  if (Button=mbLeft) and (FDockSite.DockClientCount > 0) then
-    DragManager.DragStart(FDockSite.DockClients[0], False, 1);
+  I := 0;
+  while (I < FDockPanels.Count) and
+    (TDockClientPanel(FDockPanels[I]).Control <> Control) do Inc(I);
+  if I < FDockPanels.Count then Result := TDockClientPanel(FDockPanels[I])
+    else Result := nil;
 end;
 
 constructor TCustomDockManager.Create(ADockSite: TWinControl);
 begin
   FDockSite := ADockSite;
-  FDockPanel := TPanel.Create(nil);
-  with FDockPanel do begin
-    Parent := ADockSite;
-    Align := alClient;
-    Visible := True;
-    OnPaint := DockPanelPaint;
-    OnMouseDown := DockPanelMouseDown();
-    BevelInner := bvNone;
-    BevelOuter := bvNone;
-  end;
-
-  CloseButton := TSpeedButton.Create(FDockPanel);
-  with CloseButton do begin
-    Parent := FDockPanel;
-    Caption := 'X';
-    Font.Size := 6;
-    Width := 14;
-    Height := 14;
-    Visible := True;
-    OnClick := CloseButtonClick;
-  end;
+  FDockPanels := TObjectList.Create;
   inherited Create(ADockSite);
 end;
 
 destructor TCustomDockManager.Destroy;
 begin
-  FDockPanel.Free;
+  FDockPanels.Free;
   inherited Destroy;
 end;
 
@@ -167,12 +121,65 @@ end;
 procedure TCustomDockManager.InsertControl(ADockObject: TDragDockObject);
 begin
   inherited InsertControl(ADockObject);
-  FDockPanel.Repaint;
 end;
 
 procedure TCustomDockManager.InsertControl(Control: TControl; InsertAt: TAlign;
   DropCtl: TControl);
+var
+  NewSplitter: TSplitter;
+  NewPanel: TDockClientPanel;
+  I: Integer;
 begin
+  if FDockSite.DockClientCount = 2 then begin
+    if (InsertAt = alTop) or (InsertAt = alBottom) then
+      FDockDirection := ddVertical
+    else
+    if (InsertAt = alLeft) or (InsertAt = alRight) then
+      FDockDirection := ddHorizontal
+    else FDockDirection := ddHorizontal;
+  end;
+  if FDockSite.DockClientCount > 1 then begin
+    NewSplitter := TSplitter.Create(nil);
+    NewSplitter.Parent := FDockSite;
+    NewSplitter.Visible := True;
+    NewSplitter.Color := clRed;
+    with NewSplitter do
+    if FDockDirection = ddVertical then begin
+      Align := alTop;
+      Top := FDockSite.Height;
+    end else
+    if FDockDirection = ddHorizontal then begin
+      Align := alLeft;
+      Left := FDockSite.Width;
+    end;
+
+    with TDockClientPanel(FDockPanels.Last) do
+    if FDockDirection = ddVertical then
+      Align := alTop
+    else
+    if FDockDirection = ddHorizontal then
+      Align := alLeft;
+  end;
+  NewPanel := TDockClientPanel.Create(nil);
+  with NewPanel do begin
+    Splitter := NewSplitter;
+    Parent := FDockSite;
+    OwnerDockManager := Self;
+    Visible := True;
+    Align := alClient;
+  end;
+  NewPanel.Control := Control;
+  Control.Parent := NewPanel;
+  FDockPanels.Add(NewPanel);
+
+  for I := 0 to FDockPanels.Count - 1 do begin
+    TDockClientPanel(FDockPanels[I]).Height := FDockSite.Height div
+      FDockSite.DockClientCount;
+    TDockClientPanel(FDockPanels[I]).Width := FDockSite.Width div
+      FDockSite.DockClientCount;
+  end;
+
+//  FDockPanel.Invalidate;
   inherited;
 end;
 
@@ -187,36 +194,10 @@ var
   I: Integer;
   R: TRect;
 begin
-  Canvas := TControlCanvas.Create;
-  try
-    //Canvas.Control := FDockSite;
-    Canvas.Control := FDockPanel;
-    Canvas.Lock;
-    try
-      Canvas.Handle := DC;
-      try
-        for I := 0 to FDockSite.ControlCount - 1 do
-        begin
-          Control := FDockSite.Controls[I];
-          if Control.Visible and (Control.HostDockSite = FDockSite) then
-          begin
-            R := Control.BoundsRect;
-            Control.SetBounds(0, GrabberSize, FDockSite.Width - Control.Left,
-              FDockSite.Height - Control.Top);
-            Canvas.FillRect(R);
-            DrawGrabber(Canvas, Control);
-          end;
-        end;
-      finally
-        Canvas.Handle := 0;
-      end;
-    finally
-      Canvas.Unlock;
+  for I := 0 to FDockPanels.Count - 1 do
+    with TDockClientPanel(FDockPanels[I]) do begin
+      Invalidate;
     end;
-  finally
-    Canvas.Free;
-  end;
-  FDockPanel.Repaint;
 end;
 
 procedure TCustomDockManager.MessageHandler(Sender: TControl;
@@ -233,16 +214,39 @@ end;
 procedure TCustomDockManager.PositionDockRect(Client, DropCtl: TControl;
   DropAlign: TAlign; var DockRect: TRect);
 begin
-  DockRect := Rect(0, 0, FDockSite.ClientWidth, FDockSite.ClientHeight);
+  case DropAlign of
+    alNone: begin
+      DockRect := Rect(0, 0, FDockSite.ClientWidth, FDockSite.ClientHeight);
+    end;
+    alRight: begin
+      DockRect := Rect(FDockSite.ClientWidth div 2, 0, FDockSite.ClientWidth, FDockSite.ClientHeight);
+    end;
+    alLeft: begin
+      DockRect := Rect(0, 0, FDockSite.ClientWidth div 2, FDockSite.ClientHeight);
+    end;
+    alTop: begin
+      DockRect := Rect(0, 0, FDockSite.ClientWidth, FDockSite.ClientHeight div 2);
+    end;
+    alBottom: begin
+      DockRect := Rect(0, FDockSite.ClientHeight div 2, FDockSite.ClientWidth, FDockSite.ClientHeight);
+    end;
+  end;
   DockRect.TopLeft := FDockSite.ClientToScreen(DockRect.TopLeft);
   DockRect.BottomRight := FDockSite.ClientToScreen(DockRect.BottomRight);
 end;
 
 procedure TCustomDockManager.RemoveControl(Control: TControl);
+var
+  ClientPanel: TDockClientPanel;
 begin
   inherited;
-  //FDockPanel.Invalidate;
-  FDockSite.Invalidate;
+  if Control.HostDockSite = Self.FDockSite then begin
+    ClientPanel := FindControlInPanels(Control);
+    //ClientPanel.Splitter.Free;
+    FDockPanels.Remove(ClientPanel);
+    if FDockSite.DockClientCount = 2 then FDockDirection := ddNone;
+    //FDockSite.Invalidate;
+  end;
 end;
 
 procedure TCustomDockManager.ResetBounds(Force: Boolean);
@@ -251,16 +255,6 @@ var
   Control: TControl;
   R: TRect;
 begin
-  for I := 0 to FDockSite.ControlCount - 1 do
-    begin
-      Control := FDockSite.Controls[I];
-      if Control.Visible and (Control.HostDockSite = FDockSite) then
-      begin
-        R := Control.BoundsRect;
-        Control.SetBounds(0, GrabberSize, FDockSite.Width - Control.Left,
-          FDockSite.Height - Control.Top);
-      end;
-    end;
 end;
 
 procedure TCustomDockManager.SaveToStream(Stream: TStream);
@@ -275,6 +269,84 @@ end;
 function TCustomDockManager.AutoFreeByControl: Boolean;
 begin
   Result := inherited AutoFreeByControl;
+end;
+
+{ TDockClientPanel }
+
+constructor TDockClientPanel.Create(TheOwner: TComponent);
+begin
+  inherited;
+  CloseButton := TSpeedButton.Create(Self);
+  with CloseButton do begin
+    Parent := Self;
+    Caption := 'X';
+    Font.Size := 6;
+    Width := 14;
+    Height := 14;
+    Visible := True;
+    OnClick := CloseButtonClick;
+  end;
+  OnPaint := DockPanelPaint;
+  OnMouseDown := DockPanelMouseDown;
+  OnResize := ResizeExecute;
+  BevelInner := bvNone;
+  BevelOuter := bvNone;
+end;
+
+destructor TDockClientPanel.Destroy;
+begin
+  inherited Destroy;
+end;
+
+procedure TDockClientPanel.DrawGrabber(Canvas: TCanvas; AControl: TControl);
+begin
+  with Canvas do begin
+    Brush.Color := clBtnFace;
+    Pen.Color := clBlack;
+    FillRect(0, 0, AControl.Width, GrabberSize);
+
+    if (AControl as TWinControl).Focused then
+      Font.Style := Font.Style + [fsBold]
+      else Font.Style := Font.Style - [fsBold];
+    Rectangle(1, 1, AControl.Width - 1, GrabberSize - 1);
+    TextOut(6, 2, AControl.Caption);
+
+    CloseButton.Left := AControl.Width - CloseButton.Width - 2;
+    CloseButton.Top := 2;
+  end;
+end;
+
+procedure TDockClientPanel.CloseButtonClick(Sender: TObject);
+begin
+  Control.Hide;
+end;
+
+procedure TDockClientPanel.ResizeExecute(Sender: TObject);
+begin
+  Control.Top := GrabberSize;
+  Control.Left := 0;
+  Control.Width := Width;
+  Control.Height := Height - GrabberSize;
+  //Control.SetBounds(0, GrabberSize, Width - Control.Left,
+  //  Height - Control.Top);
+end;
+
+procedure TDockClientPanel.DockPanelPaint(Sender: TObject);
+var
+  I: Integer;
+  R: TRect;
+begin
+  R := Control.ClientRect;
+  Canvas.FillRect(R);
+  DrawGrabber(Canvas, Control);
+end;
+
+procedure TDockClientPanel.DockPanelMouseDown(Sender: TObject;
+  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+begin
+  if (Button=mbLeft) then begin
+    DragManager.DragStart(Control, False, 1);
+  end;
 end;
 
 initialization
