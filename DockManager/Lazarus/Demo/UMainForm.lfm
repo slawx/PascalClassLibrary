@@ -28,6 +28,5 @@ object MainForm: TMainForm
     BevelOuter = bvNone
     DockSite = True
     TabOrder = 1
-    OnMouseDown = Panel1MouseDown
   end
 end

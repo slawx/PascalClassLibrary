@@ -16,8 +16,11 @@ type
 
   TCustomDockManager = class;
 
-  TConjoinDockForm = class(TForm)
+  { TConjoinDockForm }
 
+  TConjoinDockForm = class(TForm)
+    Panel: TPanel;
+    constructor Create(TheOwner: TComponent); override;
   end;
 
   { TDockClientPanel }
@@ -129,54 +132,63 @@ var
   NewSplitter: TSplitter;
   NewPanel: TDockClientPanel;
   I: Integer;
+  NewConjoinDockForm: TConjoinDockForm;
 begin
-  if FDockSite.DockClientCount = 2 then begin
-    if (InsertAt = alTop) or (InsertAt = alBottom) then
-      FDockDirection := ddVertical
-    else
-    if (InsertAt = alLeft) or (InsertAt = alRight) then
-      FDockDirection := ddHorizontal
-    else FDockDirection := ddHorizontal;
-  end;
-  if FDockSite.DockClientCount > 1 then begin
-    NewSplitter := TSplitter.Create(nil);
-    NewSplitter.Parent := FDockSite;
-    NewSplitter.Visible := True;
-    NewSplitter.Color := clRed;
-    with NewSplitter do
-    if FDockDirection = ddVertical then begin
-      Align := alTop;
-      Top := FDockSite.Height;
-    end else
-    if FDockDirection = ddHorizontal then begin
-      Align := alLeft;
-      Left := FDockSite.Width;
+  if (FDockSite is TForm) and (not Assigned(FDockSite.Parent)) then begin
+    NewConjoinDockForm := TConjoinDockForm.Create(nil);
+    NewConjoinDockForm.Visible := True;
+    Control.ManualDock(NewConjoinDockForm.Panel);
+    FDockSite.ManualDock(NewConjoinDockForm.Panel);
+  end else
+  if FDockSite is TPanel then begin
+    if FDockSite.DockClientCount = 2 then begin
+      if (InsertAt = alTop) or (InsertAt = alBottom) then
+        FDockDirection := ddVertical
+      else
+      if (InsertAt = alLeft) or (InsertAt = alRight) then
+        FDockDirection := ddHorizontal
+      else FDockDirection := ddHorizontal;
     end;
+    if FDockSite.DockClientCount > 1 then begin
+      NewSplitter := TSplitter.Create(nil);
+      NewSplitter.Parent := FDockSite;
+      NewSplitter.Visible := True;
+      NewSplitter.Color := clRed;
+      with NewSplitter do
+      if FDockDirection = ddVertical then begin
+        Align := alTop;
+        Top := FDockSite.Height;
+      end else
+      if FDockDirection = ddHorizontal then begin
+        Align := alLeft;
+        Left := FDockSite.Width;
+      end;
 
-    with TDockClientPanel(FDockPanels.Last) do
-    if FDockDirection = ddVertical then
-      Align := alTop
-    else
-    if FDockDirection = ddHorizontal then
-      Align := alLeft;
-  end;
-  NewPanel := TDockClientPanel.Create(nil);
-  with NewPanel do begin
-    Splitter := NewSplitter;
-    Parent := FDockSite;
-    OwnerDockManager := Self;
-    Visible := True;
-    Align := alClient;
-  end;
-  NewPanel.Control := Control;
-  Control.Parent := NewPanel;
-  FDockPanels.Add(NewPanel);
+      with TDockClientPanel(FDockPanels.Last) do
+      if FDockDirection = ddVertical then
+        Align := alTop
+      else
+      if FDockDirection = ddHorizontal then
+        Align := alLeft;
+    end;
+    NewPanel := TDockClientPanel.Create(nil);
+    with NewPanel do begin
+      Splitter := NewSplitter;
+      Parent := FDockSite;
+      OwnerDockManager := Self;
+      Visible := True;
+      Align := alClient;
+    end;
+    NewPanel.Control := Control;
+    Control.Parent := NewPanel;
+    FDockPanels.Add(NewPanel);
 
-  for I := 0 to FDockPanels.Count - 1 do begin
-    TDockClientPanel(FDockPanels[I]).Height := FDockSite.Height div
-      FDockSite.DockClientCount;
-    TDockClientPanel(FDockPanels[I]).Width := FDockSite.Width div
-      FDockSite.DockClientCount;
+    for I := 0 to FDockPanels.Count - 1 do begin
+      TDockClientPanel(FDockPanels[I]).Height := FDockSite.Height div
+        FDockSite.DockClientCount;
+      TDockClientPanel(FDockPanels[I]).Width := FDockSite.Width div
+        FDockSite.DockClientCount;
+    end;
   end;
 
 //  FDockPanel.Invalidate;
@@ -242,7 +254,7 @@ begin
   inherited;
   if Control.HostDockSite = Self.FDockSite then begin
     ClientPanel := FindControlInPanels(Control);
-    //ClientPanel.Splitter.Free;
+    //if Assigned(ClientPanel) then ClientPanel.Splitter.Free;
     FDockPanels.Remove(ClientPanel);
     if FDockSite.DockClientCount = 2 then FDockDirection := ddNone;
     //FDockSite.Invalidate;
@@ -347,6 +359,22 @@ begin
   if (Button=mbLeft) then begin
     DragManager.DragStart(Control, False, 1);
   end;
+end;
+
+{ TConjoinDockForm }
+
+constructor TConjoinDockForm.Create(TheOwner: TComponent);
+begin
+  inherited Create(TheOwner);
+  Panel := TPanel.Create(Self);
+  with Panel do begin
+    Parent := Self;
+    DockSite := True;
+    UseDockManager := True;
+    Align := alClient;
+  end;
+  DragKind := dkDock;
+  DragMode := dmAutomatic;
 end;
 
 initialization

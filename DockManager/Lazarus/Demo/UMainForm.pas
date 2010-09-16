@@ -18,15 +18,12 @@ type
     procedure Button1Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
-    procedure ListView1EndDrag(Sender, Target: TObject; X, Y: Integer);
-    procedure ListView1StartDrag(Sender: TObject; var DragObject: TDragObject);
-    procedure Panel1MouseDown(Sender: TObject; Button: TMouseButton;
-      Shift: TShiftState; X, Y: Integer);
   private
     { private declarations }
   public
     FormIndex: Integer;
     LastDockForm: TDockForm;
+    function NewDockForm: TDockForm;
   end;
 
 var
@@ -48,50 +45,32 @@ var
   DockForm2: TDockForm;
   DockForm3: TDockForm;
 begin
-  Button1Click(Self);
-  DockForm1 := LastDockForm;
+  DockForm1 := NewDockForm;
   DockForm1.ManualDock(Panel1);
 
-  Button1Click(Self);
-  DockForm2 := LastDockForm;
+  DockForm2 := NewDockForm;
   DockForm2.ManualDock(Panel1);
 
-  Button1Click(Self);
-  DockForm3 := LastDockForm;
+  DockForm3 := NewDockForm;
   DockForm3.ManualDock(DockForm2);
 end;
 
-procedure TMainForm.ListView1EndDrag(Sender, Target: TObject; X, Y: Integer);
+function TMainForm.NewDockForm: TDockForm;
 begin
-
-end;
-
-procedure TMainForm.ListView1StartDrag(Sender: TObject;
-  var DragObject: TDragObject);
-begin
-
-end;
-
-procedure TMainForm.Panel1MouseDown(Sender: TObject; Button: TMouseButton;
-  Shift: TShiftState; X, Y: Integer);
-begin
-
+  Result := TDockForm.Create(Self);
+  Result.Name := 'Form' + IntToStr(FormIndex);
+  Result.Memo1.Text := Result.Name;
+  Result.DragKind := dkDock;
+  Result.DragMode := dmAutomatic;
+  Result.DockSite := True;
+  Result.UseDockManager := True;
+  Inc(FormIndex);
+  Result.Show;
 end;
 
 procedure TMainForm.Button1Click(Sender: TObject);
-var
-  NewForm: TDockForm;
 begin
-  NewForm := TDockForm.Create(Self);
-  NewForm.Name := 'Form' + IntToStr(FormIndex);
-  NewForm.Memo1.Text := NewForm.Name;
-  NewForm.DragKind := dkDock;
-  NewForm.DragMode := dmAutomatic;
-  NewForm.DockSite := True;
-  NewForm.UseDockManager := True;
-  Inc(FormIndex);
-  NewForm.Show;
-  LastDockForm := NewForm;
+  NewDockForm;
 end;
 
 end.
