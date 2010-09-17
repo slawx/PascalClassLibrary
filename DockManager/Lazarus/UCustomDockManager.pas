@@ -30,6 +30,7 @@ type
     CloseButton: TSpeedButton;
     Control: TControl;
     Splitter: TSplitter;
+    ClientAreaPanel: TPanel;
     constructor Create(TheOwner: TComponent); override;
     destructor Destroy; override;
     procedure DockPanelPaint(Sender: TObject);
@@ -176,7 +177,8 @@ begin
       Align := alClient;
     end;
     NewPanel.Control := Control;
-    Control.Parent := NewPanel;
+    Control.Parent := NewPanel.ClientAreaPanel;
+    Control.Align := alClient;
     FDockPanels.Add(NewPanel);
 
     for I := 0 to FDockPanels.Count - 1 do begin
@@ -201,26 +203,14 @@ begin
       // Create conjointed form
       NewConjoinDockForm := TConjoinDockForm.Create(nil);
       NewConjoinDockForm.Visible := True;
+      NewConjoinDockForm.BoundsRect := FDockSite.BoundsRect;
       Control.ManualDock(NewConjoinDockForm.Panel);
       FDockSite.ManualDock(NewConjoinDockForm.Panel);
     end else begin
-      NewPanel := TPanel.Create(nil);
-      NewPanel.Parent := FDockSite.Parent;
-      NewPanel.Visible := True;
-      NewPanel.Left := FDockSite.Left;
-      NewPanel.Top := FDockSite.Top;
-      NewPanel.Width := FDockSite.Width;
-      NewPanel.Height := FDockSite.Height;
-      NewPanel.UseDockManager := True;
-      NewPanel.DockSite := True;
-      NewPanel.Color := clGreen;
-      NewPanel.ManualDock(FDockSite.HostDockSite);
-//      FDockSite.Parent := nil;
-      Control.ManualDock(NewPanel);
-      FDockSite.ManualDock(NewPanel);
+      Control.ManualDock(FDockSite.Parent);
     end;
   end else
-  if FDockSite is TPanel then begin
+  if (FDockSite is TPanel) or (FDockSite is TDockClientPanel) then begin
     InsertControlPanel(Control, InsertAt, DropCtl);
   end;
 
@@ -330,6 +320,20 @@ begin
     Height := 14;
     Visible := True;
     OnClick := CloseButtonClick;
+  end;
+  ClientAreaPanel := TPanel.Create(Self);
+  with ClientAreaPanel do begin
+    Parent := Self;
+    Visible := True;
+    DockSite := True;
+    UseDockManager := True;
+    Left := 0;
+    Top := GrabberSize;
+    Width := Self.Width;
+    Height := Self.Height;
+    Anchors := [akTop, akBottom, akLeft, akRight];
+    BevelInner := bvNone;
+    BevelOuter := bvNone;
   end;
   OnPaint := DockPanelPaint;
   OnMouseDown := DockPanelMouseDown;
