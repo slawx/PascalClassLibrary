@@ -48,6 +48,8 @@ type
     FDockSite: TWinControl;
     FDockPanels: TObjectList; // of TDockClientPanel
     function FindControlInPanels(Control: TControl): TDockClientPanel;
+    procedure InsertControlPanel(Control: TControl; InsertAt: TAlign;
+      DropCtl: TControl);
   public
     constructor Create(ADockSite: TWinControl); override;
     destructor Destroy; override;
@@ -126,21 +128,13 @@ begin
   inherited InsertControl(ADockObject);
 end;
 
-procedure TCustomDockManager.InsertControl(Control: TControl; InsertAt: TAlign;
+procedure TCustomDockManager.InsertControlPanel(Control: TControl; InsertAt: TAlign;
   DropCtl: TControl);
 var
   NewSplitter: TSplitter;
   NewPanel: TDockClientPanel;
   I: Integer;
-  NewConjoinDockForm: TConjoinDockForm;
 begin
-  if (FDockSite is TForm) and (not Assigned(FDockSite.Parent)) then begin
-    NewConjoinDockForm := TConjoinDockForm.Create(nil);
-    NewConjoinDockForm.Visible := True;
-    Control.ManualDock(NewConjoinDockForm.Panel);
-    FDockSite.ManualDock(NewConjoinDockForm.Panel);
-  end else
-  if FDockSite is TPanel then begin
     if FDockSite.DockClientCount = 2 then begin
       if (InsertAt = alTop) or (InsertAt = alBottom) then
         FDockDirection := ddVertical
@@ -148,7 +142,9 @@ begin
       if (InsertAt = alLeft) or (InsertAt = alRight) then
         FDockDirection := ddHorizontal
       else FDockDirection := ddHorizontal;
-    end;
+    end;// else FDockSite.DockClientCount > 2 then begin
+
+    //end;
     if FDockSite.DockClientCount > 1 then begin
       NewSplitter := TSplitter.Create(nil);
       NewSplitter.Parent := FDockSite;
@@ -189,6 +185,43 @@ begin
       TDockClientPanel(FDockPanels[I]).Width := FDockSite.Width div
         FDockSite.DockClientCount;
     end;
+end;
+
+procedure TCustomDockManager.InsertControl(Control: TControl; InsertAt: TAlign;
+  DropCtl: TControl);
+var
+  NewSplitter: TSplitter;
+  NewDockPanel: TDockClientPanel;
+  NewPanel: TPanel;
+  I: Integer;
+  NewConjoinDockForm: TConjoinDockForm;
+begin
+  if (FDockSite is TForm) then begin
+    if (not Assigned(FDockSite.Parent)) then begin
+      // Create conjointed form
+      NewConjoinDockForm := TConjoinDockForm.Create(nil);
+      NewConjoinDockForm.Visible := True;
+      Control.ManualDock(NewConjoinDockForm.Panel);
+      FDockSite.ManualDock(NewConjoinDockForm.Panel);
+    end else begin
+      NewPanel := TPanel.Create(nil);
+      NewPanel.Parent := FDockSite.Parent;
+      NewPanel.Visible := True;
+      NewPanel.Left := FDockSite.Left;
+      NewPanel.Top := FDockSite.Top;
+      NewPanel.Width := FDockSite.Width;
+      NewPanel.Height := FDockSite.Height;
+      NewPanel.UseDockManager := True;
+      NewPanel.DockSite := True;
+      NewPanel.Color := clGreen;
+      NewPanel.ManualDock(FDockSite.HostDockSite);
+//      FDockSite.Parent := nil;
+      Control.ManualDock(NewPanel);
+      FDockSite.ManualDock(NewPanel);
+    end;
+  end else
+  if FDockSite is TPanel then begin
+    InsertControlPanel(Control, InsertAt, DropCtl);
   end;
 
 //  FDockPanel.Invalidate;
