@@ -15,6 +15,7 @@ type
   TMainForm = class(TForm)
     Button1: TButton;
     Panel1: TPanel;
+    TabControl1: TTabControl;
     procedure Button1Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -48,14 +49,21 @@ end;
 
 procedure TMainForm.FormShow(Sender: TObject);
 var
-  DockForm1: TDockForm;
-  DockForm2: TDockForm;
-  DockForm3: TDockForm;
+  ConjoinedDockForm1: TConjoinDockForm;
+  ConjoinedDockForm2: TConjoinDockForm;
 begin
   NewDockForm.ManualDock(Panel1);
   NewDockForm.ManualDock(Panel1, nil, alBottom);
-  NewDockForm.ManualDock(TForm(DockForms[1]).Parent);
-  NewDockForm.ManualDock(TForm(DockForms[1]).Parent);
+  ConjoinedDockForm1 := TCustomDockManager(TForm(DockForms[1]).DockManager).CreateContainer;
+  ConjoinedDockForm1.Name := 'Model';;
+  ConjoinedDockForm1.ManualDock(Panel1);
+  TCustomDockManager(ConjoinedDockForm1.Panel.DockManager).DockStyle := dsTabs;
+  NewDockForm.ManualDock(ConjoinedDockForm1.Panel);
+  NewDockForm.ManualDock(ConjoinedDockForm1.Panel);
+  NewDockForm.ManualDock(TForm(DockForms[0]));
+  NewDockForm.ManualDock(TForm(DockForms[0]));
+  NewDockForm.ManualDock(TForm(DockForms[0]));
+//  TCustomDockManager(TDockForm(DockForms[0]).DockManager).DockStyle := dsTabs;
 end;
 
 function TMainForm.NewDockForm: TDockForm;

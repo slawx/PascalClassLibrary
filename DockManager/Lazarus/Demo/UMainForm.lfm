@@ -1,11 +1,11 @@
 object MainForm: TMainForm
-  Left = 462
-  Height = 240
-  Top = 108
-  Width = 320
+  Left = 311
+  Height = 435
+  Top = 91
+  Width = 576
   Caption = 'MainForm'
-  ClientHeight = 240
-  ClientWidth = 320
+  ClientHeight = 435
+  ClientWidth = 576
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
@@ -21,13 +21,27 @@ object MainForm: TMainForm
   end
   object Panel1: TPanel
     Left = 0
-    Height = 200
+    Height = 395
     Top = 40
-    Width = 320
+    Width = 576
     Align = alBottom
     Anchors = [akTop, akLeft, akRight, akBottom]
     BevelOuter = bvNone
     DockSite = True
     TabOrder = 1
+  end
+  object TabControl1: TTabControl
+    Left = 118
+    Height = 33
+    Top = 7
+    Width = 184
+    TabIndex = 0
+    TabOrder = 2
+    Tabs.Strings = (
+      'dd'
+      'ffdfd'
+      'fdf'
+    )
+    TabStop = False
   end
 end

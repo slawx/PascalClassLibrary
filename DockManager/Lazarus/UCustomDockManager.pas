@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Controls, LCLType, LMessages, Graphics, StdCtrls,
-  Buttons, ExtCtrls, Contnrs, Forms;
+  Buttons, ExtCtrls, Contnrs, Forms, ComCtrls, Dialogs;
 
 const
   GrabberSize = 18;
@@ -23,9 +23,15 @@ type
     constructor Create(TheOwner: TComponent); override;
   end;
 
+  TDockStyle = (dsList, dsTabs);
+
   { TDockClientPanel }
 
   TDockClientPanel = class(TPanel)
+  private
+    FShowHeader: Boolean;
+    procedure SetShowHeader(const AValue: Boolean);
+  public
     OwnerDockManager: TCustomDockManager;
     CloseButton: TSpeedButton;
     Control: TControl;
@@ -39,18 +45,24 @@ type
     procedure DrawGrabber(Canvas: TCanvas; AControl: TControl);
     procedure CloseButtonClick(Sender: TObject);
     procedure ResizeExecute(Sender: TObject);
+    property ShowHeader: Boolean read FShowHeader write SetShowHeader;
   end;
 
   { TCustomDockManager }
 
   TCustomDockManager = class(TDockManager)
   private
+    FDockStyle: TDockStyle;
+    TabControl: TTabControl;
     FDockDirection: TDockDirection;
     FDockSite: TWinControl;
     FDockPanels: TObjectList; // of TDockClientPanel
     function FindControlInPanels(Control: TControl): TDockClientPanel;
     procedure InsertControlPanel(Control: TControl; InsertAt: TAlign;
       DropCtl: TControl);
+    procedure SetDockStyle(const AValue: TDockStyle);
+    procedure UpdateClientSize;
+    procedure TabControlChange(Sender: TObject);
   public
     constructor Create(ADockSite: TWinControl); override;
     destructor Destroy; override;
@@ -73,6 +85,9 @@ type
     procedure SaveToStream(Stream: TStream); override;
     procedure SetReplacingControl(Control: TControl); override;
     function AutoFreeByControl: Boolean; override;
+
+    function CreateContainer: TConjoinDockForm;
+    property DockStyle: TDockStyle read FDockStyle write SetDockStyle;
   end;
 
 implementation
@@ -95,6 +110,14 @@ constructor TCustomDockManager.Create(ADockSite: TWinControl);
 begin
   FDockSite := ADockSite;
   FDockPanels := TObjectList.Create;
+  TabControl := TTabControl.Create(FDockSite);
+  with TabControl do begin
+    Parent := FDockSite;
+    Visible := False;
+    Align := alTop;
+    Height := 24;
+    OnChange := TabControlChange;
+  end;
   inherited Create(ADockSite);
 end;
 
@@ -173,20 +196,19 @@ begin
       Splitter := NewSplitter;
       Parent := FDockSite;
       OwnerDockManager := Self;
-      Visible := True;
+      if DockStyle = dsList then Visible := True;
       Align := alClient;
+    end;
+
+    if DockStyle = dsTabs then begin
+      TabControl.Tabs.Add(Control.Name);
+      TabControlChange(Self);
     end;
     NewPanel.Control := Control;
     Control.Parent := NewPanel.ClientAreaPanel;
     Control.Align := alClient;
     FDockPanels.Add(NewPanel);
-
-    for I := 0 to FDockPanels.Count - 1 do begin
-      TDockClientPanel(FDockPanels[I]).Height := FDockSite.Height div
-        FDockSite.DockClientCount;
-      TDockClientPanel(FDockPanels[I]).Width := FDockSite.Width div
-        FDockSite.DockClientCount;
-    end;
+    UpdateClientSize;
 end;
 
 procedure TCustomDockManager.InsertControl(Control: TControl; InsertAt: TAlign;
@@ -197,6 +219,8 @@ var
   NewPanel: TPanel;
   I: Integer;
   NewConjoinDockForm: TConjoinDockForm;
+  NewDockSite: TWinControl;
+  NewForm: TForm;
 begin
   if (FDockSite is TForm) then begin
     if (not Assigned(FDockSite.Parent)) then begin
@@ -204,10 +228,19 @@ begin
       NewConjoinDockForm := TConjoinDockForm.Create(nil);
       NewConjoinDockForm.Visible := True;
       NewConjoinDockForm.BoundsRect := FDockSite.BoundsRect;
-      Control.ManualDock(NewConjoinDockForm.Panel);
       FDockSite.ManualDock(NewConjoinDockForm.Panel);
+      Control.ManualDock(NewConjoinDockForm.Panel, nil, InsertAt);
     end else begin
-      Control.ManualDock(FDockSite.Parent);
+      NewConjoinDockForm := TConjoinDockForm.Create(nil);
+      NewConjoinDockForm.Visible := True;
+      NewConjoinDockForm.BoundsRect := FDockSite.BoundsRect;
+      NewConjoinDockForm.DragMode := dmAutomatic;
+      NewConjoinDockForm.DragKind := dkDock;
+      NewDockSite := FDockSite.HostDockSite;
+//      FDockSite.ManualFloat(FDockSite.BoundsRect);
+      NewConjoinDockForm.ManualDock(NewDockSite);
+      FDockSite.ManualDock(NewConjoinDockForm.Panel);
+      Control.ManualDock(NewConjoinDockForm.Panel, nil, InsertAt);
     end;
   end else
   if (FDockSite is TPanel) or (FDockSite is TDockClientPanel) then begin
@@ -281,6 +314,8 @@ begin
     FDockPanels.Remove(ClientPanel);
     if FDockSite.DockClientCount = 2 then FDockDirection := ddNone;
     //FDockSite.Invalidate;
+    //if (FDockSite is TConjoinDockForm) and (FDockSite.DockClientCount = 1) then
+    //  FDockSite.Free;
   end;
 end;
 
@@ -306,7 +341,94 @@ begin
   Result := inherited AutoFreeByControl;
 end;
 
+function TCustomDockManager.CreateContainer: TConjoinDockForm;
+var
+  NewDockSite: TWinControl;
+  NewConjoinDockForm: TConjoinDockForm;
+begin
+  NewConjoinDockForm := TConjoinDockForm.Create(nil);
+  NewConjoinDockForm.Visible := True;
+  NewConjoinDockForm.BoundsRect := FDockSite.BoundsRect;
+  NewConjoinDockForm.DragMode := dmAutomatic;
+  NewConjoinDockForm.DragKind := dkDock;
+  NewDockSite := FDockSite.HostDockSite;
+  //      FDockSite.ManualFloat(FDockSite.BoundsRect);
+  NewConjoinDockForm.ManualDock(NewDockSite);
+  Result := NewConjoinDockForm;
+end;
+
+procedure TCustomDockManager.SetDockStyle(const AValue: TDockStyle);
+var
+  I: Integer;
+begin
+  FDockStyle := AValue;
+  if AValue = dsTabs then begin
+    TabControl.Visible := True;
+    TabControl.Tabs.Clear;
+    for I := 0 to FDockPanels.Count - 1 do begin
+      TabControl.Tabs.Add(TDockClientPanel(FDockPanels[I]).Control.Name);
+      TDockClientPanel(FDockPanels[I]).Splitter.Visible := False;
+      TDockClientPanel(FDockPanels[I]).ClientAreaPanel.Visible := False;
+      TDockClientPanel(FDockPanels[I]).Visible := False;
+    end;
+    TabControlChange(Self);
+  end else
+  if AValue = dsList then begin
+    TabControl.Visible := False;
+    TabControl.Tabs.Clear;
+    for I := 0 to FDockPanels.Count - 1 do begin
+      TDockClientPanel(FDockPanels[I]).Splitter.Visible := True;
+      TDockClientPanel(FDockPanels[I]).Visible := True;
+      TDockClientPanel(FDockPanels[I]).ClientAreaPanel.Parent := TDockClientPanel(FDockPanels[I]);
+    end;
+  end;
+  UpdateClientSize;
+end;
+
+procedure TCustomDockManager.UpdateClientSize;
+var
+  I: Integer;
+begin
+  if DockStyle = dsList then begin
+    for I := 0 to FDockPanels.Count - 1 do begin
+      TDockClientPanel(FDockPanels[I]).Height := FDockSite.Height div
+        FDockSite.DockClientCount;
+      TDockClientPanel(FDockPanels[I]).Width := FDockSite.Width div
+        FDockSite.DockClientCount;
+      //TDockClientPanel(FDockPanels[I]).DockPanelPaint(Self);
+    end;
+  end else
+  if DockStyle = dsTabs then begin
+    for I := 0 to FDockPanels.Count - 1 do begin
+      TDockClientPanel(FDockPanels[I]).ClientAreaPanel.Width := FDockSite.Width;
+      TDockClientPanel(FDockPanels[I]).ClientAreaPanel.Height := FDockSite.Height - TabControl.Height;
+      //TDockClientPanel(FDockPanels[I]).DockPanelPaint(Self);
+    end;
+  end;
+end;
+
+procedure TCustomDockManager.TabControlChange(Sender: TObject);
+var
+  I: Integer;
+begin
+  for I := 0 to FDockPanels.Count - 1 do begin
+    TDockClientPanel(FDockPanels[I]).ClientAreaPanel.Visible := False;
+  end;
+  if (TabControl.TabIndex <> -1) and (FDockPanels.Count > TabControl.TabIndex) then begin
+    TDockClientPanel(FDockPanels[TabControl.TabIndex]).ClientAreaPanel.Parent := FDockSite;
+    TDockClientPanel(FDockPanels[TabControl.TabIndex]).ClientAreaPanel.Visible := True;
+//  TDockClientPanel(FDockPanels[TabControl.TabIndex]).Visible := True;
+  end;
+end;
+
 { TDockClientPanel }
+
+procedure TDockClientPanel.SetShowHeader(const AValue: Boolean);
+begin
+  if FShowHeader=AValue then exit;
+  FShowHeader := AValue;
+  DockPanelPaint(Self);
+end;
 
 constructor TDockClientPanel.Create(TheOwner: TComponent);
 begin
@@ -318,7 +440,7 @@ begin
     Font.Size := 6;
     Width := 14;
     Height := 14;
-    Visible := True;
+    Visible := False;
     OnClick := CloseButtonClick;
   end;
   ClientAreaPanel := TPanel.Create(Self);
@@ -330,16 +452,18 @@ begin
     Left := 0;
     Top := GrabberSize;
     Width := Self.Width;
-    Height := Self.Height;
+    Height := Self.Height - GrabberSize;
     Anchors := [akTop, akBottom, akLeft, akRight];
     BevelInner := bvNone;
     BevelOuter := bvNone;
+    //Color := clGreen;
   end;
   OnPaint := DockPanelPaint;
   OnMouseDown := DockPanelMouseDown;
   OnResize := ResizeExecute;
   BevelInner := bvNone;
   BevelOuter := bvNone;
+  ShowHeader := True;
 end;
 
 destructor TDockClientPanel.Destroy;
@@ -385,15 +509,26 @@ var
   I: Integer;
   R: TRect;
 begin
-  R := Control.ClientRect;
-  Canvas.FillRect(R);
-  DrawGrabber(Canvas, Control);
+  if Assigned(Control) then begin
+    R := Control.ClientRect;
+    Canvas.FillRect(R);
+    CloseButton.Visible := ShowHeader;
+    if ShowHeader then begin
+      if ClientAreaPanel.DockClientCount = 0 then
+        DrawGrabber(Canvas, Control) else
+      DrawGrabber(Canvas, ClientAreaPanel);
+    end;
+  end;
 end;
 
 procedure TDockClientPanel.DockPanelMouseDown(Sender: TObject;
   Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
-  if (Button=mbLeft) then begin
+  if Control is TForm then begin
+    TForm(Control).SetFocus;
+    DockPanelPaint(Self);
+  end;
+  if (Button = mbLeft) then begin
     DragManager.DragStart(Control, False, 1);
   end;
 end;
