@@ -16,6 +16,7 @@ type
     Button1: TButton;
     CustomDockMaster1: TCustomDockMaster;
     Panel1: TPanel;
+    TabControl1: TTabControl;
     procedure Button1Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -56,6 +57,7 @@ begin
 //  NewDockForm.ManualDock(Panel1, nil, a);
   ConjoinedDockForm1 := TCustomDockManager(Panel1.DockManager).CreateContainer(alRight);
   ConjoinedDockForm1.Name := 'Model';;
+  TCustomDockManager(ConjoinedDockForm1.Panel.DockManager).TabsPos := hpLeft;
   //ConjoinedDockForm1.ManualDock(Panel1);
   TCustomDockManager(ConjoinedDockForm1.Panel.DockManager).DockStyle := dsTabs;
   NewDockForm.ManualDock(ConjoinedDockForm1.Panel);

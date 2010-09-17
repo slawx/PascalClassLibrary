@@ -32,7 +32,11 @@ type
 
   TDockClientPanel = class(TPanel)
   private
+    FAutoHide: Boolean;
+    FHeaderPos: THeaderPos;
     FShowHeader: Boolean;
+    procedure SetAutoHide(const AValue: Boolean);
+    procedure SetHeaderPos(const AValue: THeaderPos);
     procedure SetShowHeader(const AValue: Boolean);
   public
     OwnerDockManager: TCustomDockManager;
@@ -49,12 +53,17 @@ type
     procedure CloseButtonClick(Sender: TObject);
     procedure ResizeExecute(Sender: TObject);
     property ShowHeader: Boolean read FShowHeader write SetShowHeader;
+    property AutoHide: Boolean read FAutoHide write SetAutoHide;
+    property HeaderPos: THeaderPos read FHeaderPos write SetHeaderPos;
   end;
 
   { TCustomDockManager }
 
   TCustomDockManager = class(TDockManager)
   private
+    FMoveDuration: Integer;
+    FTabsPos: THeaderPos;
+    Timer1: TTimer;
     PopupMenu1: TPopupMenu;
     FDockStyle: TDockStyle;
     TabControl: TTabControl;
@@ -65,10 +74,15 @@ type
     procedure InsertControlPanel(Control: TControl; InsertAt: TAlign;
       DropCtl: TControl);
     procedure SetDockStyle(const AValue: TDockStyle);
+    procedure SetMoveDuration(const AValue: Integer);
+    procedure SetTabsPos(const AValue: THeaderPos);
     procedure UpdateClientSize;
     procedure TabControlChange(Sender: TObject);
     procedure PopupMenuListClick(Sender: TObject);
     procedure PopupMenuTabsClick(Sender: TObject);
+    procedure PopupMenuCloseClick(Sender: TObject);
+    procedure PopupMenuRenameClick(Sender: TObject);
+    procedure Timer1Timer(Sender: TObject);
   public
     constructor Create(ADockSite: TWinControl); override;
     destructor Destroy; override;
@@ -94,6 +108,8 @@ type
 
     function CreateContainer(InsertAt: TAlign): TConjoinDockForm;
     property DockStyle: TDockStyle read FDockStyle write SetDockStyle;
+    property MoveDuration: Integer read FMoveDuration write SetMoveDuration;
+    property TabsPos: THeaderPos read FTabsPos write SetTabsPos;
   end;
 
   { TCustomDockMaster }
@@ -118,6 +134,14 @@ procedure Register;
 
 implementation
 
+resourcestring
+  SDockStyle = 'Style';
+  SDockList = 'List';
+  SDockTabs = 'Tabs';
+  SCloseForm = 'Close';
+  SRenameForm = 'Rename';
+
+
 procedure Register;
 begin
   RegisterComponents('CustomDocking', [TCustomDockMaster]);
@@ -141,19 +165,41 @@ end;
 constructor TCustomDockManager.Create(ADockSite: TWinControl);
 var
   NewMenuItem: TMenuItem;
+  NewMenuItem2: TMenuItem;
 begin
   inherited Create(ADockSite);
   FDockSite := ADockSite;
   FDockPanels := TObjectList.Create;
   PopupMenu1 := TPopupMenu.Create(FDockSite);
+
+  Timer1 := TTimer.Create(nil);
+  Timer1.Enabled := False;
+  Timer1.OnTimer := Timer1Timer;
+
   NewMenuItem := TMenuItem.Create(PopupMenu1);
-  NewMenuItem.Caption := 'List';
+  NewMenuItem.Caption := SDockStyle;
   PopupMenu1.Items.Add(NewMenuItem);
-  NewMenuItem.OnClick := PopupMenuListClick;
+
+  NewMenuItem2 := TMenuItem.Create(NewMenuItem);
+  NewMenuItem2.Caption := SDockList;
+  NewMenuItem2.OnClick := PopupMenuListClick;
+  NewMenuItem.Add(NewMenuItem2);
+
+  NewMenuItem2 := TMenuItem.Create(NewMenuItem);
+  NewMenuItem2.Caption := SDockTabs;
+  NewMenuItem2.OnClick := PopupMenuTabsClick;
+  NewMenuItem.Add(NewMenuItem2);
+
   NewMenuItem := TMenuItem.Create(PopupMenu1);
-  NewMenuItem.Caption := 'Tabs';
-  NewMenuItem.OnClick := PopupMenuTabsClick;
+  NewMenuItem.Caption := SCloseForm;
+  NewMenuItem.OnClick := PopupMenuCloseClick;
   PopupMenu1.Items.Add(NewMenuItem);
+
+  NewMenuItem := TMenuItem.Create(PopupMenu1);
+  NewMenuItem.Caption := SRenameForm;
+  NewMenuItem.OnClick := PopupMenuRenameClick;
+  PopupMenu1.Items.Add(NewMenuItem);
+
   TabControl := TTabControl.Create(FDockSite);
   with TabControl do begin
     Parent := FDockSite;
@@ -163,10 +209,13 @@ begin
     OnChange := TabControlChange;
     PopupMenu := PopupMenu1;
   end;
+  TabsPos := hpTop;
+  MoveDuration := 1000; // ms
 end;
 
 destructor TCustomDockManager.Destroy;
 begin
+  Timer1.Free;
   FDockPanels.Free;
   inherited Destroy;
 end;
@@ -430,6 +479,42 @@ begin
   UpdateClientSize;
 end;
 
+procedure TCustomDockManager.SetMoveDuration(const AValue: Integer);
+begin
+  if FMoveDuration=AValue then exit;
+  FMoveDuration := AValue;
+  //Timer1.Interval := AValue;
+end;
+
+procedure TCustomDockManager.SetTabsPos(const AValue: THeaderPos);
+begin
+  if FTabsPos=AValue then exit;
+  FTabsPos := AValue;
+  with TabControl do
+  case AValue of
+    hpAuto, hpTop: begin
+      Align := alTop;
+      TabPosition := tpTop;
+      Height := GrabberSize;
+    end;
+    hpLeft: begin
+      Align := alLeft;
+      TabPosition := tpLeft;
+      Width := GrabberSize;
+    end;
+    hpRight: begin
+      Align := alRight;
+      TabPosition := tpRight;
+      Width := GrabberSize;
+    end;
+    hpBottom: begin
+      Align := alBottom;
+      TabPosition := tpBottom;
+      Height := GrabberSize;
+    end;
+  end;
+end;
+
 procedure TCustomDockManager.UpdateClientSize;
 var
   I: Integer;
@@ -460,10 +545,20 @@ begin
     TDockClientPanel(FDockPanels[I]).ClientAreaPanel.Visible := False;
   end;
   if (TabControl.TabIndex <> -1) and (FDockPanels.Count > TabControl.TabIndex) then begin
-    with TDockClientPanel(FDockPanels[TabControl.TabIndex]).ClientAreaPanel do begin
-      Parent := FDockSite;
-      Visible := True;
-      UpdateClientSize;
+    with TDockClientPanel(FDockPanels[TabControl.TabIndex]), ClientAreaPanel do begin
+      if AutoHide then begin
+        Parent := nil;
+        Visible := True;
+        Width := 0;
+        //TimerMoveForm :=
+        //TimerIncrement := 1;
+        Timer1.Interval := MoveDuration div 10;
+        Timer1.Enabled := True;
+      end else begin
+        Parent := FDockSite;
+        Visible := True;
+        UpdateClientSize;
+      end;
     end;
 //  TDockClientPanel(FDockPanels[TabControl.TabIndex]).Visible := True;
   end;
@@ -472,6 +567,21 @@ end;
 procedure TCustomDockManager.PopupMenuTabsClick(Sender: TObject);
 begin
   DockStyle := dsTabs;
+end;
+
+procedure TCustomDockManager.PopupMenuCloseClick(Sender: TObject);
+begin
+//  TForm(TCustomDockManager(TControl(Sender).Parent.Parent.Parent.DockManager).FDockSite).Close;
+end;
+
+procedure TCustomDockManager.PopupMenuRenameClick(Sender: TObject);
+begin
+
+end;
+
+procedure TCustomDockManager.Timer1Timer(Sender: TObject);
+begin
+//  TimerMoveForm.Width := TimerMoveForm.Width
 end;
 
 procedure TCustomDockManager.PopupMenuListClick(Sender: TObject);
@@ -486,6 +596,18 @@ begin
   if FShowHeader=AValue then exit;
   FShowHeader := AValue;
   DockPanelPaint(Self);
+end;
+
+procedure TDockClientPanel.SetAutoHide(const AValue: Boolean);
+begin
+  if FAutoHide=AValue then exit;
+  FAutoHide:=AValue;
+end;
+
+procedure TDockClientPanel.SetHeaderPos(const AValue: THeaderPos);
+begin
+  if FHeaderPos=AValue then exit;
+  FHeaderPos:=AValue;
 end;
 
 constructor TDockClientPanel.Create(TheOwner: TComponent);
@@ -526,6 +648,8 @@ begin
   BevelInner := bvNone;
   BevelOuter := bvNone;
   ShowHeader := True;
+  AutoHide := False;
+  HeaderPos := hpTop;
 end;
 
 destructor TDockClientPanel.Destroy;
