@@ -26,21 +26,24 @@
         <FormatVersion Value="1"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="1">
+    <RequiredPackages Count="2">
       <Item1>
-        <PackageName Value="LCL"/>
+        <PackageName Value="CustomDockManager"/>
       </Item1>
+      <Item2>
+        <PackageName Value="LCL"/>
+      </Item2>
     </RequiredPackages>
-    <Units Count="29">
+    <Units Count="31">
       <Unit0>
         <Filename Value="Demo.lpr"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="Demo"/>
-        <EditorIndex Value="2"/>
+        <EditorIndex Value="4"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="7" Y="3"/>
-        <UsageCount Value="36"/>
+        <UsageCount Value="37"/>
         <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit0>
@@ -52,9 +55,9 @@
         <UnitName Value="UMainForm"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="47"/>
-        <CursorPos X="26" Y="61"/>
-        <UsageCount Value="36"/>
+        <TopLine Value="1"/>
+        <CursorPos X="20" Y="17"/>
+        <UsageCount Value="37"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
@@ -62,7 +65,7 @@
       <Unit2>
         <Filename Value="E:\Programy\Lazarus\lcl\controls.pp"/>
         <UnitName Value="Controls"/>
-        <EditorIndex Value="7"/>
+        <EditorIndex Value="9"/>
         <WindowIndex Value="0"/>
         <TopLine Value="3840"/>
         <CursorPos X="1" Y="3853"/>
@@ -80,7 +83,7 @@
       </Unit3>
       <Unit4>
         <Filename Value="E:\Programy\Lazarus\lcl\include\control.inc"/>
-        <EditorIndex Value="10"/>
+        <EditorIndex Value="12"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1035"/>
         <CursorPos X="1" Y="1048"/>
@@ -89,7 +92,7 @@
       </Unit4>
       <Unit5>
         <Filename Value="E:\Programy\Lazarus\lcl\include\wincontrol.inc"/>
-        <EditorIndex Value="8"/>
+        <EditorIndex Value="10"/>
         <WindowIndex Value="0"/>
         <TopLine Value="7631"/>
         <CursorPos X="1" Y="7644"/>
@@ -170,11 +173,11 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UDockForm"/>
-        <EditorIndex Value="12"/>
+        <EditorIndex Value="14"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="47" Y="8"/>
-        <UsageCount Value="35"/>
+        <UsageCount Value="36"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
@@ -198,7 +201,7 @@
       <Unit18>
         <Filename Value="E:\Projekty jine\Lazarus\examples\anchordocking\anchordocking.pas"/>
         <UnitName Value="AnchorDocking"/>
-        <EditorIndex Value="11"/>
+        <EditorIndex Value="13"/>
         <WindowIndex Value="0"/>
         <TopLine Value="4754"/>
         <CursorPos X="5" Y="4763"/>
@@ -216,13 +219,12 @@
       </Unit19>
       <Unit20>
         <Filename Value="..\UCustomDockManager.pas"/>
-        <IsPartOfProject Value="True"/>
         <UnitName Value="UCustomDockManager"/>
         <IsVisibleTab Value="True"/>
-        <EditorIndex Value="3"/>
+        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="184"/>
-        <CursorPos X="45" Y="209"/>
+        <TopLine Value="1"/>
+        <CursorPos X="39" Y="19"/>
         <UsageCount Value="31"/>
         <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
@@ -230,10 +232,12 @@
       <Unit21>
         <Filename Value="E:\Programy\Lazarus\lcl\extctrls.pp"/>
         <UnitName Value="ExtCtrls"/>
+        <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1183"/>
-        <CursorPos X="9" Y="1183"/>
-        <UsageCount Value="9"/>
+        <CursorPos X="24" Y="1199"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
       </Unit21>
       <Unit22>
         <Filename Value="E:\Programy\Lazarus\lcl\interfaces\win32\win32wsbuttons.pp"/>
@@ -245,7 +249,7 @@
       </Unit22>
       <Unit23>
         <Filename Value="E:\Programy\Lazarus\lcl\include\dragmanager.inc"/>
-        <EditorIndex Value="5"/>
+        <EditorIndex Value="7"/>
         <WindowIndex Value="0"/>
         <TopLine Value="553"/>
         <CursorPos X="18" Y="574"/>
@@ -262,7 +266,7 @@
       <Unit25>
         <Filename Value="E:\Programy\Lazarus\lcl\widgetset\wscontrols.pp"/>
         <UnitName Value="WSControls"/>
-        <EditorIndex Value="9"/>
+        <EditorIndex Value="11"/>
         <WindowIndex Value="0"/>
         <TopLine Value="267"/>
         <CursorPos X="1" Y="269"/>
@@ -272,7 +276,7 @@
       <Unit26>
         <Filename Value="E:\Programy\Lazarus\lcl\comctrls.pp"/>
         <UnitName Value="ComCtrls"/>
-        <EditorIndex Value="1"/>
+        <EditorIndex Value="3"/>
         <WindowIndex Value="0"/>
         <TopLine Value="545"/>
         <CursorPos X="3" Y="558"/>
@@ -282,7 +286,7 @@
       <Unit27>
         <Filename Value="E:\Programy\Lazarus\lcl\forms.pp"/>
         <UnitName Value="Forms"/>
-        <EditorIndex Value="6"/>
+        <EditorIndex Value="8"/>
         <WindowIndex Value="0"/>
         <TopLine Value="687"/>
         <CursorPos X="14" Y="700"/>
@@ -292,134 +296,153 @@
       <Unit28>
         <Filename Value="E:\Programy\Lazarus\lcl\themes.pas"/>
         <UnitName Value="Themes"/>
-        <EditorIndex Value="4"/>
+        <EditorIndex Value="5"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="543"/>
-        <CursorPos X="24" Y="557"/>
+        <TopLine Value="550"/>
+        <CursorPos X="13" Y="556"/>
         <UsageCount Value="11"/>
         <Loaded Value="True"/>
       </Unit28>
+      <Unit29>
+        <Filename Value="E:\Programy\Lazarus\lcl\menus.pp"/>
+        <UnitName Value="Menus"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="374"/>
+        <CursorPos X="3" Y="387"/>
+        <UsageCount Value="10"/>
+      </Unit29>
+      <Unit30>
+        <Filename Value="..\..\..\ExceptionLogger\UExceptionLogger.pas"/>
+        <UnitName Value="UExceptionLogger"/>
+        <EditorIndex Value="6"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="34"/>
+        <CursorPos X="1" Y="56"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit30>
     </Units>
     <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="57" Column="80" TopLine="44"/>
+        <Filename Value="..\UCustomDockManager.pas"/>
+        <Caret Line="360" Column="1" TopLine="354"/>
       </Position1>
       <Position2>
         <Filename Value="..\UCustomDockManager.pas"/>
-        <Caret Line="339" Column="62" TopLine="339"/>
+        <Caret Line="361" Column="1" TopLine="354"/>
       </Position2>
       <Position3>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="61" Column="39" TopLine="44"/>
+        <Filename Value="..\UCustomDockManager.pas"/>
+        <Caret Line="362" Column="1" TopLine="354"/>
       </Position3>
       <Position4>
         <Filename Value="..\UCustomDockManager.pas"/>
-        <Caret Line="381" Column="38" TopLine="368"/>
+        <Caret Line="363" Column="1" TopLine="354"/>
       </Position4>
       <Position5>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="60" Column="50" TopLine="44"/>
+        <Filename Value="..\UCustomDockManager.pas"/>
+        <Caret Line="369" Column="1" TopLine="354"/>
       </Position5>
       <Position6>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="58" Column="38" TopLine="44"/>
+        <Filename Value="..\UCustomDockManager.pas"/>
+        <Caret Line="380" Column="1" TopLine="367"/>
       </Position6>
       <Position7>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="60" Column="47" TopLine="47"/>
+        <Filename Value="..\UCustomDockManager.pas"/>
+        <Caret Line="381" Column="1" TopLine="367"/>
       </Position7>
       <Position8>
-        <Filename Value="..\UCustomDockManager.pas"/>
-        <Caret Line="416" Column="1" TopLine="399"/>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="61" Column="1" TopLine="47"/>
       </Position8>
       <Position9>
         <Filename Value="UMainForm.pas"/>
-        <Caret Line="60" Column="68" TopLine="47"/>
+        <Caret Line="62" Column="1" TopLine="47"/>
       </Position9>
       <Position10>
-        <Filename Value="..\UCustomDockManager.pas"/>
-        <Caret Line="90" Column="66" TopLine="77"/>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="63" Column="1" TopLine="47"/>
       </Position10>
       <Position11>
-        <Filename Value="..\UCustomDockManager.pas"/>
-        <Caret Line="359" Column="1" TopLine="354"/>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="64" Column="1" TopLine="47"/>
       </Position11>
       <Position12>
-        <Filename Value="..\UCustomDockManager.pas"/>
-        <Caret Line="360" Column="1" TopLine="354"/>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="60" Column="64" TopLine="47"/>
       </Position12>
       <Position13>
         <Filename Value="..\UCustomDockManager.pas"/>
-        <Caret Line="361" Column="1" TopLine="354"/>
+        <Caret Line="90" Column="62" TopLine="77"/>
       </Position13>
       <Position14>
         <Filename Value="..\UCustomDockManager.pas"/>
-        <Caret Line="362" Column="1" TopLine="354"/>
+        <Caret Line="359" Column="1" TopLine="354"/>
       </Position14>
       <Position15>
         <Filename Value="..\UCustomDockManager.pas"/>
-        <Caret Line="363" Column="1" TopLine="354"/>
+        <Caret Line="360" Column="1" TopLine="354"/>
       </Position15>
       <Position16>
         <Filename Value="..\UCustomDockManager.pas"/>
-        <Caret Line="369" Column="1" TopLine="354"/>
+        <Caret Line="361" Column="1" TopLine="354"/>
       </Position16>
       <Position17>
         <Filename Value="..\UCustomDockManager.pas"/>
-        <Caret Line="380" Column="1" TopLine="367"/>
+        <Caret Line="362" Column="1" TopLine="354"/>
       </Position17>
       <Position18>
         <Filename Value="..\UCustomDockManager.pas"/>
-        <Caret Line="381" Column="1" TopLine="367"/>
+        <Caret Line="363" Column="1" TopLine="354"/>
       </Position18>
       <Position19>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="61" Column="1" TopLine="47"/>
+        <Filename Value="..\UCustomDockManager.pas"/>
+        <Caret Line="242" Column="20" TopLine="224"/>
       </Position19>
       <Position20>
         <Filename Value="UMainForm.pas"/>
-        <Caret Line="62" Column="1" TopLine="47"/>
+        <Caret Line="61" Column="26" TopLine="47"/>
       </Position20>
       <Position21>
         <Filename Value="UMainForm.pas"/>
-        <Caret Line="63" Column="1" TopLine="47"/>
+        <Caret Line="17" Column="18" TopLine="1"/>
       </Position21>
       <Position22>
         <Filename Value="UMainForm.pas"/>
-        <Caret Line="64" Column="1" TopLine="47"/>
+        <Caret Line="18" Column="23" TopLine="1"/>
       </Position22>
       <Position23>
         <Filename Value="UMainForm.pas"/>
-        <Caret Line="60" Column="64" TopLine="47"/>
+        <Caret Line="17" Column="20" TopLine="1"/>
       </Position23>
       <Position24>
         <Filename Value="..\UCustomDockManager.pas"/>
-        <Caret Line="90" Column="62" TopLine="77"/>
+        <Caret Line="167" Column="44" TopLine="157"/>
       </Position24>
       <Position25>
         <Filename Value="..\UCustomDockManager.pas"/>
-        <Caret Line="359" Column="1" TopLine="354"/>
+        <Caret Line="2" Column="52" TopLine="1"/>
       </Position25>
       <Position26>
         <Filename Value="..\UCustomDockManager.pas"/>
-        <Caret Line="360" Column="1" TopLine="354"/>
+        <Caret Line="108" Column="5" TopLine="83"/>
       </Position26>
       <Position27>
         <Filename Value="..\UCustomDockManager.pas"/>
-        <Caret Line="361" Column="1" TopLine="354"/>
+        <Caret Line="106" Column="45" TopLine="90"/>
       </Position27>
       <Position28>
         <Filename Value="..\UCustomDockManager.pas"/>
-        <Caret Line="362" Column="1" TopLine="354"/>
+        <Caret Line="635" Column="1" TopLine="626"/>
       </Position28>
       <Position29>
         <Filename Value="..\UCustomDockManager.pas"/>
-        <Caret Line="363" Column="1" TopLine="354"/>
+        <Caret Line="100" Column="40" TopLine="97"/>
       </Position29>
       <Position30>
         <Filename Value="..\UCustomDockManager.pas"/>
-        <Caret Line="242" Column="20" TopLine="224"/>
+        <Caret Line="11" Column="72" TopLine="1"/>
       </Position30>
     </JumpHistory>
   </ProjectOptions>
@@ -439,6 +462,15 @@
         <SyntaxMode Value="Delphi"/>
       </SyntaxOptions>
     </Parsing>
+    <CodeGeneration>
+      <Checks>
+        <IOChecks Value="True"/>
+        <RangeChecks Value="True"/>
+        <OverflowChecks Value="True"/>
+        <StackChecks Value="True"/>
+      </Checks>
+      <VerifyObjMethodCallValidity Value="True"/>
+    </CodeGeneration>
     <Linking>
       <Options>
         <Win32>

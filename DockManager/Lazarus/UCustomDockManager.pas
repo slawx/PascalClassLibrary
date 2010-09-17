@@ -2,17 +2,20 @@ unit UCustomDockManager;
 
 {$mode delphi}{$H+}
 
+// Date: 2010-09-17
+
 interface
 
 uses
   Classes, SysUtils, Controls, LCLType, LMessages, Graphics, StdCtrls,
-  Buttons, ExtCtrls, Contnrs, Forms, ComCtrls, Dialogs;
+  Buttons, ExtCtrls, Contnrs, Forms, ComCtrls, Dialogs, Menus, FileUtil;
 
 const
-  GrabberSize = 18;
+  GrabberSize = 22;
 
 type
   TDockDirection = (ddNone, ddHorizontal, ddVertical);
+  THeaderPos = (hpAuto, hpLeft, hpTop, hpRight, hpBottom);
 
   TCustomDockManager = class;
 
@@ -52,6 +55,7 @@ type
 
   TCustomDockManager = class(TDockManager)
   private
+    PopupMenu1: TPopupMenu;
     FDockStyle: TDockStyle;
     TabControl: TTabControl;
     FDockDirection: TDockDirection;
@@ -63,6 +67,8 @@ type
     procedure SetDockStyle(const AValue: TDockStyle);
     procedure UpdateClientSize;
     procedure TabControlChange(Sender: TObject);
+    procedure PopupMenuListClick(Sender: TObject);
+    procedure PopupMenuTabsClick(Sender: TObject);
   public
     constructor Create(ADockSite: TWinControl); override;
     destructor Destroy; override;
@@ -86,11 +92,37 @@ type
     procedure SetReplacingControl(Control: TControl); override;
     function AutoFreeByControl: Boolean; override;
 
-    function CreateContainer: TConjoinDockForm;
+    function CreateContainer(InsertAt: TAlign): TConjoinDockForm;
     property DockStyle: TDockStyle read FDockStyle write SetDockStyle;
   end;
 
+  { TCustomDockMaster }
+
+  TCustomDockMaster = class(TComponent)
+  private
+    FDefaultHeaderPos: THeaderPos;
+    FTabsEnabled: Boolean;
+    procedure SetTabsEnabled(const AValue: Boolean);
+  public
+    procedure SaveLayoutToStream(Stream: TStream);
+    procedure LoadLayoutFromStream(Stream: TStream);
+    procedure SaveLayoutToFile(FileName: string);
+    procedure LoadLayoutFromFile(FileName: string);
+  published
+    property TabsEnabled: Boolean read FTabsEnabled write SetTabsEnabled;
+    property DefaultHeaderPos: THeaderPos read FDefaultHeaderPos
+      write FDefaultHeaderPos;
+  end;
+
+procedure Register;
+
 implementation
+
+procedure Register;
+begin
+  RegisterComponents('CustomDocking', [TCustomDockMaster]);
+end;
+
 
 { TCustomDockManager }
 
@@ -107,9 +139,21 @@ begin
 end;
 
 constructor TCustomDockManager.Create(ADockSite: TWinControl);
+var
+  NewMenuItem: TMenuItem;
 begin
+  inherited Create(ADockSite);
   FDockSite := ADockSite;
   FDockPanels := TObjectList.Create;
+  PopupMenu1 := TPopupMenu.Create(FDockSite);
+  NewMenuItem := TMenuItem.Create(PopupMenu1);
+  NewMenuItem.Caption := 'List';
+  PopupMenu1.Items.Add(NewMenuItem);
+  NewMenuItem.OnClick := PopupMenuListClick;
+  NewMenuItem := TMenuItem.Create(PopupMenu1);
+  NewMenuItem.Caption := 'Tabs';
+  NewMenuItem.OnClick := PopupMenuTabsClick;
+  PopupMenu1.Items.Add(NewMenuItem);
   TabControl := TTabControl.Create(FDockSite);
   with TabControl do begin
     Parent := FDockSite;
@@ -117,8 +161,8 @@ begin
     Align := alTop;
     Height := 24;
     OnChange := TabControlChange;
+    PopupMenu := PopupMenu1;
   end;
-  inherited Create(ADockSite);
 end;
 
 destructor TCustomDockManager.Destroy;
@@ -155,7 +199,6 @@ end;
 procedure TCustomDockManager.InsertControlPanel(Control: TControl; InsertAt: TAlign;
   DropCtl: TControl);
 var
-  NewSplitter: TSplitter;
   NewPanel: TDockClientPanel;
   I: Integer;
 begin
@@ -170,18 +213,17 @@ begin
 
     //end;
     if FDockSite.DockClientCount > 1 then begin
-      NewSplitter := TSplitter.Create(nil);
-      NewSplitter.Parent := FDockSite;
-      NewSplitter.Visible := True;
-      NewSplitter.Color := clRed;
-      with NewSplitter do
-      if FDockDirection = ddVertical then begin
-        Align := alTop;
-        Top := FDockSite.Height;
-      end else
-      if FDockDirection = ddHorizontal then begin
-        Align := alLeft;
-        Left := FDockSite.Width;
+      with TDockClientPanel(FDockPanels.Last).Splitter do begin
+        Parent := FDockSite;
+        Visible := True;
+        if FDockDirection = ddVertical then begin
+          Align := alTop;
+          Top := FDockSite.Height;
+        end else
+        if FDockDirection = ddHorizontal then begin
+          Align := alLeft;
+          Left := FDockSite.Width;
+        end;
       end;
 
       with TDockClientPanel(FDockPanels.Last) do
@@ -193,15 +235,15 @@ begin
     end;
     NewPanel := TDockClientPanel.Create(nil);
     with NewPanel do begin
-      Splitter := NewSplitter;
       Parent := FDockSite;
       OwnerDockManager := Self;
       if DockStyle = dsList then Visible := True;
       Align := alClient;
+      PopupMenu := PopupMenu1;
     end;
 
     if DockStyle = dsTabs then begin
-      TabControl.Tabs.Add(Control.Name);
+      TabControl.Tabs.Add(Control.Caption);
       TabControlChange(Self);
     end;
     NewPanel.Control := Control;
@@ -341,7 +383,7 @@ begin
   Result := inherited AutoFreeByControl;
 end;
 
-function TCustomDockManager.CreateContainer: TConjoinDockForm;
+function TCustomDockManager.CreateContainer(InsertAt: TAlign): TConjoinDockForm;
 var
   NewDockSite: TWinControl;
   NewConjoinDockForm: TConjoinDockForm;
@@ -353,7 +395,7 @@ begin
   NewConjoinDockForm.DragKind := dkDock;
   NewDockSite := FDockSite.HostDockSite;
   //      FDockSite.ManualFloat(FDockSite.BoundsRect);
-  NewConjoinDockForm.ManualDock(NewDockSite);
+  NewConjoinDockForm.ManualDock(NewDockSite, nil, InsertAt);
   Result := NewConjoinDockForm;
 end;
 
@@ -366,8 +408,9 @@ begin
     TabControl.Visible := True;
     TabControl.Tabs.Clear;
     for I := 0 to FDockPanels.Count - 1 do begin
-      TabControl.Tabs.Add(TDockClientPanel(FDockPanels[I]).Control.Name);
-      TDockClientPanel(FDockPanels[I]).Splitter.Visible := False;
+      TabControl.Tabs.Add(TDockClientPanel(FDockPanels[I]).Control.Caption);
+      if Assigned(TDockClientPanel(FDockPanels[I]).Splitter) then
+        TDockClientPanel(FDockPanels[I]).Splitter.Visible := False;
       TDockClientPanel(FDockPanels[I]).ClientAreaPanel.Visible := False;
       TDockClientPanel(FDockPanels[I]).Visible := False;
     end;
@@ -377,9 +420,11 @@ begin
     TabControl.Visible := False;
     TabControl.Tabs.Clear;
     for I := 0 to FDockPanels.Count - 1 do begin
-      TDockClientPanel(FDockPanels[I]).Splitter.Visible := True;
+      if Assigned(TDockClientPanel(FDockPanels[I]).Splitter) then
+        TDockClientPanel(FDockPanels[I]).Splitter.Visible := True;
       TDockClientPanel(FDockPanels[I]).Visible := True;
       TDockClientPanel(FDockPanels[I]).ClientAreaPanel.Parent := TDockClientPanel(FDockPanels[I]);
+      TDockClientPanel(FDockPanels[I]).ClientAreaPanel.Visible := True;
     end;
   end;
   UpdateClientSize;
@@ -415,10 +460,23 @@ begin
     TDockClientPanel(FDockPanels[I]).ClientAreaPanel.Visible := False;
   end;
   if (TabControl.TabIndex <> -1) and (FDockPanels.Count > TabControl.TabIndex) then begin
-    TDockClientPanel(FDockPanels[TabControl.TabIndex]).ClientAreaPanel.Parent := FDockSite;
-    TDockClientPanel(FDockPanels[TabControl.TabIndex]).ClientAreaPanel.Visible := True;
+    with TDockClientPanel(FDockPanels[TabControl.TabIndex]).ClientAreaPanel do begin
+      Parent := FDockSite;
+      Visible := True;
+      UpdateClientSize;
+    end;
 //  TDockClientPanel(FDockPanels[TabControl.TabIndex]).Visible := True;
   end;
+end;
+
+procedure TCustomDockManager.PopupMenuTabsClick(Sender: TObject);
+begin
+  DockStyle := dsTabs;
+end;
+
+procedure TCustomDockManager.PopupMenuListClick(Sender: TObject);
+begin
+  DockStyle := dsList;
 end;
 
 { TDockClientPanel }
@@ -438,8 +496,8 @@ begin
     Parent := Self;
     Caption := 'X';
     Font.Size := 6;
-    Width := 14;
-    Height := 14;
+    Width := GrabberSize - 4;
+    Height := GrabberSize - 4;
     Visible := False;
     OnClick := CloseButtonClick;
   end;
@@ -457,6 +515,10 @@ begin
     BevelInner := bvNone;
     BevelOuter := bvNone;
     //Color := clGreen;
+  end;
+  Splitter := TSplitter.Create(Self);
+  with Splitter do begin
+    //Color := clRed;
   end;
   OnPaint := DockPanelPaint;
   OnMouseDown := DockPanelMouseDown;
@@ -482,7 +544,7 @@ begin
       Font.Style := Font.Style + [fsBold]
       else Font.Style := Font.Style - [fsBold];
     Rectangle(1, 1, AControl.Width - 1, GrabberSize - 1);
-    TextOut(6, 2, AControl.Caption);
+    TextOut(6, 4, AControl.Caption);
 
     CloseButton.Left := AControl.Width - CloseButton.Width - 2;
     CloseButton.Top := 2;
@@ -525,7 +587,7 @@ procedure TDockClientPanel.DockPanelMouseDown(Sender: TObject;
   Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
   if Control is TForm then begin
-    TForm(Control).SetFocus;
+    //TForm(Control).SetFocus;
     DockPanelPaint(Self);
   end;
   if (Button = mbLeft) then begin
@@ -544,9 +606,54 @@ begin
     DockSite := True;
     UseDockManager := True;
     Align := alClient;
+  //  Color := clYellow;
   end;
   DragKind := dkDock;
   DragMode := dmAutomatic;
+end;
+
+{ TCustomDockMaster }
+
+procedure TCustomDockMaster.SetTabsEnabled(const AValue: Boolean);
+begin
+  if FTabsEnabled=AValue then exit;
+  FTabsEnabled:=AValue;
+end;
+
+procedure TCustomDockMaster.SaveLayoutToStream(Stream: TStream);
+begin
+
+end;
+
+procedure TCustomDockMaster.LoadLayoutFromStream(Stream: TStream);
+begin
+
+end;
+
+procedure TCustomDockMaster.SaveLayoutToFile(FileName: string);
+var
+  LayoutFile: TFileStream;
+begin
+  if FileExistsUTF8(FileName) then
+  LayoutFile := TFileStream.Create(FileName, fmOpenReadWrite)
+  else LayoutFile := TFileStream.Create(FileName, fmCreate);
+  try
+    SaveLayoutToStream(LayoutFile);
+  finally
+    Free;
+  end;
+end;
+
+procedure TCustomDockMaster.LoadLayoutFromFile(FileName: string);
+var
+  LayoutFile: TFileStream;
+begin
+  LayoutFile := TFileStream.Create(FileName, fmOpenRead);
+  try
+    LoadLayoutFromStream(LayoutFile);
+  finally
+    Free;
+  end;
 end;
 
 initialization

@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  ComCtrls, ExtCtrls, Buttons, UCustomDockManager, UDockForm;
+  ComCtrls, ExtCtrls, Buttons, Menus, UCustomDockManager, UDockForm;
 
 type
 
@@ -14,8 +14,8 @@ type
 
   TMainForm = class(TForm)
     Button1: TButton;
+    CustomDockMaster1: TCustomDockMaster;
     Panel1: TPanel;
-    TabControl1: TTabControl;
     procedure Button1Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -53,10 +53,10 @@ var
   ConjoinedDockForm2: TConjoinDockForm;
 begin
   NewDockForm.ManualDock(Panel1);
-  NewDockForm.ManualDock(Panel1, nil, alBottom);
-  ConjoinedDockForm1 := TCustomDockManager(TForm(DockForms[1]).DockManager).CreateContainer;
+//  NewDockForm.ManualDock(Panel1, nil, a);
+  ConjoinedDockForm1 := TCustomDockManager(Panel1.DockManager).CreateContainer(alRight);
   ConjoinedDockForm1.Name := 'Model';;
-  ConjoinedDockForm1.ManualDock(Panel1);
+  //ConjoinedDockForm1.ManualDock(Panel1);
   TCustomDockManager(ConjoinedDockForm1.Panel.DockManager).DockStyle := dsTabs;
   NewDockForm.ManualDock(ConjoinedDockForm1.Panel);
   NewDockForm.ManualDock(ConjoinedDockForm1.Panel);

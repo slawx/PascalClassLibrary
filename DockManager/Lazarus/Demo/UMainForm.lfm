@@ -1,7 +1,7 @@
 object MainForm: TMainForm
-  Left = 311
+  Left = 341
   Height = 435
-  Top = 91
+  Top = 158
   Width = 576
   Caption = 'MainForm'
   ClientHeight = 435
@@ -21,27 +21,18 @@ object MainForm: TMainForm
   end
   object Panel1: TPanel
     Left = 0
-    Height = 395
-    Top = 40
+    Height = 387
+    Top = 48
     Width = 576
     Align = alBottom
     Anchors = [akTop, akLeft, akRight, akBottom]
-    BevelOuter = bvNone
     DockSite = True
     TabOrder = 1
   end
-  object TabControl1: TTabControl
-    Left = 118
-    Height = 33
-    Top = 7
-    Width = 184
-    TabIndex = 0
-    TabOrder = 2
-    Tabs.Strings = (
-      'dd'
-      'ffdfd'
-      'fdf'
-    )
-    TabStop = False
+  object CustomDockMaster1: TCustomDockMaster
+    TabsEnabled = False
+    DefaultHeaderPos = hpAuto
+    left = 376
+    top = 24
   end
 end
