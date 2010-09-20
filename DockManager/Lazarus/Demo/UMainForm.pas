@@ -16,7 +16,6 @@ type
     Button1: TButton;
     CustomDockMaster1: TCustomDockMaster;
     Panel1: TPanel;
-    TabControl1: TTabControl;
     procedure Button1Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);

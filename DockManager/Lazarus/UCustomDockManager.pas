@@ -18,6 +18,7 @@ type
   THeaderPos = (hpAuto, hpLeft, hpTop, hpRight, hpBottom);
 
   TCustomDockManager = class;
+  TDockClientPanel = class;
 
   { TConjoinDockForm }
 
@@ -27,6 +28,21 @@ type
   end;
 
   TDockStyle = (dsList, dsTabs);
+
+  { TDockHeader }
+
+  TDockHeader = class(TPanel)
+    CloseButton: TSpeedButton;
+    Title: TLabel;
+    Icon: TIcon;
+    ParentClientPanel: TDockClientPanel;
+    Shape: TShape;
+    constructor Create(TheOwner: TComponent); override;
+    destructor Destroy; override;
+  private
+    procedure CloseButtonClick(Sender: TObject);
+    procedure DrawGrabber(Canvas: TCanvas; AControl: TControl);
+  end;
 
   { TDockClientPanel }
 
@@ -39,8 +55,8 @@ type
     procedure SetHeaderPos(const AValue: THeaderPos);
     procedure SetShowHeader(const AValue: Boolean);
   public
+    Header: TDockHeader;
     OwnerDockManager: TCustomDockManager;
-    CloseButton: TSpeedButton;
     Control: TControl;
     Splitter: TSplitter;
     ClientAreaPanel: TPanel;
@@ -49,8 +65,6 @@ type
     procedure DockPanelPaint(Sender: TObject);
     procedure DockPanelMouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
-    procedure DrawGrabber(Canvas: TCanvas; AControl: TControl);
-    procedure CloseButtonClick(Sender: TObject);
     procedure ResizeExecute(Sender: TObject);
     property ShowHeader: Boolean read FShowHeader write SetShowHeader;
     property AutoHide: Boolean read FAutoHide write SetAutoHide;
@@ -82,10 +96,17 @@ type
     procedure PopupMenuTabsClick(Sender: TObject);
     procedure PopupMenuCloseClick(Sender: TObject);
     procedure PopupMenuRenameClick(Sender: TObject);
+    procedure PopupMenuPositionAutoClick(Sender: TObject);
+    procedure PopupMenuPositionLeftClick(Sender: TObject);
+    procedure PopupMenuPositionRightClick(Sender: TObject);
+    procedure PopupMenuPositionTopClick(Sender: TObject);
+    procedure PopupMenuPositionBottomClick(Sender: TObject);
     procedure Timer1Timer(Sender: TObject);
   public
     constructor Create(ADockSite: TWinControl); override;
     destructor Destroy; override;
+
+    // Inherited from TDockManager
     procedure BeginUpdate; override;
     procedure EndUpdate; override;
     procedure GetControlBounds(Control: TControl;
@@ -140,7 +161,12 @@ resourcestring
   SDockTabs = 'Tabs';
   SCloseForm = 'Close';
   SRenameForm = 'Rename';
-
+  SPosition = 'Position';
+  SPositionAuto = 'Auto';
+  SPositionTop = 'Top';
+  SPositionLeft = 'Left';
+  SPositionRight = 'Right';
+  SPositionBottom = 'Bottom';
 
 procedure Register;
 begin
@@ -188,6 +214,35 @@ begin
   NewMenuItem2 := TMenuItem.Create(NewMenuItem);
   NewMenuItem2.Caption := SDockTabs;
   NewMenuItem2.OnClick := PopupMenuTabsClick;
+  NewMenuItem.Add(NewMenuItem2);
+
+  NewMenuItem := TMenuItem.Create(PopupMenu1);
+  NewMenuItem.Caption := SPosition;
+  PopupMenu1.Items.Add(NewMenuItem);
+
+  NewMenuItem2 := TMenuItem.Create(NewMenuItem);
+  NewMenuItem2.Caption := SPositionAuto;
+  NewMenuItem2.OnClick := PopupMenuPositionAutoClick;
+  NewMenuItem.Add(NewMenuItem2);
+
+  NewMenuItem2 := TMenuItem.Create(NewMenuItem);
+  NewMenuItem2.Caption := SPositionTop;
+  NewMenuItem2.OnClick := PopupMenuPositionTopClick;
+  NewMenuItem.Add(NewMenuItem2);
+
+  NewMenuItem2 := TMenuItem.Create(NewMenuItem);
+  NewMenuItem2.Caption := SPositionLeft;
+  NewMenuItem2.OnClick := PopupMenuPositionLeftClick;
+  NewMenuItem.Add(NewMenuItem2);
+
+  NewMenuItem2 := TMenuItem.Create(NewMenuItem);
+  NewMenuItem2.Caption := SPositionBottom;
+  NewMenuItem2.OnClick := PopupMenuPositionBottomClick;
+  NewMenuItem.Add(NewMenuItem2);
+
+  NewMenuItem2 := TMenuItem.Create(NewMenuItem);
+  NewMenuItem2.Caption := SPositionRight;
+  NewMenuItem2.OnClick := PopupMenuPositionRightClick;
   NewMenuItem.Add(NewMenuItem2);
 
   NewMenuItem := TMenuItem.Create(PopupMenu1);
@@ -579,6 +634,31 @@ begin
 
 end;
 
+procedure TCustomDockManager.PopupMenuPositionAutoClick(Sender: TObject);
+begin
+  TabsPos := hpAuto;
+end;
+
+procedure TCustomDockManager.PopupMenuPositionLeftClick(Sender: TObject);
+begin
+  TabsPos := hpLeft;
+end;
+
+procedure TCustomDockManager.PopupMenuPositionRightClick(Sender: TObject);
+begin
+  TabsPos := hpRight;
+end;
+
+procedure TCustomDockManager.PopupMenuPositionTopClick(Sender: TObject);
+begin
+  TabsPos := hpTop;
+end;
+
+procedure TCustomDockManager.PopupMenuPositionBottomClick(Sender: TObject);
+begin
+  TabsPos := hpBottom;
+end;
+
 procedure TCustomDockManager.Timer1Timer(Sender: TObject);
 begin
 //  TimerMoveForm.Width := TimerMoveForm.Width
@@ -613,15 +693,12 @@ end;
 constructor TDockClientPanel.Create(TheOwner: TComponent);
 begin
   inherited;
-  CloseButton := TSpeedButton.Create(Self);
-  with CloseButton do begin
+  Header := TDockHeader.Create(Self);
+  with Header do begin
     Parent := Self;
-    Caption := 'X';
-    Font.Size := 6;
-    Width := GrabberSize - 4;
-    Height := GrabberSize - 4;
-    Visible := False;
-    OnClick := CloseButtonClick;
+    Visible := ShowHeader;
+    Align := alTop;
+    Height := GrabberSize;
   end;
   ClientAreaPanel := TPanel.Create(Self);
   with ClientAreaPanel do begin
@@ -629,11 +706,7 @@ begin
     Visible := True;
     DockSite := True;
     UseDockManager := True;
-    Left := 0;
-    Top := GrabberSize;
-    Width := Self.Width;
-    Height := Self.Height - GrabberSize;
-    Anchors := [akTop, akBottom, akLeft, akRight];
+    Align := alClient;
     BevelInner := bvNone;
     BevelOuter := bvNone;
     //Color := clGreen;
@@ -657,29 +730,6 @@ begin
   inherited Destroy;
 end;
 
-procedure TDockClientPanel.DrawGrabber(Canvas: TCanvas; AControl: TControl);
-begin
-  with Canvas do begin
-    Brush.Color := clBtnFace;
-    Pen.Color := clBlack;
-    FillRect(0, 0, AControl.Width, GrabberSize);
-
-    if (AControl as TWinControl).Focused then
-      Font.Style := Font.Style + [fsBold]
-      else Font.Style := Font.Style - [fsBold];
-    Rectangle(1, 1, AControl.Width - 1, GrabberSize - 1);
-    TextOut(6, 4, AControl.Caption);
-
-    CloseButton.Left := AControl.Width - CloseButton.Width - 2;
-    CloseButton.Top := 2;
-  end;
-end;
-
-procedure TDockClientPanel.CloseButtonClick(Sender: TObject);
-begin
-  Control.Hide;
-end;
-
 procedure TDockClientPanel.ResizeExecute(Sender: TObject);
 begin
   Control.Top := GrabberSize;
@@ -698,11 +748,11 @@ begin
   if Assigned(Control) then begin
     R := Control.ClientRect;
     Canvas.FillRect(R);
-    CloseButton.Visible := ShowHeader;
+    Header.Visible := ShowHeader;
     if ShowHeader then begin
       if ClientAreaPanel.DockClientCount = 0 then
-        DrawGrabber(Canvas, Control) else
-      DrawGrabber(Canvas, ClientAreaPanel);
+        Header.DrawGrabber(Canvas, Control) else
+      Header.DrawGrabber(Canvas, ClientAreaPanel);
     end;
   end;
 end;
@@ -730,6 +780,8 @@ begin
     DockSite := True;
     UseDockManager := True;
     Align := alClient;
+    BevelOuter := bvNone;
+    BevelInner := bvNone;
   //  Color := clYellow;
   end;
   DragKind := dkDock;
@@ -778,6 +830,70 @@ begin
   finally
     Free;
   end;
+end;
+
+{ TDockHeader }
+
+constructor TDockHeader.Create(TheOwner: TComponent);
+begin
+  inherited Create(TheOwner);
+  Shape := TShape.Create(Self);
+  with Shape do begin
+    Parent := Self;
+    Anchors := [akRight, akBottom, akLeft, akTop];
+    Left := 1;
+    Top := 1;
+    Width := Self.Width - 2;
+    Height := Self.Height - 2;
+    Brush.Style := bsClear;
+  end;
+  CloseButton := TSpeedButton.Create(Self);
+  with CloseButton do begin
+    Parent := Self;
+    Caption := 'X';
+    Font.Size := 6;
+    Width := GrabberSize - 8;
+    Height := GrabberSize - 8;
+    Anchors := [akRight, akTop];
+    Left := Self.Width - Width - 4;
+    Top := 4;
+    Visible := True;
+    OnClick := CloseButtonClick;
+  end;
+  Title := TLabel.Create(Self);
+  with Title do begin
+    Parent := Self;
+    Visible := True;
+    Top := 4;
+    Left := 6;
+    BevelInner := bvNone;
+    BevelOuter := bvNone;
+  end;
+end;
+
+destructor TDockHeader.Destroy;
+begin
+  inherited Destroy;
+end;
+
+procedure TDockHeader.DrawGrabber(Canvas: TCanvas; AControl: TControl);
+begin
+  with Canvas do begin
+    Brush.Color := clBtnFace;
+    Pen.Color := clBlack;
+    //FillRect(0, 0, AControl.Width, GrabberSize);
+
+    if (AControl as TWinControl).Focused then
+      Title.Font.Style := Font.Style + [fsBold]
+      else Title.Font.Style := Font.Style - [fsBold];
+    Rectangle(1, 1, AControl.Width - 1, GrabberSize - 1);
+    Title.Caption := AControl.Caption;
+  end;
+end;
+
+procedure TDockHeader.CloseButtonClick(Sender: TObject);
+begin
+//  Control.Hide;
 end;
 
 initialization
