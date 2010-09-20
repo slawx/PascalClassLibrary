@@ -29,7 +29,7 @@ object MainForm: TMainForm
     DockSite = True
     TabOrder = 1
   end
-  object CustomDockMaster1: TCustomDockMaster
+  object CoolDockMaster1: TCoolDockMaster
     TabsEnabled = False
     DefaultHeaderPos = hpAuto
     left = 376

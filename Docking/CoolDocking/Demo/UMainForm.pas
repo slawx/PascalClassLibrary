@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  ComCtrls, ExtCtrls, Buttons, Menus, UCustomDockManager, UDockForm;
+  ComCtrls, ExtCtrls, Buttons, Menus, UCoolDocking, UDockForm;
 
 type
 
@@ -14,7 +14,7 @@ type
 
   TMainForm = class(TForm)
     Button1: TButton;
-    CustomDockMaster1: TCustomDockMaster;
+    CoolDockMaster1: TCoolDockMaster;
     Panel1: TPanel;
     procedure Button1Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -49,16 +49,16 @@ end;
 
 procedure TMainForm.FormShow(Sender: TObject);
 var
-  ConjoinedDockForm1: TConjoinDockForm;
-  ConjoinedDockForm2: TConjoinDockForm;
+  ConjoinedDockForm1: TCoolDockConjoinForm;
+  ConjoinedDockForm2: TCoolDockConjoinForm;
 begin
   NewDockForm.ManualDock(Panel1);
 //  NewDockForm.ManualDock(Panel1, nil, a);
-  ConjoinedDockForm1 := TCustomDockManager(Panel1.DockManager).CreateContainer(alRight);
+  ConjoinedDockForm1 := TCoolDockManager(Panel1.DockManager).CreateContainer(alRight);
   ConjoinedDockForm1.Name := 'Model';;
-  TCustomDockManager(ConjoinedDockForm1.Panel.DockManager).TabsPos := hpLeft;
+  TCoolDockManager(ConjoinedDockForm1.Panel.DockManager).TabsPos := hpLeft;
   //ConjoinedDockForm1.ManualDock(Panel1);
-  TCustomDockManager(ConjoinedDockForm1.Panel.DockManager).DockStyle := dsTabs;
+  TCoolDockManager(ConjoinedDockForm1.Panel.DockManager).DockStyle := dsTabs;
   NewDockForm.ManualDock(ConjoinedDockForm1.Panel);
   NewDockForm.ManualDock(ConjoinedDockForm1.Panel);
   NewDockForm.ManualDock(TForm(DockForms[0]));

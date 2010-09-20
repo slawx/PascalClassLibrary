@@ -7,7 +7,7 @@ uses
   cthreads,
   {$ENDIF}{$ENDIF}
   Interfaces, // this includes the LCL widgetset
-  Forms, UMainForm, UDockForm, CustomDockManager;
+  Forms, UMainForm, UDockForm, CoolDocking;
 
 {$R *.res}
 

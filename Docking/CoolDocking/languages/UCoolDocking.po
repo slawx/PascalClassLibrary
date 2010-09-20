@@ -1,0 +1,55 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Project-Id-Version: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: Jiří Hajda <software@mezservis.cz>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ucooldocking.scloseform
+msgid "Close"
+msgstr "Zavřít"
+
+#: ucooldocking.sdocklist
+msgid "List"
+msgstr "Seznam"
+
+#: ucooldocking.sdockstyle
+msgid "Style"
+msgstr "Styl"
+
+#: ucooldocking.sdocktabs
+msgid "Tabs"
+msgstr "Záložky"
+
+#: ucooldocking.sposition
+msgid "Position"
+msgstr "Pozice"
+
+#: ucooldocking.spositionauto
+msgid "Auto"
+msgstr "Automaticky"
+
+#: ucooldocking.spositionbottom
+msgid "Bottom"
+msgstr "Dole"
+
+#: ucooldocking.spositionleft
+msgid "Left"
+msgstr "Vlevo"
+
+#: ucooldocking.spositionright
+msgid "Right"
+msgstr "Vpravo"
+
+#: ucooldocking.spositiontop
+msgid "Top"
+msgstr "Nahoře"
+
+#: ucooldocking.srenameform
+msgid "Rename"
+msgstr "Přejmenovat"
+
