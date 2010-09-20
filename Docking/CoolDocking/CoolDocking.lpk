@@ -21,12 +21,20 @@
         <CompilerPath Value="$(CompPath)"/>
       </Other>
     </CompilerOptions>
-    <Files Count="1">
+    <Files Count="3">
       <Item1>
         <Filename Value="UCoolDocking.pas"/>
         <HasRegisterProc Value="True"/>
         <UnitName Value="UCoolDocking"/>
       </Item1>
+      <Item2>
+        <Filename Value="UCoolDockCustomize.pas"/>
+        <UnitName Value="UCoolDockCustomize"/>
+      </Item2>
+      <Item3>
+        <Filename Value="ReadMe.txt"/>
+        <Type Value="Binary"/>
+      </Item3>
     </Files>
     <i18n>
       <EnableI18N Value="True"/>

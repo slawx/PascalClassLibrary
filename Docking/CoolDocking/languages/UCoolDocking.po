@@ -53,3 +53,7 @@ msgstr "Nahoře"
 msgid "Rename"
 msgstr "Přejmenovat"
 
+#: ucooldocking.sundock
+msgid "Undock"
+msgstr ""
+

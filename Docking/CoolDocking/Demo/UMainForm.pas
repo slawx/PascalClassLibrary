@@ -6,7 +6,8 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  ComCtrls, ExtCtrls, Buttons, Menus, UCoolDocking, UDockForm;
+  ComCtrls, ExtCtrls, Buttons, Menus, UCoolDocking, UCoolDockCustomize,
+  UDockForm;
 
 type
 
@@ -14,9 +15,13 @@ type
 
   TMainForm = class(TForm)
     Button1: TButton;
+    Button2: TButton;
+    CoolDockCustomize1: TCoolDockCustomize;
     CoolDockMaster1: TCoolDockMaster;
     Panel1: TPanel;
+    TabControl1: TTabControl;
     procedure Button1Click(Sender: TObject);
+    procedure Button2Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -53,7 +58,7 @@ var
   ConjoinedDockForm2: TCoolDockConjoinForm;
 begin
   NewDockForm.ManualDock(Panel1);
-//  NewDockForm.ManualDock(Panel1, nil, a);
+ // NewDockForm.ManualDock(Panel1);
   ConjoinedDockForm1 := TCoolDockManager(Panel1.DockManager).CreateContainer(alRight);
   ConjoinedDockForm1.Name := 'Model';;
   TCoolDockManager(ConjoinedDockForm1.Panel.DockManager).TabsPos := hpLeft;
@@ -84,6 +89,11 @@ end;
 procedure TMainForm.Button1Click(Sender: TObject);
 begin
   NewDockForm;
+end;
+
+procedure TMainForm.Button2Click(Sender: TObject);
+begin
+  CoolDockCustomize1.Execute;
 end;
 
 end.

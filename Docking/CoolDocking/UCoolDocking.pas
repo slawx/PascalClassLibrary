@@ -8,7 +8,8 @@ interface
 
 uses
   Classes, SysUtils, Controls, LCLType, LMessages, Graphics, StdCtrls,
-  Buttons, ExtCtrls, Contnrs, Forms, ComCtrls, Dialogs, Menus, FileUtil;
+  Buttons, ExtCtrls, Contnrs, Forms, ComCtrls, Dialogs, Menus, FileUtil,
+  UCoolDockCustomize, DOM, XMLWrite, XMLRead;
 
 const
   GrabberSize = 22;
@@ -87,6 +88,7 @@ type
     function FindControlInPanels(Control: TControl): TCoolDockClientPanel;
     procedure InsertControlPanel(Control: TControl; InsertAt: TAlign;
       DropCtl: TControl);
+    procedure PopupMenuTabCloseClick(Sender: TObject);
     procedure SetDockStyle(const AValue: TDockStyle);
     procedure SetMoveDuration(const AValue: Integer);
     procedure SetTabsPos(const AValue: THeaderPos);
@@ -101,7 +103,10 @@ type
     procedure PopupMenuPositionRightClick(Sender: TObject);
     procedure PopupMenuPositionTopClick(Sender: TObject);
     procedure PopupMenuPositionBottomClick(Sender: TObject);
+    procedure PopupMenuUndockClick(Sender: TObject);
     procedure Timer1Timer(Sender: TObject);
+    procedure TabControlMouseDown(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
   public
     constructor Create(ADockSite: TWinControl); override;
     destructor Destroy; override;
@@ -167,10 +172,12 @@ resourcestring
   SPositionLeft = 'Left';
   SPositionRight = 'Right';
   SPositionBottom = 'Bottom';
+  SUndock = 'Undock';
 
 procedure Register;
 begin
   RegisterComponents('CoolDocking', [TCoolDockMaster]);
+  RegisterComponents('CoolDocking', [TCoolDockCustomize]);
 end;
 
 
@@ -255,6 +262,11 @@ begin
   NewMenuItem.OnClick := PopupMenuRenameClick;
   PopupMenu1.Items.Add(NewMenuItem);
 
+  NewMenuItem := TMenuItem.Create(PopupMenu1);
+  NewMenuItem.Caption := SUndock;
+  NewMenuItem.OnClick := PopupMenuUndockClick;
+  PopupMenu1.Items.Add(NewMenuItem);
+
   TabControl := TTabControl.Create(FDockSite);
   with TabControl do begin
     Parent := FDockSite;
@@ -263,6 +275,7 @@ begin
     Height := 24;
     OnChange := TabControlChange;
     PopupMenu := PopupMenu1;
+    OnMouseDown := TabControlMouseDown;
   end;
   TabsPos := hpTop;
   MoveDuration := 1000; // ms
@@ -343,7 +356,6 @@ begin
       OwnerDockManager := Self;
       if DockStyle = dsList then Visible := True;
       Align := alClient;
-      PopupMenu := PopupMenu1;
     end;
 
     if DockStyle = dsTabs then begin
@@ -375,13 +387,13 @@ begin
   if (FDockSite is TForm) then begin
     if (not Assigned(FDockSite.Parent)) then begin
       // Create conjointed form
-      NewConjoinDockForm := TCoolDockConjoinForm.Create(nil);
+      NewConjoinDockForm := TCoolDockConjoinForm.Create(Application);
       NewConjoinDockForm.Visible := True;
       NewConjoinDockForm.BoundsRect := FDockSite.BoundsRect;
       FDockSite.ManualDock(NewConjoinDockForm.Panel);
       Control.ManualDock(NewConjoinDockForm.Panel, nil, InsertAt);
     end else begin
-      NewConjoinDockForm := TCoolDockConjoinForm.Create(nil);
+      NewConjoinDockForm := TCoolDockConjoinForm.Create(Application);
       NewConjoinDockForm.Visible := True;
       NewConjoinDockForm.BoundsRect := FDockSite.BoundsRect;
       NewConjoinDockForm.DragMode := dmAutomatic;
@@ -463,6 +475,7 @@ begin
     //if Assigned(ClientPanel) then ClientPanel.Splitter.Free;
     FDockPanels.Remove(ClientPanel);
     if FDockSite.DockClientCount = 2 then FDockDirection := ddNone;
+    UpdateClientSize;
     //FDockSite.Invalidate;
     //if (FDockSite is TCoolDockConjoinForm) and (FDockSite.DockClientCount = 1) then
     //  FDockSite.Free;
@@ -497,7 +510,7 @@ var
   NewDockSite: TWinControl;
   NewConjoinDockForm: TCoolDockConjoinForm;
 begin
-  NewConjoinDockForm := TCoolDockConjoinForm.Create(nil);
+  NewConjoinDockForm := TCoolDockConjoinForm.Create(Application);
   NewConjoinDockForm.Visible := True;
   NewConjoinDockForm.BoundsRect := FDockSite.BoundsRect;
   NewConjoinDockForm.DragMode := dmAutomatic;
@@ -631,7 +644,13 @@ end;
 
 procedure TCoolDockManager.PopupMenuCloseClick(Sender: TObject);
 begin
-//  TForm(TCoolDockManager(TControl(Sender).Parent.Parent.Parent.DockManager).FDockSite).Close;
+  TForm(TCoolDockManager(TControl(Sender).Parent.Parent.Parent.DockManager).FDockSite).Close;
+end;
+
+procedure TCoolDockManager.PopupMenuTabCloseClick(Sender: TObject);
+begin
+  if TabControl.TabIndex <> -1 then
+    TCoolDockClientPanel(FDockPanels[TabControl.TabIndex]).Control.Hide;
 end;
 
 procedure TCoolDockManager.PopupMenuRenameClick(Sender: TObject);
@@ -664,9 +683,22 @@ begin
   TabsPos := hpBottom;
 end;
 
+procedure TCoolDockManager.PopupMenuUndockClick(Sender: TObject);
+begin
+
+end;
+
 procedure TCoolDockManager.Timer1Timer(Sender: TObject);
 begin
 //  TimerMoveForm.Width := TimerMoveForm.Width
+end;
+
+procedure TCoolDockManager.TabControlMouseDown(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
+begin
+  if (Button = mbLeft) and (TabControl.TabIndex <> -1) then begin
+    DragManager.DragStart(TCoolDockClientPanel(FDockPanels[TabControl.TabIndex]).Control, False, 1);
+  end;
 end;
 
 procedure TCoolDockManager.PopupMenuListClick(Sender: TObject);
@@ -802,8 +834,75 @@ begin
 end;
 
 procedure TCoolDockMaster.SaveLayoutToStream(Stream: TStream);
+var
+  Doc: TXMLDocument;
+  RootNode: TDOMNode;
+  NewNode: TDOMNode;
+  NewNode2: TDOMNode;
+  I: Integer;
 begin
+  Doc := TXMLDocument.Create;
+  with Doc do try
+    RootNode := CreateElement('DockLayout');
+    AppendChild(RootNode);
+    with RootNode do begin
+      for I := 0 to Application.ComponentCount - 1 do begin
+        if Application.Components[I] is TForm then
+        with Application.Components[I] as TForm do
+        if Assigned(HostDockSite) then
+        begin
+          NewNode := OwnerDocument.CreateElement('Form');
 
+          if HostDockSite.Parent is TForm then begin
+            NewNode2 := OwnerDocument.CreateElement('ParentFormName');
+            NewNode2.TextContent := UTF8Decode(HostDockSite.Parent.Name);
+            NewNode.AppendChild(NewNode2);
+
+            NewNode2 := OwnerDocument.CreateElement('ParentFormClassName');
+            NewNode2.TextContent := UTF8Decode(HostDockSite.Parent.ClassName);
+            NewNode.AppendChild(NewNode2);
+          end;
+
+          NewNode2 := OwnerDocument.CreateElement('Name');
+          NewNode2.TextContent := UTF8Decode(Name);
+          NewNode.AppendChild(NewNode2);
+
+          NewNode2 := OwnerDocument.CreateElement('Caption');
+          NewNode2.TextContent := UTF8Decode(Caption);
+          NewNode.AppendChild(NewNode2);
+
+          NewNode2 := OwnerDocument.CreateElement('Width');
+          NewNode2.TextContent := IntToStr(Width);
+          NewNode.AppendChild(NewNode2);
+
+          NewNode2 := OwnerDocument.CreateElement('Height');
+          NewNode2.TextContent := IntToStr(Height);
+          NewNode.AppendChild(NewNode2);
+
+          NewNode2 := OwnerDocument.CreateElement('UndockWidth');
+          NewNode2.TextContent := IntToStr(UndockWidth);
+          NewNode.AppendChild(NewNode2);
+
+          NewNode2 := OwnerDocument.CreateElement('UndockHeight');
+          NewNode2.TextContent := IntToStr(UndockHeight);
+          NewNode.AppendChild(NewNode2);
+
+          NewNode2 := OwnerDocument.CreateElement('FormState');
+          NewNode2.TextContent := IntToStr(Integer(FormState));
+          NewNode.AppendChild(NewNode2);
+
+          NewNode2 := OwnerDocument.CreateElement('Visible');
+          NewNode2.TextContent := IntToStr(Integer(Visible));
+          NewNode.AppendChild(NewNode2);
+
+          AppendChild(NewNode);
+        end;
+      end;
+    end;
+    WriteXMLFile(Doc, Stream);
+  finally
+    Free;
+  end;
 end;
 
 procedure TCoolDockMaster.LoadLayoutFromStream(Stream: TStream);
