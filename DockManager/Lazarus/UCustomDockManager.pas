@@ -462,6 +462,7 @@ begin
     //FDockSite.Invalidate;
     //if (FDockSite is TConjoinDockForm) and (FDockSite.DockClientCount = 1) then
     //  FDockSite.Free;
+    DockStyle := DockStyle;
   end;
 end;
 
@@ -716,7 +717,7 @@ begin
     //Color := clRed;
   end;
   OnPaint := DockPanelPaint;
-  OnMouseDown := DockPanelMouseDown;
+  Header.Shape.OnMouseDown := DockPanelMouseDown;
   OnResize := ResizeExecute;
   BevelInner := bvNone;
   BevelOuter := bvNone;
