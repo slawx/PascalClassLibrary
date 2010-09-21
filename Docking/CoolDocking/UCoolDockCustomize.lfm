@@ -49,6 +49,7 @@ object CoolDockCustomizeForm: TCoolDockCustomizeForm
     Width = 75
     Anchors = [akRight, akBottom]
     Caption = 'Close'
+    OnClick = ButtonCloseClick
     TabOrder = 1
   end
 end

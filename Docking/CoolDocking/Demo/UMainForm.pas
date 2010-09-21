@@ -15,16 +15,22 @@ type
 
   TMainForm = class(TForm)
     Button1: TButton;
-    Button2: TButton;
     CoolDockCustomize1: TCoolDockCustomize;
     CoolDockMaster1: TCoolDockMaster;
+    CoolDockWindowList1: TCoolDockWindowList;
+    MainMenu1: TMainMenu;
+    MenuItem1: TMenuItem;
+    MenuItem2: TMenuItem;
+    MenuItem3: TMenuItem;
+    MenuItem4: TMenuItem;
     Panel1: TPanel;
-    TabControl1: TTabControl;
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure MenuItem2Click(Sender: TObject);
+    procedure MenuItem4Click(Sender: TObject);
   private
     { private declarations }
   public
@@ -72,6 +78,16 @@ begin
 //  TCustomDockManager(TDockForm(DockForms[0]).DockManager).DockStyle := dsTabs;
 end;
 
+procedure TMainForm.MenuItem2Click(Sender: TObject);
+begin
+  CoolDockCustomize1.Execute;
+end;
+
+procedure TMainForm.MenuItem4Click(Sender: TObject);
+begin
+  CoolDockWindowList1.Execute;
+end;
+
 function TMainForm.NewDockForm: TDockForm;
 begin
   Result := TDockForm.Create(Self);
@@ -93,7 +109,7 @@ end;
 
 procedure TMainForm.Button2Click(Sender: TObject);
 begin
-  CoolDockCustomize1.Execute;
+
 end;
 
 end.

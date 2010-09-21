@@ -9,7 +9,7 @@ interface
 uses
   Classes, SysUtils, Controls, LCLType, LMessages, Graphics, StdCtrls,
   Buttons, ExtCtrls, Contnrs, Forms, ComCtrls, Dialogs, Menus, FileUtil,
-  UCoolDockCustomize, DOM, XMLWrite, XMLRead;
+  UCoolDockCustomize, DOM, XMLWrite, XMLRead, UCoolDockWindowList;
 
 const
   GrabberSize = 22;
@@ -20,6 +20,7 @@ type
 
   TCoolDockManager = class;
   TCoolDockClientPanel = class;
+  TCoolDockCustomize = class;
 
   { TCoolDockConjoinForm }
 
@@ -55,6 +56,7 @@ type
     procedure SetAutoHide(const AValue: Boolean);
     procedure SetHeaderPos(const AValue: THeaderPos);
     procedure SetShowHeader(const AValue: Boolean);
+    procedure VisibleChange(Sender: TObject);
   public
     Header: TCoolDockHeader;
     OwnerDockManager: TCoolDockManager;
@@ -79,7 +81,8 @@ type
     FMoveDuration: Integer;
     FTabsPos: THeaderPos;
     Timer1: TTimer;
-    PopupMenu1: TPopupMenu;
+    PopupMenuTabs: TPopupMenu;
+    PopupMenuHeader: TPopupMenu;
     FDockStyle: TDockStyle;
     TabControl: TTabControl;
     FDockDirection: TDockDirection;
@@ -104,6 +107,7 @@ type
     procedure PopupMenuPositionTopClick(Sender: TObject);
     procedure PopupMenuPositionBottomClick(Sender: TObject);
     procedure PopupMenuUndockClick(Sender: TObject);
+    procedure PopupMenuCustomizeClick(Sender: TObject);
     procedure Timer1Timer(Sender: TObject);
     procedure TabControlMouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
@@ -142,8 +146,10 @@ type
 
   TCoolDockMaster = class(TComponent)
   private
+    FCoolDockCustomize: TCoolDockCustomize;
     FDefaultHeaderPos: THeaderPos;
     FTabsEnabled: Boolean;
+    procedure SetCustomize(const AValue: TCoolDockCustomize);
     procedure SetTabsEnabled(const AValue: Boolean);
   public
     procedure SaveLayoutToStream(Stream: TStream);
@@ -154,6 +160,33 @@ type
     property TabsEnabled: Boolean read FTabsEnabled write SetTabsEnabled;
     property DefaultHeaderPos: THeaderPos read FDefaultHeaderPos
       write FDefaultHeaderPos;
+    property Customize: TCoolDockCustomize read FCoolDockCustomize
+      write SetCustomize;
+  end;
+
+  { TCoolDockCustomize }
+
+  TCoolDockCustomize = class(TComponent)
+  private
+    FManager: TCoolDockMaster;
+    procedure SetManager(const AValue: TCoolDockMaster);
+  public
+    Form: TCoolDockCustomizeForm;
+    function Execute: Boolean;
+    constructor Create(AOwner: TComponent); override;
+  published
+    property Manager: TCoolDockMaster read FManager write SetManager;
+  end;
+
+  { TCoolDockWindowList }
+
+  TCoolDockWindowList = class(TComponent)
+  private
+  public
+    Form: TCoolDockWindowListForm;
+    function Execute: Boolean;
+    constructor Create(AOwner: TComponent); override;
+  published
   end;
 
 procedure Register;
@@ -173,11 +206,13 @@ resourcestring
   SPositionRight = 'Right';
   SPositionBottom = 'Bottom';
   SUndock = 'Undock';
+  SCustomize = 'Customize...';
 
 procedure Register;
 begin
   RegisterComponents('CoolDocking', [TCoolDockMaster]);
   RegisterComponents('CoolDocking', [TCoolDockCustomize]);
+  RegisterComponents('CoolDocking', [TCoolDockWindowList]);
 end;
 
 
@@ -203,15 +238,18 @@ begin
   inherited Create(ADockSite);
   FDockSite := ADockSite;
   FDockPanels := TObjectList.Create;
-  PopupMenu1 := TPopupMenu.Create(FDockSite);
 
   Timer1 := TTimer.Create(nil);
   Timer1.Enabled := False;
   Timer1.OnTimer := Timer1Timer;
 
-  NewMenuItem := TMenuItem.Create(PopupMenu1);
+  // Tabs popup
+
+  PopupMenuTabs := TPopupMenu.Create(FDockSite);
+
+  NewMenuItem := TMenuItem.Create(PopupMenuTabs);
   NewMenuItem.Caption := SDockStyle;
-  PopupMenu1.Items.Add(NewMenuItem);
+  PopupMenuTabs.Items.Add(NewMenuItem);
 
   NewMenuItem2 := TMenuItem.Create(NewMenuItem);
   NewMenuItem2.Caption := SDockList;
@@ -223,9 +261,9 @@ begin
   NewMenuItem2.OnClick := PopupMenuTabsClick;
   NewMenuItem.Add(NewMenuItem2);
 
-  NewMenuItem := TMenuItem.Create(PopupMenu1);
+  NewMenuItem := TMenuItem.Create(PopupMenuTabs);
   NewMenuItem.Caption := SPosition;
-  PopupMenu1.Items.Add(NewMenuItem);
+  PopupMenuTabs.Items.Add(NewMenuItem);
 
   NewMenuItem2 := TMenuItem.Create(NewMenuItem);
   NewMenuItem2.Caption := SPositionAuto;
@@ -252,20 +290,92 @@ begin
   NewMenuItem2.OnClick := PopupMenuPositionRightClick;
   NewMenuItem.Add(NewMenuItem2);
 
-  NewMenuItem := TMenuItem.Create(PopupMenu1);
+  NewMenuItem := TMenuItem.Create(PopupMenuTabs);
   NewMenuItem.Caption := SCloseForm;
   NewMenuItem.OnClick := PopupMenuCloseClick;
-  PopupMenu1.Items.Add(NewMenuItem);
+  PopupMenuTabs.Items.Add(NewMenuItem);
 
-  NewMenuItem := TMenuItem.Create(PopupMenu1);
+  NewMenuItem := TMenuItem.Create(PopupMenuTabs);
   NewMenuItem.Caption := SRenameForm;
   NewMenuItem.OnClick := PopupMenuRenameClick;
-  PopupMenu1.Items.Add(NewMenuItem);
+  PopupMenuTabs.Items.Add(NewMenuItem);
 
-  NewMenuItem := TMenuItem.Create(PopupMenu1);
+  NewMenuItem := TMenuItem.Create(PopupMenuTabs);
   NewMenuItem.Caption := SUndock;
   NewMenuItem.OnClick := PopupMenuUndockClick;
-  PopupMenu1.Items.Add(NewMenuItem);
+  PopupMenuTabs.Items.Add(NewMenuItem);
+
+  NewMenuItem := TMenuItem.Create(PopupMenuTabs);
+  NewMenuItem.Caption := SCustomize;
+  NewMenuItem.OnClick := PopupMenuCustomizeClick;
+  PopupMenuTabs.Items.Add(NewMenuItem);
+
+  // Header popup
+
+  PopupMenuHeader := TPopupMenu.Create(FDockSite);
+
+  NewMenuItem := TMenuItem.Create(PopupMenuHeader);
+  NewMenuItem.Caption := SDockStyle;
+  PopupMenuHeader.Items.Add(NewMenuItem);
+
+  NewMenuItem2 := TMenuItem.Create(NewMenuItem);
+  NewMenuItem2.Caption := SDockList;
+  NewMenuItem2.OnClick := PopupMenuListClick;
+  NewMenuItem.Add(NewMenuItem2);
+
+  NewMenuItem2 := TMenuItem.Create(NewMenuItem);
+  NewMenuItem2.Caption := SDockTabs;
+  NewMenuItem2.OnClick := PopupMenuTabsClick;
+  NewMenuItem.Add(NewMenuItem2);
+
+  NewMenuItem := TMenuItem.Create(PopupMenuHeader);
+  NewMenuItem.Caption := SPosition;
+  PopupMenuHeader.Items.Add(NewMenuItem);
+
+  NewMenuItem2 := TMenuItem.Create(NewMenuItem);
+  NewMenuItem2.Caption := SPositionAuto;
+  NewMenuItem2.OnClick := PopupMenuPositionAutoClick;
+  NewMenuItem.Add(NewMenuItem2);
+
+  NewMenuItem2 := TMenuItem.Create(NewMenuItem);
+  NewMenuItem2.Caption := SPositionTop;
+  NewMenuItem2.OnClick := PopupMenuPositionTopClick;
+  NewMenuItem.Add(NewMenuItem2);
+
+  NewMenuItem2 := TMenuItem.Create(NewMenuItem);
+  NewMenuItem2.Caption := SPositionLeft;
+  NewMenuItem2.OnClick := PopupMenuPositionLeftClick;
+  NewMenuItem.Add(NewMenuItem2);
+
+  NewMenuItem2 := TMenuItem.Create(NewMenuItem);
+  NewMenuItem2.Caption := SPositionBottom;
+  NewMenuItem2.OnClick := PopupMenuPositionBottomClick;
+  NewMenuItem.Add(NewMenuItem2);
+
+  NewMenuItem2 := TMenuItem.Create(NewMenuItem);
+  NewMenuItem2.Caption := SPositionRight;
+  NewMenuItem2.OnClick := PopupMenuPositionRightClick;
+  NewMenuItem.Add(NewMenuItem2);
+
+  NewMenuItem := TMenuItem.Create(PopupMenuHeader);
+  NewMenuItem.Caption := SCloseForm;
+  NewMenuItem.OnClick := PopupMenuCloseClick;
+  PopupMenuHeader.Items.Add(NewMenuItem);
+
+  NewMenuItem := TMenuItem.Create(PopupMenuHeader);
+  NewMenuItem.Caption := SRenameForm;
+  NewMenuItem.OnClick := PopupMenuRenameClick;
+  PopupMenuHeader.Items.Add(NewMenuItem);
+
+  NewMenuItem := TMenuItem.Create(PopupMenuHeader);
+  NewMenuItem.Caption := SUndock;
+  NewMenuItem.OnClick := PopupMenuUndockClick;
+  PopupMenuHeader.Items.Add(NewMenuItem);
+
+  NewMenuItem := TMenuItem.Create(PopupMenuHeader);
+  NewMenuItem.Caption := SCustomize;
+  NewMenuItem.OnClick := PopupMenuCustomizeClick;
+  PopupMenuHeader.Items.Add(NewMenuItem);
 
   TabControl := TTabControl.Create(FDockSite);
   with TabControl do begin
@@ -274,7 +384,7 @@ begin
     Align := alTop;
     Height := 24;
     OnChange := TabControlChange;
-    PopupMenu := PopupMenu1;
+    PopupMenu := PopupMenuTabs;
     OnMouseDown := TabControlMouseDown;
   end;
   TabsPos := hpTop;
@@ -356,6 +466,7 @@ begin
       OwnerDockManager := Self;
       if DockStyle = dsList then Visible := True;
       Align := alClient;
+      Header.PopupMenu := PopupMenuHeader;
     end;
 
     if DockStyle = dsTabs then begin
@@ -367,6 +478,7 @@ begin
       TabControlChange(Self);
     end;
     NewPanel.Control := Control;
+    Control.AddHandlerOnVisibleChanged(NewPanel.VisibleChange);
     Control.Parent := NewPanel.ClientAreaPanel;
     Control.Align := alClient;
     FDockPanels.Add(NewPanel);
@@ -595,9 +707,9 @@ begin
   if DockStyle = dsList then begin
     for I := 0 to FDockPanels.Count - 1 do begin
       TCoolDockClientPanel(FDockPanels[I]).Height := FDockSite.Height div
-        FDockSite.DockClientCount;
+        FDockSite.VisibleDockClientCount;
       TCoolDockClientPanel(FDockPanels[I]).Width := FDockSite.Width div
-        FDockSite.DockClientCount;
+        FDockSite.VisibleDockClientCount;
       //TCoolDockClientPanel(FDockPanels[I]).DockPanelPaint(Self);
     end;
   end else
@@ -643,8 +755,13 @@ begin
 end;
 
 procedure TCoolDockManager.PopupMenuCloseClick(Sender: TObject);
+var
+  Control: TControl;
 begin
-  TForm(TCoolDockManager(TControl(Sender).Parent.Parent.Parent.DockManager).FDockSite).Close;
+  Control := FindLCLControl(Mouse.CursorPos);
+  if Assigned(Control) then
+    ShowMessage(Control.ClassName);
+//  DockSiteTForm(TCoolDockManager(TControl(Sender).Parent.Parent.Parent.DockManager).FDockSite).Close;
 end;
 
 procedure TCoolDockManager.PopupMenuTabCloseClick(Sender: TObject);
@@ -688,6 +805,12 @@ begin
 
 end;
 
+procedure TCoolDockManager.PopupMenuCustomizeClick(Sender: TObject);
+begin
+//  if Assigned(DockMaster.Customize) then
+//    DockMaster.Customize.Execute;
+end;
+
 procedure TCoolDockManager.Timer1Timer(Sender: TObject);
 begin
 //  TimerMoveForm.Width := TimerMoveForm.Width
@@ -715,6 +838,14 @@ begin
   DockPanelPaint(Self);
 end;
 
+procedure TCoolDockClientPanel.VisibleChange(Sender: TObject);
+begin
+  //OwnerDockManager.FDockPanels.Remove(Self);
+  ClientAreaPanel.Visible := Control.Visible;
+  Splitter.Visible := Control.Visible;
+  OwnerDockManager.UpdateClientSize;
+end;
+
 procedure TCoolDockClientPanel.SetAutoHide(const AValue: Boolean);
 begin
   if FAutoHide=AValue then exit;
@@ -736,6 +867,7 @@ begin
     Visible := ShowHeader;
     Align := alTop;
     Height := GrabberSize;
+    ParentClientPanel := Self;
   end;
   ClientAreaPanel := TPanel.Create(Self);
   with ClientAreaPanel do begin
@@ -831,6 +963,16 @@ procedure TCoolDockMaster.SetTabsEnabled(const AValue: Boolean);
 begin
   if FTabsEnabled=AValue then exit;
   FTabsEnabled:=AValue;
+end;
+
+procedure TCoolDockMaster.SetCustomize(const AValue: TCoolDockCustomize
+  );
+begin
+  if FCoolDockCustomize=AValue then exit;
+  FCoolDockCustomize:=AValue;
+  if Assigned(AValue) then
+    if not Assigned(AValue.Manager) then
+      AValue.Manager := Self;
 end;
 
 procedure TCoolDockMaster.SaveLayoutToStream(Stream: TStream);
@@ -997,7 +1139,45 @@ end;
 
 procedure TCoolDockHeader.CloseButtonClick(Sender: TObject);
 begin
-//  Control.Hide;
+  ParentClientPanel.Control.Hide;
+end;
+
+{ TCoolDockCustomize }
+
+procedure TCoolDockCustomize.SetManager(const AValue: TCoolDockMaster);
+begin
+  if FManager = AValue then exit;
+  FManager := AValue;
+  if Assigned(AValue) then
+    if not Assigned(AValue.Customize) then
+      AValue.Customize := Self;
+end;
+
+function TCoolDockCustomize.Execute: Boolean;
+begin
+  Form.ShowModal;
+  Result := True;
+end;
+
+constructor TCoolDockCustomize.Create(AOwner: TComponent);
+begin
+  inherited Create(AOwner);
+  Form := TCoolDockCustomizeForm.Create(Self);
+end;
+
+
+{ TCoolDockWindowList }
+
+function TCoolDockWindowList.Execute: Boolean;
+begin
+  Form.ShowModal;
+  Result := True;
+end;
+
+constructor TCoolDockWindowList.Create(AOwner: TComponent);
+begin
+  inherited Create(AOwner);
+  Form := TCoolDockWindowListForm.Create(Self);
 end;
 
 initialization

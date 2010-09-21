@@ -1,0 +1,19 @@
+msgid ""
+msgstr "Content-Type: text/plain; charset=UTF-8"
+
+#: ucooldockwindowlist.sstatedocked
+msgid "Docked"
+msgstr ""
+
+#: ucooldockwindowlist.sstatefloating
+msgid "Floating"
+msgstr ""
+
+#: ucooldockwindowlist.sstatehidden
+msgid "Hidden"
+msgstr ""
+
+#: ucooldockwindowlist.sstatevisible
+msgid "Visible"
+msgstr ""
+

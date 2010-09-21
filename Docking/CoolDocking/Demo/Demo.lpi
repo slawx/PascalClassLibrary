@@ -34,16 +34,16 @@
         <PackageName Value="LCL"/>
       </Item2>
     </RequiredPackages>
-    <Units Count="39">
+    <Units Count="41">
       <Unit0>
         <Filename Value="Demo.lpr"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="Demo"/>
-        <EditorIndex Value="10"/>
+        <EditorIndex Value="13"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="18"/>
-        <UsageCount Value="41"/>
+        <UsageCount Value="77"/>
         <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit0>
@@ -53,12 +53,11 @@
         <ComponentName Value="MainForm"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UMainForm"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="53"/>
-        <CursorPos X="3" Y="73"/>
-        <UsageCount Value="41"/>
+        <TopLine Value="14"/>
+        <CursorPos X="15" Y="27"/>
+        <UsageCount Value="77"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
@@ -66,11 +65,11 @@
       <Unit2>
         <Filename Value="E:\Programy\Lazarus\lcl\controls.pp"/>
         <UnitName Value="Controls"/>
-        <EditorIndex Value="4"/>
+        <EditorIndex Value="6"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="1689"/>
-        <CursorPos X="15" Y="1702"/>
-        <UsageCount Value="19"/>
+        <TopLine Value="1891"/>
+        <CursorPos X="31" Y="1907"/>
+        <UsageCount Value="37"/>
         <Loaded Value="True"/>
       </Unit2>
       <Unit3>
@@ -79,23 +78,25 @@
         <WindowIndex Value="0"/>
         <TopLine Value="98"/>
         <CursorPos X="27" Y="110"/>
-        <UsageCount Value="24"/>
+        <UsageCount Value="20"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit3>
       <Unit4>
         <Filename Value="E:\Programy\Lazarus\lcl\include\control.inc"/>
+        <EditorIndex Value="7"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="1041"/>
-        <CursorPos X="1" Y="1048"/>
-        <UsageCount Value="18"/>
+        <TopLine Value="1325"/>
+        <CursorPos X="20" Y="1335"/>
+        <UsageCount Value="35"/>
+        <Loaded Value="True"/>
       </Unit4>
       <Unit5>
         <Filename Value="E:\Programy\Lazarus\lcl\include\wincontrol.inc"/>
-        <EditorIndex Value="5"/>
+        <EditorIndex Value="8"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="5966"/>
-        <CursorPos X="14" Y="5976"/>
-        <UsageCount Value="18"/>
+        <TopLine Value="7669"/>
+        <CursorPos X="37" Y="7672"/>
+        <UsageCount Value="36"/>
         <Loaded Value="True"/>
       </Unit5>
       <Unit6>
@@ -104,15 +105,15 @@
         <WindowIndex Value="0"/>
         <TopLine Value="28"/>
         <CursorPos X="54" Y="32"/>
-        <UsageCount Value="11"/>
+        <UsageCount Value="7"/>
       </Unit6>
       <Unit7>
         <Filename Value="E:\Programy\Lazarus\fpc\2.4.0\source\rtl\objpas\classes\classesh.inc"/>
-        <EditorIndex Value="11"/>
+        <EditorIndex Value="14"/>
         <WindowIndex Value="0"/>
         <TopLine Value="259"/>
         <CursorPos X="14" Y="272"/>
-        <UsageCount Value="11"/>
+        <UsageCount Value="29"/>
         <Loaded Value="True"/>
       </Unit7>
       <Unit8>
@@ -120,7 +121,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="206"/>
         <CursorPos X="8" Y="219"/>
-        <UsageCount Value="11"/>
+        <UsageCount Value="7"/>
       </Unit8>
       <Unit9>
         <Filename Value="E:\Programy\Lazarus\lcl\lcltype.pp"/>
@@ -128,16 +129,16 @@
         <WindowIndex Value="0"/>
         <TopLine Value="114"/>
         <CursorPos X="3" Y="127"/>
-        <UsageCount Value="9"/>
+        <UsageCount Value="5"/>
       </Unit9>
       <Unit10>
         <Filename Value="E:\Programy\Lazarus\lcl\lclproc.pas"/>
         <UnitName Value="LCLProc"/>
-        <EditorIndex Value="7"/>
+        <EditorIndex Value="10"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="192"/>
-        <CursorPos X="11" Y="205"/>
-        <UsageCount Value="10"/>
+        <TopLine Value="1493"/>
+        <CursorPos X="18" Y="1498"/>
+        <UsageCount Value="28"/>
         <Loaded Value="True"/>
       </Unit10>
       <Unit11>
@@ -145,14 +146,14 @@
         <WindowIndex Value="0"/>
         <TopLine Value="417"/>
         <CursorPos X="60" Y="434"/>
-        <UsageCount Value="9"/>
+        <UsageCount Value="5"/>
       </Unit11>
       <Unit12>
         <Filename Value="E:\Programy\Lazarus\fpc\2.4.0\source\rtl\objpas\sysutils\filutilh.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="67"/>
         <CursorPos X="10" Y="80"/>
-        <UsageCount Value="9"/>
+        <UsageCount Value="5"/>
       </Unit12>
       <Unit13>
         <Filename Value="E:\Programy\Lazarus\fpc\2.4.0\source\rtl\win\sysutils.pp"/>
@@ -160,14 +161,14 @@
         <WindowIndex Value="0"/>
         <TopLine Value="280"/>
         <CursorPos X="3" Y="282"/>
-        <UsageCount Value="11"/>
+        <UsageCount Value="7"/>
       </Unit13>
       <Unit14>
         <Filename Value="E:\Programy\Lazarus\lcl\include\docktree.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="200"/>
         <CursorPos X="3" Y="218"/>
-        <UsageCount Value="11"/>
+        <UsageCount Value="7"/>
       </Unit14>
       <Unit15>
         <Filename Value="UDockForm.pas"/>
@@ -180,7 +181,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="47" Y="8"/>
-        <UsageCount Value="40"/>
+        <UsageCount Value="76"/>
         <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit15>
@@ -190,7 +191,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="675"/>
         <CursorPos X="24" Y="688"/>
-        <UsageCount Value="11"/>
+        <UsageCount Value="7"/>
       </Unit16>
       <Unit17>
         <Filename Value="E:\Programy\Lazarus\lcl\stdctrls.pp"/>
@@ -198,7 +199,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1092"/>
         <CursorPos X="9" Y="1098"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="6"/>
       </Unit17>
       <Unit18>
         <Filename Value="E:\Projekty jine\Lazarus\examples\anchordocking\anchordocking.pas"/>
@@ -206,7 +207,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="4756"/>
         <CursorPos X="5" Y="4763"/>
-        <UsageCount Value="19"/>
+        <UsageCount Value="15"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit18>
       <Unit19>
@@ -215,7 +216,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="362"/>
         <CursorPos X="21" Y="369"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="6"/>
       </Unit19>
       <Unit20>
         <Filename Value="..\UCoolDockManager.pas"/>
@@ -223,17 +224,17 @@
         <WindowIndex Value="0"/>
         <TopLine Value="702"/>
         <CursorPos X="10" Y="719"/>
-        <UsageCount Value="33"/>
+        <UsageCount Value="29"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit20>
       <Unit21>
         <Filename Value="E:\Programy\Lazarus\lcl\extctrls.pp"/>
         <UnitName Value="ExtCtrls"/>
-        <EditorIndex Value="3"/>
+        <EditorIndex Value="5"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1153"/>
         <CursorPos X="32" Y="1160"/>
-        <UsageCount Value="11"/>
+        <UsageCount Value="29"/>
         <Loaded Value="True"/>
       </Unit21>
       <Unit22>
@@ -242,21 +243,21 @@
         <WindowIndex Value="0"/>
         <TopLine Value="479"/>
         <CursorPos X="30" Y="488"/>
-        <UsageCount Value="9"/>
+        <UsageCount Value="5"/>
       </Unit22>
       <Unit23>
         <Filename Value="E:\Programy\Lazarus\lcl\include\dragmanager.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="538"/>
         <CursorPos X="20" Y="567"/>
-        <UsageCount Value="14"/>
+        <UsageCount Value="10"/>
       </Unit23>
       <Unit24>
         <Filename Value="E:\Programy\Lazarus\lcl\include\customform.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="359"/>
         <CursorPos X="1" Y="372"/>
-        <UsageCount Value="9"/>
+        <UsageCount Value="5"/>
       </Unit24>
       <Unit25>
         <Filename Value="E:\Programy\Lazarus\lcl\widgetset\wscontrols.pp"/>
@@ -264,7 +265,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="267"/>
         <CursorPos X="1" Y="269"/>
-        <UsageCount Value="16"/>
+        <UsageCount Value="12"/>
       </Unit25>
       <Unit26>
         <Filename Value="E:\Programy\Lazarus\lcl\comctrls.pp"/>
@@ -272,7 +273,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="551"/>
         <CursorPos X="3" Y="558"/>
-        <UsageCount Value="16"/>
+        <UsageCount Value="12"/>
       </Unit26>
       <Unit27>
         <Filename Value="E:\Programy\Lazarus\lcl\forms.pp"/>
@@ -280,16 +281,16 @@
         <WindowIndex Value="0"/>
         <TopLine Value="693"/>
         <CursorPos X="14" Y="700"/>
-        <UsageCount Value="15"/>
+        <UsageCount Value="11"/>
       </Unit27>
       <Unit28>
         <Filename Value="E:\Programy\Lazarus\lcl\themes.pas"/>
         <UnitName Value="Themes"/>
-        <EditorIndex Value="13"/>
+        <EditorIndex Value="16"/>
         <WindowIndex Value="0"/>
         <TopLine Value="550"/>
         <CursorPos X="26" Y="560"/>
-        <UsageCount Value="13"/>
+        <UsageCount Value="31"/>
         <Loaded Value="True"/>
       </Unit28>
       <Unit29>
@@ -298,7 +299,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="374"/>
         <CursorPos X="3" Y="387"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="6"/>
       </Unit29>
       <Unit30>
         <Filename Value="..\..\..\ExceptionLogger\UExceptionLogger.pas"/>
@@ -306,7 +307,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="49"/>
         <CursorPos X="1" Y="56"/>
-        <UsageCount Value="12"/>
+        <UsageCount Value="8"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit30>
       <Unit31>
@@ -315,7 +316,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="68"/>
         <CursorPos X="3" Y="77"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="6"/>
       </Unit31>
       <Unit32>
         <Filename Value="E:\Programy\Lazarus\lcl\interfaces\win32\win32wsforms.pp"/>
@@ -323,179 +324,218 @@
         <WindowIndex Value="0"/>
         <TopLine Value="341"/>
         <CursorPos X="1" Y="354"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="6"/>
       </Unit32>
       <Unit33>
         <Filename Value="..\UCoolDocking.pas"/>
         <UnitName Value="UCoolDocking"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="37"/>
-        <CursorPos X="35" Y="50"/>
-        <UsageCount Value="10"/>
+        <TopLine Value="1"/>
+        <CursorPos X="66" Y="12"/>
+        <UsageCount Value="28"/>
         <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit33>
       <Unit34>
         <Filename Value="..\ReadMe.txt"/>
-        <EditorIndex Value="14"/>
+        <EditorIndex Value="17"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
-        <CursorPos X="24" Y="7"/>
-        <UsageCount Value="10"/>
+        <CursorPos X="29" Y="16"/>
+        <UsageCount Value="28"/>
         <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="None"/>
       </Unit34>
       <Unit35>
         <Filename Value="E:\Programy\Lazarus\fpc\2.4.0\source\rtl\objpas\classes\lists.inc"/>
-        <EditorIndex Value="12"/>
+        <EditorIndex Value="15"/>
         <WindowIndex Value="0"/>
         <TopLine Value="641"/>
         <CursorPos X="3" Y="643"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="28"/>
         <Loaded Value="True"/>
       </Unit35>
       <Unit36>
         <Filename Value="E:\Programy\Lazarus\lcl\include\custompanel.inc"/>
-        <EditorIndex Value="9"/>
+        <EditorIndex Value="12"/>
         <WindowIndex Value="0"/>
         <TopLine Value="27"/>
         <CursorPos X="3" Y="32"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="28"/>
         <Loaded Value="True"/>
       </Unit36>
       <Unit37>
         <Filename Value="E:\Programy\Lazarus\lcl\include\customcontrol.inc"/>
-        <EditorIndex Value="8"/>
+        <EditorIndex Value="11"/>
         <WindowIndex Value="0"/>
         <TopLine Value="50"/>
         <CursorPos X="18" Y="61"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="28"/>
         <Loaded Value="True"/>
       </Unit37>
       <Unit38>
         <Filename Value="E:\Programy\Lazarus\lcl\include\controlsproc.inc"/>
-        <EditorIndex Value="6"/>
+        <EditorIndex Value="9"/>
         <WindowIndex Value="0"/>
         <TopLine Value="84"/>
         <CursorPos X="45" Y="90"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="28"/>
         <Loaded Value="True"/>
       </Unit38>
+      <Unit39>
+        <Filename Value="..\UCoolDockCustomize.pas"/>
+        <ComponentName Value="CoolDockCustomizeForm"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="UCoolDockCustomize"/>
+        <EditorIndex Value="4"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="9"/>
+        <CursorPos X="19" Y="17"/>
+        <UsageCount Value="28"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit39>
+      <Unit40>
+        <Filename Value="..\UCoolDockWindowList.pas"/>
+        <ComponentName Value="CoolDockWindowList"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="UCoolDockWindowList"/>
+        <EditorIndex Value="3"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="59"/>
+        <CursorPos X="44" Y="61"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit40>
     </Units>
-    <JumpHistory Count="28" HistoryIndex="27">
+    <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
-        <Filename Value="..\UCoolDocking.pas"/>
-        <Caret Line="91" Column="26" TopLine="86"/>
+        <Filename Value="E:\Programy\Lazarus\lcl\include\control.inc"/>
+        <Caret Line="1351" Column="16" TopLine="1336"/>
       </Position1>
       <Position2>
-        <Filename Value="..\UCoolDocking.pas"/>
-        <Caret Line="354" Column="15" TopLine="334"/>
+        <Filename Value="E:\Programy\Lazarus\lcl\include\control.inc"/>
+        <Caret Line="5" Column="61" TopLine="1"/>
       </Position2>
       <Position3>
-        <Filename Value="..\UCoolDocking.pas"/>
-        <Caret Line="308" Column="11" TopLine="303"/>
+        <Filename Value="E:\Programy\Lazarus\lcl\include\control.inc"/>
+        <Caret Line="1338" Column="22" TopLine="1325"/>
       </Position3>
       <Position4>
         <Filename Value="..\UCoolDocking.pas"/>
-        <Caret Line="320" Column="59" TopLine="312"/>
+        <Caret Line="469" Column="35" TopLine="450"/>
       </Position4>
       <Position5>
         <Filename Value="..\UCoolDocking.pas"/>
-        <Caret Line="354" Column="65" TopLine="338"/>
+        <Caret Line="468" Column="12" TopLine="450"/>
       </Position5>
       <Position6>
         <Filename Value="..\UCoolDocking.pas"/>
-        <Caret Line="105" Column="37" TopLine="93"/>
+        <Caret Line="417" Column="29" TopLine="404"/>
       </Position6>
       <Position7>
         <Filename Value="..\UCoolDocking.pas"/>
-        <Caret Line="677" Column="89" TopLine="674"/>
+        <Caret Line="59" Column="46" TopLine="50"/>
       </Position7>
       <Position8>
         <Filename Value="..\UCoolDocking.pas"/>
-        <Caret Line="267" Column="36" TopLine="254"/>
+        <Caret Line="470" Column="54" TopLine="454"/>
       </Position8>
       <Position9>
         <Filename Value="..\UCoolDocking.pas"/>
-        <Caret Line="106" Column="40" TopLine="92"/>
+        <Caret Line="832" Column="43" TopLine="828"/>
       </Position9>
       <Position10>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="51" Column="53" TopLine="50"/>
+        <Filename Value="..\UCoolDocking.pas"/>
+        <Caret Line="696" Column="12" TopLine="683"/>
       </Position10>
       <Position11>
         <Filename Value="..\UCoolDocking.pas"/>
-        <Caret Line="674" Column="23" TopLine="663"/>
+        <Caret Line="140" Column="47" TopLine="127"/>
       </Position11>
       <Position12>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="66" Column="47" TopLine="51"/>
+        <Filename Value="..\UCoolDocking.pas"/>
+        <Caret Line="833" Column="31" TopLine="830"/>
       </Position12>
       <Position13>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="68" Column="47" TopLine="53"/>
+        <Filename Value="..\UCoolDocking.pas"/>
+        <Caret Line="699" Column="28" TopLine="692"/>
       </Position13>
       <Position14>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="70" Column="47" TopLine="55"/>
+        <Filename Value="E:\Programy\Lazarus\lcl\controls.pp"/>
+        <Caret Line="1904" Column="65" TopLine="1891"/>
       </Position14>
       <Position15>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="96" Column="29" TopLine="75"/>
+        <Filename Value="..\UCoolDocking.pas"/>
+        <Caret Line="835" Column="42" TopLine="830"/>
       </Position15>
       <Position16>
-        <Filename Value="E:\Programy\Lazarus\lcl\themes.pas"/>
-        <Caret Line="561" Column="39" TopLine="550"/>
+        <Filename Value="..\UCoolDocking.pas"/>
+        <Caret Line="749" Column="1" TopLine="736"/>
       </Position16>
       <Position17>
         <Filename Value="..\UCoolDocking.pas"/>
-        <Caret Line="477" Column="12" TopLine="469"/>
+        <Caret Line="750" Column="1" TopLine="736"/>
       </Position17>
       <Position18>
         <Filename Value="..\UCoolDocking.pas"/>
-        <Caret Line="733" Column="3" TopLine="749"/>
+        <Caret Line="751" Column="1" TopLine="736"/>
       </Position18>
       <Position19>
         <Filename Value="..\UCoolDocking.pas"/>
-        <Caret Line="768" Column="1" TopLine="749"/>
+        <Caret Line="754" Column="1" TopLine="736"/>
       </Position19>
       <Position20>
-        <Filename Value="Demo.lpr"/>
-        <Caret Line="3" Column="7" TopLine="1"/>
+        <Filename Value="..\UCoolDocking.pas"/>
+        <Caret Line="699" Column="25" TopLine="686"/>
       </Position20>
       <Position21>
-        <Filename Value="..\UCoolDocking.pas"/>
-        <Caret Line="730" Column="29" TopLine="724"/>
+        <Filename Value="E:\Programy\Lazarus\lcl\controls.pp"/>
+        <Caret Line="1904" Column="69" TopLine="1891"/>
       </Position21>
       <Position22>
-        <Filename Value="..\UCoolDocking.pas"/>
-        <Caret Line="50" Column="35" TopLine="37"/>
+        <Filename Value="E:\Programy\Lazarus\lcl\controls.pp"/>
+        <Caret Line="1689" Column="34" TopLine="1676"/>
       </Position22>
       <Position23>
-        <Filename Value="E:\Programy\Lazarus\lcl\extctrls.pp"/>
-        <Caret Line="1196" Column="23" TopLine="1189"/>
+        <Filename Value="E:\Programy\Lazarus\lcl\controls.pp"/>
+        <Caret Line="1907" Column="31" TopLine="1891"/>
       </Position23>
       <Position24>
-        <Filename Value="E:\Programy\Lazarus\lcl\extctrls.pp"/>
-        <Caret Line="1160" Column="32" TopLine="1153"/>
+        <Filename Value="..\UCoolDockWindowList.pas"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
       </Position24>
       <Position25>
-        <Filename Value="E:\Programy\Lazarus\lcl\include\customcontrol.inc"/>
-        <Caret Line="61" Column="18" TopLine="50"/>
+        <Filename Value="..\UCoolDockWindowList.pas"/>
+        <Caret Line="19" Column="75" TopLine="1"/>
       </Position25>
       <Position26>
-        <Filename Value="E:\Programy\Lazarus\lcl\include\wincontrol.inc"/>
-        <Caret Line="6329" Column="9" TopLine="6316"/>
+        <Filename Value="..\UCoolDockWindowList.pas"/>
+        <Caret Line="36" Column="9" TopLine="17"/>
       </Position26>
       <Position27>
-        <Filename Value="E:\Programy\Lazarus\lcl\include\wincontrol.inc"/>
-        <Caret Line="6330" Column="7" TopLine="6316"/>
+        <Filename Value="..\UCoolDockWindowList.pas"/>
+        <Caret Line="24" Column="24" TopLine="11"/>
       </Position27>
       <Position28>
-        <Filename Value="E:\Programy\Lazarus\lcl\include\wincontrol.inc"/>
-        <Caret Line="5976" Column="14" TopLine="5966"/>
+        <Filename Value="..\UCoolDockWindowList.pas"/>
+        <Caret Line="70" Column="41" TopLine="53"/>
       </Position28>
+      <Position29>
+        <Filename Value="..\UCoolDockWindowList.pas"/>
+        <Caret Line="49" Column="40" TopLine="34"/>
+      </Position29>
+      <Position30>
+        <Filename Value="..\UCoolDockWindowList.pas"/>
+        <Caret Line="56" Column="26" TopLine="39"/>
+      </Position30>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>

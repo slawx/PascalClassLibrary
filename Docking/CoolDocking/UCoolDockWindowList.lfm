@@ -1,0 +1,63 @@
+object CoolDockWindowListForm: TCoolDockWindowListForm
+  Left = 361
+  Height = 256
+  Top = 142
+  Width = 382
+  Caption = 'Window list'
+  ClientHeight = 256
+  ClientWidth = 382
+  OnShow = FormShow
+  LCLVersion = '0.9.29'
+  object ListView1: TListView
+    Left = 8
+    Height = 211
+    Top = 5
+    Width = 366
+    Anchors = [akTop, akLeft, akRight, akBottom]
+    Columns = <    
+      item
+        Caption = 'Name'
+        Width = 200
+      end    
+      item
+        Caption = 'Dock state'
+        Width = 70
+      end    
+      item
+        Caption = 'Visibility'
+        Width = 70
+      end>
+    ItemIndex = -1
+    ReadOnly = True
+    RowSelect = True
+    SmallImages = ImageList1
+    TabOrder = 0
+    ViewStyle = vsReport
+    OnDblClick = ListView1DblClick
+    OnKeyPress = ListView1KeyPress
+  end
+  object ButtonFocus: TButton
+    Left = 214
+    Height = 25
+    Top = 224
+    Width = 75
+    Anchors = [akRight, akBottom]
+    Caption = 'Show'
+    OnClick = ButtonFocusClick
+    TabOrder = 1
+  end
+  object ButtonCancel: TButton
+    Left = 300
+    Height = 25
+    Top = 224
+    Width = 74
+    Anchors = [akRight, akBottom]
+    Caption = 'Cancel'
+    OnClick = ButtonCancelClick
+    TabOrder = 2
+  end
+  object ImageList1: TImageList
+    left = 32
+    top = 38
+  end
+end

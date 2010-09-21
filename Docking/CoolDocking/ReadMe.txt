@@ -13,3 +13,4 @@ Planned features:
 * Dock forms groups
 * Predefined customization form
 * User defined form header styles
+* Icons on tabs and grabbers

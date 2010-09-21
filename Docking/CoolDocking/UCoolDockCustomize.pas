@@ -19,31 +19,20 @@ type
     PageControl1: TPageControl;
     TabSheetSetting: TTabSheet;
     TabSheetLayouts: TTabSheet;
+    procedure ButtonCloseClick(Sender: TObject);
   private
     { private declarations }
   public
   end;
 
-  TCoolDockCustomize = class(TComponent)
-    Form: TCoolDockCustomizeForm;
-    function Execute: Boolean;
-    constructor Create(AOwner: TComponent); override;
-  end;
-
 implementation
 
-{ TCoolDockCustomize }
 
-function TCoolDockCustomize.Execute: Boolean;
-begin
-  Form.ShowModal;
-  Result := True;
-end;
+{ TCoolDockCustomizeForm }
 
-constructor TCoolDockCustomize.Create(AOwner: TComponent);
+procedure TCoolDockCustomizeForm.ButtonCloseClick(Sender: TObject);
 begin
-  inherited Create(AOwner);
-  Form := TCoolDockCustomizeForm.Create(Self);
+  Close;
 end;
 
 initialization

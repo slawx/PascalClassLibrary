@@ -14,6 +14,6 @@ LazarusResources.Add('TCoolDockCustomizeForm','FORMDATA',[
   +'Top'#2#10#5'Width'#2'd'#10'ItemHeight'#2#13#8'TabOrder'#2#0#4'Text'#6#9'Com'
   +'boBox1'#0#0#0#9'TTabSheet'#15'TabSheetLayouts'#7'Caption'#6#7'Layouts'#0#0#0
   +#7'TButton'#11'ButtonClose'#4'Left'#3'D'#1#6'Height'#2#22#3'Top'#3'&'#1#5'Wi'
-  +'dth'#2'K'#7'Anchors'#11#7'akRight'#8'akBottom'#0#7'Caption'#6#5'Close'#8'Ta'
-  +'bOrder'#2#1#0#0#0
+  +'dth'#2'K'#7'Anchors'#11#7'akRight'#8'akBottom'#0#7'Caption'#6#5'Close'#7'On'
+  +'Click'#7#16'ButtonCloseClick'#8'TabOrder'#2#1#0#0#0
 ]);

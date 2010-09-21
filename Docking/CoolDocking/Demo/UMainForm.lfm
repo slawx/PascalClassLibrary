@@ -4,8 +4,9 @@ object MainForm: TMainForm
   Top = 158
   Width = 576
   Caption = 'MainForm'
-  ClientHeight = 435
+  ClientHeight = 416
   ClientWidth = 576
+  Menu = MainMenu1
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
@@ -21,30 +22,13 @@ object MainForm: TMainForm
   end
   object Panel1: TPanel
     Left = 0
-    Height = 387
+    Height = 368
     Top = 48
     Width = 576
     Align = alBottom
     Anchors = [akTop, akLeft, akRight, akBottom]
     DockSite = True
     TabOrder = 1
-  end
-  object TabControl1: TTabControl
-    Left = 173
-    Height = 150
-    Top = 16
-    Width = 200
-    TabOrder = 2
-    TabStop = False
-  end
-  object Button2: TButton
-    Left = 94
-    Height = 25
-    Top = 10
-    Width = 75
-    Caption = 'Customize'
-    OnClick = Button2Click
-    TabOrder = 3
   end
   object CoolDockMaster1: TCoolDockMaster
     TabsEnabled = False
@@ -53,5 +37,27 @@ object MainForm: TMainForm
   end
   object CoolDockCustomize1: TCoolDockCustomize
     left = 472
+  end
+  object CoolDockWindowList1: TCoolDockWindowList
+    left = 472
+    top = 64
+  end
+  object MainMenu1: TMainMenu
+    left = 211
+    top = 14
+    object MenuItem1: TMenuItem
+      Caption = 'Docking'
+      object MenuItem2: TMenuItem
+        Caption = 'Customize...'
+        OnClick = MenuItem2Click
+      end
+    end
+    object MenuItem3: TMenuItem
+      Caption = 'Window'
+      object MenuItem4: TMenuItem
+        Caption = 'Window list...'
+        OnClick = MenuItem4Click
+      end
+    end
   end
 end
