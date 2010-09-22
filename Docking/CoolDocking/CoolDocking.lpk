@@ -3,6 +3,7 @@
   <Package Version="3">
     <PathDelim Value="\"/>
     <Name Value="CoolDocking"/>
+    <Author Value="Chronos"/>
     <CompilerOptions>
       <Version Value="9"/>
       <PathDelim Value="\"/>
@@ -21,6 +22,8 @@
         <CompilerPath Value="$(CompPath)"/>
       </Other>
     </CompilerOptions>
+    <Description Value="Set of components for docking of windows."/>
+    <Version Major="1"/>
     <Files Count="4">
       <Item1>
         <Filename Value="UCoolDocking.pas"/>

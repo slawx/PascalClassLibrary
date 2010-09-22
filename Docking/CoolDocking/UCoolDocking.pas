@@ -36,7 +36,7 @@ type
   TCoolDockHeader = class(TPanel)
     CloseButton: TSpeedButton;
     Title: TLabel;
-    Icon: TIcon;
+    Icon: TImage;
     ParentClientPanel: TCoolDockClientPanel;
     Shape: TShape;
     constructor Create(TheOwner: TComponent); override;
@@ -156,6 +156,7 @@ type
     procedure LoadLayoutFromStream(Stream: TStream);
     procedure SaveLayoutToFile(FileName: string);
     procedure LoadLayoutFromFile(FileName: string);
+    destructor Destroy; override;
   published
     property TabsEnabled: Boolean read FTabsEnabled write SetTabsEnabled;
     property DefaultHeaderPos: THeaderPos read FDefaultHeaderPos
@@ -168,22 +169,23 @@ type
 
   TCoolDockCustomize = class(TComponent)
   private
-    FManager: TCoolDockMaster;
-    procedure SetManager(const AValue: TCoolDockMaster);
-  public
+    FMaster: TCoolDockMaster;
     Form: TCoolDockCustomizeForm;
+    procedure SetMaster(const AValue: TCoolDockMaster);
+  public
     function Execute: Boolean;
     constructor Create(AOwner: TComponent); override;
+    destructor Destroy; override;
   published
-    property Manager: TCoolDockMaster read FManager write SetManager;
+    property Master: TCoolDockMaster read FMaster write SetMaster;
   end;
 
   { TCoolDockWindowList }
 
   TCoolDockWindowList = class(TComponent)
   private
-  public
     Form: TCoolDockWindowListForm;
+  public
     function Execute: Boolean;
     constructor Create(AOwner: TComponent); override;
   published
@@ -468,6 +470,8 @@ begin
       Align := alClient;
       Header.PopupMenu := PopupMenuHeader;
     end;
+    if (Control is TForm) and Assigned((Control as TForm).Icon) then
+      NewPanel.Header.Icon.Picture.Assign((Control as TForm).Icon);
 
     if DockStyle = dsTabs then begin
       TabControl.Tabs.Add(Control.Caption);
@@ -707,10 +711,11 @@ begin
   if DockStyle = dsList then begin
     for I := 0 to FDockPanels.Count - 1 do begin
       TCoolDockClientPanel(FDockPanels[I]).Height := FDockSite.Height div
-        FDockSite.VisibleDockClientCount;
+        FDockSite.DockClientCount;
       TCoolDockClientPanel(FDockPanels[I]).Width := FDockSite.Width div
-        FDockSite.VisibleDockClientCount;
+        FDockSite.DockClientCount;
       //TCoolDockClientPanel(FDockPanels[I]).DockPanelPaint(Self);
+      TCoolDockClientPanel(FDockPanels[I]).DockPanelPaint(Self);
     end;
   end else
   if DockStyle = dsTabs then begin
@@ -840,10 +845,14 @@ end;
 
 procedure TCoolDockClientPanel.VisibleChange(Sender: TObject);
 begin
-  //OwnerDockManager.FDockPanels.Remove(Self);
-  ClientAreaPanel.Visible := Control.Visible;
-  Splitter.Visible := Control.Visible;
-  OwnerDockManager.UpdateClientSize;
+(*  if Assigned(Control) then begin
+    //OwnerDockManager.FDockPanels.Remove(Self);
+    if Assigned(ClientAreaPanel) then
+      ClientAreaPanel.Visible := Control.Visible;
+    if Assigned(Splitter) then
+      Splitter.Visible := Control.Visible;
+    OwnerDockManager.UpdateClientSize;
+  end;*)
 end;
 
 procedure TCoolDockClientPanel.SetAutoHide(const AValue: Boolean);
@@ -967,12 +976,17 @@ end;
 
 procedure TCoolDockMaster.SetCustomize(const AValue: TCoolDockCustomize
   );
+var
+  OldCustomize: TCoolDockCustomize;
 begin
-  if FCoolDockCustomize=AValue then exit;
-  FCoolDockCustomize:=AValue;
-  if Assigned(AValue) then
-    if not Assigned(AValue.Manager) then
-      AValue.Manager := Self;
+  if FCoolDockCustomize = AValue then Exit;
+  OldCustomize := FCoolDockCustomize;
+  FCoolDockCustomize := AValue;
+  if Assigned(AValue) then begin
+    FCoolDockCustomize.Master := Self;
+  end else begin
+    OldCustomize.Master := nil;
+  end;
 end;
 
 procedure TCoolDockMaster.SaveLayoutToStream(Stream: TStream);
@@ -1078,6 +1092,12 @@ begin
   end;
 end;
 
+destructor TCoolDockMaster.Destroy;
+begin
+  Customize := nil;
+  inherited Destroy;
+end;
+
 { TCoolDockHeader }
 
 constructor TCoolDockHeader.Create(TheOwner: TComponent);
@@ -1115,6 +1135,13 @@ begin
     BevelInner := bvNone;
     BevelOuter := bvNone;
   end;
+  Icon := TImage.Create(Self);
+  with Icon do begin
+    Parent := Self;
+    Left := 4;
+    Top := 3;
+    Visible := True;
+  end;
 end;
 
 destructor TCoolDockHeader.Destroy;
@@ -1133,6 +1160,8 @@ begin
       Title.Font.Style := Font.Style + [fsBold]
       else Title.Font.Style := Font.Style - [fsBold];
     Rectangle(1, 1, AControl.Width - 1, GrabberSize - 1);
+    if Icon.Picture.Width > 0 then Title.Left := 8 + Icon.Picture.Width
+      else Title.Left := 6;
     Title.Caption := AControl.Caption;
   end;
 end;
@@ -1144,25 +1173,37 @@ end;
 
 { TCoolDockCustomize }
 
-procedure TCoolDockCustomize.SetManager(const AValue: TCoolDockMaster);
+procedure TCoolDockCustomize.SetMaster(const AValue: TCoolDockMaster);
+var
+  OldMaster: TCoolDockMaster;
 begin
-  if FManager = AValue then exit;
-  FManager := AValue;
-  if Assigned(AValue) then
-    if not Assigned(AValue.Customize) then
-      AValue.Customize := Self;
+  if FMaster = AValue then Exit;
+  OldMaster := FMaster;
+  FMaster := AValue;
+  if Assigned(AValue) then begin
+    FMaster.Customize := Self;
+  end else begin
+    OldMaster.Customize := nil;
+  end;
 end;
 
 function TCoolDockCustomize.Execute: Boolean;
 begin
+  Form := TCoolDockCustomizeForm.Create(Self);
   Form.ShowModal;
+  Form.Free;
   Result := True;
 end;
 
 constructor TCoolDockCustomize.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
-  Form := TCoolDockCustomizeForm.Create(Self);
+end;
+
+destructor TCoolDockCustomize.Destroy;
+begin
+  Master := nil;
+  inherited Destroy;
 end;
 
 
@@ -1170,14 +1211,15 @@ end;
 
 function TCoolDockWindowList.Execute: Boolean;
 begin
+  Form := TCoolDockWindowListForm.Create(Self);
   Form.ShowModal;
+  Form.Free;
   Result := True;
 end;
 
 constructor TCoolDockWindowList.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
-  Form := TCoolDockWindowListForm.Create(Self);
 end;
 
 initialization

@@ -33,9 +33,11 @@ object MainForm: TMainForm
   object CoolDockMaster1: TCoolDockMaster
     TabsEnabled = False
     DefaultHeaderPos = hpAuto
+    Customize = CoolDockCustomize1
     left = 384
   end
   object CoolDockCustomize1: TCoolDockCustomize
+    Master = CoolDockMaster1
     left = 472
   end
   object CoolDockWindowList1: TCoolDockWindowList
@@ -44,7 +46,6 @@ object MainForm: TMainForm
   end
   object MainMenu1: TMainMenu
     left = 211
-    top = 14
     object MenuItem1: TMenuItem
       Caption = 'Docking'
       object MenuItem2: TMenuItem

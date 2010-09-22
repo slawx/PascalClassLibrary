@@ -16,6 +16,7 @@ type
     ButtonClose: TButton;
     ComboBox1: TComboBox;
     Label1: TLabel;
+    ListBox1: TListBox;
     PageControl1: TPageControl;
     TabSheetSetting: TTabSheet;
     TabSheetLayouts: TTabSheet;
