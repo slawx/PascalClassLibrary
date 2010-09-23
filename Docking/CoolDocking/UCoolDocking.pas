@@ -21,11 +21,13 @@ type
   TCoolDockManager = class;
   TCoolDockClientPanel = class;
   TCoolDockCustomize = class;
+  TCoolDockClient = class;
 
   { TCoolDockConjoinForm }
 
   TCoolDockConjoinForm = class(TForm)
     Panel: TPanel;
+    CoolDockClient: TCoolDockClient;
     constructor Create(TheOwner: TComponent); override;
   end;
 
@@ -85,6 +87,7 @@ type
     PopupMenuHeader: TPopupMenu;
     FDockStyle: TDockStyle;
     TabControl: TTabControl;
+    TabImageList: TImageList;
     FDockDirection: TDockDirection;
     FDockSite: TWinControl;
     FDockPanels: TObjectList; // of TCoolDockClientPanel
@@ -148,21 +151,46 @@ type
   private
     FCoolDockCustomize: TCoolDockCustomize;
     FDefaultHeaderPos: THeaderPos;
+    FShowIcons: Boolean;
     FTabsEnabled: Boolean;
+    FClients: TObjectList;
+    function GetClient(Index: Integer): TCoolDockClient;
     procedure SetCustomize(const AValue: TCoolDockCustomize);
+    procedure SetShowIcons(const AValue: Boolean);
     procedure SetTabsEnabled(const AValue: Boolean);
   public
     procedure SaveLayoutToStream(Stream: TStream);
     procedure LoadLayoutFromStream(Stream: TStream);
     procedure SaveLayoutToFile(FileName: string);
     procedure LoadLayoutFromFile(FileName: string);
+    constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
+    procedure RegisterClient(Client: TCoolDockClient);
+    procedure UnRegisterClient(Client: TCoolDockClient);
+    property Clients[Index: Integer]: TCoolDockClient read GetClient;
   published
     property TabsEnabled: Boolean read FTabsEnabled write SetTabsEnabled;
     property DefaultHeaderPos: THeaderPos read FDefaultHeaderPos
       write FDefaultHeaderPos;
     property Customize: TCoolDockCustomize read FCoolDockCustomize
       write SetCustomize;
+    property ShowIcons: Boolean read FShowIcons
+      write SetShowIcons;
+  end;
+
+  TCoolDockClient = class(TComponent)
+  private
+    FMaster: TCoolDockMaster;
+    FPanel: TPanel;
+    procedure SetMaster(const AValue: TCoolDockMaster);
+    constructor Create(AOwner: TComponent); override;
+    destructor Destroy; override;
+    procedure SetPanel(const AValue: TPanel);
+  published
+    property Master: TCoolDockMaster read FMaster
+      write SetMaster;
+    property Panel: TPanel read FPanel
+      write SetPanel;
   end;
 
   { TCoolDockCustomize }
@@ -209,10 +237,12 @@ resourcestring
   SPositionBottom = 'Bottom';
   SUndock = 'Undock';
   SCustomize = 'Customize...';
+  SWrongOwner = 'Owner of TCoolDockClient have to be TForm';
 
 procedure Register;
 begin
   RegisterComponents('CoolDocking', [TCoolDockMaster]);
+  RegisterComponents('CoolDocking', [TCoolDockClient]);
   RegisterComponents('CoolDocking', [TCoolDockCustomize]);
   RegisterComponents('CoolDocking', [TCoolDockWindowList]);
 end;
@@ -379,6 +409,9 @@ begin
   NewMenuItem.OnClick := PopupMenuCustomizeClick;
   PopupMenuHeader.Items.Add(NewMenuItem);
 
+  TabImageList := TImageList.Create(FDockSite);
+  with TabImageList do begin
+  end;
   TabControl := TTabControl.Create(FDockSite);
   with TabControl do begin
     Parent := FDockSite;
@@ -388,6 +421,7 @@ begin
     OnChange := TabControlChange;
     PopupMenu := PopupMenuTabs;
     OnMouseDown := TabControlMouseDown;
+    Images := TabImageList;
   end;
   TabsPos := hpTop;
   MoveDuration := 1000; // ms
@@ -645,8 +679,10 @@ begin
   if AValue = dsTabs then begin
     TabControl.Visible := True;
     TabControl.Tabs.Clear;
+    TabImageList.Clear;
     for I := 0 to FDockPanels.Count - 1 do begin
       TabControl.Tabs.Add(TCoolDockClientPanel(FDockPanels[I]).Control.Caption);
+      TabImageList.Add(TCoolDockClientPanel(FDockPanels[I]).Header.Icon.Picture.Bitmap, nil);
       if Assigned(TCoolDockClientPanel(FDockPanels[I]).Splitter) then
         TCoolDockClientPanel(FDockPanels[I]).Splitter.Visible := False;
       TCoolDockClientPanel(FDockPanels[I]).ClientAreaPanel.Visible := False;
@@ -845,14 +881,13 @@ end;
 
 procedure TCoolDockClientPanel.VisibleChange(Sender: TObject);
 begin
-(*  if Assigned(Control) then begin
-    //OwnerDockManager.FDockPanels.Remove(Self);
+  if Assigned(Control) then begin
     if Assigned(ClientAreaPanel) then
       ClientAreaPanel.Visible := Control.Visible;
     if Assigned(Splitter) then
       Splitter.Visible := Control.Visible;
     OwnerDockManager.UpdateClientSize;
-  end;*)
+  end;
 end;
 
 procedure TCoolDockClientPanel.SetAutoHide(const AValue: Boolean);
@@ -962,8 +997,10 @@ begin
     BevelInner := bvNone;
   //  Color := clYellow;
   end;
-  DragKind := dkDock;
-  DragMode := dmAutomatic;
+  CoolDockClient := TCoolDockClient.Create(Self);
+  with CoolDockClient do begin
+    Panel := Self.Panel;
+  end;
 end;
 
 { TCoolDockMaster }
@@ -987,6 +1024,17 @@ begin
   end else begin
     OldCustomize.Master := nil;
   end;
+end;
+
+function TCoolDockMaster.GetClient(Index: Integer): TCoolDockClient;
+begin
+  Result := TCoolDockClient(FClients[Index]);
+end;
+
+procedure TCoolDockMaster.SetShowIcons(const AValue: Boolean);
+begin
+  if FShowIcons = AValue then Exit;
+  FShowIcons := AValue;
 end;
 
 procedure TCoolDockMaster.SaveLayoutToStream(Stream: TStream);
@@ -1092,10 +1140,35 @@ begin
   end;
 end;
 
+constructor TCoolDockMaster.Create(AOwner: TComponent);
+begin
+  inherited Create(AOwner);
+  FClients := TObjectList.Create;
+  FClients.OwnsObjects := False;
+end;
+
 destructor TCoolDockMaster.Destroy;
 begin
+  FClients.Free;
   Customize := nil;
   inherited Destroy;
+end;
+
+procedure TCoolDockMaster.RegisterClient(Client: TCoolDockClient);
+begin
+  if Assigned(Client) then
+    if FClients.IndexOf(Client) <> -1 then begin
+      FClients.Add(Client);
+      Client.Master := Self;
+    end;
+end;
+
+procedure TCoolDockMaster.UnRegisterClient(Client: TCoolDockClient);
+begin
+  if Assigned(Client) then begin
+    Client.Master := nil;
+    FClients.Remove(Client);
+  end;
 end;
 
 { TCoolDockHeader }
@@ -1139,7 +1212,7 @@ begin
   with Icon do begin
     Parent := Self;
     Left := 4;
-    Top := 3;
+    Top := 2;
     Visible := True;
   end;
 end;
@@ -1222,8 +1295,61 @@ begin
   inherited Create(AOwner);
 end;
 
-initialization
-  DefaultDockManagerClass := TCoolDockManager;
+{ TCoolDockClient }
+
+procedure TCoolDockClient.SetMaster(const AValue: TCoolDockMaster);
+var
+  FOldMaster: TCoolDockMaster;
+begin
+  if FMaster = AValue then Exit;
+  FOldMaster := FMaster;
+  FMaster := AValue;
+  if Assigned(FOldMaster) then
+    FOldMaster.UnregisterClient(Self);
+  if Assigned(FMaster) then
+    FMaster.RegisterClient(Self);
+end;
+
+constructor TCoolDockClient.Create(AOwner: TComponent);
+begin
+  inherited Create(AOwner);
+  if not (AOwner is TForm) then
+    raise Exception.Create(SWrongOwner);
+  with (AOwner as TForm) do begin
+    if not (csDesigning in ComponentState) then begin
+      DragKind := dkDock;
+      DragMode := dmAutomatic;
+      DockSite := True;
+      UseDockManager := True;
+      DockManager := TCoolDockManager.Create(TWinControl(AOwner));
+    end;
+  end;
+end;
+
+destructor TCoolDockClient.Destroy;
+begin
+  inherited Destroy;
+  Master := nil;
+end;
+
+procedure TCoolDockClient.SetPanel(const AValue: TPanel);
+var
+  OldPanel: TPanel;
+begin
+  if FPanel = AValue then exit;
+  OldPanel := FPanel;
+  FPanel := AValue;
+  if not (csDesigning in ComponentState) then begin
+    if Assigned(FPanel) then
+    with FPanel do begin
+      DockSite := True;
+      UseDockManager := True;
+      DockManager := TCoolDockManager.Create(FPanel);
+    end else begin
+      OldPanel.DockSite := False;
+    end;
+  end;
+end;
 
 end.
 

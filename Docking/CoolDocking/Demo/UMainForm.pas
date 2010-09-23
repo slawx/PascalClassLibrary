@@ -15,6 +15,7 @@ type
 
   TMainForm = class(TForm)
     Button1: TButton;
+    CoolDockClient1: TCoolDockClient;
     CoolDockCustomize1: TCoolDockCustomize;
     CoolDockMaster1: TCoolDockMaster;
     CoolDockWindowList1: TCoolDockWindowList;
@@ -93,10 +94,10 @@ begin
   Result := TDockForm.Create(Self);
   Result.Name := 'Form' + IntToStr(FormIndex);
   Result.Memo1.Text := Result.Name;
-  Result.DragKind := dkDock;
-  Result.DragMode := dmAutomatic;
-  Result.DockSite := True;
-  Result.UseDockManager := True;
+  //Result.DragKind := dkDock;
+  //Result.DragMode := dmAutomatic;
+  //Result.DockSite := True;
+  //Result.UseDockManager := True;
   Inc(FormIndex);
   Result.Show;
   DockForms.Add(Result);

@@ -1,7 +1,7 @@
 object DockForm: TDockForm
-  Left = 391
+  Left = 396
   Height = 240
-  Top = 125
+  Top = 142
   Width = 320
   Caption = 'DockForm'
   ClientHeight = 240
@@ -14,5 +14,10 @@ object DockForm: TDockForm
     Width = 320
     Align = alClient
     TabOrder = 0
+  end
+  object CoolDockClient1: TCoolDockClient
+    Master = MainForm.CoolDockMaster1
+    left = 40
+    top = 24
   end
 end

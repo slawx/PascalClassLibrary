@@ -53,3 +53,7 @@ msgstr ""
 msgid "Undock"
 msgstr ""
 
+#: ucooldocking.swrongowner
+msgid "Owner of TCoolDockClient have to be TForm"
+msgstr ""
+

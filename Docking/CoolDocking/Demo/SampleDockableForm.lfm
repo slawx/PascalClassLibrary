@@ -1,0 +1,33 @@
+object Form1: TForm1
+  Left = 335
+  Height = 240
+  Top = 167
+  Width = 320
+  Caption = 'Form1'
+  ClientHeight = 240
+  ClientWidth = 320
+  DockSite = True
+  DragKind = dkDock
+  DragMode = dmAutomatic
+  UseDockManager = True
+  LCLVersion = '0.9.29'
+  object Memo1: TMemo
+    Left = 82
+    Height = 90
+    Top = 117
+    Width = 150
+    Lines.Strings = (
+      'Memo1'
+    )
+    TabOrder = 0
+  end
+  object CoolDockClient1: TCoolDockClient
+    Master = MainForm.CoolDockMaster1
+    left = 104
+    top = 33
+  end
+  object ImageList1: TImageList
+    left = 208
+    top = 80
+  end
+end

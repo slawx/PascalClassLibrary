@@ -102,13 +102,13 @@ begin
             //IconBitmap.SetSize(Form.Icon.Width, Form.Icon.Height);
             //ShowMessage(IntToStr(Integer(Form.Icon.TransparentColor)));
             IconBitmap.Assign(Form.Icon);
-          //IconBitmap.Canvas.Draw(0, 0, Form.Icon);
+            //IconBitmap.Canvas.Draw(0, 0, Form.Icon);
 
-            Mask.Assign(Form.Icon);
-            Mask.Canvas.Brush.Color := Form.Icon.TransparentColor;
-            Mask.Monochrome := True;
-            ImageList1.BkColor := clBlack;
-            ImageList1.Add(IconBitmap, Mask);
+            //Mask.Assign(Form.Icon);
+            //Mask.Canvas.Brush.Color := Form.Icon.TransparentColor;
+            //Mask.Monochrome := True;
+            //ImageList1.BkColor := clBlack;
+            ImageList1.Add(IconBitmap, nil);
           finally
             Mask.Free;
             IconBitmap.Free;

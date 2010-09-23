@@ -5,13 +5,15 @@ unit UDockForm;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls;
+  Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
+  UCoolDocking;
 
 type
 
   { TDockForm }
 
   TDockForm = class(TForm)
+    CoolDockClient1: TCoolDockClient;
     Memo1: TMemo;
   private
     { private declarations }

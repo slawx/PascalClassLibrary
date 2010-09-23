@@ -14,7 +14,6 @@ msgid "Close"
 msgstr "Zavřít"
 
 #: ucooldocking.scustomize
-#, fuzzy
 #| msgid "Customize...s"
 msgid "Customize..."
 msgstr "Přizpůsobit..."
@@ -62,4 +61,8 @@ msgstr "Přejmenovat"
 #: ucooldocking.sundock
 msgid "Undock"
 msgstr "Odkotvit"
+
+#: ucooldocking.swrongowner
+msgid "Owner of TCoolDockClient have to be TForm"
+msgstr ""
 

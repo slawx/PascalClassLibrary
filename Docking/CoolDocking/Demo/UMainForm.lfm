@@ -34,6 +34,7 @@ object MainForm: TMainForm
     TabsEnabled = False
     DefaultHeaderPos = hpAuto
     Customize = CoolDockCustomize1
+    ShowIcons = False
     left = 384
   end
   object CoolDockCustomize1: TCoolDockCustomize
@@ -60,5 +61,11 @@ object MainForm: TMainForm
         OnClick = MenuItem4Click
       end
     end
+  end
+  object CoolDockClient1: TCoolDockClient
+    Master = CoolDockMaster1
+    Panel = Panel1
+    left = 376
+    top = 64
   end
 end
