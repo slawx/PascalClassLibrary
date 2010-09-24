@@ -22,12 +22,13 @@ object Form1: TForm1
     TabOrder = 0
   end
   object CoolDockClient1: TCoolDockClient
+    Dockable = True
     Master = MainForm.CoolDockMaster1
     left = 104
     top = 33
   end
   object ImageList1: TImageList
-    left = 208
-    top = 80
+    left = 200
+    top = 33
   end
 end

@@ -22,6 +22,7 @@ type
   TCoolDockClientPanel = class;
   TCoolDockCustomize = class;
   TCoolDockClient = class;
+  TCoolDockMaster = class;
 
   { TCoolDockConjoinForm }
 
@@ -80,6 +81,7 @@ type
 
   TCoolDockManager = class(TDockManager)
   private
+    FMaster: TCoolDockMaster;
     FMoveDuration: Integer;
     FTabsPos: THeaderPos;
     Timer1: TTimer;
@@ -96,6 +98,7 @@ type
       DropCtl: TControl);
     procedure PopupMenuTabCloseClick(Sender: TObject);
     procedure SetDockStyle(const AValue: TDockStyle);
+    procedure SetMaster(const AValue: TCoolDockMaster);
     procedure SetMoveDuration(const AValue: Integer);
     procedure SetTabsPos(const AValue: THeaderPos);
     procedure UpdateClientSize;
@@ -143,6 +146,7 @@ type
     property DockStyle: TDockStyle read FDockStyle write SetDockStyle;
     property MoveDuration: Integer read FMoveDuration write SetMoveDuration;
     property TabsPos: THeaderPos read FTabsPos write SetTabsPos;
+    property Master: TCoolDockMaster read FMaster write SetMaster;
   end;
 
   { TCoolDockMaster }
@@ -180,13 +184,17 @@ type
 
   TCoolDockClient = class(TComponent)
   private
+    FDockable: Boolean;
     FMaster: TCoolDockMaster;
     FPanel: TPanel;
+    procedure SetDockable(const AValue: Boolean);
     procedure SetMaster(const AValue: TCoolDockMaster);
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure SetPanel(const AValue: TPanel);
   published
+    property Dockable: Boolean read FDockable
+      write SetDockable default True;
     property Master: TCoolDockMaster read FMaster
       write SetMaster;
     property Panel: TPanel read FPanel
@@ -537,17 +545,11 @@ begin
   if (FDockSite is TForm) then begin
     if (not Assigned(FDockSite.Parent)) then begin
       // Create conjointed form
-      NewConjoinDockForm := TCoolDockConjoinForm.Create(Application);
-      NewConjoinDockForm.Visible := True;
-      NewConjoinDockForm.BoundsRect := FDockSite.BoundsRect;
+      NewConjoinDockForm := CreateContainer(InsertAt);
       FDockSite.ManualDock(NewConjoinDockForm.Panel);
       Control.ManualDock(NewConjoinDockForm.Panel, nil, InsertAt);
     end else begin
-      NewConjoinDockForm := TCoolDockConjoinForm.Create(Application);
-      NewConjoinDockForm.Visible := True;
-      NewConjoinDockForm.BoundsRect := FDockSite.BoundsRect;
-      NewConjoinDockForm.DragMode := dmAutomatic;
-      NewConjoinDockForm.DragKind := dkDock;
+      NewConjoinDockForm := CreateContainer(InsertAt);
       NewDockSite := FDockSite.HostDockSite;
 //      FDockSite.ManualFloat(FDockSite.BoundsRect);
       NewConjoinDockForm.ManualDock(NewDockSite);
@@ -663,8 +665,7 @@ begin
   NewConjoinDockForm := TCoolDockConjoinForm.Create(Application);
   NewConjoinDockForm.Visible := True;
   NewConjoinDockForm.BoundsRect := FDockSite.BoundsRect;
-  NewConjoinDockForm.DragMode := dmAutomatic;
-  NewConjoinDockForm.DragKind := dkDock;
+  NewConjoinDockForm.CoolDockClient.Master := Self.Master;
   NewDockSite := FDockSite.HostDockSite;
   //      FDockSite.ManualFloat(FDockSite.BoundsRect);
   NewConjoinDockForm.ManualDock(NewDockSite, nil, InsertAt);
@@ -702,6 +703,12 @@ begin
     end;
   end;
   UpdateClientSize;
+end;
+
+procedure TCoolDockManager.SetMaster(const AValue: TCoolDockMaster);
+begin
+  if FMaster = AValue then Exit;
+  FMaster := AValue;
 end;
 
 procedure TCoolDockManager.SetMoveDuration(const AValue: Integer);
@@ -848,8 +855,9 @@ end;
 
 procedure TCoolDockManager.PopupMenuCustomizeClick(Sender: TObject);
 begin
-//  if Assigned(DockMaster.Customize) then
-//    DockMaster.Customize.Execute;
+  if Assigned(Master) and
+    Assigned(Master.Customize) then
+    Master.Customize.Execute;
 end;
 
 procedure TCoolDockManager.Timer1Timer(Sender: TObject);
@@ -1306,19 +1314,44 @@ begin
   FMaster := AValue;
   if Assigned(FOldMaster) then
     FOldMaster.UnregisterClient(Self);
-  if Assigned(FMaster) then
+  if Assigned(FMaster) then begin
     FMaster.RegisterClient(Self);
+    if not (csDesigning in ComponentState) then begin
+      if Assigned(TWinControl(Owner).DockManager) then
+        TCoolDockManager(TWinControl(Owner).DockManager).Master := FMaster;
+      if Assigned(Panel) then
+        TCoolDockManager(Panel.DockManager).Master := FMaster;
+    end;
+  end;
+end;
+
+procedure TCoolDockClient.SetDockable(const AValue: Boolean);
+begin
+  if FDockable = AValue then Exit;
+  FDockable := AValue;
+  if not (Owner is TForm) then
+  with (Owner as TForm) do
+  if AValue then begin
+    DragKind := dkDock;
+    DragMode := dmAutomatic;
+  end else begin
+    DragKind := dkDrag;
+    DragMode := dmManual;
+  end;
 end;
 
 constructor TCoolDockClient.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
+  FDockable := True;
   if not (AOwner is TForm) then
     raise Exception.Create(SWrongOwner);
   with (AOwner as TForm) do begin
     if not (csDesigning in ComponentState) then begin
-      DragKind := dkDock;
-      DragMode := dmAutomatic;
+      if Dockable then begin
+        DragKind := dkDock;
+        DragMode := dmAutomatic;
+      end;
       DockSite := True;
       UseDockManager := True;
       DockManager := TCoolDockManager.Create(TWinControl(AOwner));

@@ -16,6 +16,7 @@ object DockForm: TDockForm
     TabOrder = 0
   end
   object CoolDockClient1: TCoolDockClient
+    Dockable = True
     Master = MainForm.CoolDockMaster1
     left = 40
     top = 24

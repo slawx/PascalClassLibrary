@@ -63,6 +63,7 @@ object MainForm: TMainForm
     end
   end
   object CoolDockClient1: TCoolDockClient
+    Dockable = False
     Master = CoolDockMaster1
     Panel = Panel1
     left = 376
