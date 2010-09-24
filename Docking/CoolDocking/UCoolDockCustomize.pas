@@ -15,7 +15,9 @@ type
   TCoolDockCustomizeForm = class(TForm)
     ButtonClose: TButton;
     ComboBox1: TComboBox;
+    ComboBox2: TComboBox;
     Label1: TLabel;
+    Label2: TLabel;
     ListBox1: TListBox;
     PageControl1: TPageControl;
     TabSheetSetting: TTabSheet;

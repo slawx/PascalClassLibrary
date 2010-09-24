@@ -1,6 +1,6 @@
 unit UMainForm;
 
-{$mode objfpc}{$H+}
+{$mode Delphi}{$H+}
 
 interface
 
@@ -26,14 +26,12 @@ type
     MenuItem4: TMenuItem;
     Panel1: TPanel;
     procedure Button1Click(Sender: TObject);
-    procedure Button2Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure MenuItem2Click(Sender: TObject);
     procedure MenuItem4Click(Sender: TObject);
   private
-    { private declarations }
   public
     FormIndex: Integer;
     DockForms: TList;
@@ -106,11 +104,6 @@ end;
 procedure TMainForm.Button1Click(Sender: TObject);
 begin
   NewDockForm;
-end;
-
-procedure TMainForm.Button2Click(Sender: TObject);
-begin
-
 end;
 
 end.

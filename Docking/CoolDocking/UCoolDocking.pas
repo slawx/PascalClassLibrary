@@ -94,6 +94,7 @@ type
     FDockSite: TWinControl;
     FDockPanels: TObjectList; // of TCoolDockClientPanel
     function FindControlInPanels(Control: TControl): TCoolDockClientPanel;
+    function GetDockSite: TWinControl;
     procedure InsertControlPanel(Control: TControl; InsertAt: TAlign;
       DropCtl: TControl);
     procedure PopupMenuTabCloseClick(Sender: TObject);
@@ -147,6 +148,7 @@ type
     property MoveDuration: Integer read FMoveDuration write SetMoveDuration;
     property TabsPos: THeaderPos read FTabsPos write SetTabsPos;
     property Master: TCoolDockMaster read FMaster write SetMaster;
+    property DockSite: TWinControl read GetDockSite;
   end;
 
   { TCoolDockMaster }
@@ -185,9 +187,11 @@ type
   TCoolDockClient = class(TComponent)
   private
     FDockable: Boolean;
+    FFloatable: Boolean;
     FMaster: TCoolDockMaster;
     FPanel: TPanel;
     procedure SetDockable(const AValue: Boolean);
+    procedure SetFloatable(const AValue: Boolean);
     procedure SetMaster(const AValue: TCoolDockMaster);
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -195,6 +199,8 @@ type
   published
     property Dockable: Boolean read FDockable
       write SetDockable default True;
+    property Floatable: Boolean read FFloatable
+      write SetFloatable default True;
     property Master: TCoolDockMaster read FMaster
       write SetMaster;
     property Panel: TPanel read FPanel
@@ -246,6 +252,8 @@ resourcestring
   SUndock = 'Undock';
   SCustomize = 'Customize...';
   SWrongOwner = 'Owner of TCoolDockClient have to be TForm';
+  SEnterNewWindowName = 'Enter new window name';
+  SRenameWindow = 'Rename window';
 
 procedure Register;
 begin
@@ -268,6 +276,11 @@ begin
     (TCoolDockClientPanel(FDockPanels[I]).Control <> Control) do Inc(I);
   if I < FDockPanels.Count then Result := TCoolDockClientPanel(FDockPanels[I])
     else Result := nil;
+end;
+
+function TCoolDockManager.GetDockSite: TWinControl;
+begin
+  Result := FDockSite;
 end;
 
 constructor TCoolDockManager.Create(ADockSite: TWinControl);
@@ -428,7 +441,8 @@ begin
     Height := 24;
     OnChange := TabControlChange;
     PopupMenu := PopupMenuTabs;
-    OnMouseDown := TabControlMouseDown;
+    //OnMouseDown := TabControlMouseDown;
+    TTabControlNoteBookStrings(Tabs).NoteBook.OnMouseDown := TabControlMouseDown;
     Images := TabImageList;
   end;
   TabsPos := hpTop;
@@ -517,6 +531,7 @@ begin
 
     if DockStyle = dsTabs then begin
       TabControl.Tabs.Add(Control.Caption);
+      TabImageList.Add(NewPanel.Header.Icon.Picture.Bitmap, nil);
       if Assigned(NewPanel.Splitter) then
         NewPanel.Splitter.Visible := False;
       NewPanel.ClientAreaPanel.Visible := False;
@@ -819,8 +834,12 @@ begin
 end;
 
 procedure TCoolDockManager.PopupMenuRenameClick(Sender: TObject);
+var
+  Value: string;
 begin
-
+  Value := DockSite.Parent.Caption;
+  if InputQuery(SRenameWindow, SEnterNewWindowName, False, Value) then
+    DockSite.Parent.Caption := Value;
 end;
 
 procedure TCoolDockManager.PopupMenuPositionAutoClick(Sender: TObject);
@@ -849,8 +868,11 @@ begin
 end;
 
 procedure TCoolDockManager.PopupMenuUndockClick(Sender: TObject);
+var
+  Control: TControl;
 begin
 
+  //Control.ManualFloat(Control.BoundsRect);
 end;
 
 procedure TCoolDockManager.PopupMenuCustomizeClick(Sender: TObject);
@@ -1329,7 +1351,7 @@ procedure TCoolDockClient.SetDockable(const AValue: Boolean);
 begin
   if FDockable = AValue then Exit;
   FDockable := AValue;
-  if not (Owner is TForm) then
+  if (Owner is TForm) then
   with (Owner as TForm) do
   if AValue then begin
     DragKind := dkDock;
@@ -1338,6 +1360,12 @@ begin
     DragKind := dkDrag;
     DragMode := dmManual;
   end;
+end;
+
+procedure TCoolDockClient.SetFloatable(const AValue: Boolean);
+begin
+  if FFloatable = AValue then Exit;
+  FFloatable := AValue;
 end;
 
 constructor TCoolDockClient.Create(AOwner: TComponent);

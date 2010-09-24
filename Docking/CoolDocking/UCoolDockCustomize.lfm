@@ -12,9 +12,9 @@ object CoolDockCustomizeForm: TCoolDockCustomizeForm
     Height = 278
     Top = 8
     Width = 393
-    ActivePage = TabSheetLayouts
+    ActivePage = TabSheetSetting
     Anchors = [akTop, akLeft, akRight, akBottom]
-    TabIndex = 1
+    TabIndex = 0
     TabOrder = 0
     object TabSheetSetting: TTabSheet
       Caption = 'Options'
@@ -35,6 +35,23 @@ object CoolDockCustomizeForm: TCoolDockCustomizeForm
         Width = 100
         ItemHeight = 13
         TabOrder = 0
+        Text = 'ComboBox1'
+      end
+      object Label2: TLabel
+        Left = 7
+        Height = 14
+        Top = 41
+        Width = 117
+        Caption = 'Default header position:'
+        ParentColor = False
+      end
+      object ComboBox2: TComboBox
+        Left = 132
+        Height = 21
+        Top = 38
+        Width = 100
+        ItemHeight = 13
+        TabOrder = 1
         Text = 'ComboBox1'
       end
     end

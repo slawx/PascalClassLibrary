@@ -21,6 +21,10 @@ msgstr ""
 msgid "Tabs"
 msgstr ""
 
+#: ucooldocking.senternewwindowname
+msgid "Enter new window name"
+msgstr ""
+
 #: ucooldocking.sposition
 msgid "Position"
 msgstr ""
@@ -47,6 +51,10 @@ msgstr ""
 
 #: ucooldocking.srenameform
 msgid "Rename"
+msgstr ""
+
+#: ucooldocking.srenamewindow
+msgid "Rename window"
 msgstr ""
 
 #: ucooldocking.sundock
