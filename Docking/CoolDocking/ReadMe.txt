@@ -5,6 +5,7 @@ Completeded features:
 * Tabbed docking
 * Popup control menu
 * Conjoin floating form
+* Icons on tabs and grabbers
 
 Planned features:
 =================
@@ -13,4 +14,4 @@ Planned features:
 * Dock forms groups
 * Predefined customization form
 * User defined form header styles
-* Icons on tabs and grabbers
+* Ability to lock and unlock docked controls for accidently undocking
