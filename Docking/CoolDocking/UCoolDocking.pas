@@ -83,6 +83,8 @@ type
 
   TCoolDockManager = class(TDockManager)
   private
+    MouseDown: Boolean;
+    MouseButton: TMouseButton;
     FMaster: TCoolDockMaster;
     FMoveDuration: Integer;
     FTabsPos: THeaderPos;
@@ -104,8 +106,13 @@ type
     procedure SetMaster(const AValue: TCoolDockMaster);
     procedure SetMoveDuration(const AValue: Integer);
     procedure SetTabsPos(const AValue: THeaderPos);
-    procedure UpdateClientSize;
+    procedure TabControlMouseLeave(Sender: TObject);
     procedure TabControlChange(Sender: TObject);
+    procedure TabControlMouseDown(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
+    procedure TabControlMouseUp(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
+    procedure UpdateClientSize;
     procedure PopupMenuListClick(Sender: TObject);
     procedure PopupMenuTabsClick(Sender: TObject);
     procedure PopupMenuCloseClick(Sender: TObject);
@@ -118,8 +125,6 @@ type
     procedure PopupMenuUndockClick(Sender: TObject);
     procedure PopupMenuCustomizeClick(Sender: TObject);
     procedure Timer1Timer(Sender: TObject);
-    procedure TabControlMouseDown(Sender: TObject; Button: TMouseButton;
-      Shift: TShiftState; X, Y: Integer);
   public
     constructor Create(ADockSite: TWinControl); override;
     destructor Destroy; override;
@@ -289,6 +294,16 @@ begin
   Result := FDockSite;
 end;
 
+procedure TCoolDockManager.TabControlMouseLeave(Sender: TObject);
+begin
+  if MouseDown then
+  if (TabControl.TabIndex <> -1) then begin
+    TCoolDockClientPanel(FDockPanels[TabControl.TabIndex]).ClientAreaPanel.DockSite := False;
+    DragManager.DragStart(TCoolDockClientPanel(FDockPanels[TabControl.TabIndex]).Control, False, 1);
+  end;
+  MouseDown := False;
+end;
+
 constructor TCoolDockManager.Create(ADockSite: TWinControl);
 var
   NewMenuItem: TMenuItem;
@@ -447,8 +462,9 @@ begin
     Height := 24;
     OnChange := TabControlChange;
     PopupMenu := PopupMenuTabs;
-    //OnMouseDown := TabControlMouseDown;
+    TTabControlNoteBookStrings(Tabs).NoteBook.OnMouseLeave := TabControlMouseLeave;
     TTabControlNoteBookStrings(Tabs).NoteBook.OnMouseDown := TabControlMouseDown;
+    TTabControlNoteBookStrings(Tabs).NoteBook.OnMouseUp := TabControlMouseUp;
     Images := TabImageList;
   end;
   TabsPos := hpTop;
@@ -900,10 +916,14 @@ end;
 procedure TCoolDockManager.TabControlMouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
 begin
-  if (Button = mbLeft) and (TabControl.TabIndex <> -1) then begin
-    TCoolDockClientPanel(FDockPanels[TabControl.TabIndex]).ClientAreaPanel.DockSite := False;
-    DragManager.DragStart(TCoolDockClientPanel(FDockPanels[TabControl.TabIndex]).Control, False, 1);
-  end;
+  MouseDown := True;
+  MouseButton := Button;
+end;
+
+procedure TCoolDockManager.TabControlMouseUp(Sender: TObject;
+  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+begin
+  MouseDown := False;
 end;
 
 procedure TCoolDockManager.PopupMenuListClick(Sender: TObject);

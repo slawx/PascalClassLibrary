@@ -63,12 +63,12 @@ var
   ConjoinedDockForm2: TCoolDockConjoinForm;
 begin
   NewDockForm.ManualDock(Panel1);
- // NewDockForm.ManualDock(Panel1);
-  //ConjoinedDockForm1 := TCoolDockManager(Panel1.DockManager).CreateContainer(alRight);
-  //ConjoinedDockForm1.Name := 'Model';;
-  //TCoolDockManager(ConjoinedDockForm1.Panel.DockManager).TabsPos := hpLeft;
-  //ConjoinedDockForm1.ManualDock(Panel1);
-  //TCoolDockManager(ConjoinedDockForm1.Panel.DockManager).DockStyle := dsTabs;
+  NewDockForm.ManualDock(Panel1);
+  ConjoinedDockForm1 := TCoolDockManager(Panel1.DockManager).CreateContainer(alRight);
+  ConjoinedDockForm1.Name := 'Model';;
+  TCoolDockManager(ConjoinedDockForm1.Panel.DockManager).TabsPos := hpLeft;
+  ConjoinedDockForm1.ManualDock(Panel1);
+  TCoolDockManager(ConjoinedDockForm1.Panel.DockManager).DockStyle := dsTabs;
   (*NewDockForm.ManualDock(ConjoinedDockForm1.Panel);
   NewDockForm.ManualDock(ConjoinedDockForm1.Panel);
   NewDockForm.ManualDock(TForm(DockForms[0]));
