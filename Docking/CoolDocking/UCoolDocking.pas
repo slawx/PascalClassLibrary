@@ -9,7 +9,8 @@ interface
 uses
   Classes, SysUtils, Controls, LCLType, LMessages, Graphics, StdCtrls,
   Buttons, ExtCtrls, Contnrs, Forms, ComCtrls, Dialogs, Menus, FileUtil,
-  UCoolDockCustomize, DOM, XMLWrite, XMLRead, UCoolDockWindowList;
+  UCoolDockCustomize, DOM, XMLWrite, XMLRead, UCoolDockWindowList,
+  DateUtils;
 
 const
   GrabberSize = 22;
@@ -37,6 +38,10 @@ type
   { TCoolDockHeader }
 
   TCoolDockHeader = class(TPanel)
+  private
+    procedure CloseButtonClick(Sender: TObject);
+    procedure DrawGrabber(Canvas: TCanvas; AControl: TControl);
+  public
     CloseButton: TSpeedButton;
     Title: TLabel;
     Icon: TImage;
@@ -44,9 +49,6 @@ type
     Shape: TShape;
     constructor Create(TheOwner: TComponent); override;
     destructor Destroy; override;
-  private
-    procedure CloseButtonClick(Sender: TObject);
-    procedure DrawGrabber(Canvas: TCanvas; AControl: TControl);
   end;
 
   { TCoolDockClientPanel }
@@ -157,6 +159,7 @@ type
   private
     FCoolDockCustomize: TCoolDockCustomize;
     FDefaultHeaderPos: THeaderPos;
+    FDefaultTabsPos: THeaderPos;
     FShowIcons: Boolean;
     FTabsEnabled: Boolean;
     FClients: TObjectList;
@@ -176,6 +179,8 @@ type
     property Clients[Index: Integer]: TCoolDockClient read GetClient;
   published
     property TabsEnabled: Boolean read FTabsEnabled write SetTabsEnabled;
+    property DefaultTabsPos: THeaderPos read FDefaultTabsPos
+      write FDefaultTabsPos;
     property DefaultHeaderPos: THeaderPos read FDefaultHeaderPos
       write FDefaultHeaderPos;
     property Customize: TCoolDockCustomize read FCoolDockCustomize
@@ -193,9 +198,10 @@ type
     procedure SetDockable(const AValue: Boolean);
     procedure SetFloatable(const AValue: Boolean);
     procedure SetMaster(const AValue: TCoolDockMaster);
+    procedure SetPanel(const AValue: TPanel);
+  public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-    procedure SetPanel(const AValue: TPanel);
   published
     property Dockable: Boolean read FDockable
       write SetDockable default True;
@@ -715,6 +721,7 @@ begin
       TCoolDockClientPanel(FDockPanels[I]).Visible := True;
       TCoolDockClientPanel(FDockPanels[I]).ClientAreaPanel.Parent := TCoolDockClientPanel(FDockPanels[I]);
       TCoolDockClientPanel(FDockPanels[I]).ClientAreaPanel.Visible := True;
+      TCoolDockClientPanel(FDockPanels[I]).Control.Visible := True;
     end;
   end;
   UpdateClientSize;
@@ -724,6 +731,7 @@ procedure TCoolDockManager.SetMaster(const AValue: TCoolDockMaster);
 begin
   if FMaster = AValue then Exit;
   FMaster := AValue;
+  TabsPos := AValue.DefaultTabsPos;
 end;
 
 procedure TCoolDockManager.SetMoveDuration(const AValue: Integer);
@@ -791,9 +799,11 @@ var
 begin
   for I := 0 to FDockPanels.Count - 1 do begin
     TCoolDockClientPanel(FDockPanels[I]).ClientAreaPanel.Visible := False;
+    TCoolDockClientPanel(FDockPanels[I]).Control.Visible := False;
   end;
   if (TabControl.TabIndex <> -1) and (FDockPanels.Count > TabControl.TabIndex) then begin
     with TCoolDockClientPanel(FDockPanels[TabControl.TabIndex]), ClientAreaPanel do begin
+      Control.Show;
       if AutoHide then begin
         Parent := nil;
         Visible := True;
@@ -891,6 +901,7 @@ procedure TCoolDockManager.TabControlMouseDown(Sender: TObject; Button: TMouseBu
       Shift: TShiftState; X, Y: Integer);
 begin
   if (Button = mbLeft) and (TabControl.TabIndex <> -1) then begin
+    TCoolDockClientPanel(FDockPanels[TabControl.TabIndex]).ClientAreaPanel.DockSite := False;
     DragManager.DragStart(TCoolDockClientPanel(FDockPanels[TabControl.TabIndex]).Control, False, 1);
   end;
 end;
@@ -910,14 +921,17 @@ begin
 end;
 
 procedure TCoolDockClientPanel.VisibleChange(Sender: TObject);
+var
+  Visible: Boolean;
 begin
-  if Assigned(Control) then begin
+  (*if Assigned(Control) then begin
+    Visible := Control.Visible;
     if Assigned(ClientAreaPanel) then
-      ClientAreaPanel.Visible := Control.Visible;
+      ClientAreaPanel.Visible := Visible;
     if Assigned(Splitter) then
-      Splitter.Visible := Control.Visible;
+      Splitter.Visible := Visible;
     OwnerDockManager.UpdateClientSize;
-  end;
+  end;*)
 end;
 
 procedure TCoolDockClientPanel.SetAutoHide(const AValue: Boolean);
@@ -935,6 +949,7 @@ end;
 constructor TCoolDockClientPanel.Create(TheOwner: TComponent);
 begin
   inherited;
+  ShowHeader := True;
   Header := TCoolDockHeader.Create(Self);
   with Header do begin
     Parent := Self;
@@ -963,7 +978,6 @@ begin
   OnResize := ResizeExecute;
   BevelInner := bvNone;
   BevelOuter := bvNone;
-  ShowHeader := True;
   AutoHide := False;
   HeaderPos := hpTop;
 end;
@@ -988,6 +1002,7 @@ var
   I: Integer;
   R: TRect;
 begin
+  if (csDestroyingHandle in ControlState) then
   if Assigned(Control) then begin
     R := Control.ClientRect;
     Canvas.FillRect(R);
@@ -1008,7 +1023,10 @@ begin
     DockPanelPaint(Self);
   end;
   if (Button = mbLeft) then begin
-    DragManager.DragStart(Control, False, 1);
+    //(Control as TWinControl).DockSite := False;
+    ClientAreaPanel.DockSite := False;
+    (Control as TWinControl).BeginDrag(True);
+    //DragManager.DragStart(Control, False, 1);
   end;
 end;
 
@@ -1178,7 +1196,12 @@ begin
 end;
 
 destructor TCoolDockMaster.Destroy;
+var
+  I: Integer;
 begin
+  // Assigning nil to Client Master property cause unregistring client from list
+  for I := FClients.Count - 1 downto 0 do
+    TCoolDockClient(FClients[I]).Master := nil;
   FClients.Free;
   Customize := nil;
   inherited Destroy;
@@ -1187,7 +1210,7 @@ end;
 procedure TCoolDockMaster.RegisterClient(Client: TCoolDockClient);
 begin
   if Assigned(Client) then
-    if FClients.IndexOf(Client) <> -1 then begin
+    if FClients.IndexOf(Client) = -1 then begin
       FClients.Add(Client);
       Client.Master := Self;
     end;
@@ -1356,9 +1379,11 @@ begin
   if AValue then begin
     DragKind := dkDock;
     DragMode := dmAutomatic;
+    DockSite := True;
   end else begin
     DragKind := dkDrag;
     DragMode := dmManual;
+    DockSite := False;
   end;
 end;
 
@@ -1379,8 +1404,8 @@ begin
       if Dockable then begin
         DragKind := dkDock;
         DragMode := dmAutomatic;
+        DockSite := True;
       end;
-      DockSite := True;
       UseDockManager := True;
       DockManager := TCoolDockManager.Create(TWinControl(AOwner));
     end;
