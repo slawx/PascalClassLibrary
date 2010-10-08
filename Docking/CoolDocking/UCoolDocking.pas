@@ -1028,7 +1028,7 @@ var
   I: Integer;
   R: TRect;
 begin
-  if (csDestroyingHandle in ControlState) then
+  if not (csDesigning in ComponentState) then
   if Assigned(Control) then begin
     R := Control.ClientRect;
     Canvas.FillRect(R);
@@ -1192,13 +1192,13 @@ procedure TCoolDockMaster.SaveLayoutToFile(FileName: string);
 var
   LayoutFile: TFileStream;
 begin
-  if FileExistsUTF8(FileName) then
-  LayoutFile := TFileStream.Create(FileName, fmOpenReadWrite)
-  else LayoutFile := TFileStream.Create(FileName, fmCreate);
   try
+    if FileExistsUTF8(FileName) then
+    LayoutFile := TFileStream.Create(FileName, fmOpenReadWrite)
+    else LayoutFile := TFileStream.Create(FileName, fmCreate);
     SaveLayoutToStream(LayoutFile);
   finally
-    Free;
+    LayoutFile.Free;
   end;
 end;
 

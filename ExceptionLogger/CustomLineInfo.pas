@@ -93,6 +93,8 @@ begin
       if not OpenExeFile(e,dbgfn) then
         exit;
     end;
+  if ptruint(BaseAddr) < e.processaddress then Exit;
+
   e.processaddress := ptruint(baseaddr) - e.processaddress;
   StabsFunctionRelative := E.FunctionRelative;
   if FindExeSection(e,'.stab',stabofs,stablen) and

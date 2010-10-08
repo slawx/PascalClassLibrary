@@ -35,19 +35,19 @@ object ExceptionForm: TExceptionForm
     Height = 277
     Top = 3
     Width = 678
-    ActivePage = TabSheet2
+    ActivePage = TabSheet1
     Anchors = [akTop, akLeft, akRight, akBottom]
-    TabIndex = 1
+    TabIndex = 0
     TabOrder = 2
     object TabSheet1: TTabSheet
       Caption = 'General'
       ClientHeight = 251
-      ClientWidth = 661
+      ClientWidth = 670
       object MemoExceptionInfo: TMemo
         Left = 4
         Height = 236
         Top = 3
-        Width = 655
+        Width = 664
         Anchors = [akTop, akLeft, akRight, akBottom]
         ReadOnly = True
         ScrollBars = ssAutoBoth
@@ -101,7 +101,7 @@ object ExceptionForm: TExceptionForm
   object CheckBoxIgnore: TCheckBox
     Left = 10
     Height = 17
-    Top = 298
+    Top = 288
     Width = 169
     Anchors = [akLeft, akBottom]
     Caption = 'Next time ignore this exception'
