@@ -8,17 +8,29 @@ uses
   Classes, SysUtils;
 
 type
-  TIndexType = Integer;
-  TItemType = TObject;
+  TListIndex = Integer;
+  TListItem = TObject;
 {$INCLUDE 'GenericListInterface.tpl'}
 
 type
-  TObjectGList = class(TGList)
+
+  { TObjectList }
+
+  TObjectList = class(TGList)
+    //OwnObjects: Boolean;
+    destructor Destroy; override;
   end;
 
 implementation
 
 {$INCLUDE 'GenericListImplementation.tpl'}
 
+
+{ TObjectList }
+
+destructor TObjectList.Destroy;
+begin
+  inherited Destroy;
+end;
 
 end.

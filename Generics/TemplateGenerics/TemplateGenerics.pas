@@ -8,7 +8,7 @@ interface
 
 uses
     StringList, IntegerList, ObjectList, PointerList, StringTree, IntegerTree, 
-  ObjectTree, PointerTree, LazarusPackageIntf;
+  ObjectTree, PointerTree, DoubleList, LazarusPackageIntf;
 
 implementation
 

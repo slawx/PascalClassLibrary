@@ -8,12 +8,12 @@ uses
   Classes, SysUtils;
 
 type
-  TIndexType = Integer;
-  TItemType = Integer;
+  TListIndex = Integer;
+  TListItem = Integer;
 {$INCLUDE 'GenericListInterface.tpl'}
 
 type
-  TIntegerGList = class(TGList)
+  TIntegerList = class(TGList)
   end;
 
 implementation

@@ -3,52 +3,54 @@ resourcestring
   SNotImplemented = 'Not implemented';
 
 type
-  TGListSortCompare = function(const Item1, Item2: TItemType): Integer;
+  TGListSortCompare = function(const Item1, Item2: TListItem): Integer of object;
+  TGListStringConverter = function(Item: TListItem): string;
   //TGListNotification = (lnAdded, lnExtracted, lnDeleted);
 
-  // TGList<TIndexType, TItemType> = class
+  // TGList<TListIndex, TListItem> = class
   TGList = class
   private
-    FItems: array of TItemType;
-    FCount: TIndexType;
-    function Get(Index: TIndexType): TItemType;
-    function GetCount: TIndexType;
-    function GetCapacity: TIndexType;
-    procedure SetCapacity(const AValue: TIndexType);
-    procedure Put(Index: TIndexType; const AValue: TItemType);
-    procedure SetCount(const AValue: TIndexType);
-    procedure QuickSort(L, R : TIndexType; Compare: TGListSortCompare);
-    property Capacity: TIndexType read GetCapacity write SetCapacity;
+    FItems: array of TListItem;
+    FCount: TListIndex;
+    function Get(Index: TListIndex): TListItem;
+    function GetCount: TListIndex;
+    function GetCapacity: TListIndex;
+    procedure SetCapacity(const AValue: TListIndex);
+    procedure Put(Index: TListIndex; const AValue: TListItem);
+    procedure SetCount(const AValue: TListIndex);
+    procedure QuickSort(L, R : TListIndex; Compare: TGListSortCompare);
+    property Capacity: TListIndex read GetCapacity write SetCapacity;
   public
     // All items
     procedure Reverse;
     procedure Clear;
     procedure Expand;
     procedure Sort(Compare: TGListSortCompare);
-    function Implode(Separator: string): string;
+    function Implode(Separator: string; Converter: TGListStringConverter): string;
     // Many items
-    procedure MoveItems(CurIndex, NewIndex, Count: TIndexType);
+    procedure MoveItems(CurIndex, NewIndex, Count: TListIndex);
+    procedure Swap(Index1, Index2: TListIndex);
     // One item
-    function Add(Item: TItemType): TIndexType;
-    procedure Delete(Index: TIndexType);
-    procedure Exchange(Index1, Index2: TIndexType);
-    function Extract(Item: TItemType): TItemType;
-    function First: TItemType;
-    function IndexOf(Item: TItemType): TIndexType;
-    procedure Insert(Index: TIndexType; Item: TItemType);
-    function Last: TItemType;
-    procedure Move(CurIndex, NewIndex: TIndexType);
-    function Remove(Item: TItemType): TIndexType;
-    property Items[Index: TIndexType]: TItemType read Get write Put; default;
+    function Add(Item: TListItem): TListIndex;
+    procedure Delete(Index: TListIndex);
+    procedure Exchange(Index1, Index2: TListIndex);
+    function Extract(Item: TListItem): TListItem;
+    function First: TListItem;
+    function IndexOf(Item: TListItem): TListIndex;
+    procedure Insert(Index: TListIndex; Item: TListItem);
+    function Last: TListItem;
+    procedure Move(CurIndex, NewIndex: TListIndex);
+    function Remove(Item: TListItem): TListIndex;
+    property Items[Index: TListIndex]: TListItem read Get write Put; default;
     // List
     procedure AddList(List: TGList);
     procedure Assign(List: TGList);
-    procedure DeleteItems(Index, Count: TIndexType);
-    function Equals(Obj: TObject): Boolean; override;
-    function ExtractList(Item: TItemType; Count: TIndexType): TItemType;
-    procedure InsertList(Index: TIndexType; List: TGList);
+    procedure DeleteItems(Index, Count: TListIndex);
+    //function Equals(Obj: TObject): Boolean; override;
+    function ExtractList(Item: TListItem; Count: TListIndex): TListItem;
+    procedure InsertList(Index: TListIndex; List: TGList);
     // Other
-    property Count: TIndexType read GetCount write SetCount;
+    property Count: TListIndex read GetCount write SetCount;
     // Additional
-    procedure SetArray(Values: array of TItemType);
-  end;
+    procedure SetArray(Values: array of TListItem);
+  end;

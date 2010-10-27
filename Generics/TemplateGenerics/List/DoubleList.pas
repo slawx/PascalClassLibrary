@@ -1,4 +1,4 @@
-unit PointerList;
+unit DoubleList;
 
 {$mode delphi}
 
@@ -9,11 +9,11 @@ uses
 
 type
   TListIndex = Integer;
-  TListItem = Pointer;
+  TListItem = Double;
 {$INCLUDE 'GenericListInterface.tpl'}
 
 type
-  TPointerList = class(TGList)
+  TDoubleList = class(TGList)
   end;
 
 implementation

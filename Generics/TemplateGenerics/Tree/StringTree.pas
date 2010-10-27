@@ -8,15 +8,15 @@ uses
   Classes, SysUtils;
 
 type
-  TIndexType = Integer;
-  TItemType = string;
+  TTreeIndex = Integer;
+  TTreeItem = string;
 {$INCLUDE 'GenericTreeInterface.tpl'}
 
 type
-  TStringGTree = class(TGTree)
+  TStringTree = class(TGTree)
   end;
 
-  TStringGTreeNode = class(TGTreeNode)
+  TStringTreeNode = class(TGTreeNode)
   end;
 
 implementation

@@ -7,14 +7,14 @@
       <Version Value="9"/>
       <PathDelim Value="\"/>
       <SearchPaths>
-        <OtherUnitFiles Value="List;Tree"/>
+        <OtherUnitFiles Value="List\;Tree\"/>
         <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
       </SearchPaths>
       <Other>
         <CompilerPath Value="$(CompPath)"/>
       </Other>
     </CompilerOptions>
-    <Files Count="12">
+    <Files Count="13">
       <Item1>
         <Filename Value="List\StringList.pas"/>
         <UnitName Value="StringList"/>
@@ -63,6 +63,10 @@
         <Filename Value="Tree\PointerTree.pas"/>
         <UnitName Value="PointerTree"/>
       </Item12>
+      <Item13>
+        <Filename Value="List\DoubleList.pas"/>
+        <UnitName Value="DoubleList"/>
+      </Item13>
     </Files>
     <Type Value="RunAndDesignTime"/>
     <RequiredPkgs Count="1">
@@ -78,4 +82,4 @@
       <Version Value="2"/>
     </PublishOptions>
   </Package>
-</CONFIG>
+</CONFIG>
