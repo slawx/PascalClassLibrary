@@ -1,122 +1,3 @@
-unit GenericList;
-
-{$mode delphi}
-
-interface
-
-uses
-  Classes, SysUtils, fgl;
-
-resourcestring
-  SNotImplemented = 'Not implememnted';
-
-type
-  // List could implement many different features which increases
-  // time and memory requirements and whole complexity
-  // - optimization of memory allocation using Capacity
-  // - max item count limitation
-  // - ownership of items, object freeing
-  // - sorting
-  // - single item operations
-  // - multiple items operatins, interlist manipulation
-  // - action notifications (add, delete, extract, ...)
-  // - current position, iteration
-  // - custom mass operations (for-each, for-in)
-
-  // Generic type inheritance is not supported by compiler
-  // TIndexType have to be ordinal type. compiler doesn't support constraints
-  // All lists is prefixed with G (GList) as compiler doesn't support namespaces
-
-  { TGList }
-
-  generic IA<T> = interface
-    procedure SetId(Id: T);
-  end;
-
-  generic TGList<TIndexType, TItemType> = class
-  type public
-    TGListSortCompare = function(const Item1, Item2: TItemType): Integer;
-    //TGListNotification = (lnAdded, lnExtracted, lnDeleted);
-  var private
-    function GetCapacity: TIndexType;
-    procedure SetCapacity(const AValue: TIndexType);
-  private
-    FItems: array of TItemType;
-    FCount: TIndexType;
-    function Get(Index: TIndexType): TItemType;
-    function GetCount: TIndexType;
-    procedure Put(Index: TIndexType; const AValue: TItemType);
-    procedure SetCount(const AValue: TIndexType);
-    procedure QuickSort(L, R : TIndexType; Compare: TGListSortCompare);
-    property Capacity: TIndexType read GetCapacity write SetCapacity;
-  public
-    // All items
-    procedure Reverse;
-    procedure Clear;
-    procedure Expand;
-    procedure Sort(Compare: TGListSortCompare);
-    function Implode(Separator: string): string;
-    // Many items
-    procedure MoveItems(CurIndex, NewIndex, Count: TIndexType);
-    // One item
-    function Add(Item: TItemType): TIndexType;
-    procedure Delete(Index: TIndexType);
-    procedure Exchange(Index1, Index2: TIndexType);
-    function Extract(Item: TItemType): TItemType;
-    function First: TItemType;
-    function IndexOf(Item: TItemType): TIndexType;
-    procedure Insert(Index: TIndexType; Item: TItemType);
-    function Last: TItemType;
-    procedure Move(CurIndex, NewIndex: TIndexType);
-    function Remove(Item: TItemType): TIndexType;
-    property Items[Index: TIndexType]: TItemType read Get write Put; default;
-    // List
-    function AddList(var Source): TIndexType;
-    procedure Assign(var List);
-    procedure DeleteItems(Index, Count: TIndexType);
-    function Equals(Obj: TObject): Boolean; override;
-    function ExtractList(Item: TItemType; Count: TIndexType): TItemType;
-    procedure InsertList(Index: TIndexType; var Source);
-    // Other
-    property Count: TIndexType read GetCount write SetCount;
-    // Additional
-    procedure SetArray(Values: array of TItemType);
-  end;
-
-  // TPointerList
-  TPointerGList = specialize TGList<Integer, Pointer>;
-  TBigPointerGList = specialize TGList<Int64, Pointer>;
-  TSmallPointerGList = specialize TGList<SmallInt, Pointer>;
-  TTinyPointerGList = specialize TGList<ShortInt, Pointer>;
-
-  // TObjectList
-  TObjectGList = specialize TGList<Integer, TObject>;
-  TBigObjectGList = specialize TGList<Int64, TObject>;
-  TSmallObjectGList = specialize TGList<SmallInt, TObject>;
-  TTinyObjectGList = specialize TGList<ShortInt, TObject>;
-
-  // TIntegerList
-  TIntegerGList = specialize TGList<Integer, Integer>;
-  TBigIntegerGList = specialize TGList<Int64, Integer>;
-  TSmallIntegerGList = specialize TGList<SmallInt, Integer>;
-  TTinyIntegerGList = specialize TGList<ShortInt, Integer>;
-
-  // TStringList
-  TStringGList = specialize TGList<Integer, string>;
-  TBigStringGList = specialize TGList<Int64, string>;
-  TSmallStringGList = specialize TGList<SmallInt, string>;
-  TTinyStringGList = specialize TGList<ShortInt, string>;
-
-  // TDoubleList
-  TDoubleGList = specialize TGList<Integer, Double>;
-  TBigDoubleGList = specialize TGList<Int64, Double>;
-  TSmallDoubleGList = specialize TGList<SmallInt, Double>;
-  TTinyDoubleGList = specialize TGList<ShortInt, Double>;
-
-  procedure SystemMove(const Source; var Dest; Count: SizeInt);
-
-implementation
-
 uses
   RtlConsts;
 
@@ -188,16 +69,16 @@ begin
   until I >= R;
 end;
 
-procedure TGList.Assign(var List);
+procedure TGList.Assign(List: TGList);
 var
   I: Integer;
 begin
-  (*Count := List.Count;
+  Count := List.Count;
   I := 0;
   while I < Count do begin
     Items[I] := List[I];
-  end;*)
-  raise Exception.Create(SNotImplemented);
+    I := I + 1;
+  end;
 end;
 
 procedure TGList.Expand;
@@ -257,17 +138,15 @@ begin
   FCount := FCount + 1;
 end;
 
-procedure TGList.InsertList(Index: TIndexType; var Source);
+procedure TGList.InsertList(Index: TIndexType; List: TGList);
 var
   I: TIndexType;
 begin
-  (*I := 0;
-  while (I < Source.Count) do begin
-    Insert(Index + I, Source[I]);
+  I := 0;
+  while (I < List.Count) do begin
+    Insert(Index + I, List[I]);
     I := I + 1;
   end;
-  *)
-  raise Exception.Create(SNotImplemented);
 end;
 
 function TGList.Last: TItemType;
@@ -307,16 +186,17 @@ function TGList.Equals(Obj: TObject): Boolean;
 var
   I: TIndexType;
 begin
-(*  Result := Count = List.Count;
+  Result := Count = (Obj as TGList).Count;
   if Result then begin
     I := 0;
-    while I < Count do
-      if Items[I] <> List[I] then Result := False;
+    while I < Count do begin
+      if Items[I] <> (Obj as TGList)[I] then begin
+        Result := False;
+        Break;
+      end;
+      I := I + 1;
+    end;
   end;
-  *)
-  // Not implemented
-  raise Exception.Create(SNotImplemented);
-  Result := False;
 end;
 
 procedure TGList.Reverse;
@@ -365,19 +245,15 @@ begin
   FCount := FCount + 1;
 end;
 
-function TGList.AddList(var Source): TIndexType;
+procedure TGList.AddList(List: TGList);
 var
   I: TIndexType;
 begin
-(*  I := 0;
-  while I < Source.Count do begin
-    Add(Source[I]);
+  I := 0;
+  while I < List.Count do begin
+    Add(List[I]);
     I := I + 1;
   end;
-  *)
- // Not implemented
- Result := 0;
- raise Exception.Create(SNotImplemented);
 end;
 
 procedure TGList.Clear;
@@ -422,7 +298,3 @@ begin
   FItems[Index1] := FItems[Index2];
   FItems[Index2] := Temp;
 end;
-
-end.
-
-

@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+<CONFIG>
+  <Package Version="3">
+    <PathDelim Value="\"/>
+    <Name Value="TemplateGenerics"/>
+    <CompilerOptions>
+      <Version Value="9"/>
+      <PathDelim Value="\"/>
+      <SearchPaths>
+        <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)\"/>
+      </SearchPaths>
+      <Other>
+        <CompilerPath Value="$(CompPath)"/>
+      </Other>
+    </CompilerOptions>
+    <Files Count="6">
+      <Item1>
+        <Filename Value="GenericListImplementation.tpl"/>
+        <Type Value="Text"/>
+      </Item1>
+      <Item2>
+        <Filename Value="GenericListInterface.tpl"/>
+        <Type Value="Text"/>
+      </Item2>
+      <Item3>
+        <Filename Value="IntegerList.pas"/>
+        <UnitName Value="IntegerList"/>
+      </Item3>
+      <Item4>
+        <Filename Value="ObjectList.pas"/>
+        <UnitName Value="ObjectList"/>
+      </Item4>
+      <Item5>
+        <Filename Value="PointerList.pas"/>
+        <UnitName Value="PointerList"/>
+      </Item5>
+      <Item6>
+        <Filename Value="StringList.pas"/>
+        <UnitName Value="StringList"/>
+      </Item6>
+    </Files>
+    <Type Value="RunAndDesignTime"/>
+    <RequiredPkgs Count="1">
+      <Item1>
+        <PackageName Value="FCL"/>
+        <MinVersion Major="1" Valid="True"/>
+      </Item1>
+    </RequiredPkgs>
+    <UsageOptions>
+      <UnitPath Value="$(PkgOutDir)"/>
+    </UsageOptions>
+    <PublishOptions>
+      <Version Value="2"/>
+    </PublishOptions>
+  </Package>
+</CONFIG>
