@@ -7,6 +7,9 @@ interface
 uses
   Classes, SysUtils, fgl;
 
+resourcestring
+  SNotImplemented = 'Not implememnted';
+
 type
   // List could implement many different features which increases
   // time and memory requirements and whole complexity
@@ -47,27 +50,37 @@ type
     procedure QuickSort(L, R : TIndexType; Compare: TGListSortCompare);
     property Capacity: TIndexType read GetCapacity write SetCapacity;
   public
-    function Add(Item: TItemType): TIndexType;
-    function AddList(var Source): TIndexType;
+    // All items
+    procedure Reverse;
     procedure Clear;
-    procedure Delete(Index: TIndexType);
-    procedure DeleteItems(Index, Count: TIndexType);
-    procedure Exchange(Index1, Index2: TIndexType);
     procedure Expand;
+    procedure Sort(Compare: TGListSortCompare);
+    function Implode(Separator: string): string;
+    // Many items
+    procedure MoveItems(CurIndex, NewIndex, Count: TIndexType);
+    // One item
+    function Add(Item: TItemType): TIndexType;
+    procedure Delete(Index: TIndexType);
+    procedure Exchange(Index1, Index2: TIndexType);
     function Extract(Item: TItemType): TItemType;
-    function ExtractList(Item: TItemType; Count: TIndexType): TItemType;
     function First: TItemType;
     function IndexOf(Item: TItemType): TIndexType;
     procedure Insert(Index: TIndexType; Item: TItemType);
-    procedure InsertList(Index: TIndexType; var Source);
     function Last: TItemType;
     procedure Move(CurIndex, NewIndex: TIndexType);
-    procedure MoveItems(CurIndex, NewIndex, Count: TIndexType);
     function Remove(Item: TItemType): TIndexType;
-    procedure Reverse;
-    procedure Sort(Compare: TGListSortCompare);
     property Items[Index: TIndexType]: TItemType read Get write Put; default;
+    // List
+    function AddList(var Source): TIndexType;
+    procedure Assign(var List);
+    procedure DeleteItems(Index, Count: TIndexType);
+    function Equals(Obj: TObject): Boolean; override;
+    function ExtractList(Item: TItemType; Count: TIndexType): TItemType;
+    procedure InsertList(Index: TIndexType; var Source);
+    // Other
     property Count: TIndexType read GetCount write SetCount;
+    // Additional
+    procedure SetArray(Values: array of TItemType);
   end;
 
   // TPointerList
@@ -156,7 +169,7 @@ begin
    J := R;
    P := FItems[ (L + R) div 2 ];
    repeat
-     while Compare(P, FItems[i]) > 0 do
+     while Compare(P, FItems[I]) > 0 do
        I := I + 1;
      while Compare(P, FItems[J]) < 0 do
        J := J - 1;
@@ -175,6 +188,18 @@ begin
   until I >= R;
 end;
 
+procedure TGList.Assign(var List);
+var
+  I: Integer;
+begin
+  (*Count := List.Count;
+  I := 0;
+  while I < Count do begin
+    Items[I] := List[I];
+  end;*)
+  raise Exception.Create(SNotImplemented);
+end;
+
 procedure TGList.Expand;
 var
   IncSize: TIndexType;
@@ -190,7 +215,7 @@ end;
 
 function TGList.Extract(Item: TItemType): TItemType;
 var
-  I: Integer;
+  I: TIndexType;
 begin
   I := IndexOf(Item);
   if I >= 0 then begin
@@ -202,7 +227,7 @@ end;
 
 function TGList.ExtractList(Item: TItemType; Count: TIndexType): TItemType;
 begin
-
+  raise Exception.Create(SNotImplemented);
 end;
 
 function TGList.First: TItemType;
@@ -242,6 +267,7 @@ begin
     I := I + 1;
   end;
   *)
+  raise Exception.Create(SNotImplemented);
 end;
 
 function TGList.Last: TItemType;
@@ -267,7 +293,7 @@ end;
 
 procedure TGList.MoveItems(CurIndex, NewIndex, Count: TIndexType);
 begin
-
+  raise Exception.Create(SNotImplemented);
 end;
 
 function TGList.Remove(Item: TItemType): TIndexType;
@@ -277,15 +303,57 @@ begin
     Delete(Result);
 end;
 
+function TGList.Equals(Obj: TObject): Boolean;
+var
+  I: TIndexType;
+begin
+(*  Result := Count = List.Count;
+  if Result then begin
+    I := 0;
+    while I < Count do
+      if Items[I] <> List[I] then Result := False;
+  end;
+  *)
+  // Not implemented
+  raise Exception.Create(SNotImplemented);
+  Result := False;
+end;
+
 procedure TGList.Reverse;
 begin
-
+  raise Exception.Create(SNotImplemented);
 end;
 
 procedure TGList.Sort(Compare: TGListSortCompare);
 begin
   if FCount > 1 then
     QuickSort(0, FCount - 1, Compare);
+end;
+
+procedure TGList.SetArray(Values: array of TItemType);
+var
+  I: TIndexType;
+begin
+  Clear;
+  I := 0;
+  while I <= High(Values) do begin
+    Add(Values[I]);
+    I := I + 1;
+  end;
+end;
+
+function TGList.Implode(Separator: string): string;
+var
+  I: TIndexType;
+begin
+  Result := '';
+  I := 0;
+  while I < Count do begin
+//    Result := Result + string(Items[I]);
+    if I < (Count - 1) then
+      Result := Result + Separator;
+    I := I + 1;
+  end;
 end;
 
 function TGList.Add(Item: TItemType): TIndexType;
@@ -307,6 +375,9 @@ begin
     I := I + 1;
   end;
   *)
+ // Not implemented
+ Result := 0;
+ raise Exception.Create(SNotImplemented);
 end;
 
 procedure TGList.Clear;
