@@ -7,7 +7,8 @@ unit TemplateGenerics;
 interface
 
 uses
-  IntegerList, ObjectList, PointerList, StringList, LazarusPackageIntf;
+    StringList, IntegerList, ObjectList, PointerList, StringTree, IntegerTree, 
+  ObjectTree, PointerTree, LazarusPackageIntf;
 
 implementation
 
