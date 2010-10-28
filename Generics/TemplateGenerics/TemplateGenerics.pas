@@ -8,7 +8,7 @@ interface
 
 uses
     ListDouble, ListInteger, ListObject, ListPointer, ListString, TreeInteger, 
-  TreeObject, TreePointer, TreeString, LazarusPackageIntf;
+  TreeObject, TreePointer, TreeString, DictionaryString, LazarusPackageIntf;
 
 implementation
 

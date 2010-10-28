@@ -117,7 +117,7 @@ end;
 function TGList.IndexOf(Item: TListItem): TListIndex;
 begin
   Result := 0;
-  while (Result < FCount) and (FItems[Result] <> Item) do
+  while (Result < FCount) and CompareMem(Addr(FItems[Result]), Addr(Item), SizeOf(TListItem)) do
     Result := Result + 1;
   if Result = FCount then Result := -1;
 end;
@@ -190,15 +190,6 @@ begin
   end;
 end;
 
-procedure TGList.Swap(Index1, Index2: TListIndex);
-var
-  Temp: TListItem;
-begin
-  Temp := Items[Index1];
-  Items[Index1] := Items[Index2];
-  Items[Index2] := Temp;
-end;
-
 function TGList.Remove(Item: TListItem): TListIndex;
 begin
   Result := IndexOf(Item);
@@ -229,7 +220,7 @@ var
 begin
   I := 0;
   while I < (Count div 2) do begin
-    Swap(I, Count - 1 - I);
+    Exchange(I, Count - 1 - I);
     I := I + 1;
   end;
 end;
@@ -240,11 +231,10 @@ begin
     QuickSort(0, FCount - 1, Compare);
 end;
 
-procedure TGList.SetArray(Values: array of TListItem);
+procedure TGList.AddArray(Values: array of TListItem);
 var
   I: TListIndex;
 begin
-  Clear;
   I := 0;
   while I <= High(Values) do begin
     Add(Values[I]);

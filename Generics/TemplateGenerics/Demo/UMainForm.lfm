@@ -1,12 +1,12 @@
 object MainForm: TMainForm
   Left = 379
-  Height = 322
+  Height = 397
   Top = 129
-  Width = 433
+  Width = 478
   ActiveControl = ButtonIntegerList
   Caption = 'Template generics demo'
-  ClientHeight = 322
-  ClientWidth = 433
+  ClientHeight = 397
+  ClientWidth = 478
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   LCLVersion = '0.9.29'
@@ -14,16 +14,16 @@ object MainForm: TMainForm
     Left = 8
     Height = 25
     Top = 8
-    Width = 75
-    Caption = 'IntegerList'
+    Width = 112
+    Caption = 'TListInteger'
     OnClick = ButtonIntegerListClick
     TabOrder = 0
   end
   object MemoOutput: TMemo
-    Left = 95
-    Height = 306
-    Top = 6
-    Width = 329
+    Left = 128
+    Height = 384
+    Top = 8
+    Width = 344
     Anchors = [akTop, akLeft, akRight, akBottom]
     ReadOnly = True
     ScrollBars = ssAutoBoth
@@ -33,9 +33,18 @@ object MainForm: TMainForm
     Left = 8
     Height = 25
     Top = 40
-    Width = 75
-    Caption = 'StringList'
+    Width = 112
+    Caption = 'TListString'
     OnClick = ButtonStringListClick
     TabOrder = 2
+  end
+  object ButtonDictionaryString: TButton
+    Left = 8
+    Height = 25
+    Top = 72
+    Width = 112
+    Caption = 'TDictionaryString'
+    OnClick = ButtonDictionaryStringClick
+    TabOrder = 3
   end
 end

@@ -6,16 +6,18 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  ComCtrls, ListInteger, ListString;
+  ComCtrls, ListInteger, ListString, DictionaryString;
 
 type
 
   { TMainForm }
 
   TMainForm = class(TForm)
+    ButtonDictionaryString: TButton;
     ButtonIntegerList: TButton;
     ButtonStringList: TButton;
     MemoOutput: TMemo;
+    procedure ButtonDictionaryStringClick(Sender: TObject);
     procedure ButtonIntegerListClick(Sender: TObject);
     procedure ButtonStringListClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -45,10 +47,10 @@ var
   I: Integer;
 begin
   MemoOutput.Clear;
-  WriteLn('TIntegerList test');
+  WriteLn('TListInteger test');
   List := TListInteger.Create;
   with List do try
-    SetArray([10, 20, 30, 40]);
+    AddArray([10, 20, 30, 40]);
     WriteLn('Implode: ' + Implode(',', IntToStr));
     Clear;
     for I := 0 to 10 do Add(I);
@@ -67,6 +69,34 @@ begin
   end;
 end;
 
+function StringPairToStr(Pair: TPairString): string;
+begin
+  Result := Pair.Key + ':' + Pair.Value;
+end;
+
+procedure TMainForm.ButtonDictionaryStringClick(Sender: TObject);
+var
+  Dictionary: TDictionaryString;
+begin
+  MemoOutput.Clear;
+  WriteLn('TDictionaryString test');
+  Dictionary := TDictionaryString.Create;
+  with Dictionary do try
+    Add('Key1', 'Value1');
+    Add('Key2', 'Value2');
+    Add('Key3', 'Value3');
+    WriteLn('Implode: ' + Implode(',', StringPairToStr));
+    WriteLn('Values[Key2]: ' + Values['Key2']);
+    WriteLn('Values[Key2] = None');
+    Values['Key2'] := 'None';
+    WriteLn('Values[Key2]: ' + Values['Key2']);
+    WriteLn('Values[Key0]: ' + Values['Key0']);
+    WriteLn('Keys[2]: ' + Keys[2]);
+  finally
+    Free;
+  end;
+end;
+
 function StrToStr(Value: string): string;
 begin
   Result := Value;
@@ -77,10 +107,10 @@ var
   List: TListString;
 begin
   MemoOutput.Clear;
-  WriteLn('TStringList test');
+  WriteLn('TListString test');
   List := TListString.Create;
   with List do try
-    SetArray(['One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven']);
+    AddArray(['One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven']);
     WriteLn('Count: ' + IntToStr(Count));
     WriteLn('Implode: ' + Implode(',', StrToStr));
     WriteLn('Reverse');

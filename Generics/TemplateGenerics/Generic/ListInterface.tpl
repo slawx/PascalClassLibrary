@@ -25,11 +25,10 @@
     function Implode(Separator: string; Converter: TGListStringConverter): string;
     // Many items
     procedure MoveItems(CurIndex, NewIndex, Count: TListIndex);
-    procedure Swap(Index1, Index2: TListIndex);
+    procedure Exchange(Index1, Index2: TListIndex);
     // One item
     function Add(Item: TListItem): TListIndex;
     procedure Delete(Index: TListIndex);
-    procedure Exchange(Index1, Index2: TListIndex);
     function Extract(Item: TListItem): TListItem;
     function First: TListItem;
     function IndexOf(Item: TListItem): TListIndex;
@@ -47,5 +46,5 @@
     // Other
     property Count: TListIndex read GetCount write SetCount;
     // Additional
-    procedure SetArray(Values: array of TListItem);
+    procedure AddArray(Values: array of TListItem);
   end;
