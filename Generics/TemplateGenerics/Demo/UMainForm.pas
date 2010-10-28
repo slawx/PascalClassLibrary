@@ -6,19 +6,21 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  ComCtrls, ListInteger, ListString, DictionaryString;
+  ComCtrls, ListInteger, ListString, DictionaryString, QueueInteger;
 
 type
 
   { TMainForm }
 
   TMainForm = class(TForm)
+    ButtonQueueInteger: TButton;
     ButtonDictionaryString: TButton;
     ButtonIntegerList: TButton;
     ButtonStringList: TButton;
     MemoOutput: TMemo;
     procedure ButtonDictionaryStringClick(Sender: TObject);
     procedure ButtonIntegerListClick(Sender: TObject);
+    procedure ButtonQueueIntegerClick(Sender: TObject);
     procedure ButtonStringListClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -63,6 +65,29 @@ begin
     WriteLn('First: ' + IntToStr(First));
     WriteLn('Last: ' + IntToStr(Last));
     MoveItems(3, 2, 3);
+    WriteLn('Implode: ' + Implode(',', IntToStr));
+  finally
+    Free;
+  end;
+end;
+
+procedure TMainForm.ButtonQueueIntegerClick(Sender: TObject);
+var
+  Queue: TQueueInteger;
+  I: Integer;
+begin
+  MemoOutput.Clear;
+  WriteLn('TQueueInteger test');
+  Queue := TQueueInteger.Create;
+  with Queue do try
+    Enqueue(1);
+    Enqueue(2);
+    Enqueue(3);
+    WriteLn('Implode: ' + Implode(',', IntToStr));
+    WriteLn('Enqueue: 4');
+    Enqueue(4);
+    WriteLn('Implode: ' + Implode(',', IntToStr));
+    WriteLn('Dequeue: ' + IntToStr(Dequeue));
     WriteLn('Implode: ' + Implode(',', IntToStr));
   finally
     Free;

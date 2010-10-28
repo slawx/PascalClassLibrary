@@ -117,7 +117,8 @@ end;
 function TGList.IndexOf(Item: TListItem): TListIndex;
 begin
   Result := 0;
-  while (Result < FCount) and CompareMem(Addr(FItems[Result]), Addr(Item), SizeOf(TListItem)) do
+  while (Result < FCount) and
+  not CompareMem(Addr(FItems[Result]), Addr(Item), SizeOf(TListItem)) do
     Result := Result + 1;
   if Result = FCount then Result := -1;
 end;

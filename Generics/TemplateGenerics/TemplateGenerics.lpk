@@ -14,7 +14,7 @@
         <CompilerPath Value="$(CompPath)"/>
       </Other>
     </CompilerOptions>
-    <Files Count="16">
+    <Files Count="30">
       <Item1>
         <Filename Value="Generic\DictionaryImplementation.tpl"/>
         <Type Value="Text"/>
@@ -79,6 +79,62 @@
         <Filename Value="Specialized\DictionaryString.pas"/>
         <UnitName Value="DictionaryString"/>
       </Item16>
+      <Item17>
+        <Filename Value="Specialized\StackDouble.pas"/>
+        <UnitName Value="StackDouble"/>
+      </Item17>
+      <Item18>
+        <Filename Value="Specialized\StackInteger.pas"/>
+        <UnitName Value="StackInteger"/>
+      </Item18>
+      <Item19>
+        <Filename Value="Specialized\StackObject.pas"/>
+        <UnitName Value="StackObject"/>
+      </Item19>
+      <Item20>
+        <Filename Value="Specialized\StackPointer.pas"/>
+        <UnitName Value="StackPointer"/>
+      </Item20>
+      <Item21>
+        <Filename Value="Specialized\StackString.pas"/>
+        <UnitName Value="StackString"/>
+      </Item21>
+      <Item22>
+        <Filename Value="Generic\StackImplementation.tpl"/>
+        <Type Value="Text"/>
+      </Item22>
+      <Item23>
+        <Filename Value="Generic\StackInterface.tpl"/>
+        <Type Value="Text"/>
+      </Item23>
+      <Item24>
+        <Filename Value="Generic\QueueImplementation.tpl"/>
+        <Type Value="Text"/>
+      </Item24>
+      <Item25>
+        <Filename Value="Generic\QueueInterface.tpl"/>
+        <Type Value="Text"/>
+      </Item25>
+      <Item26>
+        <Filename Value="Specialized\QueueDouble.pas"/>
+        <UnitName Value="QueueDouble"/>
+      </Item26>
+      <Item27>
+        <Filename Value="Specialized\QueueInteger.pas"/>
+        <UnitName Value="QueueInteger"/>
+      </Item27>
+      <Item28>
+        <Filename Value="Specialized\QueueObject.pas"/>
+        <UnitName Value="QueueObject"/>
+      </Item28>
+      <Item29>
+        <Filename Value="Specialized\QueuePointer.pas"/>
+        <UnitName Value="QueuePointer"/>
+      </Item29>
+      <Item30>
+        <Filename Value="Specialized\QueueString.pas"/>
+        <UnitName Value="QueueString"/>
+      </Item30>
     </Files>
     <Type Value="RunAndDesignTime"/>
     <RequiredPkgs Count="1">

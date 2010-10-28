@@ -1,5 +1,6 @@
 
 {$INCLUDE 'ListImplementation.tpl'}
+
 function TGDictionary.GetKey(Index: TDictionaryIndex): TDictionaryKey;
 begin
   Result := Items[Index].Key;

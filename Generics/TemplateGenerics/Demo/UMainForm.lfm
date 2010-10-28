@@ -47,4 +47,13 @@ object MainForm: TMainForm
     OnClick = ButtonDictionaryStringClick
     TabOrder = 3
   end
+  object ButtonQueueInteger: TButton
+    Left = 8
+    Height = 25
+    Top = 102
+    Width = 112
+    Caption = 'TQueueInteger'
+    OnClick = ButtonQueueIntegerClick
+    TabOrder = 4
+  end
 end
