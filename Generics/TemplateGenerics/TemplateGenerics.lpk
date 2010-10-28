@@ -7,65 +7,74 @@
       <Version Value="9"/>
       <PathDelim Value="\"/>
       <SearchPaths>
+        <OtherUnitFiles Value="Specialized"/>
         <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
       </SearchPaths>
       <Other>
         <CompilerPath Value="$(CompPath)"/>
       </Other>
     </CompilerOptions>
-    <Files Count="13">
+    <Files Count="15">
       <Item1>
-        <Filename Value="ListString.pas"/>
-        <UnitName Value="ListString"/>
+        <Filename Value="Generic\DictionaryImplementation.tpl"/>
+        <Type Value="Text"/>
       </Item1>
       <Item2>
-        <Filename Value="ListGenericImplementation.tpl"/>
+        <Filename Value="Generic\DictionaryInterface.tpl"/>
         <Type Value="Text"/>
       </Item2>
       <Item3>
-        <Filename Value="ListGenericInterface.tpl"/>
+        <Filename Value="Generic\ListImplementation.tpl"/>
         <Type Value="Text"/>
       </Item3>
       <Item4>
-        <Filename Value="ListInteger.pas"/>
-        <UnitName Value="ListInteger"/>
+        <Filename Value="Generic\ListInterface.tpl"/>
+        <Type Value="Text"/>
       </Item4>
       <Item5>
-        <Filename Value="ListObject.pas"/>
-        <UnitName Value="ListObject"/>
+        <Filename Value="Generic\TreeImplementation.tpl"/>
+        <Type Value="Text"/>
       </Item5>
       <Item6>
-        <Filename Value="ListPointer.pas"/>
-        <UnitName Value="ListPointer"/>
+        <Filename Value="Generic\TreeInterface.tpl"/>
+        <Type Value="Text"/>
       </Item6>
       <Item7>
-        <Filename Value="TreeString.pas"/>
-        <UnitName Value="TreeString"/>
+        <Filename Value="Specialized\ListDouble.pas"/>
+        <UnitName Value="ListDouble"/>
       </Item7>
       <Item8>
-        <Filename Value="TreeGenericImplementation.tpl"/>
-        <Type Value="Text"/>
+        <Filename Value="Specialized\ListInteger.pas"/>
+        <UnitName Value="ListInteger"/>
       </Item8>
       <Item9>
-        <Filename Value="TreeGenericInterface.tpl"/>
-        <Type Value="Text"/>
+        <Filename Value="Specialized\ListObject.pas"/>
+        <UnitName Value="ListObject"/>
       </Item9>
       <Item10>
-        <Filename Value="TreeInteger.pas"/>
-        <UnitName Value="TreeInteger"/>
+        <Filename Value="Specialized\ListPointer.pas"/>
+        <UnitName Value="ListPointer"/>
       </Item10>
       <Item11>
-        <Filename Value="TreeObject.pas"/>
-        <UnitName Value="TreeObject"/>
+        <Filename Value="Specialized\ListString.pas"/>
+        <UnitName Value="ListString"/>
       </Item11>
       <Item12>
-        <Filename Value="TreePointer.pas"/>
-        <UnitName Value="TreePointer"/>
+        <Filename Value="Specialized\TreeInteger.pas"/>
+        <UnitName Value="TreeInteger"/>
       </Item12>
       <Item13>
-        <Filename Value="ListDouble.pas"/>
-        <UnitName Value="ListDouble"/>
+        <Filename Value="Specialized\TreeObject.pas"/>
+        <UnitName Value="TreeObject"/>
       </Item13>
+      <Item14>
+        <Filename Value="Specialized\TreePointer.pas"/>
+        <UnitName Value="TreePointer"/>
+      </Item14>
+      <Item15>
+        <Filename Value="Specialized\TreeString.pas"/>
+        <UnitName Value="TreeString"/>
+      </Item15>
     </Files>
     <Type Value="RunAndDesignTime"/>
     <RequiredPkgs Count="1">

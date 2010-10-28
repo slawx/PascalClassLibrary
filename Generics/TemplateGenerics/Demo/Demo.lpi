@@ -37,12 +37,12 @@
         <PackageName Value="LCL"/>
       </Item2>
     </RequiredPackages>
-    <Units Count="19">
+    <Units Count="32">
       <Unit0>
         <Filename Value="Demo.lpr"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="Demo"/>
-        <UsageCount Value="21"/>
+        <UsageCount Value="22"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit0>
       <Unit1>
@@ -51,143 +51,117 @@
         <ComponentName Value="MainForm"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UMainForm"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="65"/>
-        <CursorPos X="22" Y="80"/>
-        <UsageCount Value="21"/>
+        <TopLine Value="18"/>
+        <CursorPos X="33" Y="34"/>
+        <UsageCount Value="22"/>
         <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit1>
       <Unit2>
         <Filename Value="../ListInteger.pas"/>
         <UnitName Value="ListInteger"/>
-        <EditorIndex Value="8"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="24" Y="16"/>
-        <UsageCount Value="11"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="12"/>
       </Unit2>
       <Unit3>
         <Filename Value="../ListObject.pas"/>
         <UnitName Value="ListObject"/>
-        <EditorIndex Value="9"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="16" Y="26"/>
-        <UsageCount Value="11"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="12"/>
       </Unit3>
       <Unit4>
         <Filename Value="../ListPointer.pas"/>
         <UnitName Value="ListPointer"/>
-        <EditorIndex Value="10"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="16" Y="21"/>
-        <UsageCount Value="11"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="12"/>
       </Unit4>
       <Unit5>
         <Filename Value="../TreeString.pas"/>
-        <UnitName Value="StringTree"/>
-        <EditorIndex Value="11"/>
+        <UnitName Value="TreeString"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="16" Y="24"/>
-        <UsageCount Value="11"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="12"/>
       </Unit5>
       <Unit6>
         <Filename Value="../TreeGenericImplementation.tpl"/>
-        <EditorIndex Value="4"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="23" Y="2"/>
-        <UsageCount Value="11"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="12"/>
         <DefaultSyntaxHighlighter Value="None"/>
       </Unit6>
       <Unit7>
         <Filename Value="../TreeInteger.pas"/>
         <UnitName Value="TreeInteger"/>
-        <EditorIndex Value="5"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="16" Y="24"/>
-        <UsageCount Value="11"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="12"/>
       </Unit7>
       <Unit8>
         <Filename Value="../TreeObject.pas"/>
-        <UnitName Value="ObjectTree"/>
-        <EditorIndex Value="1"/>
+        <UnitName Value="TreeObject"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="16" Y="24"/>
-        <UsageCount Value="11"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="12"/>
       </Unit8>
       <Unit9>
         <Filename Value="../TreePointer.pas"/>
-        <UnitName Value="PointerTree"/>
-        <EditorIndex Value="2"/>
+        <UnitName Value="TreePointer"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="16" Y="24"/>
-        <UsageCount Value="11"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="12"/>
       </Unit9>
       <Unit10>
         <Filename Value="../ListDouble.pas"/>
         <UnitName Value="ListDouble"/>
-        <EditorIndex Value="3"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="16" Y="17"/>
-        <UsageCount Value="11"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="12"/>
       </Unit10>
       <Unit11>
         <Filename Value="../ListString.pas"/>
         <UnitName Value="ListString"/>
-        <EditorIndex Value="7"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="24" Y="21"/>
-        <UsageCount Value="11"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="12"/>
       </Unit11>
       <Unit12>
         <Filename Value="../ListGenericImplementation.tpl"/>
-        <EditorIndex Value="12"/>
         <WindowIndex Value="0"/>
         <TopLine Value="161"/>
         <CursorPos X="15" Y="187"/>
-        <UsageCount Value="11"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="12"/>
         <DefaultSyntaxHighlighter Value="None"/>
       </Unit12>
       <Unit13>
         <Filename Value="../ListGenericInterface.tpl"/>
-        <EditorIndex Value="13"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="3" Y="7"/>
-        <UsageCount Value="11"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="12"/>
         <DefaultSyntaxHighlighter Value="None"/>
       </Unit13>
       <Unit14>
         <Filename Value="../TreeGenericInterface.tpl"/>
-        <EditorIndex Value="6"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
-        <CursorPos X="18" Y="6"/>
-        <UsageCount Value="11"/>
-        <Loaded Value="True"/>
+        <CursorPos X="53" Y="4"/>
+        <UsageCount Value="12"/>
         <DefaultSyntaxHighlighter Value="None"/>
       </Unit14>
       <Unit15>
@@ -223,8 +197,139 @@
         <CursorPos X="20" Y="2048"/>
         <UsageCount Value="11"/>
       </Unit18>
+      <Unit19>
+        <Filename Value="../Specialized/ListDouble.pas"/>
+        <UnitName Value="ListDouble"/>
+        <EditorIndex Value="1"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="12" Y="21"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit19>
+      <Unit20>
+        <Filename Value="../Specialized/ListInteger.pas"/>
+        <UnitName Value="ListInteger"/>
+        <EditorIndex Value="2"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="23" Y="21"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit20>
+      <Unit21>
+        <Filename Value="../Specialized/ListObject.pas"/>
+        <UnitName Value="ListObject"/>
+        <EditorIndex Value="3"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="3"/>
+        <CursorPos X="23" Y="26"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit21>
+      <Unit22>
+        <Filename Value="../Specialized/ListPointer.pas"/>
+        <UnitName Value="ListPointer"/>
+        <EditorIndex Value="4"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="23" Y="21"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit22>
+      <Unit23>
+        <Filename Value="../Specialized/TreeString.pas"/>
+        <UnitName Value="TreeString"/>
+        <EditorIndex Value="5"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="23" Y="24"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit23>
+      <Unit24>
+        <Filename Value="../Specialized/TreePointer.pas"/>
+        <UnitName Value="TreePointer"/>
+        <EditorIndex Value="6"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="23" Y="13"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit24>
+      <Unit25>
+        <Filename Value="../Specialized/TreeObject.pas"/>
+        <UnitName Value="TreeObject"/>
+        <EditorIndex Value="7"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="23" Y="24"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit25>
+      <Unit26>
+        <Filename Value="../Specialized/TreeInteger.pas"/>
+        <UnitName Value="TreeInteger"/>
+        <EditorIndex Value="8"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="1" Y="27"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit26>
+      <Unit27>
+        <Filename Value="../Specialized/ListString.pas"/>
+        <UnitName Value="ListString"/>
+        <EditorIndex Value="11"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="25" Y="20"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit27>
+      <Unit28>
+        <Filename Value="../Generic/TreeImplementation.tpl"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="9"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="9" Y="8"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="None"/>
+      </Unit28>
+      <Unit29>
+        <Filename Value="../Generic/TreeInterface.tpl"/>
+        <EditorIndex Value="10"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="18" Y="6"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="None"/>
+      </Unit29>
+      <Unit30>
+        <Filename Value="../Generic/ListInterface.tpl"/>
+        <EditorIndex Value="12"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="18"/>
+        <CursorPos X="39" Y="44"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="None"/>
+      </Unit30>
+      <Unit31>
+        <Filename Value="../Generic/ListImplementation.tpl"/>
+        <EditorIndex Value="13"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="296"/>
+        <CursorPos X="14" Y="313"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="None"/>
+      </Unit31>
     </Units>
-    <JumpHistory Count="26" HistoryIndex="25">
+    <JumpHistory Count="24" HistoryIndex="23">
       <Position1>
         <Filename Value="UMainForm.pas"/>
         <Caret Line="26" Column="1" TopLine="21"/>
@@ -246,89 +351,81 @@
         <Caret Line="41" Column="7" TopLine="8"/>
       </Position5>
       <Position6>
-        <Filename Value="../ListString.pas"/>
-        <Caret Line="1" Column="16" TopLine="1"/>
-      </Position6>
-      <Position7>
-        <Filename Value="../ListString.pas"/>
-        <Caret Line="21" Column="23" TopLine="1"/>
-      </Position7>
-      <Position8>
-        <Filename Value="../ListInteger.pas"/>
-        <Caret Line="10" Column="11" TopLine="1"/>
-      </Position8>
-      <Position9>
-        <Filename Value="../ListObject.pas"/>
-        <Caret Line="6" Column="26" TopLine="1"/>
-      </Position9>
-      <Position10>
-        <Filename Value="../ListPointer.pas"/>
-        <Caret Line="16" Column="15" TopLine="1"/>
-      </Position10>
-      <Position11>
-        <Filename Value="../TreeString.pas"/>
-        <Caret Line="23" Column="42" TopLine="1"/>
-      </Position11>
-      <Position12>
-        <Filename Value="../TreeGenericInterface.tpl"/>
-        <Caret Line="19" Column="42" TopLine="1"/>
-      </Position12>
-      <Position13>
-        <Filename Value="../ListGenericInterface.tpl"/>
-        <Caret Line="15" Column="31" TopLine="1"/>
-      </Position13>
-      <Position14>
-        <Filename Value="../TreeGenericImplementation.tpl"/>
-        <Caret Line="2" Column="23" TopLine="1"/>
-      </Position14>
-      <Position15>
-        <Filename Value="../TreeInteger.pas"/>
-        <Caret Line="24" Column="1" TopLine="1"/>
-      </Position15>
-      <Position16>
-        <Filename Value="../TreeObject.pas"/>
-        <Caret Line="12" Column="18" TopLine="1"/>
-      </Position16>
-      <Position17>
-        <Filename Value="../TreePointer.pas"/>
-        <Caret Line="16" Column="16" TopLine="1"/>
-      </Position17>
-      <Position18>
-        <Filename Value="../ListDouble.pas"/>
-        <Caret Line="16" Column="14" TopLine="1"/>
-      </Position18>
-      <Position19>
         <Filename Value="UMainForm.pas"/>
         <Caret Line="41" Column="1" TopLine="25"/>
-      </Position19>
-      <Position20>
+      </Position6>
+      <Position7>
         <Filename Value="UMainForm.pas"/>
         <Caret Line="45" Column="14" TopLine="28"/>
-      </Position20>
-      <Position21>
+      </Position7>
+      <Position8>
         <Filename Value="UMainForm.pas"/>
         <Caret Line="50" Column="16" TopLine="33"/>
-      </Position21>
-      <Position22>
+      </Position8>
+      <Position9>
         <Filename Value="UMainForm.pas"/>
         <Caret Line="82" Column="13" TopLine="65"/>
-      </Position22>
-      <Position23>
+      </Position9>
+      <Position10>
         <Filename Value="UMainForm.pas"/>
         <Caret Line="9" Column="21" TopLine="1"/>
+      </Position10>
+      <Position11>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="50" Column="21" TopLine="31"/>
+      </Position11>
+      <Position12>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="50" Column="21" TopLine="31"/>
+      </Position12>
+      <Position13>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="87" Column="11" TopLine="65"/>
+      </Position13>
+      <Position14>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="86" Column="11" TopLine="64"/>
+      </Position14>
+      <Position15>
+        <Filename Value="../Specialized/ListDouble.pas"/>
+        <Caret Line="21" Column="16" TopLine="1"/>
+      </Position15>
+      <Position16>
+        <Filename Value="../Specialized/ListDouble.pas"/>
+        <Caret Line="13" Column="23" TopLine="1"/>
+      </Position16>
+      <Position17>
+        <Filename Value="../Specialized/ListDouble.pas"/>
+        <Caret Line="21" Column="20" TopLine="1"/>
+      </Position17>
+      <Position18>
+        <Filename Value="../Specialized/ListInteger.pas"/>
+        <Caret Line="13" Column="17" TopLine="1"/>
+      </Position18>
+      <Position19>
+        <Filename Value="../Specialized/ListObject.pas"/>
+        <Caret Line="13" Column="16" TopLine="1"/>
+      </Position19>
+      <Position20>
+        <Filename Value="../Specialized/ListObject.pas"/>
+        <Caret Line="15" Column="23" TopLine="1"/>
+      </Position20>
+      <Position21>
+        <Filename Value="../Specialized/ListPointer.pas"/>
+        <Caret Line="13" Column="23" TopLine="1"/>
+      </Position21>
+      <Position22>
+        <Filename Value="../Specialized/ListString.pas"/>
+        <Caret Line="13" Column="23" TopLine="1"/>
+      </Position22>
+      <Position23>
+        <Filename Value="../Specialized/TreeInteger.pas"/>
+        <Caret Line="13" Column="16" TopLine="1"/>
       </Position23>
       <Position24>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="50" Column="21" TopLine="31"/>
+        <Filename Value="../Specialized/TreeInteger.pas"/>
+        <Caret Line="24" Column="23" TopLine="1"/>
       </Position24>
-      <Position25>
-        <Filename Value="../ListInteger.pas"/>
-        <Caret Line="16" Column="24" TopLine="1"/>
-      </Position25>
-      <Position26>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="50" Column="21" TopLine="31"/>
-      </Position26>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>

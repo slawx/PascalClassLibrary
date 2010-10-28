@@ -16,7 +16,6 @@ type
     ButtonIntegerList: TButton;
     ButtonStringList: TButton;
     MemoOutput: TMemo;
-    TreeView1: TTreeView;
     procedure ButtonIntegerListClick(Sender: TObject);
     procedure ButtonStringListClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -61,6 +60,8 @@ begin
     WriteLn('Implode: ' + Implode(',', IntToStr));
     WriteLn('First: ' + IntToStr(First));
     WriteLn('Last: ' + IntToStr(Last));
+    MoveItems(3, 2, 3);
+    WriteLn('Implode: ' + Implode(',', IntToStr));
   finally
     Free;
   end;
@@ -87,6 +88,8 @@ begin
     WriteLn('Implode: ' + Implode(',', StrToStr));
     WriteLn('First: ' + First);
     WriteLn('Last: ' + Last);
+    MoveItems(2, 3, 3);
+    WriteLn('Implode: ' + Implode(',', StrToStr));
   finally
     Free;
   end;

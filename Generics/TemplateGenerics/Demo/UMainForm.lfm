@@ -38,12 +38,4 @@ object MainForm: TMainForm
     OnClick = ButtonStringListClick
     TabOrder = 2
   end
-  object TreeView1: TTreeView
-    Left = 27
-    Height = 97
-    Top = 97
-    Width = 121
-    DefaultItemHeight = 15
-    TabOrder = 3
-  end
 end
