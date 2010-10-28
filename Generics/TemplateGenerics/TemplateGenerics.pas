@@ -10,7 +10,8 @@ uses
     ListDouble, ListInteger, ListObject, ListPointer, ListString, TreeInteger, 
   TreeObject, TreePointer, TreeString, DictionaryString, StackDouble, 
   StackInteger, StackObject, StackPointer, StackString, QueueDouble, 
-  QueueInteger, QueueObject, QueuePointer, QueueString, LazarusPackageIntf;
+  QueueInteger, QueueObject, QueuePointer, QueueString, ListChar, 
+  LazarusPackageIntf;
 
 implementation
 

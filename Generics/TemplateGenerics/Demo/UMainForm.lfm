@@ -56,4 +56,13 @@ object MainForm: TMainForm
     OnClick = ButtonQueueIntegerClick
     TabOrder = 4
   end
+  object ButtonCharList: TButton
+    Left = 7
+    Height = 25
+    Top = 134
+    Width = 115
+    Caption = 'TListChar(TString)'
+    OnClick = ButtonCharListClick
+    TabOrder = 5
+  end
 end

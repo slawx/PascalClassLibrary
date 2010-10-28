@@ -14,7 +14,7 @@
         <CompilerPath Value="$(CompPath)"/>
       </Other>
     </CompilerOptions>
-    <Files Count="30">
+    <Files Count="31">
       <Item1>
         <Filename Value="Generic\DictionaryImplementation.tpl"/>
         <Type Value="Text"/>
@@ -135,6 +135,10 @@
         <Filename Value="Specialized\QueueString.pas"/>
         <UnitName Value="QueueString"/>
       </Item30>
+      <Item31>
+        <Filename Value="Specialized\ListChar.pas"/>
+        <UnitName Value="ListChar"/>
+      </Item31>
     </Files>
     <Type Value="RunAndDesignTime"/>
     <RequiredPkgs Count="1">

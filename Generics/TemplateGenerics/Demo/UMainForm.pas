@@ -6,18 +6,20 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  ComCtrls, ListInteger, ListString, DictionaryString, QueueInteger;
+  ComCtrls, ListInteger, ListString, DictionaryString, QueueInteger, ListChar;
 
 type
 
   { TMainForm }
 
   TMainForm = class(TForm)
+    ButtonCharList: TButton;
     ButtonQueueInteger: TButton;
     ButtonDictionaryString: TButton;
     ButtonIntegerList: TButton;
     ButtonStringList: TButton;
     MemoOutput: TMemo;
+    procedure ButtonCharListClick(Sender: TObject);
     procedure ButtonDictionaryStringClick(Sender: TObject);
     procedure ButtonIntegerListClick(Sender: TObject);
     procedure ButtonQueueIntegerClick(Sender: TObject);
@@ -117,6 +119,39 @@ begin
     WriteLn('Values[Key2]: ' + Values['Key2']);
     WriteLn('Values[Key0]: ' + Values['Key0']);
     WriteLn('Keys[2]: ' + Keys[2]);
+  finally
+    Free;
+  end;
+end;
+
+function CharToStr(Value: Char): string;
+begin
+  Result := Value;
+end;
+
+procedure TMainForm.ButtonCharListClick(Sender: TObject);
+var
+  List: TListChar;
+begin
+  MemoOutput.Clear;
+  WriteLn('TListChar test');
+  List := TListChar.Create;
+  with List do try
+    AddArray([' ', ' ', 'A', 'b', 'c', 'd', ' ']);
+    WriteLn('Implode: ''' + Implode('', CharToStr) + '''');
+    WriteLn('Implode: ' + Implode('', CharToStr));
+    WriteLn('Reverse');
+    Reverse;
+    WriteLn('Implode: ''' + Implode('', CharToStr) + '''');
+    WriteLn('TrimLeft');
+    TrimLeft;
+    WriteLn('Implode: ''' + Implode('', CharToStr) + '''');
+    WriteLn('TrimRight');
+    TrimRight;
+    WriteLn('Implode: ''' + Implode('', CharToStr) + '''');
+    WriteLn('UpperCase');
+    UpperCase;
+    WriteLn('Implode: ''' + Implode('', CharToStr) + '''');
   finally
     Free;
   end;

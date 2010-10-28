@@ -302,7 +302,7 @@ var
 begin
   I := Index;
   while I < (Index + Count) do begin
-    Delete(I);
+    Delete(Index);
     I := I + 1;
   end;
 end;

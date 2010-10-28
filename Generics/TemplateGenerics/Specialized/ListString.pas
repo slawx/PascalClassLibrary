@@ -13,6 +13,9 @@ type
 {$INCLUDE '..\Generic\ListInterface.tpl'}
 
 type
+
+  { TListString }
+
   TListString = class(TGList)
   end;
 
