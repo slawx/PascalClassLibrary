@@ -7,7 +7,6 @@
       <Version Value="9"/>
       <PathDelim Value="\"/>
       <SearchPaths>
-        <OtherUnitFiles Value="List\;Tree\"/>
         <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
       </SearchPaths>
       <Other>
@@ -16,56 +15,56 @@
     </CompilerOptions>
     <Files Count="13">
       <Item1>
-        <Filename Value="List\StringList.pas"/>
-        <UnitName Value="StringList"/>
+        <Filename Value="ListString.pas"/>
+        <UnitName Value="ListString"/>
       </Item1>
       <Item2>
-        <Filename Value="List\GenericListImplementation.tpl"/>
+        <Filename Value="ListGenericImplementation.tpl"/>
         <Type Value="Text"/>
       </Item2>
       <Item3>
-        <Filename Value="List\GenericListInterface.tpl"/>
+        <Filename Value="ListGenericInterface.tpl"/>
         <Type Value="Text"/>
       </Item3>
       <Item4>
-        <Filename Value="List\IntegerList.pas"/>
-        <UnitName Value="IntegerList"/>
+        <Filename Value="ListInteger.pas"/>
+        <UnitName Value="ListInteger"/>
       </Item4>
       <Item5>
-        <Filename Value="List\ObjectList.pas"/>
-        <UnitName Value="ObjectList"/>
+        <Filename Value="ListObject.pas"/>
+        <UnitName Value="ListObject"/>
       </Item5>
       <Item6>
-        <Filename Value="List\PointerList.pas"/>
-        <UnitName Value="PointerList"/>
+        <Filename Value="ListPointer.pas"/>
+        <UnitName Value="ListPointer"/>
       </Item6>
       <Item7>
-        <Filename Value="Tree\StringTree.pas"/>
-        <UnitName Value="StringTree"/>
+        <Filename Value="TreeString.pas"/>
+        <UnitName Value="TreeString"/>
       </Item7>
       <Item8>
-        <Filename Value="Tree\GenericTreeImplementation.tpl"/>
+        <Filename Value="TreeGenericImplementation.tpl"/>
         <Type Value="Text"/>
       </Item8>
       <Item9>
-        <Filename Value="Tree\GenericTreeInterface.tpl"/>
+        <Filename Value="TreeGenericInterface.tpl"/>
         <Type Value="Text"/>
       </Item9>
       <Item10>
-        <Filename Value="Tree\IntegerTree.pas"/>
-        <UnitName Value="IntegerTree"/>
+        <Filename Value="TreeInteger.pas"/>
+        <UnitName Value="TreeInteger"/>
       </Item10>
       <Item11>
-        <Filename Value="Tree\ObjectTree.pas"/>
-        <UnitName Value="ObjectTree"/>
+        <Filename Value="TreeObject.pas"/>
+        <UnitName Value="TreeObject"/>
       </Item11>
       <Item12>
-        <Filename Value="Tree\PointerTree.pas"/>
-        <UnitName Value="PointerTree"/>
+        <Filename Value="TreePointer.pas"/>
+        <UnitName Value="TreePointer"/>
       </Item12>
       <Item13>
-        <Filename Value="List\DoubleList.pas"/>
-        <UnitName Value="DoubleList"/>
+        <Filename Value="ListDouble.pas"/>
+        <UnitName Value="ListDouble"/>
       </Item13>
     </Files>
     <Type Value="RunAndDesignTime"/>
