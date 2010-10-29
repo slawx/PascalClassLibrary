@@ -3,7 +3,6 @@ object MainForm: TMainForm
   Height = 397
   Top = 129
   Width = 478
-  ActiveControl = ButtonIntegerList
   Caption = 'Template generics demo'
   ClientHeight = 397
   ClientWidth = 478
@@ -64,5 +63,14 @@ object MainForm: TMainForm
     Caption = 'TListChar(TString)'
     OnClick = ButtonCharListClick
     TabOrder = 5
+  end
+  object ButtonBenchmark: TButton
+    Left = 10
+    Height = 25
+    Top = 350
+    Width = 112
+    Caption = 'Benchmark'
+    OnClick = ButtonBenchmarkClick
+    TabOrder = 6
   end
 end

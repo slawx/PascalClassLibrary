@@ -3,6 +3,7 @@
   <Package Version="3">
     <PathDelim Value="\"/>
     <Name Value="TemplateGenerics"/>
+    <Author Value="Chronos"/>
     <CompilerOptions>
       <Version Value="9"/>
       <PathDelim Value="\"/>
@@ -14,7 +15,8 @@
         <CompilerPath Value="$(CompPath)"/>
       </Other>
     </CompilerOptions>
-    <Files Count="31">
+    <Version Minor="1"/>
+    <Files Count="38">
       <Item1>
         <Filename Value="Generic\DictionaryImplementation.tpl"/>
         <Type Value="Text"/>
@@ -139,6 +141,34 @@
         <Filename Value="Specialized\ListChar.pas"/>
         <UnitName Value="ListChar"/>
       </Item31>
+      <Item32>
+        <Filename Value="ReadMe.txt"/>
+        <Type Value="Text"/>
+      </Item32>
+      <Item33>
+        <Filename Value="Generic\SetImplementation.tpl"/>
+        <Type Value="Text"/>
+      </Item33>
+      <Item34>
+        <Filename Value="Generic\SetInterface.tpl"/>
+        <Type Value="Text"/>
+      </Item34>
+      <Item35>
+        <Filename Value="Specialized\ListVariant.pas"/>
+        <UnitName Value="ListVariant"/>
+      </Item35>
+      <Item36>
+        <Filename Value="Specialized\SetInteger.pas"/>
+        <UnitName Value="SetInteger"/>
+      </Item36>
+      <Item37>
+        <Filename Value="Specialized\SetString.pas"/>
+        <UnitName Value="SetString"/>
+      </Item37>
+      <Item38>
+        <Filename Value="Specialized\SetChar.pas"/>
+        <UnitName Value="SetChar"/>
+      </Item38>
     </Files>
     <Type Value="RunAndDesignTime"/>
     <RequiredPkgs Count="1">
@@ -154,4 +184,4 @@
       <Version Value="2"/>
     </PublishOptions>
   </Package>
-</CONFIG>
+</CONFIG>

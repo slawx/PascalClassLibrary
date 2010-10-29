@@ -1,12 +1,6 @@
 uses
   RtlConsts;
 
-// Used instead of System.Move form because of error: Identifier "System" not found
-procedure SystemMove(const Source; var Dest; Count: SizeInt);
-begin
-  Move(Source, Dest, Count);
-end;
-
 { TGList }
 
 function TGList.GetCapacity: TListIndex;
@@ -129,7 +123,7 @@ begin
     raise EListError.CreateFmt(SListIndexError, [Index]);
   if FCount = Capacity then Expand;
   if Index < FCount then
-    SystemMove(FItems[Index], FItems[Index + 1], (FCount - Index) * SizeOf(TListItem));
+    System.Move(FItems[Index], FItems[Index + 1], (FCount - Index) * SizeOf(TListItem));
   FItems[Index] := Item;
   FCount := FCount + 1;
 end;
@@ -162,8 +156,15 @@ begin
   if ((NewIndex < 0) or (NewIndex > Count -1)) then
     raise EListError.CreateFmt(SlistIndexError, [NewIndex]);
   Temp := FItems[CurIndex];
-  Delete(CurIndex);
-  Insert(NewIndex, Temp);
+  if NewIndex > CurIndex then begin
+    System.Move(FItems[CurIndex + 1], FItems[CurIndex], (NewIndex - CurIndex) * SizeOf(TListItem));
+  end else
+  if NewIndex < CurIndex then begin
+    System.Move(FItems[NewIndex], FItems[NewIndex + 1], (CurIndex - NewIndex) * SizeOf(TListItem));
+  end;
+  FItems[NewIndex] := Temp;
+  //Delete(CurIndex);
+  //Insert(NewIndex, Temp);
 end;
 
 procedure TGList.MoveItems(CurIndex, NewIndex, Count: TListIndex);
@@ -288,7 +289,7 @@ begin
   if (Index < 0) or (Index >= FCount) then
     raise EListError.CreateFmt(SListIndexError, [Index]);
   FCount := FCount - 1;
-  SystemMove(FItems[Index + 1], FItems[Index], (FCount - Index) * SizeOf(TListItem));
+  System.Move(FItems[Index + 1], FItems[Index], (FCount - Index) * SizeOf(TListItem));
   // Shrink the list if appropriate
   if (Capacity > 256) and (FCount < Capacity shr 2) then
   begin
@@ -318,4 +319,4 @@ begin
   Temp := FItems[Index1];
   FItems[Index1] := FItems[Index2];
   FItems[Index2] := Temp;
-end;
+end;

@@ -3,10 +3,14 @@
   TListItem = TStackItem;
   {$INCLUDE 'ListInterface.tpl'}
 
-  // TGStack<TListIndex, TListItem> = class(TGList)
-  TGStack = class(TGList)
+  // TGStack<TStackIndex, TStackItem> = class(TGList)
+  TGStack = class
   private
+    FList: TGList;
   public
     procedure Push(Value: TStackItem);
     function Pop: TStackItem;
-  end;
+    constructor Create;
+    destructor Destroy; override;
+    property List: TGList read FList;
+  end;

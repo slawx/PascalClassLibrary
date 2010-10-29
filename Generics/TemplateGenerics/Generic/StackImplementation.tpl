@@ -4,11 +4,22 @@
 
 procedure TGStack.Push(Value: TStackItem);
 begin
-  Add(Value);
+  FList.Add(Value);
 end;
 
 function TGStack.Pop: TStackItem;
 begin
-  Result := Extract(Last);
+  Result := FList.Extract(FList.Last);
 end;
-
+
+constructor TGStack.Create;
+begin
+  FList := TGList.Create;
+end;
+
+destructor TGStack.Destroy;
+begin
+  FList.Free;
+  inherited Destroy;
+end;
+
