@@ -108,9 +108,9 @@ begin
     Result := Items[0];
 end;
 
-function TGList.IndexOf(Item: TListItem): TListIndex;
+function TGList.IndexOf(Item: TListItem; Start: TListIndex): TListIndex;
 begin
-  Result := 0;
+  Result := Start;
   while (Result < FCount) and
   not CompareMem(Addr(FItems[Result]), Addr(Item), SizeOf(TListItem)) do
     Result := Result + 1;
@@ -137,6 +137,25 @@ begin
     Insert(Index + I, List[I]);
     I := I + 1;
   end;
+end;
+
+function TGList.IndexOfList(List: TGList; Start: TListIndex): TListIndex;
+var
+  I: TListIndex;
+begin
+  if List.Count > 0 then begin
+    Result := IndexOf(List[0], Start);
+    if Result <> -1 then begin
+      I := 1;
+      while I < List.Count do begin
+        if not CompareMem(Addr(FItems[Result + I]), Addr(List.FItems[I]), SizeOf(TListItem)) then begin
+          Result := -1;
+          Break;
+        end;
+        I := I + 1;
+      end;
+    end;
+  end else Result := -1;
 end;
 
 function TGList.Last: TListItem;
@@ -199,22 +218,22 @@ begin
     Delete(Result);
 end;
 
-(*function TGList.Equals(Obj: TObject): Boolean;
+function TGList.Equals(List: TGList): Boolean;
 var
   I: TListIndex;
 begin
-  Result := Count = (Obj as TGList).Count;
+  Result := Count = List.Count;
   if Result then begin
     I := 0;
     while I < Count do begin
-      if Items[I] <> (Obj as TGList)[I] then begin
+      if not CompareMem(Addr(FItems[I]), Addr(List.FItems[I]), SizeOf(TListItem)) then begin
         Result := False;
         Break;
       end;
       I := I + 1;
     end;
   end;
-end;*)
+end;
 
 procedure TGList.Reverse;
 var
@@ -244,6 +263,29 @@ begin
   end;
 end;
 
+procedure TGList.SetArray(Values: array of TListItem);
+var
+  I: TListIndex;
+begin
+  Clear;
+  I := 0;
+  while I <= High(Values) do begin
+    Add(Values[I]);
+    I := I + 1;
+  end;
+end;
+
+procedure TGList.InsertArray(Index: TListIndex; Values: array of TListItem);
+var
+  I: TListIndex;
+begin
+  I := 0;
+  while I <= High(Values) do begin
+    Insert(Index + I, Values[I]);
+    I := I + 1;
+  end;
+end;
+
 function TGList.Implode(Separator: string; Converter: TGListStringConverter): string;
 var
   I: TListIndex;
@@ -254,6 +296,17 @@ begin
     Result := Result + Converter(Items[I]);
     if I < (Count - 1) then
       Result := Result + Separator;
+    I := I + 1;
+  end;
+end;
+
+procedure TGList.Perform(Operation: TGListOperation);
+var
+  I: TListIndex;
+begin
+  I := 0;
+  while I < Count do begin
+    Operation(Self, @FItems[I]);
     I := I + 1;
   end;
 end;
@@ -305,6 +358,15 @@ begin
   while I < (Index + Count) do begin
     Delete(Index);
     I := I + 1;
+  end;
+end;
+
+procedure TGList.Fill(Start, Count: TListIndex; Value: TListItem);
+begin
+  while Count > 0 do begin
+    Items[Start] := Value;
+    Count := Count - 1;
+    Start := Start + 1;
   end;
 end;
 

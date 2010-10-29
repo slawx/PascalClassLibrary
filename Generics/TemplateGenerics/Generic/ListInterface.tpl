@@ -1,6 +1,10 @@
 
+  PGListItem = ^TListItem;
+  TGList = class;
+
   TGListSortCompare = function(const Item1, Item2: TListItem): Integer of object;
   TGListStringConverter = function(Item: TListItem): string;
+  TGListOperation = procedure(List: TGList; Item: PGListItem);
   //TGListNotification = (lnAdded, lnExtracted, lnDeleted);
 
   // TGList<TListIndex, TListItem> = class
@@ -15,7 +19,6 @@
     procedure Put(Index: TListIndex; const AValue: TListItem);
     procedure SetCount(const AValue: TListIndex);
     procedure QuickSort(L, R : TListIndex; Compare: TGListSortCompare);
-    property Capacity: TListIndex read GetCapacity write SetCapacity;
   public
     // All items
     procedure Reverse;
@@ -23,16 +26,18 @@
     procedure Expand;
     procedure Sort(Compare: TGListSortCompare);
     function Implode(Separator: string; Converter: TGListStringConverter): string;
+    procedure Perform(Operation: TGListOperation);
     // Many items
     procedure MoveItems(CurIndex, NewIndex, Count: TListIndex);
     procedure DeleteItems(Index, Count: TListIndex);
+    procedure Fill(Start, Count: TListIndex; Value: TListItem);
     // One item
     function Add(Item: TListItem): TListIndex;
     procedure Delete(Index: TListIndex);
     function Extract(Item: TListItem): TListItem;
     procedure Exchange(Index1, Index2: TListIndex);
     function First: TListItem;
-    function IndexOf(Item: TListItem): TListIndex;
+    function IndexOf(Item: TListItem; Start: TListIndex = 0): TListIndex;
     procedure Insert(Index: TListIndex; Item: TListItem);
     function Last: TListItem;
     procedure Move(CurIndex, NewIndex: TListIndex);
@@ -41,10 +46,14 @@
     // List
     procedure AddList(List: TGList);
     procedure Assign(List: TGList);
-    //function Equals(Obj: TObject): Boolean; override;
+    function Equals(List: TGList): Boolean;
     procedure InsertList(Index: TListIndex; List: TGList);
+    function IndexOfList(List: TGList; Start: TListIndex = 0): TListIndex;
     // Other
     property Count: TListIndex read GetCount write SetCount;
-    // Additional
+    property Capacity: TListIndex read GetCapacity write SetCapacity;
+    // Array
     procedure AddArray(Values: array of TListItem);
-  end;
+    procedure SetArray(Values: array of TListItem);
+    procedure InsertArray(Index: TListIndex; Values: array of TListItem);
+  end;

@@ -5,7 +5,7 @@ unit ListVariant;
 interface
 
 uses
-  Classes, SysUtils;
+  Classes, SysUtils, Variants;
 
 type
   TListIndex = Integer;

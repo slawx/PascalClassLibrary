@@ -23,6 +23,7 @@ type
     procedure TrimLeft;
     procedure TrimRight;
   end;
+  // System.Pos -> TListChar.IndexOfList
 
   TString = TListChar;
 

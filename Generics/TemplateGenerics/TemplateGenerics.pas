@@ -11,7 +11,7 @@ uses
   TreeObject, TreePointer, TreeString, DictionaryString, StackDouble, 
   StackInteger, StackObject, StackPointer, StackString, QueueDouble, 
   QueueInteger, QueueObject, QueuePointer, QueueString, ListChar, ListVariant, 
-  SetInteger, SetString, SetChar, LazarusPackageIntf;
+  SetInteger, SetString, SetChar, RangeDateTime, ListByte, LazarusPackageIntf;
 
 implementation
 

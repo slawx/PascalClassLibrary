@@ -16,7 +16,7 @@
       </Other>
     </CompilerOptions>
     <Version Minor="1"/>
-    <Files Count="38">
+    <Files Count="42">
       <Item1>
         <Filename Value="Generic\DictionaryImplementation.tpl"/>
         <Type Value="Text"/>
@@ -169,6 +169,22 @@
         <Filename Value="Specialized\SetChar.pas"/>
         <UnitName Value="SetChar"/>
       </Item38>
+      <Item39>
+        <Filename Value="Specialized\RangeDateTime.pas"/>
+        <UnitName Value="RangeDateTime"/>
+      </Item39>
+      <Item40>
+        <Filename Value="Generic\RangeInterface.tpl"/>
+        <Type Value="Text"/>
+      </Item40>
+      <Item41>
+        <Filename Value="Generic\RangeImplementation.tpl"/>
+        <Type Value="Text"/>
+      </Item41>
+      <Item42>
+        <Filename Value="Specialized\ListByte.pas"/>
+        <UnitName Value="ListByte"/>
+      </Item42>
     </Files>
     <Type Value="RunAndDesignTime"/>
     <RequiredPkgs Count="1">
