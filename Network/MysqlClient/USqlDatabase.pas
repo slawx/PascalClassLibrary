@@ -1,15 +1,17 @@
 unit USqlDatabase;
 
 {$mode Delphi}{$H+}
-// Upraveno: 16.12.2009
+
+// Upraveno: 28.10.2010
 
 interface
 
 uses
-  SysUtils, Classes, Dialogs, mysql50, TypInfo;
+  SysUtils, Classes, Dialogs, mysql50, TypInfo, UStringListEx,
+  ListObject, DictionaryStringString;
 
 type
-  EQueryError = Exception;
+  EQueryError = class(Exception);
 
   TClientCapabilities = (_CLIENT_LONG_PASSWORD, _CLIENT_FOUND_ROWS,
     _CLIENT_LONG_FLAG, _CLIENT_CONNECT_WITH_DB, _CLIENT_NO_SCHEMA,
@@ -18,26 +20,12 @@ type
 
   TSetClientCapabilities = set of TClientCapabilities;
 
-  TAssociativeArray = class(TStringList)
+  TDbRows = class(TListObject)
   private
-    function GetValues(Index: string): string;
-    function GetValuesAtIndex(Index: Integer): string;
-    procedure SetValues(Index: string; const Value: string);
+    function GetData(Index: Integer): TDictionaryStringString;
+    procedure SetData(Index: Integer; const Value: TDictionaryStringString);
   public
-    constructor Create;
-    destructor Destroy; override;
-    function GetAllValues: string;
-    procedure AddKeyValue(Key, Value: string);
-    property ValuesAtIndex[Index: Integer]: string read GetValuesAtIndex;
-    property Values[Index: string]: string read GetValues write SetValues; default;
-  end;
-
-  TDbRows = class(TList)
-  private
-    function GetData(Index: Integer): TAssociativeArray;
-    procedure SetData(Index: Integer; const Value: TAssociativeArray);
-  public
-    property Data[Index: Integer]: TAssociativeArray read GetData write SetData; default;
+    property Data[Index: Integer]: TDictionaryStringString read GetData write SetData; default;
     destructor Destroy; override;
   end;
 
@@ -50,10 +38,8 @@ type
     function GetConnected: Boolean;
     function GetLastErrorMessage: string;
     function GetLastErrorNumber: Integer;
-    function CheckError: Boolean;
     function GetCharset: string;
     procedure SetDatabase(const Value: string);
-    { Private declarations }
   public
     Hostname: string;
     UserName: string;
@@ -68,9 +54,9 @@ type
     function Query(Data: string): TDbRows;
     function Select(ATable: string; Filter: string = '*'; Condition: string = '1'): TDbRows;
     procedure Delete(ATable: string; Condition: string = '1');
-    procedure Insert(ATable: string; Data: TAssociativeArray);
-    procedure Update(ATable: string; Data: TAssociativeArray; Condition: string = '1');
-    procedure Replace(ATable: string; Data: TAssociativeArray);
+    procedure Insert(ATable: string; Data: TDictionaryStringString);
+    procedure Update(ATable: string; Data: TDictionaryStringString; Condition: string = '1');
+    procedure Replace(ATable: string; Data: TDictionaryStringString);
     procedure Connect;
     procedure Disconnect;
     function LastInsertId: Integer;
@@ -85,10 +71,16 @@ type
 
   function MySQLFloatToStr(F: Real): string;
   function MySQLStrToFloat(S: string): Real;
+  function SQLToDateTime(Value: string): TDateTime;
+  function DateTimeToSQL(Value: TDateTime): string;
 
 implementation
 
-uses DateUtils, Math;
+uses
+  DateUtils, Math;
+
+resourcestring
+  SDatabaseQueryError = 'Database query error: "%s"';
 
 const
   CLIENT_LONG_PASSWORD = 1;      // new more secure passwords
@@ -105,22 +97,54 @@ const
   CLIENT_IGNORE_SIGPIPE = 4096;  // IGNORE sigpipes
   CLIENT_TRANSACTIONS = 8192;    // Client knows about transactions
 
-{ TDataModule2 }
-
 function MySQLFloatToStr(F: Real): string;
 var
   S: string;
 begin
   S := FloatToStr(F);
-  if Pos(',', S) > 0 then S[Pos(',',S)] := '.';
+  if Pos(',', S) > 0 then S[Pos(',', S)] := '.';
   Result := S;
 end;
 
 function MySQLStrToFloat(S: string): Real;
 begin
-  if Pos('.', S) > 0 then S[Pos('.',S)] := ',';
+  if Pos('.', S) > 0 then S[Pos('.', S)] := ',';
   Result := StrToFloat(S);
 end;
+
+function SQLToDateTime(Value: string): TDateTime;
+var
+  Parts: TStringListEx;
+  DateParts: TStringListEx;
+  TimeParts: TStringListEx;
+begin
+  try
+    Parts := TStringListEx.Create;
+    DateParts := TStringListEx.Create;
+    TimeParts := TStringListEx.Create;
+
+    Parts.Explode(' ', Value);
+    DateParts.Explode('-', Parts[0]);
+    Result := EncodeDate(StrToInt(DateParts[0]), StrToInt(DateParts[1]),
+      StrToInt(DateParts[2]));
+    if Parts.Count > 1 then begin
+      TimeParts.Explode(':', Parts[1]);
+      Result := Result + EncodeTime(StrToInt(TimeParts[0]), StrToInt(TimeParts[1]),
+        StrToInt(TimeParts[2]), 0);
+    end;
+  finally
+    DateParts.Free;
+    TimeParts.Free;
+    Parts.Free;
+  end;
+end;
+
+function DateTimeToSQL(Value: TDateTime): string;
+begin
+  Result := FormatDateTime('yyyy-mm-dd hh.nn.ss', Value);
+end;
+
+{ TSqlDatabase }
 
 procedure TSqlDatabase.Connect;
 var
@@ -137,12 +161,18 @@ begin
     FConnected := True;
     FSession := NewSession;
   end else FConnected := False;
-  CheckError;
-  Rows := Query('SET NAMES ' + Encoding);
-  Rows.Free;
+
+  if LastErrorNumber <> 0 then
+    raise EQueryError.Create(Format(SDatabaseQueryError, [LastErrorMessage]));
+
+  try
+    Rows := Query('SET NAMES ' + Encoding);
+  finally
+    Rows.Free;
+  end;
 end;
 
-procedure TSqlDatabase.Insert(ATable: string; Data: TAssociativeArray);
+procedure TSqlDatabase.Insert(ATable: string; Data: TDictionaryStringString);
 var
   DbNames: string;
   DbValues: string;
@@ -154,16 +184,19 @@ begin
   DbNames := '';
   DbValues := '';
   for I := 0 to Data.Count - 1 do begin
-    Value := Data.ValuesAtIndex[I];
+    Value := Data.Items[I].Value;
     StringReplace(Value, '"', '\"', [rfReplaceAll]);
     if Value = 'NOW()' then DbValues := DbValues + ',' + Value
     else DbValues := DbValues + ',"' + Value + '"';
-    DbNames := DbNames + ',`' + Data.Names[I] + '`';
+    DbNames := DbNames + ',`' + Data.Keys[I] + '`';
   end;
   System.Delete(DbNames, 1, 1);
   System.Delete(DbValues, 1, 1);
-  DbResult := Query('INSERT INTO `' + Table + '` (' + DbNames + ') VALUES (' + DbValues + ')');
-  DbResult.Free;
+  try
+    DbResult := Query('INSERT INTO `' + Table + '` (' + DbNames + ') VALUES (' + DbValues + ')');
+  finally
+    DbResult.Free;
+  end;
 end;
 
 function TSqlDatabase.Query(Data: string): TDbRows;
@@ -175,40 +208,30 @@ begin
   //DebugLog('SqlDatabase query: '+Data);
   RepeatLastAction := False;
   LastQuery := Data;
-  //if not Connected then NastaveniPripojeni.ShowModal;
   Result := TDbRows.Create;
-  //repeat
   mysql_query(FSession, PChar(Data));
-  //until not
-  CheckError;
-  //if not CheckError then
-  begin
-    DbResult := mysql_store_result(FSession);
-    if Assigned(DbResult) then begin
-      Result.Count := mysql_num_rows(DbResult);
-      for I := 0 to Result.Count - 1 do begin
-        DbRow := mysql_fetch_row(DbResult);
-        Result[I] := TAssociativeArray.Create;
-        with Result[I] do begin
-          for II := 0 to mysql_num_fields(DbResult) - 1 do begin
-            Add(mysql_fetch_field_direct(DbResult, II)^.Name +
-              NameValueSeparator + PChar((DbRow + II)^));
+  if LastErrorNumber <> 0 then begin
+    raise EQueryError.Create(Format(SDatabaseQueryError, [LastErrorMessage]));
+  end;
+
+  DbResult := mysql_store_result(FSession);
+  if Assigned(DbResult) then begin
+    Result.Count := mysql_num_rows(DbResult);
+    for I := 0 to Result.Count - 1 do begin
+      DbRow := mysql_fetch_row(DbResult);
+      Result[I] := TDictionaryStringString.Create;
+      with Result[I] do begin
+        for II := 0 to mysql_num_fields(DbResult) - 1 do begin
+          Add(mysql_fetch_field_direct(DbResult, II)^.Name,
+            PChar((DbRow + II)^));
           end;
         end;
       end;
-    end;
   end;
   mysql_free_result(DbResult);
-  (*
-  if Assigned(DatabaseIntegrity) then
-  with DatabaseIntegrity do if not Checking then begin
-    Check;
-    DebugLog('Database integrity: Unreferenced='+IntToStr(Unreferenced)+' BadReferences='+IntToStr(BadReferences));
-  end;
-  *)
 end;
 
-procedure TSqlDatabase.Replace(ATable: string; Data: TAssociativeArray);
+procedure TSqlDatabase.Replace(ATable: string; Data: TDictionaryStringString);
 var
   DbNames: string;
   DbValues: string;
@@ -220,25 +243,28 @@ begin
   DbNames := '';
   DbValues := '';
   for I := 0 to Data.Count - 1 do begin
-    Value := Data.ValuesAtIndex[I];
+    Value := Data.Items[I].Value;
     StringReplace(Value, '"', '\"', [rfReplaceAll]);
     if Value = 'NOW()' then DbValues := DbValues + ',' + Value
     else DbValues := DbValues + ',"' + Value + '"';
-    DbNames := DbNames + ',`' + Data.Names[I] + '`';
+    DbNames := DbNames + ',`' + Data.Keys[I] + '`';
   end;
   System.Delete(DbNames, 1, 1);
   System.Delete(DbValues, 1, 1);
-  DbResult := Query('REPLACE INTO `' + Table + '` (' + DbNames + ') VALUES (' + DbValues + ')');
-  DbResult.Free;
+  try
+    DbResult := Query('REPLACE INTO `' + Table + '` (' + DbNames + ') VALUES (' + DbValues + ')');
+  finally
+    DbResult.Free;
+  end;
 end;
 
 function TSqlDatabase.Select(ATable: string; Filter: string = '*'; Condition: string = '1'): TDbRows;
 begin
   Table := ATable;
-  Result := Query('SELECT ' + Filter + ' FROM `' + Table + '` WHERE '+Condition);
+  Result := Query('SELECT ' + Filter + ' FROM `' + Table + '` WHERE ' + Condition);
 end;
 
-procedure TSqlDatabase.Update(ATable: string; Data: TAssociativeArray; Condition: string = '1');
+procedure TSqlDatabase.Update(ATable: string; Data: TDictionaryStringString; Condition: string = '1');
 var
   DbValues: string;
   Value: string;
@@ -248,14 +274,17 @@ begin
   Table := ATable;
   DbValues := '';
   for I := 0 to Data.Count - 1 do begin
-    Value := Data.ValuesAtIndex[I];
+    Value := Data.Items[I].Value;
     StringReplace(Value, '"', '\"', [rfReplaceAll]);
     if Value = 'NOW()' then DbValues := DbValues + ',' + Value
-    else DbValues := DbValues + ',' + Data.Names[I] + '=' + '"' + Value + '"';
+    else DbValues := DbValues + ',' + Data.Keys[I] + '=' + '"' + Value + '"';
   end;
   System.Delete(DbValues, 1, 1);
-  DbResult := Query('UPDATE `' + Table + '` SET (' + DbValues + ') WHERE ' + Condition);
-  DbResult.Free;
+  try
+    DbResult := Query('UPDATE `' + Table + '` SET (' + DbValues + ') WHERE ' + Condition);
+  finally
+    DbResult.Free;
+  end;
 end;
 
 procedure TSqlDatabase.mySQLClient1ConnectError(Sender: TObject; Msg: String);
@@ -263,47 +292,16 @@ begin
 //  LastError := Msg + '('+IntToStr(mySQLClient1.LastErrorNumber)+')';
 end;
 
-{ TAssocArray }
-
-procedure TAssociativeArray.AddKeyValue(Key, Value: string);
-begin
-  Add(Key + NameValueSeparator + Value);
-end;
-
-constructor TAssociativeArray.Create;
-begin
-  NameValueSeparator := '|';
-end;
-
-destructor TAssociativeArray.Destroy;
-begin
-  inherited;
-end;
-
-function TAssociativeArray.GetAllValues: string;
-var
-  I: Integer;
-begin
-  Result := '';
-  for I := 0 to Count - 1 do begin
-    Result := Result + Names[I] + '=' + ValuesAtIndex[I] + ',';
-  end;
-end;
-
-function TAssociativeArray.GetValues(Index: string): string;
-begin
-  Result := inherited Values[Index];
-end;
-
-function TAssociativeArray.GetValuesAtIndex(Index: Integer): string;
-begin
-  Result := inherited Values[Names[Index]];
-end;
-
 procedure TSqlDatabase.Delete(ATable: string; Condition: string = '1');
+var
+  DbResult: TDbRows;
 begin
   Table := ATable;
-  Query('DELETE FROM `' + Table + '` WHERE ' + Condition);
+  try
+    DbResult := Query('DELETE FROM `' + Table + '` WHERE ' + Condition);
+  finally
+    DbResult.Free;
+  end;
 end;
 
 function TSqlDatabase.GetConnected: Boolean;
@@ -324,32 +322,6 @@ begin
   Encoding := 'utf8';
 end;
 
-procedure TAssociativeArray.SetValues(Index: string; const Value: string);
-begin
-  inherited Values[Index] := Value;
-end;
-
-{ TDbRows }
-
-destructor TDbRows.Destroy;
-var
-  I: Integer;
-begin
-  for I := 0 to Count - 1 do
-    Data[I].Free;
-  inherited;
-end;
-
-function TDbRows.GetData(Index: Integer): TAssociativeArray;
-begin
-  Result := Items[Index];
-end;
-
-procedure TDbRows.SetData(Index: Integer; const Value: TAssociativeArray);
-begin
-  Items[Index] := Value;
-end;
-
 function TSqlDatabase.LastInsertId: Integer;
 begin
   Result := mysql_insert_id(FSession);
@@ -365,13 +337,6 @@ begin
   Result := mysql_errno(FSession);
 end;
 
-function TSqlDatabase.CheckError: Boolean;
-begin
-  Result := LastErrorNumber <> 0;
-  if Result then
-    raise EQueryError.Create('Database query error: "' + LastErrorMessage + '"');
-end;
-
 procedure TSqlDatabase.CreateDatabase;
 var
   TempDatabase: string;
@@ -385,12 +350,9 @@ begin
 end;
 
 procedure TSqlDatabase.CreateTable(Name: string);
-var
-  DbRows: TDbRows;
 begin
-  DbRows := Query('CREATE TABLE `' + Name + '`' +
+  Query('CREATE TABLE `' + Name + '`' +
   ' (`Id` INT NOT NULL AUTO_INCREMENT, PRIMARY KEY (`Id`));');
-  DbRows.Destroy;
 end;
 
 procedure TSqlDatabase.CreateColumn(Table, ColumnName: string;
@@ -417,6 +379,23 @@ procedure TSqlDatabase.SetDatabase(const Value: string);
 begin
   FDatabase := Value;
   if FConnected then mysql_select_db(FSession, PChar(FDatabase));
+end;
+
+{ TDbRows }
+
+destructor TDbRows.Destroy;
+begin
+  inherited;
+end;
+
+function TDbRows.GetData(Index: Integer): TDictionaryStringString;
+begin
+  Result := TDictionaryStringString(Items[Index]);
+end;
+
+procedure TDbRows.SetData(Index: Integer; const Value: TDictionaryStringString);
+begin
+  Items[Index] := Value;
 end;
 
 end.
