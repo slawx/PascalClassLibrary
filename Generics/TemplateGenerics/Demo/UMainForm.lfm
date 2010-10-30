@@ -14,16 +14,16 @@ object MainForm: TMainForm
     Left = 8
     Height = 25
     Top = 8
-    Width = 112
+    Width = 128
     Caption = 'TListInteger'
     OnClick = ButtonIntegerListClick
     TabOrder = 0
   end
   object MemoOutput: TMemo
-    Left = 128
+    Left = 144
     Height = 384
     Top = 8
-    Width = 344
+    Width = 328
     Anchors = [akTop, akLeft, akRight, akBottom]
     ReadOnly = True
     ScrollBars = ssAutoBoth
@@ -33,7 +33,7 @@ object MainForm: TMainForm
     Left = 8
     Height = 25
     Top = 40
-    Width = 112
+    Width = 128
     Caption = 'TListString'
     OnClick = ButtonStringListClick
     TabOrder = 2
@@ -42,7 +42,7 @@ object MainForm: TMainForm
     Left = 8
     Height = 25
     Top = 72
-    Width = 112
+    Width = 128
     Caption = 'TDictionaryString'
     OnClick = ButtonDictionaryStringClick
     TabOrder = 3
@@ -51,7 +51,7 @@ object MainForm: TMainForm
     Left = 8
     Height = 25
     Top = 102
-    Width = 112
+    Width = 128
     Caption = 'TQueueInteger'
     OnClick = ButtonQueueIntegerClick
     TabOrder = 4
@@ -60,27 +60,36 @@ object MainForm: TMainForm
     Left = 7
     Height = 25
     Top = 134
-    Width = 115
+    Width = 129
     Caption = 'TListChar(TString)'
     OnClick = ButtonCharListClick
     TabOrder = 5
   end
-  object ButtonBenchmark: TButton
-    Left = 10
+  object ButtonBenchmarkList: TButton
+    Left = 8
     Height = 25
-    Top = 350
-    Width = 112
-    Caption = 'Benchmark'
-    OnClick = ButtonBenchmarkClick
+    Top = 352
+    Width = 128
+    Caption = 'Benchmark list'
+    OnClick = ButtonBenchmarkListClick
     TabOrder = 6
   end
   object ButtonListObject: TButton
     Left = 7
     Height = 25
     Top = 163
-    Width = 113
+    Width = 129
     Caption = 'TListObject'
     OnClick = ButtonListObjectClick
     TabOrder = 7
+  end
+  object ButtonBenchmarkDictionary: TButton
+    Left = 10
+    Height = 25
+    Top = 320
+    Width = 126
+    Caption = 'Benchmark dictionary'
+    OnClick = ButtonBenchmarkDictionaryClick
+    TabOrder = 8
   end
 end

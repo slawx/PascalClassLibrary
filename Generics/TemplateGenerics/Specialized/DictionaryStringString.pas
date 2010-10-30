@@ -1,4 +1,4 @@
-unit DictionaryString;
+unit DictionaryStringString;
 
 {$mode delphi}
 
@@ -14,9 +14,9 @@ type
 {$INCLUDE '..\Generic\DictionaryInterface.tpl'}
 
 type
-  TPairString = TGPair;
+  TPairStringString = TGPair;
 
-  TDictionaryString = class(TGDictionary)
+  TDictionaryStringString = class(TGDictionary)
   end;
 
 implementation

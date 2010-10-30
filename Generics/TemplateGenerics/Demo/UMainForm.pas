@@ -6,23 +6,25 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  ComCtrls, ListInteger, ListString, DictionaryString, QueueInteger, ListChar,
-  ListPointer, DateUtils, ListVariant, Contnrs, ListObject;
+  ComCtrls, ListInteger, ListString, DictionaryStringString, QueueInteger, ListChar,
+  ListPointer, DateUtils, ListObject;
 
 type
 
   { TMainForm }
 
   TMainForm = class(TForm)
+    ButtonBenchmarkDictionary: TButton;
     ButtonListObject: TButton;
-    ButtonBenchmark: TButton;
+    ButtonBenchmarkList: TButton;
     ButtonCharList: TButton;
     ButtonQueueInteger: TButton;
     ButtonDictionaryString: TButton;
     ButtonIntegerList: TButton;
     ButtonStringList: TButton;
     MemoOutput: TMemo;
-    procedure ButtonBenchmarkClick(Sender: TObject);
+    procedure ButtonBenchmarkDictionaryClick(Sender: TObject);
+    procedure ButtonBenchmarkListClick(Sender: TObject);
     procedure ButtonCharListClick(Sender: TObject);
     procedure ButtonDictionaryStringClick(Sender: TObject);
     procedure ButtonIntegerListClick(Sender: TObject);
@@ -131,18 +133,18 @@ begin
   end;
 end;
 
-function StringPairToStr(Pair: TPairString): string;
+function StringPairToStr(Pair: TPairStringString): string;
 begin
   Result := Pair.Key + ':' + Pair.Value;
 end;
 
 procedure TMainForm.ButtonDictionaryStringClick(Sender: TObject);
 var
-  Dictionary: TDictionaryString;
+  Dictionary: TDictionaryStringString;
 begin
   MemoOutput.Clear;
   WriteLn('TDictionaryString test');
-  Dictionary := TDictionaryString.Create;
+  Dictionary := TDictionaryStringString.Create;
   with Dictionary do try
     Add('Key1', 'Value1');
     Add('Key2', 'Value2');
@@ -192,7 +194,7 @@ begin
   end;
 end;
 
-procedure TMainForm.ButtonBenchmarkClick(Sender: TObject);
+procedure TMainForm.ButtonBenchmarkListClick(Sender: TObject);
 var
   List: TListPointer;
   List2: TList;
@@ -335,6 +337,101 @@ begin
 
   finally
     List2.Free;
+  end;
+end;
+
+procedure TMainForm.ButtonBenchmarkDictionaryClick(Sender: TObject);
+var
+  Dictionary: TDictionaryStringString;
+  Dictionary2: TStringList;
+  StartTime: TDateTime;
+  I: Integer;
+  R: string;
+begin
+  MemoOutput.Clear;
+  try
+    Dictionary := TDictionaryStringString.Create;
+    WriteLn('TDictionaryStringString...');
+    I := 0;
+    StartTime := Now;
+    repeat
+      Dictionary.Add(IntToStr(I), IntToStr(I));
+      I := I + 1;
+    until (Now - StartTime) > OneSecond;
+    WriteLn('Add pair: ' + IntToStr(Dictionary.Count) + ' ops/sec');
+    Application.ProcessMessages;
+
+    I := 0;
+    StartTime := Now;
+    repeat
+      R := Dictionary.Values[IntToStr(I mod Dictionary.Count)];
+      I := I + 1;
+    until (Now - StartTime) > OneSecond;
+    WriteLn('Values: ' + IntToStr(I) + ' ops/sec');
+    Application.ProcessMessages;
+
+    I := 0;
+    StartTime := Now;
+    repeat
+      R := Dictionary.Keys[I mod Dictionary.Count];
+      I := I + 1;
+    until (Now - StartTime) > OneSecond;
+    WriteLn('Keys: ' + IntToStr(I) + ' ops/sec');
+    Application.ProcessMessages;
+
+    I := 0;
+    StartTime := Now;
+    repeat
+      R := Dictionary.Items[I mod Dictionary.Count].Value;
+      I := I + 1;
+    until (Now - StartTime) > OneSecond;
+    WriteLn('Values by index: ' + IntToStr(I) + ' ops/sec');
+    Application.ProcessMessages;
+  finally
+    Dictionary.Free;
+  end;
+
+  try
+    Dictionary2 := TStringList.Create;
+    Dictionary2.NameValueSeparator := '|';
+    WriteLn('TStringList...');
+    I := 0;
+    StartTime := Now;
+    repeat
+      Dictionary2.Add(IntToStr(I) + Dictionary2.NameValueSeparator + IntToStr(I));
+      I := I + 1;
+    until (Now - StartTime) > OneSecond;
+    WriteLn('Add pair: ' + IntToStr(Dictionary2.Count) + ' ops/sec');
+    Application.ProcessMessages;
+
+    I := 0;
+    StartTime := Now;
+    repeat
+      R := Dictionary2.Values[IntToStr(I mod Dictionary2.Count)];
+      I := I + 1;
+    until (Now - StartTime) > OneSecond;
+    WriteLn('Values: ' + IntToStr(I) + ' ops/sec');
+    Application.ProcessMessages;
+
+    I := 0;
+    StartTime := Now;
+    repeat
+      R := Dictionary2.Names[I mod Dictionary2.Count];
+      I := I + 1;
+    until (Now - StartTime) > OneSecond;
+    WriteLn('Keys: ' + IntToStr(I) + ' ops/sec');
+    Application.ProcessMessages;
+
+    I := 0;
+    StartTime := Now;
+    repeat
+      R := Dictionary2.ValueFromIndex[I mod Dictionary2.Count];
+      I := I + 1;
+    until (Now - StartTime) > OneSecond;
+    WriteLn('Values by index: ' + IntToStr(I) + ' ops/sec');
+    Application.ProcessMessages;
+  finally
+    Dictionary2.Free;
   end;
 end;
 

@@ -78,8 +78,8 @@
         <UnitName Value="TreeString"/>
       </Item15>
       <Item16>
-        <Filename Value="Specialized\DictionaryString.pas"/>
-        <UnitName Value="DictionaryString"/>
+        <Filename Value="Specialized\DictionaryStringString.pas"/>
+        <UnitName Value="DictionaryStringString"/>
       </Item16>
       <Item17>
         <Filename Value="Specialized\StackDouble.pas"/>
@@ -200,4 +200,4 @@
       <Version Value="2"/>
     </PublishOptions>
   </Package>
-</CONFIG>
+</CONFIG>

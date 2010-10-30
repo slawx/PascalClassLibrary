@@ -8,7 +8,7 @@ interface
 
 uses
     ListDouble, ListInteger, ListObject, ListPointer, ListString, TreeInteger, 
-  TreeObject, TreePointer, TreeString, DictionaryString, StackDouble, 
+  TreeObject, TreePointer, TreeString, DictionaryStringString, StackDouble, 
   StackInteger, StackObject, StackPointer, StackString, QueueDouble, 
   QueueInteger, QueueObject, QueuePointer, QueueString, ListChar, ListVariant, 
   SetInteger, SetString, SetChar, RangeDateTime, ListByte, LazarusPackageIntf;
