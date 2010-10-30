@@ -7,12 +7,15 @@ uses
   cthreads,
   {$ENDIF}{$ENDIF}
   Interfaces, // this includes the LCL widgetset
-  Forms, UMainForm, TemplateGenerics
-  { you can add units after this };
+  Forms, SysUtils, UMainForm, TemplateGenerics;
 
 {$R *.res}
 
+const
+  HeapTraceLogFileName = 'heaptrclog.trc';
 begin
+  DeleteFile(ExtractFilePath(ParamStr(0)) + HeapTraceLogFileName);
+  SetHeapTraceOutput(ExtractFilePath(ParamStr(0)) + HeapTraceLogFileName);
   Application.Initialize;
   Application.CreateForm(TMainForm, MainForm);
   Application.Run;

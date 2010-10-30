@@ -13,17 +13,17 @@
     FItems: array of TListItem;
     FCount: TListIndex;
     function Get(Index: TListIndex): TListItem;
-    function GetCount: TListIndex;
     function GetCapacity: TListIndex;
     procedure SetCapacity(const AValue: TListIndex);
-    procedure Put(Index: TListIndex; const AValue: TListItem);
+    procedure Put(Index: TListIndex; const AValue: TListItem); virtual;
     procedure SetCount(const AValue: TListIndex);
     procedure QuickSort(L, R : TListIndex; Compare: TGListSortCompare);
   public
     // All items
     procedure Reverse;
-    procedure Clear;
+    procedure Clear; virtual;
     procedure Expand;
+    procedure Contract;
     procedure Sort(Compare: TGListSortCompare);
     function Implode(Separator: string; Converter: TGListStringConverter): string;
     procedure Perform(Operation: TGListOperation);
@@ -33,7 +33,7 @@
     procedure Fill(Start, Count: TListIndex; Value: TListItem);
     // One item
     function Add(Item: TListItem): TListIndex;
-    procedure Delete(Index: TListIndex);
+    procedure Delete(Index: TListIndex); virtual;
     function Extract(Item: TListItem): TListItem;
     procedure Exchange(Index1, Index2: TListIndex);
     function First: TListItem;
@@ -50,10 +50,10 @@
     procedure InsertList(Index: TListIndex; List: TGList);
     function IndexOfList(List: TGList; Start: TListIndex = 0): TListIndex;
     // Other
-    property Count: TListIndex read GetCount write SetCount;
+    property Count: TListIndex read FCount write SetCount;
     property Capacity: TListIndex read GetCapacity write SetCapacity;
     // Array
     procedure AddArray(Values: array of TListItem);
     procedure SetArray(Values: array of TListItem);
     procedure InsertArray(Index: TListIndex; Values: array of TListItem);
-  end;
+  end;

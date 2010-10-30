@@ -7,13 +7,14 @@ interface
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
   ComCtrls, ListInteger, ListString, DictionaryString, QueueInteger, ListChar,
-  ListPointer, DateUtils, ListVariant;
+  ListPointer, DateUtils, ListVariant, Contnrs, ListObject;
 
 type
 
   { TMainForm }
 
   TMainForm = class(TForm)
+    ButtonListObject: TButton;
     ButtonBenchmark: TButton;
     ButtonCharList: TButton;
     ButtonQueueInteger: TButton;
@@ -25,6 +26,7 @@ type
     procedure ButtonCharListClick(Sender: TObject);
     procedure ButtonDictionaryStringClick(Sender: TObject);
     procedure ButtonIntegerListClick(Sender: TObject);
+    procedure ButtonListObjectClick(Sender: TObject);
     procedure ButtonQueueIntegerClick(Sender: TObject);
     procedure ButtonStringListClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -70,6 +72,37 @@ begin
     WriteLn('Last: ' + IntToStr(Last));
     MoveItems(3, 2, 3);
     WriteLn('Implode: ' + Implode(',', IntToStr));
+  finally
+    Free;
+  end;
+end;
+
+function ObjectToStr(Obj: TObject): string;
+begin
+  Result := Obj.ClassName;
+end;
+
+procedure TMainForm.ButtonListObjectClick(Sender: TObject);
+var
+  List: TListObject;
+  I: Integer;
+begin
+  MemoOutput.Clear;
+  WriteLn('TListObject test');
+  List := TListObject.Create;
+  with List do try
+    AddArray([TObject.Create, TObject.Create, TObject.Create, TObject.Create]);
+    WriteLn('Implode: ' + Implode(',', ObjectToStr));
+    Clear;
+    for I := 0 to 10 do Add(TObject.Create);
+    WriteLn('Implode: ' + Implode(',', ObjectToStr));
+    WriteLn('Count: ' + IntToStr(Count));
+    WriteLn('Implode: ' + Implode(',', ObjectToStr));
+    WriteLn('Reverse');
+    Reverse;
+    WriteLn('Implode: ' + Implode(',', ObjectToStr));
+    MoveItems(3, 2, 3);
+    WriteLn('Implode: ' + Implode(',', ObjectToStr));
   finally
     Free;
   end;
@@ -206,6 +239,27 @@ begin
     WriteLn('Move: ' + IntToStr(I) + ' ops/sec');
     List.Clear;
 
+    for I := 0 to 1000000 do
+      List.Add(1);
+    StartTime := Now;
+    I := 0;
+    repeat
+      List.Exchange(300000, 700000);
+      Inc(I);
+    until (Now - StartTime) > OneSecond;
+    WriteLn('Exchange: ' + IntToStr(I) + ' ops/sec');
+    List.Clear;
+
+    for I := 0 to 1000000 do
+      List.Add(1);
+    StartTime := Now;
+    I := 0;
+    repeat
+      List.IndexOf(Pointer(I mod List.Count));
+      Inc(I);
+    until (Now - StartTime) > OneSecond;
+    WriteLn('IndexOf: ' + IntToStr(I) + ' ops/sec');
+    List.Clear;
   finally
     List.Free;
   end;
@@ -237,8 +291,8 @@ begin
     until (Now - StartTime) > OneSecond;
     WriteLn('Delete: ' + IntToStr(I) + ' ops/sec');
 
-      for I := 0 to 1000000 do
-      List2.Add(1);
+    for I := 0 to 1000000 do
+    List2.Add(1);
     StartTime := Now;
     I := 0;
     repeat
@@ -246,6 +300,26 @@ begin
       Inc(I);
     until (Now - StartTime) > OneSecond;
     WriteLn('Move: ' + IntToStr(I) + ' ops/sec');
+
+    for I := 0 to 1000000 do
+    List2.Add(1);
+    StartTime := Now;
+    I := 0;
+    repeat
+      List2.Exchange(300000, 700000);
+      Inc(I);
+    until (Now - StartTime) > OneSecond;
+    WriteLn('Exchange: ' + IntToStr(I) + ' ops/sec');
+
+    for I := 0 to 1000000 do
+    List2.Add(1);
+    StartTime := Now;
+    I := 0;
+    repeat
+      List2.IndexOf(Pointer(I mod List.Count));
+      Inc(I);
+    until (Now - StartTime) > OneSecond;
+    WriteLn('IndexOf: ' + IntToStr(I) + ' ops/sec');
 
   finally
     List2.Free;

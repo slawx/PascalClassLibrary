@@ -18,11 +18,6 @@ begin
   Result := FItems[Index];
 end;
 
-function TGList.GetCount: TListIndex;
-begin
-  Result := FCount;
-end;
-
 procedure TGList.Put(Index: TListIndex; const AValue: TListItem);
 begin
   FItems[Index] := AValue;
@@ -85,6 +80,14 @@ begin
     if Capacity > 8 then IncSize := IncSize + 8;
     if Capacity > 63 then IncSize := IncSize + Capacity shr 2;
     Capacity := Capacity + IncSize;
+  end;
+end;
+
+procedure TGList.Contract;
+begin
+  if (Capacity > 256) and (FCount < Capacity shr 2) then
+  begin
+    Capacity := Capacity shr 1;
   end;
 end;
 
@@ -343,11 +346,7 @@ begin
     raise EListError.CreateFmt(SListIndexError, [Index]);
   FCount := FCount - 1;
   System.Move(FItems[Index + 1], FItems[Index], (FCount - Index) * SizeOf(TListItem));
-  // Shrink the list if appropriate
-  if (Capacity > 256) and (FCount < Capacity shr 2) then
-  begin
-    Capacity := Capacity shr 1;
-  end;
+  Contract;
 end;
 
 procedure TGList.DeleteItems(Index, Count: TListIndex);
@@ -381,4 +380,4 @@ begin
   Temp := FItems[Index1];
   FItems[Index1] := FItems[Index2];
   FItems[Index2] := Temp;
-end;
+end;
