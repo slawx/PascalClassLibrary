@@ -209,6 +209,7 @@ begin
     until (Now - StartTime) > OneSecond;
     WriteLn('Add: ' + IntToStr(List.Count) + ' ops/sec');
     List.Clear;
+    Application.ProcessMessages;
 
     StartTime := Now;
     repeat
@@ -216,6 +217,7 @@ begin
     until (Now - StartTime) > OneSecond;
     WriteLn('Insert: ' + IntToStr(List.Count) + ' ops/sec');
     List.Clear;
+    Application.ProcessMessages;
 
     for I := 0 to 1000000 do
       List.Add(1);
@@ -227,6 +229,7 @@ begin
     until (Now - StartTime) > OneSecond;
     WriteLn('Delete: ' + IntToStr(I) + ' ops/sec');
     List.Clear;
+    Application.ProcessMessages;
 
     for I := 0 to 1000000 do
       List.Add(1);
@@ -238,6 +241,7 @@ begin
     until (Now - StartTime) > OneSecond;
     WriteLn('Move: ' + IntToStr(I) + ' ops/sec');
     List.Clear;
+    Application.ProcessMessages;
 
     for I := 0 to 1000000 do
       List.Add(1);
@@ -249,6 +253,7 @@ begin
     until (Now - StartTime) > OneSecond;
     WriteLn('Exchange: ' + IntToStr(I) + ' ops/sec');
     List.Clear;
+    Application.ProcessMessages;
 
     for I := 0 to 1000000 do
       List.Add(1);
@@ -260,6 +265,7 @@ begin
     until (Now - StartTime) > OneSecond;
     WriteLn('IndexOf: ' + IntToStr(I) + ' ops/sec');
     List.Clear;
+    Application.ProcessMessages;
   finally
     List.Free;
   end;
@@ -273,6 +279,7 @@ begin
     until (Now - StartTime) > OneSecond;
     WriteLn('Add: ' + IntToStr(List2.Count) + ' ops/sec');
     List2.Clear;
+    Application.ProcessMessages;
 
     StartTime := Now;
     repeat
@@ -280,6 +287,7 @@ begin
     until (Now - StartTime) > OneSecond;
     WriteLn('Insert: ' + IntToStr(List2.Count) + ' ops/sec');
     List2.Clear;
+    Application.ProcessMessages;
 
     for I := 0 to 1000000 do
       List2.Add(1);
@@ -290,6 +298,7 @@ begin
       Inc(I);
     until (Now - StartTime) > OneSecond;
     WriteLn('Delete: ' + IntToStr(I) + ' ops/sec');
+    Application.ProcessMessages;
 
     for I := 0 to 1000000 do
     List2.Add(1);
@@ -300,6 +309,7 @@ begin
       Inc(I);
     until (Now - StartTime) > OneSecond;
     WriteLn('Move: ' + IntToStr(I) + ' ops/sec');
+    Application.ProcessMessages;
 
     for I := 0 to 1000000 do
     List2.Add(1);
@@ -310,6 +320,7 @@ begin
       Inc(I);
     until (Now - StartTime) > OneSecond;
     WriteLn('Exchange: ' + IntToStr(I) + ' ops/sec');
+    Application.ProcessMessages;
 
     for I := 0 to 1000000 do
     List2.Add(1);
@@ -320,6 +331,7 @@ begin
       Inc(I);
     until (Now - StartTime) > OneSecond;
     WriteLn('IndexOf: ' + IntToStr(I) + ' ops/sec');
+    Application.ProcessMessages;
 
   finally
     List2.Free;
