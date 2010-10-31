@@ -6,8 +6,8 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  ComCtrls, ListInteger, ListString, DictionaryStringString, QueueInteger, ListChar,
-  ListPointer, DateUtils, ListObject;
+  ComCtrls, SpecializedList, SpecializedDictionary, SpecializedQueue,
+  DateUtils, ListObject;
 
 type
 

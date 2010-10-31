@@ -1,38 +1,51 @@
 {$IFDEF INTERFACE}
 
-  TListIndex = TObjectListIndex;
-  TListItem = TObjectListItem;
-  {$DEFINE INTERFACE}
-  {$INCLUDE 'GenericList.inc'}
+{$DEFINE TGListIndex := TGObjectListIndex}
+{$DEFINE TGListItem := TGObjectListItem}
+{$DEFINE TGList := TGObjectListList}
+{$DEFINE TGListSortCompare := TGObjectListSortCompare}
+{$DEFINE TGListStringConverter := TObjectListStringConverter}
+{$DEFINE INTERFACE}
+{$INCLUDE 'GenericList.inc'}
 
   // TGObjectList<TObjectListIndex, TObjectListItem> = class(TGList)
   TGObjectList = class(TGList)
   private
-    procedure Put(Index: TListIndex; const AValue: TListItem); override;
+    procedure Put(Index: TGListIndex; const AValue: TGListItem); override;
   public
     OwnsObjects: Boolean;
-    procedure Delete(Index: TListIndex); override;
+    procedure Delete(Index: TGObjectListIndex); override;
     procedure Clear; override;
     constructor Create;
     destructor Destroy; override;
   end;
-{$UNDEF INTERFACE}
+
+{$UNDEF INTERFACE}
 {$ENDIF}
 
 {$IFDEF IMPLEMENTATION}
 
+{$UNDEF IMPLEMENTATION}
+{$DEFINE IMPLEMENTATION_USES}
+{$INCLUDE '..\Generic\GenericList.inc'}
+
+{$DEFINE TGListIndex := TGObjectListIndex}
+{$DEFINE TGListItem := TGObjectListItem}
+{$DEFINE TGList := TGObjectListList}
+{$DEFINE TGListSortCompare := TGObjectListSortCompare}
+{$DEFINE TGListStringConverter := TObjectListStringConverter}
 {$DEFINE IMPLEMENTATION}
 {$INCLUDE 'GenericList.inc'}
 
 { TGObjectList }
 
-procedure TGObjectList.Put(Index: TObjectListIndex; const AValue: TObjectListItem);
+procedure TGObjectList.Put(Index: TGListIndex; const AValue: TGListItem);
 begin
   if OwnsObjects then FItems[Index].Free;
   inherited Put(Index, AValue);
 end;
 
-procedure TGObjectList.Delete(Index: TObjectListIndex);
+procedure TGObjectList.Delete(Index: TGObjectListIndex);
 begin
   if OwnsObjects then FItems[Index].Free;
   inherited Delete(Index);
@@ -40,7 +53,7 @@ end;
 
 procedure TGObjectList.Clear;
 var
-  I: TObjectListIndex;
+  I: TGObjectListIndex;
 begin
   if OwnsObjects then begin
     I := 0;
@@ -64,4 +77,5 @@ begin
   inherited Destroy;
 end;
 
-{$ENDIF}
+{$UNDEF IMPLEMENTATION}
+{$ENDIF}

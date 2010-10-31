@@ -1,37 +1,54 @@
 {$IFDEF INTERFACE}
 
-  TListIndex = TStackIndex;
-  TListItem = TStackItem;
-  {$DEFINE INTERFACE}
-  {$INCLUDE 'GenericList.inc'}
+{$DEFINE TGListIndex := TGStackIndex}
+{$DEFINE TGListItem := TGStackItem}
+{$DEFINE TGList := TGStackList}
+{$DEFINE TGListSortCompare := TGStackSortCompare}
+{$DEFINE TGListStringConverter := TGStackStringConverter}
+{$DEFINE INTERFACE}
+{$INCLUDE 'GenericList.inc'}
 
   // TGStack<TStackIndex, TStackItem> = class(TGList)
   TGStack = class
   private
     FList: TGList;
   public
-    procedure Push(Value: TStackItem);
-    function Pop: TStackItem;
+    procedure Push(Value: TGStackItem);
+    function Pop: TGStackItem;
     constructor Create;
     destructor Destroy; override;
     property List: TGList read FList;
-  end;
+  end;
+
 {$UNDEF INTERFACE}
+{$ENDIF}
+
+{$IFDEF IMPLEMENTATION_USES}
+
+  {$DEFINE IMPLEMENTATION_USES}
+  {$INCLUDE '..\Generic\GenericList.inc'}
+
+{$UNDEF IMPLEMENTATION_USES}
 {$ENDIF}
 
 {$IFDEF IMPLEMENTATION}
 
+{$DEFINE TGListIndex := TGStackIndex}
+{$DEFINE TGListItem := TGStackItem}
+{$DEFINE TGList := TGStackList}
+{$DEFINE TGListSortCompare := TGStackSortCompare}
+{$DEFINE TGListStringConverter := TGStackStringConverter}
 {$DEFINE IMPLEMENTATION}
 {$INCLUDE 'GenericList.inc'}
 
 { TGStack }
 
-procedure TGStack.Push(Value: TStackItem);
+procedure TGStack.Push(Value: TGStackItem);
 begin
   FList.Add(Value);
 end;
 
-function TGStack.Pop: TStackItem;
+function TGStack.Pop: TGStackItem;
 begin
   Result := FList.Extract(FList.Last);
 end;
@@ -47,4 +64,5 @@ begin
   inherited Destroy;
 end;
 
-{$ENDIF}
+{$UNDEF IMPLEMENTATION}
+{$ENDIF}

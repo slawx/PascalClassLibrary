@@ -1,31 +1,48 @@
 {$IFDEF INTERFACE}
 
-  TListIndex = TSetIndex;
-  TListItem = TSetItem;
-  {$DEFINE INTERFACE}
-  {$INCLUDE 'GenericList.inc'}
+{$DEFINE TGListIndex := TGSetIndex}
+{$DEFINE TGListItem := TGSetItem}
+{$DEFINE TGList := TGSetList}
+{$DEFINE TGListSortCompare := TGSetSortCompare}
+{$DEFINE TGListStringConverter := TGSetStringConverter}
+{$DEFINE INTERFACE}
+{$INCLUDE 'GenericList.inc'}
 
-  // TGSet<TSetIndex, TSetItem> = class(TGSet)
+  // TGSet<TGSetIndex, TGSetItem> = class
   TGSet = class
   private
     FList: TGList;
   public
-    function IsIn(Item: TSetItem): Boolean;
+    function IsIn(Item: TGSetItem): Boolean;
     constructor Create;
     destructor Destroy; override;
     property List: TGList read FList;
-  end;
+  end;
+
 {$UNDEF INTERFACE}
+{$ENDIF}
+
+{$IFDEF IMPLEMENTATION_USES}
+
+  {$DEFINE IMPLEMENTATION_USES}
+  {$INCLUDE '..\Generic\GenericList.inc'}
+
+{$UNDEF IMPLEMENTATION_USES}
 {$ENDIF}
 
 {$IFDEF IMPLEMENTATION}
 
+{$DEFINE TGListIndex := TGSetIndex}
+{$DEFINE TGListItem := TGSetItem}
+{$DEFINE TGList := TGSetList}
+{$DEFINE TGListSortCompare := TGSetSortCompare}
+{$DEFINE TGListStringConverter := TGSetStringConverter}
 {$DEFINE IMPLEMENTATION}
 {$INCLUDE 'GenericList.inc'}
 
 { TGSet }
 
-function TGSet.IsIn(Item: TSetItem): Boolean;
+function TGSet.IsIn(Item: TGSetItem): Boolean;
 begin
   Result := FList.IndexOf(Item) <> -1;
 end;
@@ -41,4 +58,5 @@ begin
   inherited Destroy;
 end;
 
-{$ENDIF}
+{$UNDEF IMPLEMENTATION}
+{$ENDIF}

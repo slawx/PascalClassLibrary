@@ -3,51 +3,63 @@
   TGDictionary = class;
 
   TGPair = record
-    Key: TDictionaryKey;
-    Value: TDictionaryValue;
+    Key: TGPairKey;
+    Value: TGPairValue;
   end;
 
-  TListIndex = TDictionaryIndex;
-  TListItem = TGPair;
-  {$DEFINE INTERFACE}
-  {$INCLUDE 'GenericList.inc'}
+{$DEFINE TGListIndex := TGDictionaryIndex}
+{$DEFINE TGListItem := TGPair}
+{$DEFINE TGList := TGDictionaryList}
+{$DEFINE TGListSortCompare := TDictionarySortCompare}
+{$DEFINE TGListStringConverter := TDictionaryStringConverter}
+{$DEFINE INTERFACE}
+{$INCLUDE 'GenericList.inc'}
 
-  // TGDictionary<TDictionaryIndex, TDictionaryKey, TDictionaryValue> = class(TGList)
+  // TGDictionary<TGDictionaryIndex, TGPair<TGPairKey, TGPairValue>> = class(TGList)
   TGDictionary = class(TGList)
   private
-    function GetKey(Index: TDictionaryIndex): TDictionaryKey;
-    function GetValue(Key: TDictionaryKey): TDictionaryValue;
-    procedure PutKey(Index: TDictionaryIndex; const AValue: TDictionaryKey);
-    procedure PutValue(Key: TDictionaryKey; const AValue: TDictionaryValue);
+    function GetKey(Index: TGDictionaryIndex): TGPairKey;
+    function GetValue(Key: TGPairKey): TGPairValue;
+    procedure PutKey(Index: TGDictionaryIndex; const AValue: TGPairKey);
+    procedure PutValue(Key: TGPairKey; const AValue: TGPairValue);
   public
-    function SearchKey(Key: TDictionaryKey): TDictionaryIndex;
-    procedure Add(Key: TDictionaryKey; Value: TDictionaryValue);
-    property Values[Index: TDictionaryKey]: TDictionaryValue
+    function SearchKey(Key: TGPairKey): TGDictionaryIndex;
+    procedure Add(Key: TGPairKey; Value: TGPairValue);
+    property Values[Index: TGPairKey]: TGPairValue
       read GetValue write PutValue;
-    property Keys[Index: TDictionaryIndex]: TDictionaryKey
+    property Keys[Index: TGDictionaryIndex]: TGPairKey
       read GetKey write PutKey;
-  end;
+  end;
+
 {$UNDEF INTERFACE}
 {$ENDIF}
 
 {$IFDEF IMPLEMENTATION}
 
+{$UNDEF IMPLEMENTATION}
+{$DEFINE IMPLEMENTATION_USES}
+{$INCLUDE '..\Generic\GenericList.inc'}
 
+{$DEFINE TGListIndex := TGDictionaryIndex}
+{$DEFINE TGListItem := TGPair}
+{$DEFINE TGList := TGDictionaryList}
+{$DEFINE TGListSortCompare := TDictionarySortCompare}
+{$DEFINE TGListStringConverter := TDictionaryStringConverter}
 {$DEFINE IMPLEMENTATION}
 {$INCLUDE 'GenericList.inc'}
 
-function TGDictionary.GetKey(Index: TDictionaryIndex): TDictionaryKey;
+function TGDictionary.GetKey(Index: TGDictionaryIndex): TGPairKey;
 begin
   Result := Items[Index].Key;
 end;
 
-function TGDictionary.GetValue(Key: TDictionaryKey): TDictionaryValue;
+function TGDictionary.GetValue(Key: TGPairKey): TGPairValue;
 begin
   Result := Items[SearchKey(Key)].Value;
 end;
 
-procedure TGDictionary.PutKey(Index: TDictionaryIndex;
-  const AValue: TDictionaryKey);
+procedure TGDictionary.PutKey(Index: TGDictionaryIndex;
+  const AValue: TGPairKey);
 var
   Item: TGPair;
 begin
@@ -57,11 +69,11 @@ begin
   Items[Index] := Item;
 end;
 
-procedure TGDictionary.PutValue(Key: TDictionaryKey;
-  const AValue: TDictionaryValue);
+procedure TGDictionary.PutValue(Key: TGPairKey;
+  const AValue: TGPairValue);
 var
   Item: TGPair;
-  Index: TDictionaryIndex;
+  Index: TGDictionaryIndex;
 begin
   //Items[SearchKey(Index)].Value := AValue;
   Index := SearchKey(Key);
@@ -70,7 +82,7 @@ begin
   Items[Index] := Item;
 end;
 
-function TGDictionary.SearchKey(Key: TDictionaryKey): TDictionaryIndex;
+function TGDictionary.SearchKey(Key: TGPairKey): TGDictionaryIndex;
 begin
   Result := 0;
   while Result < Count do begin
@@ -81,7 +93,7 @@ begin
   end;
 end;
 
-procedure TGDictionary.Add(Key: TDictionaryKey; Value: TDictionaryValue);
+procedure TGDictionary.Add(Key: TGPairKey; Value: TGPairValue);
 var
   NewPair: TGPair;
 begin
@@ -90,4 +102,5 @@ begin
   inherited Add(NewPair);
 end;
 
-{$ENDIF}
+{$UNDEF IMPLEMENTATION}
+{$ENDIF}

@@ -1,6 +1,7 @@
 unit ListObject;
 
 {$mode delphi}
+{$MACRO ON}
 
 interface
 
@@ -8,19 +9,27 @@ uses
   Classes, SysUtils;
 
 type
-  TObjectListIndex = Integer;
-  TObjectListItem = TObject;
-{$INCLUDE '..\Generic\ObjectListInterface.tpl'}
+// TListObject<Integer, TObject>
+{$DEFINE TGObjectListIndex := Integer}
+{$DEFINE TGObjectListItem := TObject}
+{$DEFINE TGObjectListList := TObjectListList}
+{$DEFINE TGObjectList := TListObject}
+{$DEFINE TGObjectListSortCompare := TObjectListSortCompareInteger}
+{$DEFINE TGObjectListStringConverter := TObjectListStringConverterInteger}
+{$DEFINE INTERFACE}
+{$INCLUDE '..\Generic\GenericObjectList.inc'}
 
-type
-
-  { TListObject }
-
-  TListObject = class(TGObjectList)
-  end;
 
 implementation
 
-{$INCLUDE '..\Generic\ObjectListImplementation.tpl'}
+// TListObject<Integer, TObject>
+{$DEFINE TGObjectListIndex := Integer}
+{$DEFINE TGObjectListItem := TObject}
+{$DEFINE TGObjectListList := TObjectListList}
+{$DEFINE TGObjectList := TListObject}
+{$DEFINE TGObjectListSortCompare := TObjectListSortCompareInteger}
+{$DEFINE TGObjectListStringConverter := TObjectListStringConverterInteger}
+{$DEFINE IMPLEMENTATION}
+{$INCLUDE '..\Generic\GenericObjectList.inc'}
 
 end.

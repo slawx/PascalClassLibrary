@@ -16,147 +16,67 @@
       </Other>
     </CompilerOptions>
     <Version Minor="1"/>
-    <Files Count="35">
+    <Files Count="15">
       <Item1>
-        <Filename Value="Specialized\ListDouble.pas"/>
-        <UnitName Value="ListDouble"/>
-      </Item1>
-      <Item2>
-        <Filename Value="Specialized\ListInteger.pas"/>
-        <UnitName Value="ListInteger"/>
-      </Item2>
-      <Item3>
-        <Filename Value="Specialized\ListPointer.pas"/>
-        <UnitName Value="ListPointer"/>
-      </Item3>
-      <Item4>
-        <Filename Value="Specialized\ListString.pas"/>
-        <UnitName Value="ListString"/>
-      </Item4>
-      <Item5>
-        <Filename Value="Specialized\TreeInteger.pas"/>
-        <UnitName Value="TreeInteger"/>
-      </Item5>
-      <Item6>
-        <Filename Value="Specialized\TreeObject.pas"/>
-        <UnitName Value="TreeObject"/>
-      </Item6>
-      <Item7>
-        <Filename Value="Specialized\TreePointer.pas"/>
-        <UnitName Value="TreePointer"/>
-      </Item7>
-      <Item8>
-        <Filename Value="Specialized\TreeString.pas"/>
-        <UnitName Value="TreeString"/>
-      </Item8>
-      <Item9>
-        <Filename Value="Specialized\DictionaryStringString.pas"/>
-        <UnitName Value="DictionaryStringString"/>
-      </Item9>
-      <Item10>
-        <Filename Value="Specialized\StackDouble.pas"/>
-        <UnitName Value="StackDouble"/>
-      </Item10>
-      <Item11>
-        <Filename Value="Specialized\StackInteger.pas"/>
-        <UnitName Value="StackInteger"/>
-      </Item11>
-      <Item12>
-        <Filename Value="Specialized\StackObject.pas"/>
-        <UnitName Value="StackObject"/>
-      </Item12>
-      <Item13>
-        <Filename Value="Specialized\StackPointer.pas"/>
-        <UnitName Value="StackPointer"/>
-      </Item13>
-      <Item14>
-        <Filename Value="Specialized\StackString.pas"/>
-        <UnitName Value="StackString"/>
-      </Item14>
-      <Item15>
-        <Filename Value="Specialized\QueueDouble.pas"/>
-        <UnitName Value="QueueDouble"/>
-      </Item15>
-      <Item16>
-        <Filename Value="Specialized\QueueInteger.pas"/>
-        <UnitName Value="QueueInteger"/>
-      </Item16>
-      <Item17>
-        <Filename Value="Specialized\QueueObject.pas"/>
-        <UnitName Value="QueueObject"/>
-      </Item17>
-      <Item18>
-        <Filename Value="Specialized\QueuePointer.pas"/>
-        <UnitName Value="QueuePointer"/>
-      </Item18>
-      <Item19>
-        <Filename Value="Specialized\QueueString.pas"/>
-        <UnitName Value="QueueString"/>
-      </Item19>
-      <Item20>
-        <Filename Value="Specialized\ListChar.pas"/>
-        <UnitName Value="ListChar"/>
-      </Item20>
-      <Item21>
         <Filename Value="ReadMe.txt"/>
         <Type Value="Text"/>
-      </Item21>
-      <Item22>
-        <Filename Value="Specialized\ListVariant.pas"/>
-        <UnitName Value="ListVariant"/>
-      </Item22>
-      <Item23>
-        <Filename Value="Specialized\SetInteger.pas"/>
-        <UnitName Value="SetInteger"/>
-      </Item23>
-      <Item24>
-        <Filename Value="Specialized\SetString.pas"/>
-        <UnitName Value="SetString"/>
-      </Item24>
-      <Item25>
-        <Filename Value="Specialized\SetChar.pas"/>
-        <UnitName Value="SetChar"/>
-      </Item25>
-      <Item26>
-        <Filename Value="Specialized\RangeDateTime.pas"/>
-        <UnitName Value="RangeDateTime"/>
-      </Item26>
-      <Item27>
-        <Filename Value="Specialized\ListByte.pas"/>
-        <UnitName Value="ListByte"/>
-      </Item27>
-      <Item28>
+      </Item1>
+      <Item2>
         <Filename Value="Generic\GenericDictionary.inc"/>
         <Type Value="Include"/>
-      </Item28>
-      <Item29>
+      </Item2>
+      <Item3>
         <Filename Value="Generic\GenericList.inc"/>
         <Type Value="Include"/>
-      </Item29>
-      <Item30>
+      </Item3>
+      <Item4>
         <Filename Value="Generic\GenericObjectList.inc"/>
         <Type Value="Include"/>
-      </Item30>
-      <Item31>
+      </Item4>
+      <Item5>
         <Filename Value="Generic\GenericQueue.inc"/>
         <Type Value="Include"/>
-      </Item31>
-      <Item32>
+      </Item5>
+      <Item6>
         <Filename Value="Generic\GenericRange.inc"/>
         <Type Value="Include"/>
-      </Item32>
-      <Item33>
+      </Item6>
+      <Item7>
         <Filename Value="Generic\GenericSet.inc"/>
         <Type Value="Include"/>
-      </Item33>
-      <Item34>
+      </Item7>
+      <Item8>
         <Filename Value="Generic\GenericStack.inc"/>
         <Type Value="Include"/>
-      </Item34>
-      <Item35>
+      </Item8>
+      <Item9>
         <Filename Value="Generic\GenericTree.inc"/>
         <Type Value="Include"/>
-      </Item35>
+      </Item9>
+      <Item10>
+        <Filename Value="Specialized\SpecializedList.pas"/>
+        <UnitName Value="SpecializedList"/>
+      </Item10>
+      <Item11>
+        <Filename Value="Specialized\SpecializedDictionary.pas"/>
+        <UnitName Value="SpecializedDictionary"/>
+      </Item11>
+      <Item12>
+        <Filename Value="Specialized\SpecializedStack.pas"/>
+        <UnitName Value="SpecializedStack"/>
+      </Item12>
+      <Item13>
+        <Filename Value="Specialized\SpecializedTree.pas"/>
+        <UnitName Value="SpecializedTree"/>
+      </Item13>
+      <Item14>
+        <Filename Value="Specialized\SpecializedQueue.pas"/>
+        <UnitName Value="SpecializedQueue"/>
+      </Item14>
+      <Item15>
+        <Filename Value="Specialized\SpecializedSet.pas"/>
+        <UnitName Value="SpecializedSet"/>
+      </Item15>
     </Files>
     <Type Value="RunAndDesignTime"/>
     <RequiredPkgs Count="1">

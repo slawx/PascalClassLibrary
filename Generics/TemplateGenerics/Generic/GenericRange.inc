@@ -40,4 +40,5 @@ begin
   end;
 end;
 
-{$ENDIF}
+{$UNDEF IMPLEMENTATION}
+{$ENDIF}

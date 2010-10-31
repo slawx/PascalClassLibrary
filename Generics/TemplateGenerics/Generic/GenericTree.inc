@@ -2,22 +2,22 @@
 
   TGTreeNode = class;
 
-  TListIndex = TTreeIndex;
-  TListItem = TGTreeNode;
-  {$DEFINE INTERFACE}
-  {$INCLUDE 'GenericList.inc'}
+{$DEFINE TGListIndex := TGTreeIndex}
+{$DEFINE TGListItem := TGTreeNode}
+{$DEFINE TGList := TGTreeNodeList}
+{$DEFINE TGListSortCompare := TGTreeSortCompare}
+{$DEFINE TGListStringConverter := TGTreeStringConverter}
+{$DEFINE INTERFACE}
+{$INCLUDE 'GenericList.inc'}
 
-  TTreeNodeList = class(TGList)
-  end;
-
-  // TGTreeNode<TTreeIndex, TTreeItem> = class
+  // TGTreeNode<TGTreeIndex, TGTreeItem> = class
   TGTreeNode = class
-    Childs: TTreeNodeList;
-    Value: TTreeItem;
+    Childs: TGTreeNodeList;
+    Value: TGTreeItem;
     procedure Clear;
   end;
 
-  // TGTree<TTreeIndex, TTreeItem> = class
+  // TGTree<TGTreeIndex, TGTreeItem> = class
   TGTree = class
     TopItem: TGTreeNode;
     procedure Clear;
@@ -26,7 +26,23 @@
 {$UNDEF INTERFACE}
 {$ENDIF}
 
-{$IFDEF IMPLEMENTATION}
+{$IFDEF IMPLEMENTATION_USES}
+
+  {$DEFINE IMPLEMENTATION_USES}
+  {$INCLUDE 'GenericList.inc'}
+
+{$UNDEF INTERFACE_USES}
+{$ENDIF}
+
+
+{$IFDEF IMPLEMENTATION}
+{$UNDEF IMPLEMENTATION}
+
+{$DEFINE TGListIndex := TGTreeIndex}
+{$DEFINE TGListItem := TGTreeNode}
+{$DEFINE TGList := TGTreeNodeList}
+{$DEFINE TGListSortCompare := TGTreeSortCompare}
+{$DEFINE TGListStringConverter := TGTreeStringConverter}
 {$DEFINE IMPLEMENTATION}
 {$INCLUDE 'GenericList.inc'}
 
@@ -44,4 +60,5 @@ begin
   if Assigned(TopItem) then TopItem.Clear;
 end;
 
-{$ENDIF}
+{$UNDEF IMPLEMENTATION}
+{$ENDIF}
