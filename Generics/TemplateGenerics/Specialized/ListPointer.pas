@@ -10,7 +10,8 @@ uses
 type
   TListIndex = Integer;
   TListItem = Pointer;
-{$INCLUDE '..\Generic\ListInterface.tpl'}
+{$DEFINE INTERFACE}
+{$INCLUDE '..\Generic\GenericList.inc'}
 
 type
   TListPointer = class(TGList)
@@ -18,7 +19,8 @@ type
 
 implementation
 
-{$INCLUDE '..\Generic\ListImplementation.tpl'}
+{$DEFINE IMPLEMENTATION}
+{$INCLUDE '..\Generic\GenericList.inc'}
 
 
 end.

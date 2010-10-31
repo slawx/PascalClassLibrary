@@ -11,7 +11,8 @@ type
   TDictionaryIndex = Integer;
   TDictionaryKey = string;
   TDictionaryValue = string;
-{$INCLUDE '..\Generic\DictionaryInterface.tpl'}
+{$DEFINE INTERFACE}
+{$INCLUDE '..\Generic\GenericDictionary.inc'}
 
 type
   TPairStringString = TGPair;
@@ -21,7 +22,8 @@ type
 
 implementation
 
-{$INCLUDE '..\Generic\DictionaryImplementation.tpl'}
+{$DEFINE IMPLEMENTATION}
+{$INCLUDE '..\Generic\GenericDictionary.inc'}
 
 
 end.

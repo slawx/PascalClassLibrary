@@ -10,7 +10,8 @@ uses
 type
   TListIndex = Integer;
   TListItem = Char;
-{$INCLUDE '..\Generic\ListInterface.tpl'}
+{$DEFINE INTERFACE}
+{$INCLUDE '..\Generic\GenericList.inc'}
 
 type
 
@@ -29,8 +30,8 @@ type
 
 implementation
 
-{$INCLUDE '..\Generic\ListImplementation.tpl'}
-
+{$DEFINE IMPLEMENTATION}
+{$INCLUDE '..\Generic\GenericList.inc'}
 
 { TListChar }
 

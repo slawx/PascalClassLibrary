@@ -1,4 +1,28 @@
-{$INCLUDE 'ListImplementation.tpl'}
+{$IFDEF INTERFACE}
+
+  TListIndex = TObjectListIndex;
+  TListItem = TObjectListItem;
+  {$DEFINE INTERFACE}
+  {$INCLUDE 'GenericList.inc'}
+
+  // TGObjectList<TObjectListIndex, TObjectListItem> = class(TGList)
+  TGObjectList = class(TGList)
+  private
+    procedure Put(Index: TListIndex; const AValue: TListItem); override;
+  public
+    OwnsObjects: Boolean;
+    procedure Delete(Index: TListIndex); override;
+    procedure Clear; override;
+    constructor Create;
+    destructor Destroy; override;
+  end;
+{$UNDEF INTERFACE}
+{$ENDIF}
+
+{$IFDEF IMPLEMENTATION}
+
+{$DEFINE IMPLEMENTATION}
+{$INCLUDE 'GenericList.inc'}
 
 { TGObjectList }
 
@@ -39,4 +63,5 @@ begin
   Clear;
   inherited Destroy;
 end;
-
+
+{$ENDIF}

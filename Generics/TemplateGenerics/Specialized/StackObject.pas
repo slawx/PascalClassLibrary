@@ -10,7 +10,8 @@ uses
 type
   TStackIndex = Integer;
   TStackItem = TObject;
-{$INCLUDE '..\Generic\StackInterface.tpl'}
+{$DEFINE INTERFACE}
+{$INCLUDE '..\Generic\GenericStack.inc'}
 
 type
 
@@ -23,8 +24,8 @@ type
 
 implementation
 
-{$INCLUDE '..\Generic\StackImplementation.tpl'}
-
+{$DEFINE IMPLEMENTATION}
+{$INCLUDE '..\Generic\GenericStack.inc'}
 
 { TObjectStack }
 

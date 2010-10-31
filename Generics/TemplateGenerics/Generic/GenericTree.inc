@@ -1,9 +1,11 @@
+{$IFDEF INTERFACE}
 
   TGTreeNode = class;
 
   TListIndex = TTreeIndex;
   TListItem = TGTreeNode;
-  {$INCLUDE 'ListInterface.tpl'}
+  {$DEFINE INTERFACE}
+  {$INCLUDE 'GenericList.inc'}
 
   TTreeNodeList = class(TGList)
   end;
@@ -20,4 +22,26 @@
     TopItem: TGTreeNode;
     procedure Clear;
   end;
-
+
+{$UNDEF INTERFACE}
+{$ENDIF}
+
+{$IFDEF IMPLEMENTATION}
+{$DEFINE IMPLEMENTATION}
+{$INCLUDE 'GenericList.inc'}
+
+{ TGTreeNode }
+
+procedure TGTreeNode.Clear;
+begin
+  Childs.Clear;
+end;
+
+{ TGTree }
+
+procedure TGTree.Clear;
+begin
+  if Assigned(TopItem) then TopItem.Clear;
+end;
+
+{$ENDIF}

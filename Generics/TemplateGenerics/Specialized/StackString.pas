@@ -10,7 +10,8 @@ uses
 type
   TStackIndex = Integer;
   TStackItem = string;
-{$INCLUDE '..\Generic\StackInterface.tpl'}
+{$DEFINE INTERFACE}
+{$INCLUDE '..\Generic\GenericStack.inc'}
 
 type
   TStackString = class(TGStack)
@@ -18,6 +19,7 @@ type
 
 implementation
 
-{$INCLUDE '..\Generic\StackImplementation.tpl'}
+{$DEFINE IMPLEMENTATION}
+{$INCLUDE '..\Generic\GenericStack.inc'}
 
 end.

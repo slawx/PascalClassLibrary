@@ -10,7 +10,8 @@ uses
 type
   TQueueIndex = Integer;
   TQueueItem = TObject;
-{$INCLUDE '..\Generic\QueueInterface.tpl'}
+{$DEFINE INTERFACE}
+{$INCLUDE '..\Generic\GenericQueue.inc'}
 
 type
 
@@ -23,8 +24,8 @@ type
 
 implementation
 
-{$INCLUDE '..\Generic\QueueImplementation.tpl'}
-
+{$DEFINE IMPLEMENTATION}
+{$INCLUDE '..\Generic\GenericQueue.inc'}
 
 { TObjectQueue }
 

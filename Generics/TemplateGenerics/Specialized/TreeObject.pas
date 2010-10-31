@@ -10,7 +10,8 @@ uses
 type
   TTreeIndex = Integer;
   TTreeItem = TObject;
-{$INCLUDE '..\Generic\TreeInterface.tpl'}
+{$DEFINE INTERFACE}
+{$INCLUDE '..\Generic\GenericTree.inc'}
 
 type
   TTreeObject = class(TGTree)
@@ -21,7 +22,8 @@ type
 
 implementation
 
-{$INCLUDE '..\Generic\TreeImplementation.tpl'}
+{$DEFINE IMPLEMENTATION}
+{$INCLUDE '..\Generic\GenericTree.inc'}
 
 
 end.

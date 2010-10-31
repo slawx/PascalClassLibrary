@@ -9,7 +9,8 @@ uses
 
 type
   TRangeItem = TDateTime;
-{$INCLUDE '..\Generic\RangeInterface.tpl'}
+{$DEFINE INTERFACE}
+{$INCLUDE '..\Generic\GenericRange.inc'}
 
 type
   TRangeDateTime = class(TGRange)
@@ -17,7 +18,8 @@ type
 
 implementation
 
-{$INCLUDE '..\Generic\RangeImplementation.tpl'}
+{$DEFINE IMPLEMENTATION}
+{$INCLUDE '..\Generic\GenericRange.inc'}
 
 
 end.

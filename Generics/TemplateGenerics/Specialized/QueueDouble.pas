@@ -10,7 +10,8 @@ uses
 type
   TQueueIndex = Integer;
   TQueueItem = Double;
-{$INCLUDE '..\Generic\QueueInterface.tpl'}
+{$DEFINE INTERFACE}
+{$INCLUDE '..\Generic\GenericQueue.inc'}
 
 type
   TQueueDouble = class(TGQueue)
@@ -18,7 +19,7 @@ type
 
 implementation
 
-{$INCLUDE '..\Generic\QueueImplementation.tpl'}
-
+{$DEFINE IMPLEMENTATION}
+{$INCLUDE '..\Generic\GenericQueue.inc'}
 
 end.

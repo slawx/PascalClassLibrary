@@ -10,7 +10,8 @@ uses
 type
   TSetIndex = Integer;
   TSetItem = Integer;
-{$INCLUDE '..\Generic\SetInterface.tpl'}
+{$DEFINE INTERFACE}
+{$INCLUDE '..\Generic\GenericSet.inc'}
 
 type
   TSetInteger = class(TGSet)
@@ -18,7 +19,8 @@ type
 
 implementation
 
-{$INCLUDE '..\Generic\SetImplementation.tpl'}
+{$DEFINE IMPLEMENTATION}
+{$INCLUDE '..\Generic\GenericSet.inc'}
 
 
 end.

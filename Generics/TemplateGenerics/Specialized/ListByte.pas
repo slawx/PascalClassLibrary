@@ -10,7 +10,8 @@ uses
 type
   TListIndex = Integer;
   TListItem = Byte;
-{$INCLUDE '..\Generic\ListInterface.tpl'}
+{$DEFINE INTERFACE}
+{$INCLUDE '..\Generic\GenericList.inc'}
 
 type
   TListByte = class(TGList)
@@ -23,7 +24,8 @@ type
 
 implementation
 
-{$INCLUDE '..\Generic\ListImplementation.tpl'}
+{$DEFINE IMPLEMENTATION}
+{$INCLUDE '..\Generic\GenericList.inc'}
 
 
 end.
