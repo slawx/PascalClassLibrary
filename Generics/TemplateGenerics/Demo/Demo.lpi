@@ -15,9 +15,6 @@
     <VersionInfo>
       <StringTable ProductVersion=""/>
     </VersionInfo>
-    <BuildModes Count="1">
-      <Item1 Name="default" Default="True"/>
-    </BuildModes>
     <PublishOptions>
       <Version Value="2"/>
       <IncludeFileFilter Value="*.(pas|pp|inc|lfm|lpr|lrs|lpi|lpk|sh|xml)"/>
@@ -37,12 +34,12 @@
         <PackageName Value="LCL"/>
       </Item2>
     </RequiredPackages>
-    <Units Count="70">
+    <Units Count="73">
       <Unit0>
         <Filename Value="Demo.lpr"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="Demo"/>
-        <EditorIndex Value="12"/>
+        <EditorIndex Value="10"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="26" Y="8"/>
@@ -56,11 +53,10 @@
         <ComponentName Value="MainForm"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UMainForm"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="411"/>
-        <CursorPos X="63" Y="428"/>
+        <TopLine Value="1"/>
+        <CursorPos X="37" Y="10"/>
         <UsageCount Value="54"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -181,22 +177,18 @@
       </Unit15>
       <Unit16>
         <Filename Value="/usr/share/fpcsrc/rtl/objpas/classes/classesh.inc"/>
-        <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
         <TopLine Value="558"/>
         <CursorPos X="14" Y="575"/>
         <UsageCount Value="12"/>
-        <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit16>
       <Unit17>
         <Filename Value="/usr/share/fpcsrc/rtl/objpas/classes/lists.inc"/>
-        <EditorIndex Value="4"/>
         <WindowIndex Value="0"/>
         <TopLine Value="588"/>
         <CursorPos X="3" Y="593"/>
         <UsageCount Value="12"/>
-        <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit17>
       <Unit18>
@@ -210,7 +202,7 @@
       <Unit19>
         <Filename Value="../Specialized/ListDouble.pas"/>
         <UnitName Value="ListDouble"/>
-        <EditorIndex Value="13"/>
+        <EditorIndex Value="11"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="12" Y="21"/>
@@ -220,7 +212,7 @@
       <Unit20>
         <Filename Value="../Specialized/ListInteger.pas"/>
         <UnitName Value="ListInteger"/>
-        <EditorIndex Value="14"/>
+        <EditorIndex Value="12"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="25" Y="17"/>
@@ -230,17 +222,15 @@
       <Unit21>
         <Filename Value="../Specialized/ListObject.pas"/>
         <UnitName Value="ListObject"/>
-        <EditorIndex Value="16"/>
         <WindowIndex Value="0"/>
         <TopLine Value="33"/>
         <CursorPos X="12" Y="56"/>
         <UsageCount Value="25"/>
-        <Loaded Value="True"/>
       </Unit21>
       <Unit22>
         <Filename Value="../Specialized/ListPointer.pas"/>
         <UnitName Value="ListPointer"/>
-        <EditorIndex Value="18"/>
+        <EditorIndex Value="14"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="23" Y="21"/>
@@ -250,7 +240,7 @@
       <Unit23>
         <Filename Value="../Specialized/TreeString.pas"/>
         <UnitName Value="TreeString"/>
-        <EditorIndex Value="19"/>
+        <EditorIndex Value="15"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="23" Y="24"/>
@@ -260,7 +250,7 @@
       <Unit24>
         <Filename Value="../Specialized/TreePointer.pas"/>
         <UnitName Value="TreePointer"/>
-        <EditorIndex Value="20"/>
+        <EditorIndex Value="16"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="23" Y="13"/>
@@ -270,7 +260,7 @@
       <Unit25>
         <Filename Value="../Specialized/TreeObject.pas"/>
         <UnitName Value="TreeObject"/>
-        <EditorIndex Value="21"/>
+        <EditorIndex Value="17"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="23" Y="24"/>
@@ -280,7 +270,7 @@
       <Unit26>
         <Filename Value="../Specialized/TreeInteger.pas"/>
         <UnitName Value="TreeInteger"/>
-        <EditorIndex Value="22"/>
+        <EditorIndex Value="18"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="27"/>
@@ -290,7 +280,7 @@
       <Unit27>
         <Filename Value="../Specialized/ListString.pas"/>
         <UnitName Value="ListString"/>
-        <EditorIndex Value="30"/>
+        <EditorIndex Value="26"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="29" Y="17"/>
@@ -299,7 +289,7 @@
       </Unit27>
       <Unit28>
         <Filename Value="../Generic/TreeImplementation.tpl"/>
-        <EditorIndex Value="23"/>
+        <EditorIndex Value="19"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="2"/>
@@ -309,7 +299,7 @@
       </Unit28>
       <Unit29>
         <Filename Value="../Generic/TreeInterface.tpl"/>
-        <EditorIndex Value="29"/>
+        <EditorIndex Value="25"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="20" Y="12"/>
@@ -319,7 +309,7 @@
       </Unit29>
       <Unit30>
         <Filename Value="../Generic/ListInterface.tpl"/>
-        <EditorIndex Value="31"/>
+        <EditorIndex Value="27"/>
         <WindowIndex Value="0"/>
         <TopLine Value="23"/>
         <CursorPos X="14" Y="40"/>
@@ -329,7 +319,7 @@
       </Unit30>
       <Unit31>
         <Filename Value="../Generic/ListImplementation.tpl"/>
-        <EditorIndex Value="33"/>
+        <EditorIndex Value="29"/>
         <WindowIndex Value="0"/>
         <TopLine Value="114"/>
         <CursorPos X="3" Y="116"/>
@@ -339,7 +329,7 @@
       </Unit31>
       <Unit32>
         <Filename Value="../Generic/DictionaryImplementation.tpl"/>
-        <EditorIndex Value="24"/>
+        <EditorIndex Value="20"/>
         <WindowIndex Value="0"/>
         <TopLine Value="4"/>
         <CursorPos X="3" Y="6"/>
@@ -349,7 +339,7 @@
       </Unit32>
       <Unit33>
         <Filename Value="../Generic/DictionaryInterface.tpl"/>
-        <EditorIndex Value="28"/>
+        <EditorIndex Value="24"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="14" Y="16"/>
@@ -367,7 +357,7 @@
       </Unit34>
       <Unit35>
         <Filename Value="../Generic/StackInterface.tpl"/>
-        <EditorIndex Value="25"/>
+        <EditorIndex Value="21"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="42" Y="15"/>
@@ -378,7 +368,7 @@
       <Unit36>
         <Filename Value="../Specialized/StackString.pas"/>
         <UnitName Value="StackString"/>
-        <EditorIndex Value="26"/>
+        <EditorIndex Value="22"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="22"/>
@@ -387,7 +377,7 @@
       </Unit36>
       <Unit37>
         <Filename Value="../Generic/StackImplementation.tpl"/>
-        <EditorIndex Value="27"/>
+        <EditorIndex Value="23"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="32" Y="12"/>
@@ -397,7 +387,7 @@
       </Unit37>
       <Unit38>
         <Filename Value="../Generic/QueueImplementation.tpl"/>
-        <EditorIndex Value="35"/>
+        <EditorIndex Value="31"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="33" Y="28"/>
@@ -407,10 +397,10 @@
       </Unit38>
       <Unit39>
         <Filename Value="../Generic/QueueInterface.tpl"/>
-        <EditorIndex Value="36"/>
+        <EditorIndex Value="32"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
-        <CursorPos X="18" Y="14"/>
+        <CursorPos X="42" Y="4"/>
         <UsageCount Value="23"/>
         <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="None"/>
@@ -434,7 +424,7 @@
       <Unit42>
         <Filename Value="../Specialized/ListChar.pas"/>
         <UnitName Value="ListChar"/>
-        <EditorIndex Value="32"/>
+        <EditorIndex Value="28"/>
         <WindowIndex Value="0"/>
         <TopLine Value="50"/>
         <CursorPos X="9" Y="79"/>
@@ -501,7 +491,7 @@
       </Unit49>
       <Unit50>
         <Filename Value="../Generic/SetInterface.tpl"/>
-        <EditorIndex Value="6"/>
+        <EditorIndex Value="4"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="14"/>
@@ -512,7 +502,7 @@
       <Unit51>
         <Filename Value="../Specialized/SetChar.pas"/>
         <UnitName Value="SetChar"/>
-        <EditorIndex Value="7"/>
+        <EditorIndex Value="5"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="25"/>
@@ -521,7 +511,7 @@
       </Unit51>
       <Unit52>
         <Filename Value="../Generic/SetImplementation.tpl"/>
-        <EditorIndex Value="5"/>
+        <EditorIndex Value="3"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="27" Y="15"/>
@@ -531,10 +521,10 @@
       </Unit52>
       <Unit53>
         <Filename Value="../Generic/RangeInterface.tpl"/>
-        <EditorIndex Value="9"/>
+        <EditorIndex Value="7"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
-        <CursorPos X="23" Y="10"/>
+        <CursorPos X="7" Y="4"/>
         <UsageCount Value="17"/>
         <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="None"/>
@@ -542,7 +532,7 @@
       <Unit54>
         <Filename Value="../Specialized/RangeDateTime.pas"/>
         <UnitName Value="RangeDateTime"/>
-        <EditorIndex Value="10"/>
+        <EditorIndex Value="8"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="14" Y="15"/>
@@ -559,7 +549,7 @@
       </Unit55>
       <Unit56>
         <Filename Value="../Generic/RangeImplementation.tpl"/>
-        <EditorIndex Value="11"/>
+        <EditorIndex Value="9"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="14" Y="18"/>
@@ -570,7 +560,7 @@
       <Unit57>
         <Filename Value="../Specialized/ListVariant.pas"/>
         <UnitName Value="ListVariant"/>
-        <EditorIndex Value="8"/>
+        <EditorIndex Value="6"/>
         <WindowIndex Value="0"/>
         <TopLine Value="2"/>
         <CursorPos X="30" Y="8"/>
@@ -579,7 +569,7 @@
       </Unit57>
       <Unit58>
         <Filename Value="../ReadMe.txt"/>
-        <EditorIndex Value="34"/>
+        <EditorIndex Value="30"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="24" Y="7"/>
@@ -590,7 +580,7 @@
       <Unit59>
         <Filename Value="../Specialized/ListByte.pas"/>
         <UnitName Value="ListByte"/>
-        <EditorIndex Value="15"/>
+        <EditorIndex Value="13"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="19" Y="15"/>
@@ -656,156 +646,158 @@
       <Unit67>
         <Filename Value="/usr/share/fpcsrc/packages/fcl-base/src/contnrs.pp"/>
         <UnitName Value="contnrs"/>
-        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
         <TopLine Value="60"/>
         <CursorPos X="26" Y="72"/>
         <UsageCount Value="12"/>
-        <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit67>
       <Unit68>
         <Filename Value="/usr/share/fpcsrc/rtl/inc/objpash.inc"/>
-        <EditorIndex Value="17"/>
         <WindowIndex Value="0"/>
         <TopLine Value="160"/>
         <CursorPos X="22" Y="177"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit68>
       <Unit69>
         <Filename Value="/usr/share/fpcsrc/rtl/objpas/classes/stringl.inc"/>
-        <EditorIndex Value="3"/>
         <WindowIndex Value="0"/>
         <TopLine Value="199"/>
         <CursorPos X="3" Y="205"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit69>
+      <Unit70>
+        <Filename Value="ListObject.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="ListObject"/>
+        <UsageCount Value="20"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit70>
+      <Unit71>
+        <Filename Value="../Generic/ObjectListInterface.tpl"/>
+        <EditorIndex Value="1"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="1" Y="5"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="None"/>
+      </Unit71>
+      <Unit72>
+        <Filename Value="../Generic/ObjectListImplementation.tpl"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="2"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="18" Y="1"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="None"/>
+      </Unit72>
     </Units>
-    <JumpHistory Count="30" HistoryIndex="28">
+    <JumpHistory Count="25" HistoryIndex="24">
       <Position1>
         <Filename Value="UMainForm.pas"/>
-        <Caret Line="374" Column="10" TopLine="344"/>
+        <Caret Line="415" Column="1" TopLine="386"/>
       </Position1>
       <Position2>
         <Filename Value="UMainForm.pas"/>
-        <Caret Line="415" Column="1" TopLine="386"/>
+        <Caret Line="367" Column="1" TopLine="351"/>
       </Position2>
       <Position3>
         <Filename Value="UMainForm.pas"/>
-        <Caret Line="367" Column="1" TopLine="351"/>
+        <Caret Line="368" Column="1" TopLine="351"/>
       </Position3>
       <Position4>
         <Filename Value="UMainForm.pas"/>
-        <Caret Line="368" Column="1" TopLine="351"/>
+        <Caret Line="363" Column="9" TopLine="341"/>
       </Position4>
       <Position5>
         <Filename Value="UMainForm.pas"/>
-        <Caret Line="363" Column="9" TopLine="341"/>
+        <Caret Line="366" Column="7" TopLine="341"/>
       </Position5>
       <Position6>
         <Filename Value="UMainForm.pas"/>
-        <Caret Line="366" Column="7" TopLine="341"/>
+        <Caret Line="367" Column="1" TopLine="341"/>
       </Position6>
       <Position7>
         <Filename Value="UMainForm.pas"/>
-        <Caret Line="367" Column="1" TopLine="341"/>
+        <Caret Line="368" Column="1" TopLine="341"/>
       </Position7>
       <Position8>
         <Filename Value="UMainForm.pas"/>
-        <Caret Line="368" Column="1" TopLine="341"/>
+        <Caret Line="364" Column="18" TopLine="348"/>
       </Position8>
       <Position9>
         <Filename Value="UMainForm.pas"/>
-        <Caret Line="364" Column="18" TopLine="348"/>
+        <Caret Line="345" Column="5" TopLine="329"/>
       </Position9>
       <Position10>
         <Filename Value="UMainForm.pas"/>
-        <Caret Line="345" Column="5" TopLine="329"/>
+        <Caret Line="346" Column="14" TopLine="329"/>
       </Position10>
       <Position11>
         <Filename Value="UMainForm.pas"/>
-        <Caret Line="346" Column="14" TopLine="329"/>
+        <Caret Line="411" Column="23" TopLine="383"/>
       </Position11>
       <Position12>
         <Filename Value="UMainForm.pas"/>
-        <Caret Line="411" Column="23" TopLine="383"/>
+        <Caret Line="407" Column="21" TopLine="383"/>
       </Position12>
       <Position13>
         <Filename Value="UMainForm.pas"/>
-        <Caret Line="407" Column="21" TopLine="383"/>
+        <Caret Line="376" Column="19" TopLine="349"/>
       </Position13>
       <Position14>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="376" Column="19" TopLine="349"/>
-      </Position14>
-      <Position15>
         <Filename Value="../Generic/DictionaryInterface.tpl"/>
         <Caret Line="26" Column="13" TopLine="1"/>
-      </Position15>
-      <Position16>
+      </Position14>
+      <Position15>
         <Filename Value="../Generic/DictionaryImplementation.tpl"/>
         <Caret Line="6" Column="3" TopLine="4"/>
+      </Position15>
+      <Position16>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="373" Column="8" TopLine="349"/>
       </Position16>
       <Position17>
         <Filename Value="UMainForm.pas"/>
-        <Caret Line="373" Column="8" TopLine="349"/>
+        <Caret Line="412" Column="1" TopLine="383"/>
       </Position17>
       <Position18>
         <Filename Value="UMainForm.pas"/>
-        <Caret Line="412" Column="1" TopLine="383"/>
+        <Caret Line="427" Column="24" TopLine="399"/>
       </Position18>
       <Position19>
         <Filename Value="UMainForm.pas"/>
-        <Caret Line="427" Column="24" TopLine="399"/>
+        <Caret Line="427" Column="58" TopLine="399"/>
       </Position19>
       <Position20>
-        <Filename Value="/usr/share/fpcsrc/rtl/objpas/classes/classesh.inc"/>
-        <Caret Line="582" Column="53" TopLine="564"/>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="367" Column="12" TopLine="350"/>
       </Position20>
       <Position21>
-        <Filename Value="/usr/share/fpcsrc/rtl/objpas/classes/classesh.inc"/>
-        <Caret Line="581" Column="57" TopLine="564"/>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="428" Column="7" TopLine="411"/>
       </Position21>
       <Position22>
-        <Filename Value="/usr/share/fpcsrc/rtl/objpas/classes/classesh.inc"/>
-        <Caret Line="579" Column="53" TopLine="564"/>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="349" Column="3" TopLine="332"/>
       </Position22>
       <Position23>
-        <Filename Value="/usr/share/fpcsrc/rtl/objpas/classes/stringl.inc"/>
-        <Caret Line="183" Column="8" TopLine="177"/>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="428" Column="35" TopLine="411"/>
       </Position23>
       <Position24>
-        <Filename Value="/usr/share/fpcsrc/rtl/objpas/classes/classesh.inc"/>
-        <Caret Line="575" Column="71" TopLine="551"/>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="432" Column="47" TopLine="411"/>
       </Position24>
       <Position25>
         <Filename Value="UMainForm.pas"/>
-        <Caret Line="427" Column="58" TopLine="399"/>
+        <Caret Line="10" Column="25" TopLine="1"/>
       </Position25>
-      <Position26>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="367" Column="12" TopLine="350"/>
-      </Position26>
-      <Position27>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="428" Column="7" TopLine="411"/>
-      </Position27>
-      <Position28>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="349" Column="3" TopLine="332"/>
-      </Position28>
-      <Position29>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="428" Column="35" TopLine="411"/>
-      </Position29>
-      <Position30>
-        <Filename Value="/usr/share/fpcsrc/rtl/objpas/classes/classesh.inc"/>
-        <Caret Line="575" Column="14" TopLine="558"/>
-      </Position30>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
@@ -814,7 +806,7 @@
       <Filename Value="Demo"/>
     </Target>
     <SearchPaths>
-      <IncludeFiles Value="$(ProjOutDir)"/>
+      <IncludeFiles Value="$(ProjOutDir)/"/>
       <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <Parsing>
