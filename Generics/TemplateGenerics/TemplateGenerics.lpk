@@ -8,14 +8,16 @@
       <Version Value="9"/>
       <PathDelim Value="\"/>
       <SearchPaths>
-        <OtherUnitFiles Value="Specialized\"/>
+        <IncludeFiles Value="Generic\"/>
+        <OtherUnitFiles Value="Specialized\;Generic\"/>
         <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
       </SearchPaths>
       <Other>
         <CompilerPath Value="$(CompPath)"/>
       </Other>
     </CompilerOptions>
-    <Version Minor="1"/>
+    <Description Value="Generic classes implemented as templates."/>
+    <Version Minor="2"/>
     <Files Count="15">
       <Item1>
         <Filename Value="ReadMe.txt"/>
@@ -86,7 +88,8 @@
       </Item1>
     </RequiredPkgs>
     <UsageOptions>
-      <UnitPath Value="$(PkgOutDir)"/>
+      <IncludePath Value="Generic\"/>
+      <UnitPath Value="$(PkgOutDir)\"/>
     </UsageOptions>
     <PublishOptions>
       <Version Value="2"/>

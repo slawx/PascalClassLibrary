@@ -18,7 +18,7 @@ type
 {$DEFINE TGSetSortCompare := TSetSortCompareInteger}
 {$DEFINE TGSetStringConverter := TSetStringConverterInteger}
 {$DEFINE INTERFACE}
-{$INCLUDE '..\Generic\GenericSet.inc'}
+{$I 'GenericSet.inc'}
 
 // TSetPointer<Integer, Pointer>
 {$DEFINE TGSetIndex := Integer}
@@ -28,12 +28,12 @@ type
 {$DEFINE TGSetSortCompare := TSetSortComparePointer}
 {$DEFINE TGSetStringConverter := TSetStringConverterPointer}
 {$DEFINE INTERFACE}
-{$INCLUDE '..\Generic\GenericSet.inc'}
+{$I 'GenericSet.inc'}
 
 implementation
 
 {$DEFINE IMPLEMENTATION_USES}
-{$INCLUDE '..\Generic\GenericSet.inc'}
+{$I 'GenericSet.inc'}
 
 // TSetInteger<Integer, Integer>
 {$DEFINE TGSetIndex := Integer}
@@ -43,7 +43,7 @@ implementation
 {$DEFINE TGSetSortCompare := TSetSortCompareInteger}
 {$DEFINE TGSetStringConverter := TSetStringConverterInteger}
 {$DEFINE IMPLEMENTATION}
-{$INCLUDE '..\Generic\GenericSet.inc'}      
+{$I 'GenericSet.inc'}
 
 // TSetPointer<Integer, Pointer>
 {$DEFINE TGSetIndex := Integer}
@@ -53,6 +53,6 @@ implementation
 {$DEFINE TGSetSortCompare := TSetSortComparePointer}
 {$DEFINE TGSetStringConverter := TSetStringConverterPointer}
 {$DEFINE IMPLEMENTATION}
-{$INCLUDE '..\Generic\GenericSet.inc'}
+{$I 'GenericSet.inc'}
 
 end.

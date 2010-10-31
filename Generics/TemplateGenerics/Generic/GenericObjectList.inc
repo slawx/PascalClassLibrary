@@ -6,7 +6,7 @@
 {$DEFINE TGListSortCompare := TGObjectListSortCompare}
 {$DEFINE TGListStringConverter := TGObjectListStringConverter}
 {$DEFINE INTERFACE}
-{$INCLUDE 'GenericList.inc'}
+{$I 'GenericList.inc'}
 
   // TGObjectList<TObjectListIndex, TObjectListItem> = class(TGList)
   TGObjectList = class(TGList)
@@ -26,7 +26,7 @@
 {$IFDEF IMPLEMENTATION_USES}
 
   {$DEFINE IMPLEMENTATION_USES}
-  {$INCLUDE '..\Generic\GenericList.inc'}
+  {$I '..\Generic\GenericList.inc'}
 
 {$UNDEF IMPLEMENTATION_USES}
 {$ENDIF}
@@ -39,7 +39,7 @@
 {$DEFINE TGListSortCompare := TGObjectListSortCompare}
 {$DEFINE TGListStringConverter := TGObjectListStringConverter}
 {$DEFINE IMPLEMENTATION}
-{$INCLUDE 'GenericList.inc'}
+{$I 'GenericList.inc'}
 
 { TGObjectList }
 

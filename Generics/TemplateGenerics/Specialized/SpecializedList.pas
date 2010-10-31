@@ -17,7 +17,7 @@ type
 {$DEFINE TGListSortCompare := TListIntegerSortCompare}
 {$DEFINE TGListStringConverter := TListIntegerStringConverter}
 {$DEFINE INTERFACE}
-{$INCLUDE '..\Generic\GenericList.inc'}
+{$I 'GenericList.inc'}
 
 // TListSmallInt<Integer, SmallInt>
 {$DEFINE TGListIndex := Integer}
@@ -26,7 +26,7 @@ type
 {$DEFINE TGListSortCompare := TListSmallIntSortCompare}
 {$DEFINE TGListStringConverter := TListSmallIntStringConverter}
 {$DEFINE INTERFACE}
-{$INCLUDE '..\Generic\GenericList.inc'}
+{$I 'GenericList.inc'}
 
 // TListDouble<Integer, Double>
 {$DEFINE TGListIndex := Integer}
@@ -44,7 +44,7 @@ type
 {$DEFINE TGListSortCompare := TListPointerSortCompare}
 {$DEFINE TGListStringConverter := TListPointerStringConverter}
 {$DEFINE INTERFACE}
-{$INCLUDE '..\Generic\GenericList.inc'}
+{$I 'GenericList.inc'}
 
 // TListString<Integer, string>
 {$DEFINE TGListIndex := Integer}
@@ -53,7 +53,7 @@ type
 {$DEFINE TGListSortCompare := TListStringSortCompare}
 {$DEFINE TGListStringConverter := TListStringStringConverter}
 {$DEFINE INTERFACE}
-{$INCLUDE '..\Generic\GenericList.inc'}
+{$I 'GenericList.inc'}
 
 // TListByte<Integer, Byte>
 {$DEFINE TGListIndex := Integer}
@@ -62,9 +62,7 @@ type
 {$DEFINE TGListSortCompare := TListByteSortCompare}
 {$DEFINE TGListStringConverter := TListByteStringConverter}
 {$DEFINE INTERFACE}
-{$INCLUDE '..\Generic\GenericList.inc'}
-
-
+{$I 'GenericList.inc'}
 
 // TListChar<Integer, Char>
 {$DEFINE TGListIndex := Integer}
@@ -73,7 +71,7 @@ type
 {$DEFINE TGListSortCompare := TListSortCompareChar}
 {$DEFINE TGListStringConverter := TListStringConverterChar}
 {$DEFINE INTERFACE}
-{$INCLUDE '..\Generic\GenericList.inc'}
+{$I 'GenericList.inc'}
 
 { TListChar }
 
@@ -89,7 +87,7 @@ end;
 implementation
 
 {$DEFINE IMPLEMENTATION_USES}
-{$INCLUDE '..\Generic\GenericList.inc'}
+{$I 'GenericList.inc'}
 
 // TListInteger<Integer, Integer>
 {$DEFINE TGListIndex:=Integer}
@@ -98,7 +96,7 @@ implementation
 {$DEFINE TGListSortCompare:=TListIntegerSortCompare}
 {$DEFINE TGListStringConverter:=TListIntegerStringConverter}
 {$DEFINE IMPLEMENTATION}
-{$INCLUDE '..\Generic\GenericList.inc'}
+{$I 'GenericList.inc'}
 
 // TListSmallInt<Integer, SmallInt>
 {$DEFINE TGListIndex:=Integer}
@@ -107,7 +105,7 @@ implementation
 {$DEFINE TGListSortCompare:=TListSmallIntSortCompare}
 {$DEFINE TGListStringConverter:=TListSmallIntStringConverter}
 {$DEFINE IMPLEMENTATION}
-{$INCLUDE '..\Generic\GenericList.inc'}
+{$I 'GenericList.inc'}
 
 // TListDouble<Integer, Double>
 {$DEFINE TGListIndex := Integer}
@@ -116,7 +114,7 @@ implementation
 {$DEFINE TGListSortCompare := TListDoubleSortCompare}
 {$DEFINE TGListStringConverter := TListDoubleStringConverter}
 {$DEFINE IMPLEMENTATION}
-{$INCLUDE '..\Generic\GenericList.inc'}
+{$I 'GenericList.inc'}
 
 // TListPointer<Integer, Pointer>
 {$DEFINE TGListIndex := Integer}
@@ -125,7 +123,7 @@ implementation
 {$DEFINE TGListSortCompare := TListPointerSortCompare}
 {$DEFINE TGListStringConverter := TListPointerStringConverter}
 {$DEFINE IMPLEMENTATION}
-{$INCLUDE '..\Generic\GenericList.inc'}
+{$I 'GenericList.inc'}
 
 // TListString<Integer, string>
 {$DEFINE TGListIndex := Integer}
@@ -134,7 +132,7 @@ implementation
 {$DEFINE TGListSortCompare := TListStringSortCompare}
 {$DEFINE TGListStringConverter := TListStringStringConverter}
 {$DEFINE IMPLEMENTATION}
-{$INCLUDE '..\Generic\GenericList.inc'}
+{$I 'GenericList.inc'}
 
 // TListByte<Integer, Byte>
 {$DEFINE TGListIndex := Integer}
@@ -143,7 +141,7 @@ implementation
 {$DEFINE TGListSortCompare := TListByteSortCompare}
 {$DEFINE TGListStringConverter := TListByteStringConverter}
 {$DEFINE IMPLEMENTATION}
-{$INCLUDE '..\Generic\GenericList.inc'}
+{$I 'GenericList.inc'}
 
 // TListByte<Integer, Char>
 {$DEFINE TGListIndex := Integer}
@@ -152,7 +150,7 @@ implementation
 {$DEFINE TGListSortCompare := TListSortCompareChar}
 {$DEFINE TGListStringConverter := TListStringConverterChar}
 {$DEFINE IMPLEMENTATION}
-{$INCLUDE '..\Generic\GenericList.inc'}
+{$I 'GenericList.inc'}
 
 { TListChar }
 

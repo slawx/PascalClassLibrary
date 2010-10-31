@@ -17,10 +17,13 @@ type
 {$DEFINE TGObjectListSortCompare := TObjectListSortCompareInteger}
 {$DEFINE TGObjectListStringConverter := TObjectListStringConverterInteger}
 {$DEFINE INTERFACE}
-{$INCLUDE '..\Generic\GenericObjectList.inc'}
+{$I 'GenericObjectList.inc'}
 
 
 implementation
+
+{$DEFINE IMPLEMENTATION_USES}
+{$I 'GenericObjectList.inc'}
 
 // TListObject<Integer, TObject>
 {$DEFINE TGObjectListIndex := Integer}
@@ -30,6 +33,6 @@ implementation
 {$DEFINE TGObjectListSortCompare := TObjectListSortCompareInteger}
 {$DEFINE TGObjectListStringConverter := TObjectListStringConverterInteger}
 {$DEFINE IMPLEMENTATION}
-{$INCLUDE '..\Generic\GenericObjectList.inc'}
+{$I 'GenericObjectList.inc'}
 
 end.

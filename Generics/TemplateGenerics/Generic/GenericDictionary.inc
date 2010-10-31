@@ -13,7 +13,7 @@
 {$DEFINE TGListSortCompare := TDictionarySortCompare}
 {$DEFINE TGListStringConverter := TDictionaryStringConverter}
 {$DEFINE INTERFACE}
-{$INCLUDE 'GenericList.inc'}
+{$I 'GenericList.inc'}
 
   // TGDictionary<TGDictionaryIndex, TGPair<TGPairKey, TGPairValue>> = class(TGList)
   TGDictionary = class(TGList)
@@ -38,7 +38,7 @@
 
 {$UNDEF IMPLEMENTATION}
 {$DEFINE IMPLEMENTATION_USES}
-{$INCLUDE '..\Generic\GenericList.inc'}
+{$I '..\Generic\GenericList.inc'}
 
 {$DEFINE TGListIndex := TGDictionaryIndex}
 {$DEFINE TGListItem := TGPair}
@@ -46,7 +46,7 @@
 {$DEFINE TGListSortCompare := TDictionarySortCompare}
 {$DEFINE TGListStringConverter := TDictionaryStringConverter}
 {$DEFINE IMPLEMENTATION}
-{$INCLUDE 'GenericList.inc'}
+{$I 'GenericList.inc'}
 
 function TGDictionary.GetKey(Index: TGDictionaryIndex): TGPairKey;
 begin

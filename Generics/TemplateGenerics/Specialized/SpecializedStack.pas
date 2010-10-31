@@ -18,7 +18,7 @@ type
 {$DEFINE TGStackSortCompare := TStackSortCompareInteger}
 {$DEFINE TGStackStringConverter := TStackStringConverterInteger}
 {$DEFINE INTERFACE}
-{$INCLUDE '..\Generic\GenericStack.inc'}
+{$I 'GenericStack.inc'}
 
 // TStackInteger<Integer, Pointer>
 {$DEFINE TGStackIndex := Integer}
@@ -28,13 +28,13 @@ type
 {$DEFINE TGStackSortCompare := TStackSortComparePointer}
 {$DEFINE TGStackStringConverter := TStackStringConverterPointer}
 {$DEFINE INTERFACE}
-{$INCLUDE '..\Generic\GenericStack.inc'}
+{$I 'GenericStack.inc'}
 
 
 implementation
 
 {$DEFINE IMPLEMENTATION_USES}
-{$INCLUDE '..\Generic\GenericStack.inc'}
+{$I 'GenericStack.inc'}
 
 // TStackInteger<Integer, Integer>
 {$DEFINE TGStackIndex := Integer}
@@ -44,7 +44,7 @@ implementation
 {$DEFINE TGStackSortCompare := TStackSortCompareInteger}
 {$DEFINE TGStackStringConverter := TStackStringConverterInteger}
 {$DEFINE IMPLEMENTATION}
-{$INCLUDE '..\Generic\GenericStack.inc'}      
+{$I 'GenericStack.inc'}
 
 // TStackInteger<Integer, Pointer>
 {$DEFINE TGStackIndex := Integer}
@@ -54,5 +54,5 @@ implementation
 {$DEFINE TGStackSortCompare := TStackSortComparePointer}
 {$DEFINE TGStackStringConverter := TStackStringConverterPointer}
 {$DEFINE IMPLEMENTATION}
-{$INCLUDE '..\Generic\GenericStack.inc'}
+{$I 'GenericStack.inc'}
 end.

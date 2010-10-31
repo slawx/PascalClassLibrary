@@ -6,7 +6,7 @@
 {$DEFINE TGListSortCompare := TGQueueSortCompare}
 {$DEFINE TGListStringConverter := TGQueueStringConverter}
 {$DEFINE INTERFACE}
-{$INCLUDE 'GenericList.inc'}
+{$I 'GenericList.inc'}
 
   // TGQueue<TSetIndex, TSetItem> = class(TGList)
   TGQueue = class
@@ -27,7 +27,7 @@
 {$IFDEF IMPLEMENTATION_USES}
 
   {$DEFINE IMPLEMENTATION_USES}
-  {$INCLUDE '..\Generic\GenericList.inc'}
+  {$I 'GenericList.inc'}
 
 {$UNDEF IMPLEMENTATION_USES}
 {$ENDIF}
@@ -40,7 +40,7 @@
 {$DEFINE TGListSortCompare := TGQueueSortCompare}
 {$DEFINE TGListStringConverter := TGQueueStringConverter}
 {$DEFINE IMPLEMENTATION}
-{$INCLUDE 'GenericList.inc'}
+{$I 'GenericList.inc'}
 
 { TGQueue }
 

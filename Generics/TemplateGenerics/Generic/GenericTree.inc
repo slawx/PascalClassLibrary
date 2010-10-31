@@ -8,7 +8,7 @@
 {$DEFINE TGListSortCompare := TGTreeSortCompare}
 {$DEFINE TGListStringConverter := TGTreeStringConverter}
 {$DEFINE INTERFACE}
-{$INCLUDE 'GenericList.inc'}
+{$I 'GenericList.inc'}
 
   // TGTreeNode<TGTreeIndex, TGTreeItem> = class
   TGTreeNode = class
@@ -29,7 +29,7 @@
 {$IFDEF IMPLEMENTATION_USES}
 
   {$DEFINE IMPLEMENTATION_USES}
-  {$INCLUDE 'GenericList.inc'}
+  {$I 'GenericList.inc'}
 
 {$UNDEF INTERFACE_USES}
 {$ENDIF}
@@ -44,7 +44,7 @@
 {$DEFINE TGListSortCompare := TGTreeSortCompare}
 {$DEFINE TGListStringConverter := TGTreeStringConverter}
 {$DEFINE IMPLEMENTATION}
-{$INCLUDE 'GenericList.inc'}
+{$I 'GenericList.inc'}
 
 { TGTreeNode }
 

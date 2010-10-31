@@ -20,7 +20,7 @@ type
 {$DEFINE TGDictionarySortCompare := TDictionarySortCompareInteger}
 {$DEFINE TGDictionaryStringConverter := TDictionaryStringConverterInteger}
 {$DEFINE INTERFACE}
-{$INCLUDE '..\Generic\GenericDictionary.inc'}
+{$I 'GenericDictionary.inc'}
 
 implementation
 
@@ -34,6 +34,6 @@ implementation
 {$DEFINE TGDictionarySortCompare := TDictionarySortCompareInteger}
 {$DEFINE TGDictionaryStringConverter := TDictionaryStringConverterInteger}
 {$DEFINE IMPLEMENTATION}
-{$INCLUDE '..\Generic\GenericDictionary.inc'}
+{$I 'GenericDictionary.inc'}
 
 end.

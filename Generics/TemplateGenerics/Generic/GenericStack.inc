@@ -6,7 +6,7 @@
 {$DEFINE TGListSortCompare := TGStackSortCompare}
 {$DEFINE TGListStringConverter := TGStackStringConverter}
 {$DEFINE INTERFACE}
-{$INCLUDE 'GenericList.inc'}
+{$I 'GenericList.inc'}
 
   // TGStack<TStackIndex, TStackItem> = class(TGList)
   TGStack = class
@@ -26,7 +26,7 @@
 {$IFDEF IMPLEMENTATION_USES}
 
   {$DEFINE IMPLEMENTATION_USES}
-  {$INCLUDE '..\Generic\GenericList.inc'}
+  {$I 'GenericList.inc'}
 
 {$UNDEF IMPLEMENTATION_USES}
 {$ENDIF}
@@ -39,7 +39,7 @@
 {$DEFINE TGListSortCompare := TGStackSortCompare}
 {$DEFINE TGListStringConverter := TGStackStringConverter}
 {$DEFINE IMPLEMENTATION}
-{$INCLUDE 'GenericList.inc'}
+{$I 'GenericList.inc'}
 
 { TGStack }
 
