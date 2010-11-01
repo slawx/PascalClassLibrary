@@ -26,7 +26,7 @@
 {$IFDEF IMPLEMENTATION_USES}
 
   {$DEFINE IMPLEMENTATION_USES}
-  {$I '..\Generic\GenericList.inc'}
+  {$I 'GenericList.inc'}
 
 {$UNDEF IMPLEMENTATION_USES}
 {$ENDIF}
@@ -82,4 +82,4 @@ begin
 end;
 
 {$UNDEF IMPLEMENTATION}
-{$ENDIF}
+{$ENDIF}

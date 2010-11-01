@@ -8,8 +8,8 @@
       <Version Value="9"/>
       <PathDelim Value="\"/>
       <SearchPaths>
-        <IncludeFiles Value="Generic\"/>
-        <OtherUnitFiles Value="Specialized\;Generic\"/>
+        <IncludeFiles Value="Generic"/>
+        <OtherUnitFiles Value="Specialized;Generic"/>
         <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
       </SearchPaths>
       <Other>
@@ -18,7 +18,7 @@
     </CompilerOptions>
     <Description Value="Generic classes implemented as templates."/>
     <Version Minor="2"/>
-    <Files Count="15">
+    <Files Count="16">
       <Item1>
         <Filename Value="ReadMe.txt"/>
         <Type Value="Text"/>
@@ -79,6 +79,10 @@
         <Filename Value="Specialized\SpecializedSet.pas"/>
         <UnitName Value="SpecializedSet"/>
       </Item15>
+      <Item16>
+        <Filename Value="Specialized\SpecializedObjectList.pas"/>
+        <UnitName Value="SpecializedObjectList"/>
+      </Item16>
     </Files>
     <Type Value="RunAndDesignTime"/>
     <RequiredPkgs Count="1">
@@ -95,4 +99,4 @@
       <Version Value="2"/>
     </PublishOptions>
   </Package>
-</CONFIG>
+</CONFIG>
