@@ -15,6 +15,9 @@
     <VersionInfo>
       <StringTable ProductVersion=""/>
     </VersionInfo>
+    <BuildModes Count="1">
+      <Item1 Name="default" Default="True"/>
+    </BuildModes>
     <PublishOptions>
       <Version Value="2"/>
       <IncludeFileFilter Value="*.(pas|pp|inc|lfm|lpr|lrs|lpi|lpk|sh|xml)"/>
@@ -34,7 +37,7 @@
         <PackageName Value="LCL"/>
       </Item2>
     </RequiredPackages>
-    <Units Count="92">
+    <Units Count="91">
       <Unit0>
         <Filename Value="Demo.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -51,10 +54,11 @@
         <ComponentName Value="MainForm"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UMainForm"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="342"/>
-        <CursorPos X="51" Y="360"/>
+        <TopLine Value="1"/>
+        <CursorPos X="35" Y="10"/>
         <UsageCount Value="63"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -610,14 +614,11 @@
       </Unit69>
       <Unit70>
         <Filename Value="ListObject.pas"/>
-        <IsPartOfProject Value="True"/>
         <UnitName Value="ListObject"/>
-        <EditorIndex Value="15"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="1"/>
+        <TopLine Value="13"/>
         <CursorPos X="15" Y="12"/>
         <UsageCount Value="29"/>
-        <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit70>
       <Unit71>
@@ -677,128 +678,119 @@
       </Unit77>
       <Unit78>
         <Filename Value="../Generic/GenericList.inc"/>
-        <EditorIndex Value="14"/>
+        <EditorIndex Value="13"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="43"/>
-        <CursorPos X="32" Y="65"/>
+        <TopLine Value="58"/>
+        <CursorPos X="86" Y="71"/>
         <UsageCount Value="13"/>
         <Loaded Value="True"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit78>
       <Unit79>
-        <Filename Value="../Specialized/SpecializedList.pas"/>
-        <UnitName Value="SpecializedList"/>
-        <EditorIndex Value="1"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="1"/>
-        <CursorPos X="1" Y="11"/>
-        <UsageCount Value="13"/>
-        <Loaded Value="True"/>
-      </Unit79>
-      <Unit80>
         <Filename Value="../Generic/GenericDictionary.inc"/>
-        <EditorIndex Value="2"/>
+        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="10"/>
         <UsageCount Value="13"/>
         <Loaded Value="True"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit80>
-      <Unit81>
+      </Unit79>
+      <Unit80>
         <Filename Value="../Generic/GenericObjectList.inc"/>
-        <EditorIndex Value="4"/>
+        <EditorIndex Value="3"/>
         <WindowIndex Value="0"/>
         <TopLine Value="34"/>
         <CursorPos X="8" Y="56"/>
         <UsageCount Value="13"/>
         <Loaded Value="True"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit81>
-      <Unit82>
+      </Unit80>
+      <Unit81>
         <Filename Value="../Generic/GenericQueue.inc"/>
-        <EditorIndex Value="7"/>
+        <EditorIndex Value="6"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="3"/>
         <UsageCount Value="13"/>
         <Loaded Value="True"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit82>
-      <Unit83>
+      </Unit81>
+      <Unit82>
         <Filename Value="../Generic/GenericSet.inc"/>
-        <EditorIndex Value="12"/>
+        <EditorIndex Value="11"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="42" Y="11"/>
         <UsageCount Value="13"/>
         <Loaded Value="True"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit83>
-      <Unit84>
+      </Unit82>
+      <Unit83>
         <Filename Value="../Generic/GenericStack.inc"/>
-        <EditorIndex Value="11"/>
+        <EditorIndex Value="10"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="3"/>
         <UsageCount Value="13"/>
         <Loaded Value="True"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit84>
-      <Unit85>
+      </Unit83>
+      <Unit84>
         <Filename Value="../Generic/GenericTree.inc"/>
-        <EditorIndex Value="13"/>
+        <EditorIndex Value="12"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="22" Y="30"/>
         <UsageCount Value="13"/>
         <Loaded Value="True"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit85>
-      <Unit86>
+      </Unit84>
+      <Unit85>
         <Filename Value="../Specialized/SpecializedDictionary.pas"/>
         <UnitName Value="SpecializedDictionary"/>
-        <EditorIndex Value="9"/>
+        <EditorIndex Value="8"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="13"/>
         <UsageCount Value="12"/>
         <Loaded Value="True"/>
-      </Unit86>
-      <Unit87>
+      </Unit85>
+      <Unit86>
         <Filename Value="../Specialized/SpecializedStack.pas"/>
         <UnitName Value="SpecializedStack"/>
-        <EditorIndex Value="10"/>
+        <EditorIndex Value="9"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="13"/>
         <UsageCount Value="11"/>
         <Loaded Value="True"/>
-      </Unit87>
-      <Unit88>
+      </Unit86>
+      <Unit87>
         <Filename Value="../Specialized/SpecializedTree.pas"/>
         <UnitName Value="SpecializedTree"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="3"/>
+        <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="11"/>
         <UsageCount Value="11"/>
         <Loaded Value="True"/>
-      </Unit88>
-      <Unit89>
+      </Unit87>
+      <Unit88>
         <Filename Value="../Generic/GenericRange.inc"/>
-        <EditorIndex Value="8"/>
+        <EditorIndex Value="7"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="44"/>
         <UsageCount Value="11"/>
         <Loaded Value="True"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit89>
-      <Unit90>
+      </Unit88>
+      <Unit89>
         <Filename Value="../Specialized/SpecializedQueue.pas"/>
         <UnitName Value="SpecializedQueue"/>
+        <EditorIndex Value="4"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="1" Y="13"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+      </Unit89>
+      <Unit90>
+        <Filename Value="../Specialized/SpecializedSet.pas"/>
+        <UnitName Value="SpecializedSet"/>
         <EditorIndex Value="5"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
@@ -806,18 +798,8 @@
         <UsageCount Value="11"/>
         <Loaded Value="True"/>
       </Unit90>
-      <Unit91>
-        <Filename Value="../Specialized/SpecializedSet.pas"/>
-        <UnitName Value="SpecializedSet"/>
-        <EditorIndex Value="6"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="1"/>
-        <CursorPos X="1" Y="13"/>
-        <UsageCount Value="11"/>
-        <Loaded Value="True"/>
-      </Unit91>
     </Units>
-    <JumpHistory Count="30" HistoryIndex="29">
+    <JumpHistory Count="29" HistoryIndex="28">
       <Position1>
         <Filename Value="../Specialized/SpecializedDictionary.pas"/>
         <Caret Line="22" Column="23" TopLine="1"/>
@@ -863,81 +845,77 @@
         <Caret Line="20" Column="49" TopLine="1"/>
       </Position11>
       <Position12>
-        <Filename Value="ListObject.pas"/>
-        <Caret Line="23" Column="30" TopLine="1"/>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="22" Column="35" TopLine="1"/>
       </Position12>
       <Position13>
         <Filename Value="UMainForm.pas"/>
-        <Caret Line="22" Column="35" TopLine="1"/>
+        <Caret Line="110" Column="12" TopLine="81"/>
       </Position13>
       <Position14>
         <Filename Value="UMainForm.pas"/>
-        <Caret Line="110" Column="12" TopLine="81"/>
+        <Caret Line="133" Column="9" TopLine="103"/>
       </Position14>
       <Position15>
         <Filename Value="UMainForm.pas"/>
-        <Caret Line="133" Column="9" TopLine="103"/>
+        <Caret Line="162" Column="7" TopLine="136"/>
       </Position15>
       <Position16>
         <Filename Value="UMainForm.pas"/>
-        <Caret Line="162" Column="7" TopLine="136"/>
+        <Caret Line="171" Column="1" TopLine="152"/>
       </Position16>
       <Position17>
         <Filename Value="UMainForm.pas"/>
-        <Caret Line="171" Column="1" TopLine="152"/>
+        <Caret Line="190" Column="7" TopLine="165"/>
       </Position17>
       <Position18>
         <Filename Value="UMainForm.pas"/>
-        <Caret Line="190" Column="7" TopLine="165"/>
+        <Caret Line="188" Column="5" TopLine="168"/>
       </Position18>
       <Position19>
         <Filename Value="UMainForm.pas"/>
-        <Caret Line="188" Column="5" TopLine="168"/>
+        <Caret Line="393" Column="5" TopLine="364"/>
       </Position19>
       <Position20>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="393" Column="5" TopLine="364"/>
+        <Filename Value="../Specialized/SpecializedQueue.pas"/>
+        <Caret Line="33" Column="32" TopLine="1"/>
       </Position20>
       <Position21>
         <Filename Value="../Specialized/SpecializedQueue.pas"/>
-        <Caret Line="33" Column="32" TopLine="1"/>
+        <Caret Line="20" Column="34" TopLine="1"/>
       </Position21>
       <Position22>
-        <Filename Value="../Specialized/SpecializedQueue.pas"/>
-        <Caret Line="20" Column="34" TopLine="1"/>
+        <Filename Value="../Specialized/SpecializedDictionary.pas"/>
+        <Caret Line="22" Column="36" TopLine="1"/>
       </Position22>
       <Position23>
-        <Filename Value="../Specialized/SpecializedDictionary.pas"/>
-        <Caret Line="22" Column="36" TopLine="1"/>
-      </Position23>
-      <Position24>
         <Filename Value="UMainForm.pas"/>
         <Caret Line="469" Column="3" TopLine="439"/>
-      </Position24>
-      <Position25>
-        <Filename Value="ListObject.pas"/>
-        <Caret Line="33" Column="39" TopLine="1"/>
-      </Position25>
-      <Position26>
+      </Position23>
+      <Position24>
         <Filename Value="../Generic/GenericObjectList.inc"/>
         <Caret Line="14" Column="55" TopLine="1"/>
-      </Position26>
-      <Position27>
+      </Position24>
+      <Position25>
         <Filename Value="UMainForm.pas"/>
         <Caret Line="89" Column="20" TopLine="70"/>
-      </Position27>
-      <Position28>
+      </Position25>
+      <Position26>
         <Filename Value="../Specialized/SpecializedDictionary.pas"/>
         <Caret Line="22" Column="36" TopLine="1"/>
-      </Position28>
-      <Position29>
+      </Position26>
+      <Position27>
         <Filename Value="../Generic/GenericTree.inc"/>
         <Caret Line="33" Column="25" TopLine="12"/>
-      </Position29>
-      <Position30>
+      </Position27>
+      <Position28>
         <Filename Value="../Specialized/SpecializedTree.pas"/>
         <Caret Line="82" Column="5" TopLine="47"/>
-      </Position30>
+      </Position28>
+      <Position29>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="360" Column="51" TopLine="342"/>
+      </Position29>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
@@ -946,7 +924,7 @@
       <Filename Value="Demo"/>
     </Target>
     <SearchPaths>
-      <IncludeFiles Value="$(ProjOutDir)/"/>
+      <IncludeFiles Value="$(ProjOutDir)"/>
       <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <Parsing>

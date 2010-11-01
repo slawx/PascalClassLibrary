@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
   ComCtrls, SpecializedList, SpecializedDictionary, SpecializedQueue,
-  DateUtils, ListObject;
+  DateUtils, SpecializedObjectList;
 
 type
 

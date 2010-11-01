@@ -3,7 +3,6 @@ object MainForm: TMainForm
   Height = 397
   Top = 129
   Width = 478
-  ActiveControl = ButtonIntegerList
   Caption = 'Template generics demo'
   ClientHeight = 397
   ClientWidth = 478
