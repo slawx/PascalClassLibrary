@@ -7,7 +7,9 @@ unit CoolDocking;
 interface
 
 uses
-    UCoolDocking, UCoolDockCustomize, UCoolDockWindowList, LazarusPackageIntf;
+    UCoolDocking, UCoolDockCustomize, UCoolDockWindowList, UCoolDockStyleTabs, 
+  UCoolDockStyleRegions, UCoolDockStylePopupTabs, UCoolDockStylePopupRegions, 
+  LazarusPackageIntf;
 
 implementation
 

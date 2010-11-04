@@ -14,6 +14,7 @@ uses
 
 const
   GrabberSize = 22;
+  AutoHideStepCount = 20;
 
 type
   TDockDirection = (ddNone, ddHorizontal, ddVertical);
@@ -51,6 +52,9 @@ type
     destructor Destroy; override;
   end;
 
+  TCoolDockStyle = class
+  end;
+
   { TCoolDockClientPanel }
 
   TCoolDockClientPanel = class(TPanel)
@@ -58,7 +62,9 @@ type
     FAutoHide: Boolean;
     FHeaderPos: THeaderPos;
     FShowHeader: Boolean;
+    function GetAutoHideEnabled: Boolean;
     procedure SetAutoHide(const AValue: Boolean);
+    procedure SetAutoHideEnabled(const AValue: Boolean);
     procedure SetHeaderPos(const AValue: THeaderPos);
     procedure SetShowHeader(const AValue: Boolean);
     procedure VisibleChange(Sender: TObject);
@@ -75,8 +81,37 @@ type
       Shift: TShiftState; X, Y: Integer);
     procedure ResizeExecute(Sender: TObject);
     property ShowHeader: Boolean read FShowHeader write SetShowHeader;
-    property AutoHide: Boolean read FAutoHide write SetAutoHide;
+    property AutoHideEnabled: Boolean read GetAutoHideEnabled
+      write SetAutoHideEnabled;
     property HeaderPos: THeaderPos read FHeaderPos write SetHeaderPos;
+  end;
+
+  { TCoolDockAutoHide }
+
+  TCoolDockAutoHide = class
+  private
+    FDuration: Real;
+    FStepCount: Integer;
+    StartBounds: TRect;
+    procedure SetDuration(const AValue: Real);
+    procedure SetStepCount(const AValue: Integer);
+    procedure UpdateBounds;
+    procedure UpdateTimerInterval;
+  public
+    Position: Real;
+    Direction: Integer;
+    TabPosition: TTabPosition;
+    Enable: Boolean;
+    Timer: TTimer;
+    Control: TControl;
+    ControlVisible: Boolean;
+    procedure Hide;
+    procedure Show;
+    constructor Create;
+    destructor Destroy; override;
+    procedure TimerExecute(Sender: TObject);
+    property Duration: Real read FDuration write SetDuration;
+    property StepCount: Integer read FStepCount write SetStepCount;
   end;
 
   { TCoolDockManager }
@@ -87,9 +122,7 @@ type
     MouseButton: TMouseButton;
     MouseDownSkip: Boolean;
     FMaster: TCoolDockMaster;
-    FMoveDuration: Integer;
     FTabsPos: THeaderPos;
-    Timer1: TTimer;
     PopupMenuTabs: TPopupMenu;
     PopupMenuHeader: TPopupMenu;
     FDockStyle: TDockStyle;
@@ -97,9 +130,11 @@ type
     TabImageList: TImageList;
     FDockDirection: TDockDirection;
     FDockSite: TWinControl;
-    FDockPanels: TObjectList; // of TCoolDockClientPanel
+    FDockPanels: TObjectList; // TObjectList<TCoolDockClientPanel>
+    AutoHide: TCoolDockAutoHide;
     function FindControlInPanels(Control: TControl): TCoolDockClientPanel;
     function GetDockSite: TWinControl;
+    function GetMoveDuration: Integer;
     procedure InsertControlPanel(Control: TControl; InsertAt: TAlign;
       DropCtl: TControl);
     procedure PopupMenuTabCloseClick(Sender: TObject);
@@ -125,7 +160,6 @@ type
     procedure PopupMenuPositionBottomClick(Sender: TObject);
     procedure PopupMenuUndockClick(Sender: TObject);
     procedure PopupMenuCustomizeClick(Sender: TObject);
-    procedure Timer1Timer(Sender: TObject);
   public
     constructor Create(ADockSite: TWinControl); override;
     destructor Destroy; override;
@@ -153,7 +187,7 @@ type
 
     function CreateContainer(InsertAt: TAlign): TCoolDockConjoinForm;
     property DockStyle: TDockStyle read FDockStyle write SetDockStyle;
-    property MoveDuration: Integer read FMoveDuration write SetMoveDuration;
+    property MoveDuration: Integer read GetMoveDuration write SetMoveDuration;
     property TabsPos: THeaderPos read FTabsPos write SetTabsPos;
     property Master: TCoolDockMaster read FMaster write SetMaster;
     property DockSite: TWinControl read GetDockSite;
@@ -165,6 +199,7 @@ type
   private
     FCoolDockCustomize: TCoolDockCustomize;
     FDefaultHeaderPos: THeaderPos;
+    FDefaultMoveSpeed: Integer;
     FDefaultTabsPos: THeaderPos;
     FShowIcons: Boolean;
     FTabsEnabled: Boolean;
@@ -189,6 +224,8 @@ type
       write FDefaultTabsPos;
     property DefaultHeaderPos: THeaderPos read FDefaultHeaderPos
       write FDefaultHeaderPos;
+    property DefaultMoveSpeed: Integer read FDefaultMoveSpeed
+      write FDefaultMoveSpeed;
     property Customize: TCoolDockCustomize read FCoolDockCustomize
       write SetCustomize;
     property ShowIcons: Boolean read FShowIcons
@@ -249,6 +286,9 @@ procedure Register;
 
 implementation
 
+uses
+  UCoolDockStyleTabs;
+
 resourcestring
   SDockStyle = 'Style';
   SDockList = 'List';
@@ -295,6 +335,11 @@ begin
   Result := FDockSite;
 end;
 
+function TCoolDockManager.GetMoveDuration: Integer;
+begin
+
+end;
+
 procedure TCoolDockManager.TabControlMouseLeave(Sender: TObject);
 begin
   if MouseDown then
@@ -314,9 +359,7 @@ begin
   FDockSite := ADockSite;
   FDockPanels := TObjectList.Create;
 
-  Timer1 := TTimer.Create(nil);
-  Timer1.Enabled := False;
-  Timer1.OnTimer := Timer1Timer;
+  AutoHide := TCoolDockAutoHide.Create;
 
   // Tabs popup
 
@@ -475,7 +518,6 @@ end;
 
 destructor TCoolDockManager.Destroy;
 begin
-  Timer1.Free;
   FDockPanels.Free;
   inherited Destroy;
 end;
@@ -715,31 +757,33 @@ procedure TCoolDockManager.SetDockStyle(const AValue: TDockStyle);
 var
   I: Integer;
 begin
-  FDockStyle := AValue;
-  if AValue = dsTabs then begin
-    TabControl.Visible := True;
-    TabControl.Tabs.Clear;
-    TabImageList.Clear;
-    for I := 0 to FDockPanels.Count - 1 do begin
-      TabControl.Tabs.Add(TCoolDockClientPanel(FDockPanels[I]).Control.Caption);
-      TabImageList.Add(TCoolDockClientPanel(FDockPanels[I]).Header.Icon.Picture.Bitmap, nil);
-      if Assigned(TCoolDockClientPanel(FDockPanels[I]).Splitter) then
-        TCoolDockClientPanel(FDockPanels[I]).Splitter.Visible := False;
-      TCoolDockClientPanel(FDockPanels[I]).ClientAreaPanel.Visible := False;
-      TCoolDockClientPanel(FDockPanels[I]).Visible := False;
-    end;
-    TabControlChange(Self);
-  end else
-  if AValue = dsList then begin
-    TabControl.Visible := False;
-    TabControl.Tabs.Clear;
-    for I := 0 to FDockPanels.Count - 1 do begin
-      if Assigned(TCoolDockClientPanel(FDockPanels[I]).Splitter) then
+  if FDockStyle <> AValue then begin
+    FDockStyle := AValue;
+    if AValue = dsTabs then begin
+      TabControl.Visible := True;
+      TabControl.Tabs.Clear;
+      TabImageList.Clear;
+      for I := 0 to FDockPanels.Count - 1 do begin
+        TabControl.Tabs.Add(TCoolDockClientPanel(FDockPanels[I]).Control.Caption);
+        TabImageList.Add(TCoolDockClientPanel(FDockPanels[I]).Header.Icon.Picture.Bitmap, nil);
+        if Assigned(TCoolDockClientPanel(FDockPanels[I]).Splitter) then
+          TCoolDockClientPanel(FDockPanels[I]).Splitter.Visible := False;
+        TCoolDockClientPanel(FDockPanels[I]).ClientAreaPanel.Visible := False;
+        TCoolDockClientPanel(FDockPanels[I]).Visible := False;
+      end;
+      TabControlChange(Self);
+    end else
+    if AValue = dsList then begin
+      TabControl.Visible := False;
+      TabControl.Tabs.Clear;
+      for I := 0 to FDockPanels.Count - 1 do begin
+        if Assigned(TCoolDockClientPanel(FDockPanels[I]).Splitter) then
         TCoolDockClientPanel(FDockPanels[I]).Splitter.Visible := True;
-      TCoolDockClientPanel(FDockPanels[I]).Visible := True;
-      TCoolDockClientPanel(FDockPanels[I]).ClientAreaPanel.Parent := TCoolDockClientPanel(FDockPanels[I]);
-      TCoolDockClientPanel(FDockPanels[I]).ClientAreaPanel.Visible := True;
-      TCoolDockClientPanel(FDockPanels[I]).Control.Visible := True;
+        TCoolDockClientPanel(FDockPanels[I]).Visible := True;
+        TCoolDockClientPanel(FDockPanels[I]).ClientAreaPanel.Parent := TCoolDockClientPanel(FDockPanels[I]);
+        TCoolDockClientPanel(FDockPanels[I]).ClientAreaPanel.Visible := True;
+        TCoolDockClientPanel(FDockPanels[I]).Control.Visible := True;
+      end;
     end;
   end;
   UpdateClientSize;
@@ -754,14 +798,11 @@ end;
 
 procedure TCoolDockManager.SetMoveDuration(const AValue: Integer);
 begin
-  if FMoveDuration=AValue then exit;
-  FMoveDuration := AValue;
-  //Timer1.Interval := AValue;
 end;
 
 procedure TCoolDockManager.SetTabsPos(const AValue: THeaderPos);
 begin
-  if FTabsPos=AValue then exit;
+  if FTabsPos = AValue then Exit;
   FTabsPos := AValue;
   with TabControl do
   case AValue of
@@ -815,21 +856,25 @@ procedure TCoolDockManager.TabControlChange(Sender: TObject);
 var
   I: Integer;
 begin
+  // Hide all clients
   for I := 0 to FDockPanels.Count - 1 do begin
     TCoolDockClientPanel(FDockPanels[I]).ClientAreaPanel.Visible := False;
+    TCoolDockClientPanel(FDockPanels[I]).ClientAreaPanel.Parent := FDockSite;
+    TCoolDockClientPanel(FDockPanels[I]).Control.Align := alClient;
     TCoolDockClientPanel(FDockPanels[I]).Control.Visible := False;
   end;
   if (TabControl.TabIndex <> -1) and (FDockPanels.Count > TabControl.TabIndex) then begin
     with TCoolDockClientPanel(FDockPanels[TabControl.TabIndex]), ClientAreaPanel do begin
       Control.Show;
-      if AutoHide then begin
-        Parent := nil;
+      AutoHide.Enable := True;
+      if AutoHide.Enable then begin
+        //Parent := nil;
         Visible := True;
-        Width := 0;
-        //TimerMoveForm :=
-        //TimerIncrement := 1;
-        Timer1.Interval := MoveDuration div 10;
-        Timer1.Enabled := True;
+        if AutoHide.ControlVisible then begin
+          AutoHide.Hide;
+        end;
+        AutoHide.Control := Control;
+        AutoHide.Show;
       end else begin
         Parent := FDockSite;
         Visible := True;
@@ -911,11 +956,6 @@ begin
     Master.Customize.Execute;
 end;
 
-procedure TCoolDockManager.Timer1Timer(Sender: TObject);
-begin
-//  TimerMoveForm.Width := TimerMoveForm.Width
-end;
-
 procedure TCoolDockManager.TabControlMouseDown(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 begin
@@ -941,7 +981,7 @@ end;
 
 procedure TCoolDockClientPanel.SetShowHeader(const AValue: Boolean);
 begin
-  if FShowHeader=AValue then exit;
+  if FShowHeader = AValue then Exit;
   FShowHeader := AValue;
   DockPanelPaint(Self);
 end;
@@ -962,8 +1002,17 @@ end;
 
 procedure TCoolDockClientPanel.SetAutoHide(const AValue: Boolean);
 begin
-  if FAutoHide=AValue then exit;
-  FAutoHide:=AValue;
+  if FAutoHide = AValue then Exit;
+  FAutoHide := AValue;
+end;
+
+function TCoolDockClientPanel.GetAutoHideEnabled: Boolean;
+begin
+end;
+
+procedure TCoolDockClientPanel.SetAutoHideEnabled(const AValue: Boolean);
+begin
+
 end;
 
 procedure TCoolDockClientPanel.SetHeaderPos(const AValue: THeaderPos);
@@ -1004,7 +1053,7 @@ begin
   OnResize := ResizeExecute;
   BevelInner := bvNone;
   BevelOuter := bvNone;
-  AutoHide := False;
+  AutoHideEnabled := True;
   HeaderPos := hpTop;
 end;
 
@@ -1081,8 +1130,8 @@ end;
 
 procedure TCoolDockMaster.SetTabsEnabled(const AValue: Boolean);
 begin
-  if FTabsEnabled=AValue then exit;
-  FTabsEnabled:=AValue;
+  if FTabsEnabled = AValue then Exit;
+  FTabsEnabled := AValue;
 end;
 
 procedure TCoolDockMaster.SetCustomize(const AValue: TCoolDockCustomize
@@ -1342,7 +1391,17 @@ end;
 function TCoolDockCustomize.Execute: Boolean;
 begin
   Form := TCoolDockCustomizeForm.Create(Self);
+  if Assigned(Master) then begin
+    Form.SpinEdit1.Value := Master.DefaultMoveSpeed;
+    Form.ComboBox1.ItemIndex := Integer(Master.DefaultTabsPos);
+    Form.ComboBox2.ItemIndex := Integer(Master.DefaultHeaderPos);
+  end;
   Form.ShowModal;
+  if Assigned(Master) then begin
+    Master.DefaultMoveSpeed := Form.SpinEdit1.Value;
+    Master.DefaultTabsPos := THeaderPos(Form.ComboBox1.ItemIndex);
+    Master.DefaultHeaderPos := THeaderPos(Form.ComboBox2.ItemIndex);
+  end;
   Form.Free;
   Result := True;
 end;
@@ -1461,6 +1520,102 @@ begin
       OldPanel.DockSite := False;
     end;
   end;
+end;
+
+{ TCoolDockAutoHide }
+
+procedure TCoolDockAutoHide.UpdateBounds;
+begin
+  case TabPosition of
+    tpBottom: begin
+      Control.Height := Round((StartBounds.Bottom - StartBounds.Top) * Position);
+      Control.Top := StartBounds.Bottom - Control.Height;
+    end;
+    tpTop: begin
+      Control.Height := Round((StartBounds.Bottom - StartBounds.Top) * Position);
+    end;
+    tpRight: begin
+      Control.Width := Round((StartBounds.Right - StartBounds.Left) * Position);
+    end;
+    tpLeft: begin
+      Control.Width := Round((StartBounds.Right - StartBounds.Left) * Position);
+      Control.Left := StartBounds.Right - Control.Width;
+    end;
+  end;
+end;
+
+procedure TCoolDockAutoHide.UpdateTimerInterval;
+begin
+  Timer.Interval := Round(FDuration * 1000 / FStepCount);
+end;
+
+procedure TCoolDockAutoHide.SetDuration(const AValue: Real);
+begin
+  if FDuration = AValue then Exit;
+  FDuration := AValue;
+  UpdateTimerInterval;
+end;
+
+procedure TCoolDockAutoHide.SetStepCount(const AValue: Integer);
+begin
+  if FStepCount = AValue then Exit;
+  FStepCount := AValue;
+  UpdateTimerInterval;
+end;
+
+procedure TCoolDockAutoHide.Hide;
+begin
+  StartBounds := Control.BoundsRect;
+  Direction := -1;
+  Position := 1;
+  Timer.Enabled := True;
+  UpdateBounds;
+end;
+
+procedure TCoolDockAutoHide.Show;
+begin
+  StartBounds := Control.BoundsRect;
+  Control.Align := alCustom;
+  Direction := 1;
+  Position := 0;
+  Timer.Enabled := True;
+  UpdateBounds;
+end;
+
+constructor TCoolDockAutoHide.Create;
+begin
+  Timer := TTimer.Create(nil);
+  Timer.Enabled := False;
+  Timer.OnTimer := TimerExecute;
+  StepCount := AutoHideStepCount;
+  Duration := 0.5;
+end;
+
+destructor TCoolDockAutoHide.Destroy;
+begin
+  Timer.Free;
+  inherited Destroy;
+end;
+
+procedure TCoolDockAutoHide.TimerExecute(Sender: TObject);
+begin
+  if Direction = 1 then begin
+    Position := Position + 1 / StepCount;
+    if Position > 1 then begin
+      Position := 1;
+      Timer.Enabled := False;
+      ControlVisible := True;
+    end;
+  end else
+  if Direction = -1 then begin
+    Position := Position - 1 / StepCount;
+    if Position < 1 then begin
+      Position := 0;
+      Timer.Enabled := False;
+      ControlVisible := False;
+    end;
+  end;
+  UpdateBounds;
 end;
 
 end.
