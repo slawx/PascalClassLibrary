@@ -18,7 +18,7 @@
     </CompilerOptions>
     <Description Value="Generic classes implemented as templates."/>
     <Version Minor="2"/>
-    <Files Count="16">
+    <Files Count="18">
       <Item1>
         <Filename Value="ReadMe.txt"/>
         <Type Value="Text"/>
@@ -83,6 +83,13 @@
         <Filename Value="Specialized\SpecializedObjectList.pas"/>
         <UnitName Value="SpecializedObjectList"/>
       </Item16>
+      <Item17>
+        <Filename Value="Generic\GenericPoint.inc"/>
+      </Item17>
+      <Item18>
+        <Filename Value="Specialized\SpecializedPoint.pas"/>
+        <UnitName Value="SpecializedPoint"/>
+      </Item18>
     </Files>
     <Type Value="RunAndDesignTime"/>
     <RequiredPkgs Count="1">

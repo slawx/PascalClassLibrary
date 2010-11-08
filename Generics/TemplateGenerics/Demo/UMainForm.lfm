@@ -1,7 +1,7 @@
 object MainForm: TMainForm
-  Left = 379
+  Left = 388
   Height = 397
-  Top = 129
+  Top = 121
   Width = 478
   Caption = 'Template generics demo'
   ClientHeight = 397
@@ -67,7 +67,7 @@ object MainForm: TMainForm
   object ButtonBenchmarkList: TButton
     Left = 8
     Height = 25
-    Top = 352
+    Top = 367
     Width = 128
     Caption = 'Benchmark list'
     OnClick = ButtonBenchmarkListClick
@@ -85,7 +85,7 @@ object MainForm: TMainForm
   object ButtonBenchmarkDictionary: TButton
     Left = 10
     Height = 25
-    Top = 320
+    Top = 336
     Width = 126
     Caption = 'Benchmark dictionary'
     OnClick = ButtonBenchmarkDictionaryClick

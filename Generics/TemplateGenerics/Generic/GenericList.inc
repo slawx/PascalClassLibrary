@@ -13,47 +13,45 @@
     FCount: TGListIndex;
     function Get(Index: TGListIndex): TGListItem;
     function GetCapacity: TGListIndex;
+    function GetLast: TGListItem;
+    function GetFirst: TGListItem;
     procedure SetCapacity(const AValue: TGListIndex);
+    procedure SetLast(AValue: TGListItem);
+    procedure SetFirst(AValue: TGListItem);
     procedure Put(Index: TGListIndex; const AValue: TGListItem); virtual;
     procedure SetCount(const AValue: TGListIndex);
     procedure QuickSort(L, R : TGListIndex; Compare: TGListSortCompare);
   public
-    // All items
-    procedure Reverse;
-    procedure Clear; virtual;
-    procedure Expand;
-    procedure Contract;
-    procedure Sort(Compare: TGListSortCompare);
-    function Implode(Separator: string; Converter: TGListStringConverter): string;
-    // Many items
-    procedure MoveItems(CurIndex, NewIndex, Count: TGListIndex);
-    procedure DeleteItems(Index, Count: TGListIndex);
-    procedure Fill(Start, Count: TGListIndex; Value: TGListItem);
-    // One item
     function Add(Item: TGListItem): TGListIndex;
-    procedure Delete(Index: TGListIndex); virtual;
-    function Extract(Item: TGListItem): TGListItem;
-    procedure Exchange(Index1, Index2: TGListIndex);
-    function First: TGListItem;
-    function IndexOf(Item: TGListItem; Start: TGListIndex = 0): TGListIndex;
-    procedure Insert(Index: TGListIndex; Item: TGListItem);
-    function Last: TGListItem;
-    procedure Move(CurIndex, NewIndex: TGListIndex);
-    function Remove(Item: TGListItem): TGListIndex;
-    property Items[Index: TGListIndex]: TGListItem read Get write Put; default;
-    // List
+    procedure AddArray(Values: array of TGListItem);
     procedure AddList(List: TGList);
     procedure Assign(List: TGList);
+    procedure Clear; virtual;
+    procedure Contract;
+    procedure Delete(Index: TGListIndex); virtual;
+    procedure DeleteItems(Index, Count: TGListIndex);
     function Equals(List: TGList): Boolean;
-    procedure InsertList(Index: TGListIndex; List: TGList);
+    procedure Expand;
+    function Extract(Item: TGListItem): TGListItem;
+    procedure Exchange(Index1, Index2: TGListIndex);
+    property First: TGListItem read GetFirst write SetFirst;
+    procedure Fill(Start, Count: TGListIndex; Value: TGListItem);
+    function Implode(Separator: string; Converter: TGListStringConverter): string;
+    function IndexOf(Item: TGListItem; Start: TGListIndex = 0): TGListIndex;
     function IndexOfList(List: TGList; Start: TGListIndex = 0): TGListIndex;
-    // Other
+    procedure Insert(Index: TGListIndex; Item: TGListItem);
+    procedure InsertList(Index: TGListIndex; List: TGList);
+    procedure InsertArray(Index: TGListIndex; Values: array of TGListItem);
+    procedure Move(CurIndex, NewIndex: TGListIndex);
+    procedure MoveItems(CurIndex, NewIndex, Count: TGListIndex);
+    function Remove(Item: TGListItem): TGListIndex;
+    procedure Reverse;
+    procedure Sort(Compare: TGListSortCompare);
+    procedure SetArray(Values: array of TGListItem);
     property Count: TGListIndex read FCount write SetCount;
     property Capacity: TGListIndex read GetCapacity write SetCapacity;
-    // Array
-    procedure AddArray(Values: array of TGListItem);
-    procedure SetArray(Values: array of TGListItem);
-    procedure InsertArray(Index: TGListIndex; Values: array of TGListItem);
+    property Items[Index: TGListIndex]: TGListItem read Get write Put; default;
+    property Last: TGListItem read GetLast write SetLast;
   end;
   
 {$UNDEF INTERFACE}
@@ -171,14 +169,6 @@ begin
     raise EListError.CreateFmt(SListIndexError, [0]);
 end;
 
-function TGList.First: TGListItem;
-begin
-  if FCount = 0 then
-    raise EListError.CreateFmt(SListIndexError, [0])
-  else
-    Result := Items[0];
-end;
-
 function TGList.IndexOf(Item: TGListItem; Start: TGListIndex): TGListIndex;
 begin
   Result := Start;
@@ -229,12 +219,36 @@ begin
   end else Result := -1;
 end;
 
-function TGList.Last: TGListItem;
+function TGList.GetLast: TGListItem;
 begin
   if FCount = 0 then
     raise EListError.CreateFmt(SListIndexError, [0])
   else
     Result := Items[FCount - 1];
+end;
+
+procedure TGList.SetLast(AValue: TGListItem);
+begin
+  if FCount = 0 then
+    raise EListError.CreateFmt(SListIndexError, [0])
+  else
+    Items[FCount - 1] := AValue;
+end;
+
+function TGList.GetFirst: TGListItem;
+begin
+  if FCount = 0 then
+    raise EListError.CreateFmt(SListIndexError, [0])
+  else
+    Result := Items[0];
+end;
+
+procedure TGList.SetFirst(AValue: TGListItem);
+begin
+  if FCount = 0 then
+    raise EListError.CreateFmt(SListIndexError, [0])
+  else
+    Items[0] := AValue;
 end;
 
 procedure TGList.Move(CurIndex, NewIndex: TGListIndex);
@@ -440,4 +454,4 @@ begin
 end;
 
 {$UNDEF IMPLEMENTATION}
-{$ENDIF}
+{$ENDIF}

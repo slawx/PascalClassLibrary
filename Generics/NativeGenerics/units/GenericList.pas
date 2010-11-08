@@ -8,7 +8,7 @@ uses
   Classes, SysUtils, fgl;
 
 resourcestring
-  SNotImplemented = 'Not implememnted';
+  SNotImplemented = 'Not implemented';
 
 type
   // List could implement many different features which increases
