@@ -3,8 +3,8 @@
   TGList = class;
 
   TGListSortCompare = function(const Item1, Item2: TGListItem): Integer of object;
-  TGListStringConverter = function(Item: TGListItem): string;
-  //TGListNotification = (lnAdded, lnExtracted, lnDeleted);
+  TGListToStringConverter = function(Item: TGListItem): string;
+  TGListFromStringConverter = function(Text: string): TGListItem;
 
   // TGList<TGListIndex, TGListItem> = class
   TGList = class
@@ -30,13 +30,14 @@
     procedure Contract;
     procedure Delete(Index: TGListIndex); virtual;
     procedure DeleteItems(Index, Count: TGListIndex);
-    function Equals(List: TGList): Boolean;
+    function EqualTo(List: TGList): Boolean;
     procedure Expand;
     function Extract(Item: TGListItem): TGListItem;
     procedure Exchange(Index1, Index2: TGListIndex);
     property First: TGListItem read GetFirst write SetFirst;
     procedure Fill(Start, Count: TGListIndex; Value: TGListItem);
-    function Implode(Separator: string; Converter: TGListStringConverter): string;
+    function Implode(Separator: string; Converter: TGListToStringConverter): string;
+    procedure Explode(Text, Separator: string; Converter: TGListFromStringConverter; SlicesCount: Integer = -1);
     function IndexOf(Item: TGListItem; Start: TGListIndex = 0): TGListIndex;
     function IndexOfList(List: TGList; Start: TGListIndex = 0): TGListIndex;
     procedure Insert(Index: TGListIndex; Item: TGListItem);
@@ -303,7 +304,7 @@ begin
     Delete(Result);
 end;
 
-function TGList.Equals(List: TGList): Boolean;
+function TGList.EqualTo(List: TGList): Boolean;
 var
   I: TGListIndex;
 begin
@@ -371,7 +372,7 @@ begin
   end;
 end;
 
-function TGList.Implode(Separator: string; Converter: TGListStringConverter): string;
+function TGList.Implode(Separator: string; Converter: TGListToStringConverter): string;
 var
   I: TGListIndex;
 begin
@@ -383,6 +384,17 @@ begin
       Result := Result + Separator;
     I := I + 1;
   end;
+end;
+
+procedure TGList.Explode(Text, Separator: string; Converter: TGListFromStringConverter; SlicesCount: Integer = -1);
+begin
+  Clear;
+  while (Pos(Separator, Text) > 0) and
+  ((Count < (SlicesCount - 1)) or (SlicesCount = -1)) do begin
+    Add(Converter(Copy(Text, 1, Pos(Separator, Text) - 1)));
+    System.Delete(Text, 1, Pos(Separator, Text) + Length(Separator) - 1);
+  end;
+  Add(Converter(Text));
 end;
 
 function TGList.Add(Item: TGListItem): TGListIndex;
@@ -454,4 +466,4 @@ begin
 end;
 
 {$UNDEF IMPLEMENTATION}
-{$ENDIF}
+{$ENDIF}

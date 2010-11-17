@@ -16,7 +16,8 @@ type
 {$DEFINE TGTreeNode := TTreeNodeInteger}
 {$DEFINE TGTreeNodeList := TTreeNodeListInteger}
 {$DEFINE TGTreeSortCompare := TTreeSortCompareInteger}
-{$DEFINE TGTreeStringConverter := TTreeStringConverterInteger}
+{$DEFINE TGTreeToStringConverter := TTreeToStringConverterInteger}
+{$DEFINE TGTreeFromStringConverter := TTreeFromStringConverterInteger}
 {$DEFINE INTERFACE}
 {$I 'GenericTree.inc'}
 
@@ -27,7 +28,8 @@ type
 {$DEFINE TGTreeNode := TTreeNodeString}
 {$DEFINE TGTreeNodeList := TTreeNodeListString}
 {$DEFINE TGTreeSortCompare := TTreeSortCompareString}
-{$DEFINE TGTreeStringConverter := TTreeStringConverterString}
+{$DEFINE TGTreeToStringConverter := TTreeToStringConverterString}
+{$DEFINE TGTreeFromStringConverter := TTreeFromStringConverterString}
 {$DEFINE INTERFACE}
 {$I 'GenericTree.inc'}
 
@@ -38,7 +40,8 @@ type
 {$DEFINE TGTreeNode := TTreeNodePointer}
 {$DEFINE TGTreeNodeList := TTreeNodeListPointer}
 {$DEFINE TGTreeSortCompare := TTreeSortComparePointer}
-{$DEFINE TGTreeStringConverter := TTreeStringConverterPointer}
+{$DEFINE TGTreeToStringConverter := TTreeToStringConverterPointer}
+{$DEFINE TGTreeFromStringConverter := TTreeFromStringConverterPointer}
 {$DEFINE INTERFACE}
 {$I 'GenericTree.inc'}
 
@@ -54,7 +57,8 @@ implementation
 {$DEFINE TGTreeNode := TTreeNodeInteger}
 {$DEFINE TGTreeNodeList := TTreeNodeListInteger}
 {$DEFINE TGTreeSortCompare := TTreeSortCompareInteger}
-{$DEFINE TGTreeStringConverter := TTreeStringConverterInteger}
+{$DEFINE TGTreeToStringConverter := TTreeToStringConverterInteger}
+{$DEFINE TGTreeFromStringConverter := TTreeFromStringConverterInteger}
 {$DEFINE IMPLEMENTATION}
 {$I 'GenericTree.inc'}
 
@@ -65,7 +69,8 @@ implementation
 {$DEFINE TGTreeNode := TTreeNodeString}
 {$DEFINE TGTreeNodeList := TTreeNodeListString}
 {$DEFINE TGTreeSortCompare := TTreeSortCompareString}
-{$DEFINE TGTreeStringConverter := TTreeStringConverterString}
+{$DEFINE TGTreeToStringConverter := TTreeToStringConverterString}
+{$DEFINE TGTreeFromStringConverter := TTreeFromStringConverterString}
 {$DEFINE IMPLEMENTATION}
 {$I 'GenericTree.inc'}
 
@@ -76,7 +81,8 @@ implementation
 {$DEFINE TGTreeNode := TTreeNodePointer}
 {$DEFINE TGTreeNodeList := TTreeNodeListPointer}
 {$DEFINE TGTreeSortCompare := TTreeSortComparePointer}
-{$DEFINE TGTreeStringConverter := TTreeStringConverterPointer}
+{$DEFINE TGTreeToStringConverter := TTreeToStringConverterPointer}
+{$DEFINE TGTreeFromStringConverter := TTreeFromStringConverterPointer}
 {$DEFINE IMPLEMENTATION}
 {$I 'GenericTree.inc'}
 

@@ -16,7 +16,8 @@ type
 {$DEFINE TGObjectListList := TObjectListListObject}
 {$DEFINE TGObjectList := TListObject}
 {$DEFINE TGObjectListSortCompare := TObjectListSortCompareObject}
-{$DEFINE TGObjectListStringConverter := TObjectListStringConverterObject}
+{$DEFINE TGObjectListToStringConverter := TObjectListToStringConverterObject}
+{$DEFINE TGObjectListFromStringConverter := TObjectListFromStringConverterObject}
 {$DEFINE INTERFACE}
 {$I 'GenericObjectList.inc'}
 
@@ -31,7 +32,8 @@ implementation
 {$DEFINE TGObjectListList := TObjectListListObject}
 {$DEFINE TGObjectList := TListObject}
 {$DEFINE TGObjectListSortCompare := TObjectListSortCompareObject}
-{$DEFINE TGObjectListStringConverter := TObjectListStringConverterObject}
+{$DEFINE TGObjectListToStringConverter := TObjectListToStringConverterObject}
+{$DEFINE TGObjectListFromStringConverter := TObjectListFromStringConverterObject}
 {$DEFINE IMPLEMENTATION}
 {$I 'GenericObjectList.inc'}
 

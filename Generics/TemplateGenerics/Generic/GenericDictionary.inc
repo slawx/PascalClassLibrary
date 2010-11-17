@@ -11,7 +11,8 @@
 {$DEFINE TGListItem := TGPair}
 {$DEFINE TGList := TGDictionaryList}
 {$DEFINE TGListSortCompare := TDictionarySortCompare}
-{$DEFINE TGListStringConverter := TDictionaryStringConverter}
+{$DEFINE TGListToStringConverter := TDictionaryToStringConverter}
+{$DEFINE TGListFromStringConverter := TDictionaryFromStringConverter}
 {$DEFINE INTERFACE}
 {$I 'GenericList.inc'}
 
@@ -44,7 +45,8 @@
 {$DEFINE TGListItem := TGPair}
 {$DEFINE TGList := TGDictionaryList}
 {$DEFINE TGListSortCompare := TDictionarySortCompare}
-{$DEFINE TGListStringConverter := TDictionaryStringConverter}
+{$DEFINE TGListToStringConverter := TDictionaryToStringConverter}
+{$DEFINE TGListFromStringConverter := TDictionaryFromStringConverter}
 {$DEFINE IMPLEMENTATION}
 {$I 'GenericList.inc'}
 

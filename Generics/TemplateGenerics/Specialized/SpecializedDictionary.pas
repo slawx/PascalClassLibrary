@@ -18,7 +18,8 @@ type
 {$DEFINE TGDictionary := TDictionaryStringString}
 {$DEFINE TGDictionaryList := TDictionaryList}
 {$DEFINE TGDictionarySortCompare := TDictionarySortCompareInteger}
-{$DEFINE TGDictionaryStringConverter := TDictionaryStringConverterInteger}
+{$DEFINE TGDictionaryToStringConverter := TDictionaryToStringConverterInteger}
+{$DEFINE TGDictionaryFromStringConverter := TDictionaryFromStringConverterInteger}
 {$DEFINE INTERFACE}
 {$I 'GenericDictionary.inc'}
 
@@ -32,7 +33,8 @@ implementation
 {$DEFINE TGDictionary := TDictionaryStringString}
 {$DEFINE TGDictionaryList := TDictionaryList}
 {$DEFINE TGDictionarySortCompare := TDictionarySortCompareInteger}
-{$DEFINE TGDictionaryStringConverter := TDictionaryStringConverterInteger}
+{$DEFINE TGDictionaryToStringConverter := TDictionaryToStringConverterInteger}
+{$DEFINE TGDictionaryFromStringConverter := TDictionaryFromStringConverterInteger}
 {$DEFINE IMPLEMENTATION}
 {$I 'GenericDictionary.inc'}
 

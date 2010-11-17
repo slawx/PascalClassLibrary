@@ -16,7 +16,8 @@ type
 {$DEFINE TGStackList := TListStackInteger}
 {$DEFINE TGStack := TStackInteger}
 {$DEFINE TGStackSortCompare := TStackSortCompareInteger}
-{$DEFINE TGStackStringConverter := TStackStringConverterInteger}
+{$DEFINE TGStackToStringConverter := TStackToStringConverterInteger}
+{$DEFINE TGStackFromStringConverter := TStackFromStringConverterInteger}
 {$DEFINE INTERFACE}
 {$I 'GenericStack.inc'}
 
@@ -26,7 +27,8 @@ type
 {$DEFINE TGStackList := TListStackPointer}
 {$DEFINE TGStack := TStackPointer}
 {$DEFINE TGStackSortCompare := TStackSortComparePointer}
-{$DEFINE TGStackStringConverter := TStackStringConverterPointer}
+{$DEFINE TGStackToStringConverter := TStackToStringConverterPointer}
+{$DEFINE TGStackFromStringConverter := TStackFromStringConverterPointer}
 {$DEFINE INTERFACE}
 {$I 'GenericStack.inc'}
 
@@ -42,7 +44,8 @@ implementation
 {$DEFINE TGStackList := TListStackInteger}
 {$DEFINE TGStack := TStackInteger}
 {$DEFINE TGStackSortCompare := TStackSortCompareInteger}
-{$DEFINE TGStackStringConverter := TStackStringConverterInteger}
+{$DEFINE TGStackToStringConverter := TStackToStringConverterInteger}
+{$DEFINE TGStackFromStringConverter := TStackFromStringConverterInteger}
 {$DEFINE IMPLEMENTATION}
 {$I 'GenericStack.inc'}
 
@@ -52,7 +55,8 @@ implementation
 {$DEFINE TGStackList := TListStackPointer}
 {$DEFINE TGStack := TStackPointer}
 {$DEFINE TGStackSortCompare := TStackSortComparePointer}
-{$DEFINE TGStackStringConverter := TStackStringConverterPointer}
+{$DEFINE TGStackToStringConverter := TStackToStringConverterPointer}
+{$DEFINE TGStackFromStringConverter := TStackFromStringConverterPointer}
 {$DEFINE IMPLEMENTATION}
 {$I 'GenericStack.inc'}
 end.
