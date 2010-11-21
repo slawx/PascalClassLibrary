@@ -91,6 +91,8 @@ TListChar = class(TListCharBase)
   procedure TrimRight;
 end;
 
+function StrToStr(Value: string): string;
+
 implementation
 
 {$DEFINE IMPLEMENTATION_USES}
@@ -165,6 +167,12 @@ implementation
 {$DEFINE TGListFromStringConverter := TListFromStringConverterChar}
 {$DEFINE IMPLEMENTATION}
 {$I 'GenericList.inc'}
+
+
+function StrToStr(Value: string): string;
+begin
+  Result := Value;
+end;
 
 { TListChar }
 
