@@ -1,0 +1,105 @@
+<?xml version="1.0"?>
+<CONFIG>
+  <Package Version="3">
+    <Name Value="CoolWeb"/>
+    <Author Value="Chronos"/>
+    <CompilerOptions>
+      <Version Value="9"/>
+      <SearchPaths>
+        <OtherUnitFiles Value="WebServer;Persistence;Network;Modules;Common"/>
+        <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)/"/>
+      </SearchPaths>
+      <Other>
+        <CompilerPath Value="$(CompPath)"/>
+      </Other>
+    </CompilerOptions>
+    <Description Value="Unit set for generating CGI or server web application."/>
+    <License Value="GNU/GPL"/>
+    <Version Minor="1"/>
+    <Files Count="16">
+      <Item1>
+        <Filename Value="WebServer/UHTTPServer.pas"/>
+        <UnitName Value="UHTTPServer"/>
+      </Item1>
+      <Item2>
+        <Filename Value="WebServer/UHTTPServerCGI.pas"/>
+        <UnitName Value="UHTTPServerCGI"/>
+      </Item2>
+      <Item3>
+        <Filename Value="WebServer/UHTTPServerTCP.pas"/>
+        <UnitName Value="UHTTPServerTCP"/>
+      </Item3>
+      <Item4>
+        <Filename Value="WebServer/UHTTPSessionFile.pas"/>
+        <UnitName Value="UHTTPSessionFile"/>
+      </Item4>
+      <Item5>
+        <Filename Value="WebServer/UHTTPSessionMySQL.pas"/>
+        <UnitName Value="UHTTPSessionMySQL"/>
+      </Item5>
+      <Item6>
+        <Filename Value="Persistence/USqlDatabase.pas"/>
+        <UnitName Value="USqlDatabase"/>
+      </Item6>
+      <Item7>
+        <Filename Value="Network/UTCPServer.pas"/>
+        <UnitName Value="UTCPServer"/>
+      </Item7>
+      <Item8>
+        <Filename Value="Modules/UPageList.pas"/>
+        <UnitName Value="UPageList"/>
+      </Item8>
+      <Item9>
+        <Filename Value="Modules/UUser.pas"/>
+        <UnitName Value="UUser"/>
+      </Item9>
+      <Item10>
+        <Filename Value="Common/UCommon.pas"/>
+        <UnitName Value="UCommon"/>
+      </Item10>
+      <Item11>
+        <Filename Value="Common/UHtmlClasses.pas"/>
+        <UnitName Value="UHtmlClasses"/>
+      </Item11>
+      <Item12>
+        <Filename Value="Common/UMemoryStreamEx.pas"/>
+        <UnitName Value="UMemoryStreamEx"/>
+      </Item12>
+      <Item13>
+        <Filename Value="Common/UMIMEType.pas"/>
+        <UnitName Value="UMIMEType"/>
+      </Item13>
+      <Item14>
+        <Filename Value="Common/UPool.pas"/>
+        <UnitName Value="UPool"/>
+      </Item14>
+      <Item15>
+        <Filename Value="Common/UResetableThread.pas"/>
+        <UnitName Value="UResetableThread"/>
+      </Item15>
+      <Item16>
+        <Filename Value="Common/UXmlClasses.pas"/>
+        <UnitName Value="UXmlClasses"/>
+      </Item16>
+    </Files>
+    <Type Value="RunAndDesignTime"/>
+    <RequiredPkgs Count="3">
+      <Item1>
+        <PackageName Value="TemplateGenerics"/>
+      </Item1>
+      <Item2>
+        <PackageName Value="synapse"/>
+      </Item2>
+      <Item3>
+        <PackageName Value="FCL"/>
+        <MinVersion Major="1" Valid="True"/>
+      </Item3>
+    </RequiredPkgs>
+    <UsageOptions>
+      <UnitPath Value="$(PkgOutDir)"/>
+    </UsageOptions>
+    <PublishOptions>
+      <Version Value="2"/>
+    </PublishOptions>
+  </Package>
+</CONFIG>
