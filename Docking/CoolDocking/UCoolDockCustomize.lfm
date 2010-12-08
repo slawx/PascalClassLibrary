@@ -1,6 +1,8 @@
 object CoolDockCustomizeForm: TCoolDockCustomizeForm
+  Left = 338
   Left = 431
   Height = 323
+  Top = 96
   Top = 139
   Width = 407
   Caption = 'Customize docking'

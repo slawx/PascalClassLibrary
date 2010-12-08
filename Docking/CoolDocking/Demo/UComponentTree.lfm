@@ -1,0 +1,20 @@
+object ComponentTree: TComponentTree
+  Left = 442
+  Height = 499
+  Top = 103
+  Width = 411
+  Caption = 'Component tree'
+  ClientHeight = 499
+  ClientWidth = 411
+  OnShow = FormShow
+  LCLVersion = '0.9.29'
+  object TreeView1: TTreeView
+    Left = 8
+    Height = 488
+    Top = 8
+    Width = 395
+    Anchors = [akTop, akLeft, akRight, akBottom]
+    DefaultItemHeight = 15
+    TabOrder = 0
+  end
+end

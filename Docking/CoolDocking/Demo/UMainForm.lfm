@@ -30,8 +30,18 @@ object MainForm: TMainForm
     DockSite = True
     TabOrder = 1
   end
+  object Button2: TButton
+    Left = 94
+    Height = 25
+    Top = 10
+    Width = 107
+    Caption = 'Component tree'
+    OnClick = Button2Click
+    TabOrder = 2
+  end
   object CoolDockMaster1: TCoolDockMaster
     TabsEnabled = False
+    DefaultTabsPos = hpAuto
     DefaultHeaderPos = hpAuto
     Customize = CoolDockCustomize1
     ShowIcons = False
@@ -64,6 +74,7 @@ object MainForm: TMainForm
   end
   object CoolDockClient1: TCoolDockClient
     Dockable = False
+    Floatable = False
     Master = CoolDockMaster1
     Panel = Panel1
     left = 376

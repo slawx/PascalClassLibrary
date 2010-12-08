@@ -31,6 +31,7 @@ type
   TCoolDockConjoinForm = class(TForm)
     Panel: TPanel;
     CoolDockClient: TCoolDockClient;
+    procedure FormShow(Sender : TObject);
     constructor Create(TheOwner: TComponent); override;
   end;
 
@@ -364,6 +365,7 @@ begin
   // Tabs popup
 
   PopupMenuTabs := TPopupMenu.Create(FDockSite);
+  PopupMenuTabs.Name := ADockSite.Name + '_' + 'PopupMenuTabs';
 
   NewMenuItem := TMenuItem.Create(PopupMenuTabs);
   NewMenuItem.Caption := SDockStyle;
@@ -431,6 +433,7 @@ begin
   // Header popup
 
   PopupMenuHeader := TPopupMenu.Create(FDockSite);
+  PopupMenuHeader.Name := ADockSite.Name + '_' + 'PopupMenuHeader';
 
   NewMenuItem := TMenuItem.Create(PopupMenuHeader);
   NewMenuItem.Caption := SDockStyle;
@@ -497,10 +500,12 @@ begin
 
   TabImageList := TImageList.Create(FDockSite);
   with TabImageList do begin
+    Name := ADockSite.Name + '_' + 'ImageList';
   end;
   TabControl := TTabControl.Create(FDockSite);
   with TabControl do begin
     Parent := FDockSite;
+    Name := ADockSite.Name + '_' + 'TabControl';
     Visible := False;
     Align := alTop;
     Height := 24;
@@ -862,6 +867,9 @@ begin
     TCoolDockClientPanel(FDockPanels[I]).ClientAreaPanel.Parent := FDockSite;
     TCoolDockClientPanel(FDockPanels[I]).Control.Align := alClient;
     TCoolDockClientPanel(FDockPanels[I]).Control.Visible := False;
+
+    // Workaround for "Cannot focus" error
+    TForm(TCoolDockClientPanel(FDockPanels[I]).Control).ActiveControl := nil;
   end;
   if (TabControl.TabIndex <> -1) and (FDockPanels.Count > TabControl.TabIndex) then begin
     with TCoolDockClientPanel(FDockPanels[TabControl.TabIndex]), ClientAreaPanel do begin
@@ -881,7 +889,7 @@ begin
         UpdateClientSize;
       end;
     end;
-//  TCoolDockClientPanel(FDockPanels[TabControl.TabIndex]).Visible := True;
+  //TCoolDockClientPanel(FDockPanels[TabControl.TabIndex]).Visible := True;
   end;
   MouseDownSkip := True;
 end;
@@ -1107,12 +1115,18 @@ end;
 
 { TCoolDockConjoinForm }
 
+procedure TCoolDockConjoinForm.FormShow(Sender: TObject);
+begin
+  //Panel.Show;
+end;
+
 constructor TCoolDockConjoinForm.Create(TheOwner: TComponent);
 begin
   inherited Create(TheOwner);
   Panel := TPanel.Create(Self);
   with Panel do begin
     Parent := Self;
+    Name := Parent.Name + '_Panel';
     DockSite := True;
     UseDockManager := True;
     Align := alClient;
@@ -1123,7 +1137,9 @@ begin
   CoolDockClient := TCoolDockClient.Create(Self);
   with CoolDockClient do begin
     Panel := Self.Panel;
+    Name := Owner.Name + '_CoolDockClient';
   end;
+  OnShow := FormShow;
 end;
 
 { TCoolDockMaster }
