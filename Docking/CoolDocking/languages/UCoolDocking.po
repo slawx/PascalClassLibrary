@@ -1,66 +1,6 @@
 msgid ""
 msgstr "Content-Type: text/plain; charset=UTF-8"
 
-#: ucooldocking.scloseform
-msgid "Close"
-msgstr ""
-
-#: ucooldocking.scustomize
-msgid "Customize..."
-msgstr ""
-
-#: ucooldocking.sdocklist
-msgid "List"
-msgstr ""
-
-#: ucooldocking.sdockstyle
-msgid "Style"
-msgstr ""
-
-#: ucooldocking.sdocktabs
-msgid "Tabs"
-msgstr ""
-
-#: ucooldocking.senternewwindowname
-msgid "Enter new window name"
-msgstr ""
-
-#: ucooldocking.sposition
-msgid "Position"
-msgstr ""
-
-#: ucooldocking.spositionauto
-msgid "Auto"
-msgstr ""
-
-#: ucooldocking.spositionbottom
-msgid "Bottom"
-msgstr ""
-
-#: ucooldocking.spositionleft
-msgid "Left"
-msgstr ""
-
-#: ucooldocking.spositionright
-msgid "Right"
-msgstr ""
-
-#: ucooldocking.spositiontop
-msgid "Top"
-msgstr ""
-
-#: ucooldocking.srenameform
-msgid "Rename"
-msgstr ""
-
-#: ucooldocking.srenamewindow
-msgid "Rename window"
-msgstr ""
-
-#: ucooldocking.sundock
-msgid "Undock"
-msgstr ""
-
 #: ucooldocking.swrongowner
 msgid "Owner of TCoolDockClient have to be TForm"
 msgstr ""

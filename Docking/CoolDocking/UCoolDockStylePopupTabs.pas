@@ -192,7 +192,7 @@ begin
     Align := alTop;
     Height := 24;
     OnChange := TabControlChange;
-    PopupMenu := PopupMenuTabs;
+    PopupMenu := TCoolDockManager(Manager).PopupMenu;
     TTabControlNoteBookStrings(Tabs).NoteBook.OnMouseLeave := TabControlMouseLeave;
     TTabControlNoteBookStrings(Tabs).NoteBook.OnMouseDown := TabControlMouseDown;
     TTabControlNoteBookStrings(Tabs).NoteBook.OnMouseUp := TabControlMouseUp;

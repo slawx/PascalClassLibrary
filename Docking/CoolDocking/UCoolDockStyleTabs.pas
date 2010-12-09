@@ -18,7 +18,6 @@ type
     MouseDownSkip: Boolean;
     TabControl: TTabControl;
     TabImageList: TImageList;
-    PopupMenuTabs: TPopupMenu;
     procedure TabControlMouseLeave(Sender: TObject);
     procedure TabControlChange(Sender: TObject);
     procedure TabControlMouseDown(Sender: TObject; Button: TMouseButton;
@@ -126,73 +125,6 @@ var
 begin
   inherited;
 
-  (*// Tabs popup
-
-  PopupMenuTabs := TPopupMenu.Create(Manager.DockSite);
-
-  NewMenuItem := TMenuItem.Create(PopupMenuTabs);
-  NewMenuItem.Caption := SDockStyle;
-  PopupMenuTabs.Items.Add(NewMenuItem);
-
-  NewMenuItem2 := TMenuItem.Create(NewMenuItem);
-  NewMenuItem2.Caption := SDockList;
-  NewMenuItem2.OnClick := PopupMenuListClick;
-  NewMenuItem.Add(NewMenuItem2);
-
-  NewMenuItem2 := TMenuItem.Create(NewMenuItem);
-  NewMenuItem2.Caption := SDockTabs;
-  NewMenuItem2.OnClick := PopupMenuTabsClick;
-  NewMenuItem.Add(NewMenuItem2);
-
-  NewMenuItem := TMenuItem.Create(PopupMenuTabs);
-  NewMenuItem.Caption := SPosition;
-  PopupMenuTabs.Items.Add(NewMenuItem);
-
-  NewMenuItem2 := TMenuItem.Create(NewMenuItem);
-  NewMenuItem2.Caption := SPositionAuto;
-  NewMenuItem2.OnClick := PopupMenuPositionAutoClick;
-  NewMenuItem.Add(NewMenuItem2);
-
-  NewMenuItem2 := TMenuItem.Create(NewMenuItem);
-  NewMenuItem2.Caption := SPositionTop;
-  NewMenuItem2.OnClick := PopupMenuPositionTopClick;
-  NewMenuItem.Add(NewMenuItem2);
-
-  NewMenuItem2 := TMenuItem.Create(NewMenuItem);
-  NewMenuItem2.Caption := SPositionLeft;
-  NewMenuItem2.OnClick := PopupMenuPositionLeftClick;
-  NewMenuItem.Add(NewMenuItem2);
-
-  NewMenuItem2 := TMenuItem.Create(NewMenuItem);
-  NewMenuItem2.Caption := SPositionBottom;
-  NewMenuItem2.OnClick := PopupMenuPositionBottomClick;
-  NewMenuItem.Add(NewMenuItem2);
-
-  NewMenuItem2 := TMenuItem.Create(NewMenuItem);
-  NewMenuItem2.Caption := SPositionRight;
-  NewMenuItem2.OnClick := PopupMenuPositionRightClick;
-  NewMenuItem.Add(NewMenuItem2);
-
-  NewMenuItem := TMenuItem.Create(PopupMenuTabs);
-  NewMenuItem.Caption := SCloseForm;
-  NewMenuItem.OnClick := PopupMenuCloseClick;
-  PopupMenuTabs.Items.Add(NewMenuItem);
-
-  NewMenuItem := TMenuItem.Create(PopupMenuTabs);
-  NewMenuItem.Caption := SRenameForm;
-  NewMenuItem.OnClick := PopupMenuRenameClick;
-  PopupMenuTabs.Items.Add(NewMenuItem);
-
-  NewMenuItem := TMenuItem.Create(PopupMenuTabs);
-  NewMenuItem.Caption := SUndock;
-  NewMenuItem.OnClick := PopupMenuUndockClick;
-  PopupMenuTabs.Items.Add(NewMenuItem);
-
-  NewMenuItem := TMenuItem.Create(PopupMenuTabs);
-  NewMenuItem.Caption := SCustomize;
-  NewMenuItem.OnClick := PopupMenuCustomizeClick;
-  PopupMenuTabs.Items.Add(NewMenuItem);     *)
-
   TabImageList := TImageList.Create(TCoolDockManager(AManager).DockSite); //FDockSite);
   with TabImageList do begin
     Name := TCoolDockManager(Manager).DockSite.Name + '_' + 'ImageList';
@@ -205,7 +137,7 @@ begin
     Align := alTop;
     Height := 24;
     OnChange := TabControlChange;
-    PopupMenu := PopupMenuTabs;
+    PopupMenu := TCoolDockManager(Manager).PopupMenu;
     TTabControlNoteBookStrings(Tabs).NoteBook.OnMouseLeave := TabControlMouseLeave;
     TTabControlNoteBookStrings(Tabs).NoteBook.OnMouseDown := TabControlMouseDown;
     TTabControlNoteBookStrings(Tabs).NoteBook.OnMouseUp := TabControlMouseUp;

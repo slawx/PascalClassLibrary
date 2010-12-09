@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, Controls, SysUtils, Forms, StdCtrls, ExtCtrls, Graphics,
-  Buttons;
+  Buttons, UCoolDockPopupMenu;
 
 type
 
