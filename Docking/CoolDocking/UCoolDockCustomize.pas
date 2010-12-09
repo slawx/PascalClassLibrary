@@ -1,6 +1,6 @@
 unit UCoolDockCustomize;
 
-{$mode objfpc}{$H+}
+{$mode Delphi}{$H+}
 
 interface
 

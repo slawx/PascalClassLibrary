@@ -24,7 +24,7 @@
     </CompilerOptions>
     <Description Value="Set of components for docking of windows."/>
     <Version Minor="1"/>
-    <Files Count="8">
+    <Files Count="10">
       <Item1>
         <Filename Value="UCoolDocking.pas"/>
         <HasRegisterProc Value="True"/>
@@ -58,6 +58,14 @@
         <Filename Value="UCoolDockStylePopupRegions.pas"/>
         <UnitName Value="UCoolDockStylePopupRegions"/>
       </Item8>
+      <Item9>
+        <Filename Value="UCoolDockStyle.pas"/>
+        <UnitName Value="UCoolDockStyle"/>
+      </Item9>
+      <Item10>
+        <Filename Value="UCoolDockClientPanel.pas"/>
+        <UnitName Value="UCoolDockClientPanel"/>
+      </Item10>
     </Files>
     <i18n>
       <EnableI18N Value="True"/>

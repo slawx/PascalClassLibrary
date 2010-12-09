@@ -9,7 +9,7 @@ interface
 uses
     UCoolDocking, UCoolDockCustomize, UCoolDockWindowList, UCoolDockStyleTabs, 
   UCoolDockStyleRegions, UCoolDockStylePopupTabs, UCoolDockStylePopupRegions, 
-  LazarusPackageIntf;
+  UCoolDockStyle, UCoolDockClientPanel, LazarusPackageIntf;
 
 implementation
 

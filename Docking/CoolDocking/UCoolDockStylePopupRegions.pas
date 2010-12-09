@@ -1,13 +1,22 @@
-unit UCoolDockStylePopupRegions; 
+unit UCoolDockStylePopupRegions;
 
-{$mode objfpc}{$H+}
+{$mode Delphi}{$H+}
 
 interface
 
 uses
-  Classes, SysUtils; 
+  Classes, SysUtils, UCoolDockStyleRegions, UCoolDockStyle;
+
+type
+  TCoolDockStylePopupRegions = class(TCoolDockStyleRegions)
+
+  end;
+
 
 implementation
+
+uses
+  UCoolDocking;
 
 end.
 

@@ -10,18 +10,16 @@ uses
   Classes, SysUtils, Controls, LCLType, LMessages, Graphics, StdCtrls,
   Buttons, ExtCtrls, Contnrs, Forms, ComCtrls, Dialogs, Menus, FileUtil,
   UCoolDockCustomize, DOM, XMLWrite, XMLRead, UCoolDockWindowList,
-  DateUtils;
+  DateUtils, UCoolDockStyleTabs, UCoolDockStyleRegions, UCoolDockStylePopupTabs,
+  UCoolDockStylePopupRegions, UCoolDockStyle, UCoolDockClientPanel;
 
 const
   GrabberSize = 22;
-  AutoHideStepCount = 20;
 
 type
   TDockDirection = (ddNone, ddHorizontal, ddVertical);
-  THeaderPos = (hpAuto, hpLeft, hpTop, hpRight, hpBottom);
 
   TCoolDockManager = class;
-  TCoolDockClientPanel = class;
   TCoolDockCustomize = class;
   TCoolDockClient = class;
   TCoolDockMaster = class;
@@ -35,120 +33,27 @@ type
     constructor Create(TheOwner: TComponent); override;
   end;
 
-  TDockStyle = (dsList, dsTabs);
-
-  { TCoolDockHeader }
-
-  TCoolDockHeader = class(TPanel)
-  private
-    procedure CloseButtonClick(Sender: TObject);
-    procedure DrawGrabber(Canvas: TCanvas; AControl: TControl);
-  public
-    CloseButton: TSpeedButton;
-    Title: TLabel;
-    Icon: TImage;
-    ParentClientPanel: TCoolDockClientPanel;
-    Shape: TShape;
-    constructor Create(TheOwner: TComponent); override;
-    destructor Destroy; override;
-  end;
-
-  TCoolDockStyle = class
-  end;
-
-  { TCoolDockClientPanel }
-
-  TCoolDockClientPanel = class(TPanel)
-  private
-    FAutoHide: Boolean;
-    FHeaderPos: THeaderPos;
-    FShowHeader: Boolean;
-    function GetAutoHideEnabled: Boolean;
-    procedure SetAutoHide(const AValue: Boolean);
-    procedure SetAutoHideEnabled(const AValue: Boolean);
-    procedure SetHeaderPos(const AValue: THeaderPos);
-    procedure SetShowHeader(const AValue: Boolean);
-    procedure VisibleChange(Sender: TObject);
-  public
-    Header: TCoolDockHeader;
-    OwnerDockManager: TCoolDockManager;
-    Control: TControl;
-    Splitter: TSplitter;
-    ClientAreaPanel: TPanel;
-    constructor Create(TheOwner: TComponent); override;
-    destructor Destroy; override;
-    procedure DockPanelPaint(Sender: TObject);
-    procedure DockPanelMouseDown(Sender: TObject; Button: TMouseButton;
-      Shift: TShiftState; X, Y: Integer);
-    procedure ResizeExecute(Sender: TObject);
-    property ShowHeader: Boolean read FShowHeader write SetShowHeader;
-    property AutoHideEnabled: Boolean read GetAutoHideEnabled
-      write SetAutoHideEnabled;
-    property HeaderPos: THeaderPos read FHeaderPos write SetHeaderPos;
-  end;
-
-  { TCoolDockAutoHide }
-
-  TCoolDockAutoHide = class
-  private
-    FDuration: Real;
-    FStepCount: Integer;
-    StartBounds: TRect;
-    procedure SetDuration(const AValue: Real);
-    procedure SetStepCount(const AValue: Integer);
-    procedure UpdateBounds;
-    procedure UpdateTimerInterval;
-  public
-    Position: Real;
-    Direction: Integer;
-    TabPosition: TTabPosition;
-    Enable: Boolean;
-    Timer: TTimer;
-    Control: TControl;
-    ControlVisible: Boolean;
-    procedure Hide;
-    procedure Show;
-    constructor Create;
-    destructor Destroy; override;
-    procedure TimerExecute(Sender: TObject);
-    property Duration: Real read FDuration write SetDuration;
-    property StepCount: Integer read FStepCount write SetStepCount;
-  end;
+  TDockStyle = (dsList, dsTabs, dsPopupTabs, dsPopupList);
 
   { TCoolDockManager }
 
   TCoolDockManager = class(TDockManager)
   private
-    MouseDown: Boolean;
-    MouseButton: TMouseButton;
-    MouseDownSkip: Boolean;
     FMaster: TCoolDockMaster;
-    FTabsPos: THeaderPos;
-    PopupMenuTabs: TPopupMenu;
+    DockStyleHandler: TCoolDockStyle;
     PopupMenuHeader: TPopupMenu;
     FDockStyle: TDockStyle;
-    TabControl: TTabControl;
-    TabImageList: TImageList;
     FDockDirection: TDockDirection;
     FDockSite: TWinControl;
     FDockPanels: TObjectList; // TObjectList<TCoolDockClientPanel>
-    AutoHide: TCoolDockAutoHide;
     function FindControlInPanels(Control: TControl): TCoolDockClientPanel;
     function GetDockSite: TWinControl;
     function GetMoveDuration: Integer;
     procedure InsertControlPanel(Control: TControl; InsertAt: TAlign;
       DropCtl: TControl);
-    procedure PopupMenuTabCloseClick(Sender: TObject);
     procedure SetDockStyle(const AValue: TDockStyle);
     procedure SetMaster(const AValue: TCoolDockMaster);
     procedure SetMoveDuration(const AValue: Integer);
-    procedure SetTabsPos(const AValue: THeaderPos);
-    procedure TabControlMouseLeave(Sender: TObject);
-    procedure TabControlChange(Sender: TObject);
-    procedure TabControlMouseDown(Sender: TObject; Button: TMouseButton;
-      Shift: TShiftState; X, Y: Integer);
-    procedure TabControlMouseUp(Sender: TObject; Button: TMouseButton;
-      Shift: TShiftState; X, Y: Integer);
     procedure UpdateClientSize;
     procedure PopupMenuListClick(Sender: TObject);
     procedure PopupMenuTabsClick(Sender: TObject);
@@ -187,9 +92,9 @@ type
     function AutoFreeByControl: Boolean; override;
 
     function CreateContainer(InsertAt: TAlign): TCoolDockConjoinForm;
+    property DockPanels: TObjectList read FDockPanels write FDockPanels;
     property DockStyle: TDockStyle read FDockStyle write SetDockStyle;
     property MoveDuration: Integer read GetMoveDuration write SetMoveDuration;
-    property TabsPos: THeaderPos read FTabsPos write SetTabsPos;
     property Master: TCoolDockMaster read FMaster write SetMaster;
     property DockSite: TWinControl read GetDockSite;
   end;
@@ -285,11 +190,6 @@ type
 
 procedure Register;
 
-implementation
-
-uses
-  UCoolDockStyleTabs;
-
 resourcestring
   SDockStyle = 'Style';
   SDockList = 'List';
@@ -307,6 +207,9 @@ resourcestring
   SWrongOwner = 'Owner of TCoolDockClient have to be TForm';
   SEnterNewWindowName = 'Enter new window name';
   SRenameWindow = 'Rename window';
+
+
+implementation
 
 procedure Register;
 begin
@@ -341,16 +244,6 @@ begin
 
 end;
 
-procedure TCoolDockManager.TabControlMouseLeave(Sender: TObject);
-begin
-  if MouseDown then
-  if (TabControl.TabIndex <> -1) then begin
-    TCoolDockClientPanel(FDockPanels[TabControl.TabIndex]).ClientAreaPanel.DockSite := False;
-    DragManager.DragStart(TCoolDockClientPanel(FDockPanels[TabControl.TabIndex]).Control, False, 1);
-  end;
-  MouseDown := False;
-end;
-
 constructor TCoolDockManager.Create(ADockSite: TWinControl);
 var
   NewMenuItem: TMenuItem;
@@ -360,9 +253,10 @@ begin
   FDockSite := ADockSite;
   FDockPanels := TObjectList.Create;
 
-  AutoHide := TCoolDockAutoHide.Create;
+  FDockStyle := dsTabs; // To initialize style value have to be different
+  DockStyle := dsList;
 
-  // Tabs popup
+(*  // Tabs popup
 
   PopupMenuTabs := TPopupMenu.Create(FDockSite);
   PopupMenuTabs.Name := ADockSite.Name + '_' + 'PopupMenuTabs';
@@ -497,28 +391,7 @@ begin
   NewMenuItem.Caption := SCustomize;
   NewMenuItem.OnClick := PopupMenuCustomizeClick;
   PopupMenuHeader.Items.Add(NewMenuItem);
-
-  TabImageList := TImageList.Create(FDockSite);
-  with TabImageList do begin
-    Name := ADockSite.Name + '_' + 'ImageList';
-  end;
-  TabControl := TTabControl.Create(FDockSite);
-  with TabControl do begin
-    Parent := FDockSite;
-    Name := ADockSite.Name + '_' + 'TabControl';
-    Visible := False;
-    Align := alTop;
-    Height := 24;
-    OnChange := TabControlChange;
-    PopupMenu := PopupMenuTabs;
-    TTabControlNoteBookStrings(Tabs).NoteBook.OnMouseLeave := TabControlMouseLeave;
-    TTabControlNoteBookStrings(Tabs).NoteBook.OnMouseDown := TabControlMouseDown;
-    TTabControlNoteBookStrings(Tabs).NoteBook.OnMouseUp := TabControlMouseUp;
-    OnMouseUp := TabControlMouseUp;
-    Images := TabImageList;
-  end;
-  TabsPos := hpTop;
-  MoveDuration := 1000; // ms
+  *)
 end;
 
 destructor TCoolDockManager.Destroy;
@@ -600,15 +473,8 @@ begin
     if (Control is TForm) and Assigned((Control as TForm).Icon) then
       NewPanel.Header.Icon.Picture.Assign((Control as TForm).Icon);
 
-    if DockStyle = dsTabs then begin
-      TabControl.Tabs.Add(Control.Caption);
-      TabImageList.Add(NewPanel.Header.Icon.Picture.Bitmap, nil);
-      if Assigned(NewPanel.Splitter) then
-        NewPanel.Splitter.Visible := False;
-      NewPanel.ClientAreaPanel.Visible := False;
-      NewPanel.Visible := False;
-      TabControlChange(Self);
-    end;
+    DockStyleHandler.InsertControl(NewPanel, Control, InsertAt);
+
     NewPanel.Control := Control;
     Control.AddHandlerOnVisibleChanged(NewPanel.VisibleChange);
     Control.Parent := NewPanel.ClientAreaPanel;
@@ -764,31 +630,18 @@ var
 begin
   if FDockStyle <> AValue then begin
     FDockStyle := AValue;
+    DockStyleHandler.Free;
     if AValue = dsTabs then begin
-      TabControl.Visible := True;
-      TabControl.Tabs.Clear;
-      TabImageList.Clear;
-      for I := 0 to FDockPanels.Count - 1 do begin
-        TabControl.Tabs.Add(TCoolDockClientPanel(FDockPanels[I]).Control.Caption);
-        TabImageList.Add(TCoolDockClientPanel(FDockPanels[I]).Header.Icon.Picture.Bitmap, nil);
-        if Assigned(TCoolDockClientPanel(FDockPanels[I]).Splitter) then
-          TCoolDockClientPanel(FDockPanels[I]).Splitter.Visible := False;
-        TCoolDockClientPanel(FDockPanels[I]).ClientAreaPanel.Visible := False;
-        TCoolDockClientPanel(FDockPanels[I]).Visible := False;
-      end;
-      TabControlChange(Self);
+      DockStyleHandler := TCoolDockStyleTabs.Create(Self);
     end else
     if AValue = dsList then begin
-      TabControl.Visible := False;
-      TabControl.Tabs.Clear;
-      for I := 0 to FDockPanels.Count - 1 do begin
-        if Assigned(TCoolDockClientPanel(FDockPanels[I]).Splitter) then
-        TCoolDockClientPanel(FDockPanels[I]).Splitter.Visible := True;
-        TCoolDockClientPanel(FDockPanels[I]).Visible := True;
-        TCoolDockClientPanel(FDockPanels[I]).ClientAreaPanel.Parent := TCoolDockClientPanel(FDockPanels[I]);
-        TCoolDockClientPanel(FDockPanels[I]).ClientAreaPanel.Visible := True;
-        TCoolDockClientPanel(FDockPanels[I]).Control.Visible := True;
-      end;
+      DockStyleHandler := TCoolDockStyleRegions.Create(Self);
+    end else
+    if AValue = dsPopupList then begin
+      DockStyleHandler := TCoolDockStylePopupRegions.Create(Self);
+    end else
+    if AValue = dsPopupTabs then begin
+      DockStyleHandler := TCoolDockStylePopupTabs.Create(Self);
     end;
   end;
   UpdateClientSize;
@@ -798,100 +651,15 @@ procedure TCoolDockManager.SetMaster(const AValue: TCoolDockMaster);
 begin
   if FMaster = AValue then Exit;
   FMaster := AValue;
-  TabsPos := AValue.DefaultTabsPos;
 end;
 
 procedure TCoolDockManager.SetMoveDuration(const AValue: Integer);
 begin
 end;
 
-procedure TCoolDockManager.SetTabsPos(const AValue: THeaderPos);
-begin
-  if FTabsPos = AValue then Exit;
-  FTabsPos := AValue;
-  with TabControl do
-  case AValue of
-    hpAuto, hpTop: begin
-      Align := alTop;
-      TabPosition := tpTop;
-      Height := GrabberSize;
-    end;
-    hpLeft: begin
-      Align := alLeft;
-      TabPosition := tpLeft;
-      Width := GrabberSize;
-    end;
-    hpRight: begin
-      Align := alRight;
-      TabPosition := tpRight;
-      Width := GrabberSize;
-    end;
-    hpBottom: begin
-      Align := alBottom;
-      TabPosition := tpBottom;
-      Height := GrabberSize;
-    end;
-  end;
-end;
-
 procedure TCoolDockManager.UpdateClientSize;
-var
-  I: Integer;
 begin
-  if DockStyle = dsList then begin
-    for I := 0 to FDockPanels.Count - 1 do begin
-      TCoolDockClientPanel(FDockPanels[I]).Height := FDockSite.Height div
-        FDockSite.DockClientCount;
-      TCoolDockClientPanel(FDockPanels[I]).Width := FDockSite.Width div
-        FDockSite.DockClientCount;
-      //TCoolDockClientPanel(FDockPanels[I]).DockPanelPaint(Self);
-      TCoolDockClientPanel(FDockPanels[I]).DockPanelPaint(Self);
-    end;
-  end else
-  if DockStyle = dsTabs then begin
-    for I := 0 to FDockPanels.Count - 1 do begin
-      TCoolDockClientPanel(FDockPanels[I]).ClientAreaPanel.Width := FDockSite.Width;
-      TCoolDockClientPanel(FDockPanels[I]).ClientAreaPanel.Height := FDockSite.Height - TabControl.Height;
-      //TCoolDockClientPanel(FDockPanels[I]).DockPanelPaint(Self);
-    end;
-  end;
-end;
-
-procedure TCoolDockManager.TabControlChange(Sender: TObject);
-var
-  I: Integer;
-begin
-  // Hide all clients
-  for I := 0 to FDockPanels.Count - 1 do begin
-    TCoolDockClientPanel(FDockPanels[I]).ClientAreaPanel.Visible := False;
-    TCoolDockClientPanel(FDockPanels[I]).ClientAreaPanel.Parent := FDockSite;
-    TCoolDockClientPanel(FDockPanels[I]).Control.Align := alClient;
-    TCoolDockClientPanel(FDockPanels[I]).Control.Visible := False;
-
-    // Workaround for "Cannot focus" error
-    TForm(TCoolDockClientPanel(FDockPanels[I]).Control).ActiveControl := nil;
-  end;
-  if (TabControl.TabIndex <> -1) and (FDockPanels.Count > TabControl.TabIndex) then begin
-    with TCoolDockClientPanel(FDockPanels[TabControl.TabIndex]), ClientAreaPanel do begin
-      Control.Show;
-      AutoHide.Enable := True;
-      if AutoHide.Enable then begin
-        //Parent := nil;
-        Visible := True;
-        if AutoHide.ControlVisible then begin
-          AutoHide.Hide;
-        end;
-        AutoHide.Control := Control;
-        AutoHide.Show;
-      end else begin
-        Parent := FDockSite;
-        Visible := True;
-        UpdateClientSize;
-      end;
-    end;
-  //TCoolDockClientPanel(FDockPanels[TabControl.TabIndex]).Visible := True;
-  end;
-  MouseDownSkip := True;
+  DockStyleHandler.UpdateClientSize;
 end;
 
 procedure TCoolDockManager.PopupMenuTabsClick(Sender: TObject);
@@ -909,12 +677,6 @@ begin
 //  DockSiteTForm(TCoolDockManager(TControl(Sender).Parent.Parent.Parent.DockManager).FDockSite).Close;
 end;
 
-procedure TCoolDockManager.PopupMenuTabCloseClick(Sender: TObject);
-begin
-  if TabControl.TabIndex <> -1 then
-    TCoolDockClientPanel(FDockPanels[TabControl.TabIndex]).Control.Hide;
-end;
-
 procedure TCoolDockManager.PopupMenuRenameClick(Sender: TObject);
 var
   Value: string;
@@ -926,27 +688,27 @@ end;
 
 procedure TCoolDockManager.PopupMenuPositionAutoClick(Sender: TObject);
 begin
-  TabsPos := hpAuto;
+  //TabsPos := hpAuto;
 end;
 
 procedure TCoolDockManager.PopupMenuPositionLeftClick(Sender: TObject);
 begin
-  TabsPos := hpLeft;
+  //TabsPos := hpLeft;
 end;
 
 procedure TCoolDockManager.PopupMenuPositionRightClick(Sender: TObject);
 begin
-  TabsPos := hpRight;
+  //TabsPos := hpRight;
 end;
 
 procedure TCoolDockManager.PopupMenuPositionTopClick(Sender: TObject);
 begin
-  TabsPos := hpTop;
+  //TabsPos := hpTop;
 end;
 
 procedure TCoolDockManager.PopupMenuPositionBottomClick(Sender: TObject);
 begin
-  TabsPos := hpBottom;
+  //TabsPos := hpBottom;
 end;
 
 procedure TCoolDockManager.PopupMenuUndockClick(Sender: TObject);
@@ -964,154 +726,11 @@ begin
     Master.Customize.Execute;
 end;
 
-procedure TCoolDockManager.TabControlMouseDown(Sender: TObject; Button: TMouseButton;
-  Shift: TShiftState; X, Y: Integer);
-begin
-  if not MouseDownSkip then begin
-    MouseDown := True;
-    MouseButton := Button;
-  end;
-  MouseDownSkip := False;
-end;
-
-procedure TCoolDockManager.TabControlMouseUp(Sender: TObject;
-  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
-begin
-  MouseDown := False;
-end;
-
 procedure TCoolDockManager.PopupMenuListClick(Sender: TObject);
 begin
   DockStyle := dsList;
 end;
 
-{ TCoolDockClientPanel }
-
-procedure TCoolDockClientPanel.SetShowHeader(const AValue: Boolean);
-begin
-  if FShowHeader = AValue then Exit;
-  FShowHeader := AValue;
-  DockPanelPaint(Self);
-end;
-
-procedure TCoolDockClientPanel.VisibleChange(Sender: TObject);
-var
-  Visible: Boolean;
-begin
-  (*if Assigned(Control) then begin
-    Visible := Control.Visible;
-    if Assigned(ClientAreaPanel) then
-      ClientAreaPanel.Visible := Visible;
-    if Assigned(Splitter) then
-      Splitter.Visible := Visible;
-    OwnerDockManager.UpdateClientSize;
-  end;*)
-end;
-
-procedure TCoolDockClientPanel.SetAutoHide(const AValue: Boolean);
-begin
-  if FAutoHide = AValue then Exit;
-  FAutoHide := AValue;
-end;
-
-function TCoolDockClientPanel.GetAutoHideEnabled: Boolean;
-begin
-end;
-
-procedure TCoolDockClientPanel.SetAutoHideEnabled(const AValue: Boolean);
-begin
-
-end;
-
-procedure TCoolDockClientPanel.SetHeaderPos(const AValue: THeaderPos);
-begin
-  if FHeaderPos=AValue then exit;
-  FHeaderPos:=AValue;
-end;
-
-constructor TCoolDockClientPanel.Create(TheOwner: TComponent);
-begin
-  inherited;
-  ShowHeader := True;
-  Header := TCoolDockHeader.Create(Self);
-  with Header do begin
-    Parent := Self;
-    Visible := ShowHeader;
-    Align := alTop;
-    Height := GrabberSize;
-    ParentClientPanel := Self;
-  end;
-  ClientAreaPanel := TPanel.Create(Self);
-  with ClientAreaPanel do begin
-    Parent := Self;
-    Visible := True;
-    DockSite := True;
-    UseDockManager := True;
-    Align := alClient;
-    BevelInner := bvNone;
-    BevelOuter := bvNone;
-    //Color := clGreen;
-  end;
-  Splitter := TSplitter.Create(Self);
-  with Splitter do begin
-    //Color := clRed;
-  end;
-  OnPaint := DockPanelPaint;
-  Header.Shape.OnMouseDown := DockPanelMouseDown;
-  OnResize := ResizeExecute;
-  BevelInner := bvNone;
-  BevelOuter := bvNone;
-  AutoHideEnabled := True;
-  HeaderPos := hpTop;
-end;
-
-destructor TCoolDockClientPanel.Destroy;
-begin
-  inherited Destroy;
-end;
-
-procedure TCoolDockClientPanel.ResizeExecute(Sender: TObject);
-begin
-  Control.Top := GrabberSize;
-  Control.Left := 0;
-  Control.Width := Width;
-  Control.Height := Height - GrabberSize;
-  //Control.SetBounds(0, GrabberSize, Width - Control.Left,
-  //  Height - Control.Top);
-end;
-
-procedure TCoolDockClientPanel.DockPanelPaint(Sender: TObject);
-var
-  I: Integer;
-  R: TRect;
-begin
-  if not (csDesigning in ComponentState) then
-  if Assigned(Control) then begin
-    R := Control.ClientRect;
-    Canvas.FillRect(R);
-    Header.Visible := ShowHeader;
-    if ShowHeader then begin
-      if ClientAreaPanel.DockClientCount = 0 then
-        Header.DrawGrabber(Canvas, Control) else
-      Header.DrawGrabber(Canvas, ClientAreaPanel);
-    end;
-  end;
-end;
-
-procedure TCoolDockClientPanel.DockPanelMouseDown(Sender: TObject;
-  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
-begin
-  if Control is TForm then begin
-    //TForm(Control).SetFocus;
-    DockPanelPaint(Self);
-  end;
-  if (Button = mbLeft) then begin
-    //(Control as TWinControl).DockSite := False;
-    ClientAreaPanel.DockSite := False;
-    (Control as TWinControl).BeginDrag(False, 10);
-    //DragManager.DragStart(Control, False, 1);
-  end;
-end;
 
 { TCoolDockConjoinForm }
 
@@ -1315,79 +934,6 @@ begin
   end;
 end;
 
-{ TCoolDockHeader }
-
-constructor TCoolDockHeader.Create(TheOwner: TComponent);
-begin
-  inherited Create(TheOwner);
-  Shape := TShape.Create(Self);
-  with Shape do begin
-    Parent := Self;
-    Anchors := [akRight, akBottom, akLeft, akTop];
-    Left := 1;
-    Top := 1;
-    Width := Self.Width - 2;
-    Height := Self.Height - 2;
-    Brush.Style := bsClear;
-  end;
-  CloseButton := TSpeedButton.Create(Self);
-  with CloseButton do begin
-    Parent := Self;
-    Caption := 'X';
-    Font.Size := 6;
-    Width := GrabberSize - 8;
-    Height := GrabberSize - 8;
-    Anchors := [akRight, akTop];
-    Left := Self.Width - Width - 4;
-    Top := 4;
-    Visible := True;
-    OnClick := CloseButtonClick;
-  end;
-  Title := TLabel.Create(Self);
-  with Title do begin
-    Parent := Self;
-    Visible := True;
-    Top := 4;
-    Left := 6;
-    BevelInner := bvNone;
-    BevelOuter := bvNone;
-  end;
-  Icon := TImage.Create(Self);
-  with Icon do begin
-    Parent := Self;
-    Left := 4;
-    Top := 2;
-    Visible := True;
-  end;
-end;
-
-destructor TCoolDockHeader.Destroy;
-begin
-  inherited Destroy;
-end;
-
-procedure TCoolDockHeader.DrawGrabber(Canvas: TCanvas; AControl: TControl);
-begin
-  with Canvas do begin
-    Brush.Color := clBtnFace;
-    Pen.Color := clBlack;
-    //FillRect(0, 0, AControl.Width, GrabberSize);
-
-    if (AControl as TWinControl).Focused then
-      Title.Font.Style := Font.Style + [fsBold]
-      else Title.Font.Style := Font.Style - [fsBold];
-    Rectangle(1, 1, AControl.Width - 1, GrabberSize - 1);
-    if Icon.Picture.Width > 0 then Title.Left := 8 + Icon.Picture.Width
-      else Title.Left := 6;
-    Title.Caption := AControl.Caption;
-  end;
-end;
-
-procedure TCoolDockHeader.CloseButtonClick(Sender: TObject);
-begin
-  ParentClientPanel.Control.Hide;
-end;
-
 { TCoolDockCustomize }
 
 procedure TCoolDockCustomize.SetMaster(const AValue: TCoolDockMaster);
@@ -1538,101 +1084,6 @@ begin
   end;
 end;
 
-{ TCoolDockAutoHide }
-
-procedure TCoolDockAutoHide.UpdateBounds;
-begin
-  case TabPosition of
-    tpBottom: begin
-      Control.Height := Round((StartBounds.Bottom - StartBounds.Top) * Position);
-      Control.Top := StartBounds.Bottom - Control.Height;
-    end;
-    tpTop: begin
-      Control.Height := Round((StartBounds.Bottom - StartBounds.Top) * Position);
-    end;
-    tpRight: begin
-      Control.Width := Round((StartBounds.Right - StartBounds.Left) * Position);
-    end;
-    tpLeft: begin
-      Control.Width := Round((StartBounds.Right - StartBounds.Left) * Position);
-      Control.Left := StartBounds.Right - Control.Width;
-    end;
-  end;
-end;
-
-procedure TCoolDockAutoHide.UpdateTimerInterval;
-begin
-  Timer.Interval := Round(FDuration * 1000 / FStepCount);
-end;
-
-procedure TCoolDockAutoHide.SetDuration(const AValue: Real);
-begin
-  if FDuration = AValue then Exit;
-  FDuration := AValue;
-  UpdateTimerInterval;
-end;
-
-procedure TCoolDockAutoHide.SetStepCount(const AValue: Integer);
-begin
-  if FStepCount = AValue then Exit;
-  FStepCount := AValue;
-  UpdateTimerInterval;
-end;
-
-procedure TCoolDockAutoHide.Hide;
-begin
-  StartBounds := Control.BoundsRect;
-  Direction := -1;
-  Position := 1;
-  Timer.Enabled := True;
-  UpdateBounds;
-end;
-
-procedure TCoolDockAutoHide.Show;
-begin
-  StartBounds := Control.BoundsRect;
-  Control.Align := alCustom;
-  Direction := 1;
-  Position := 0;
-  Timer.Enabled := True;
-  UpdateBounds;
-end;
-
-constructor TCoolDockAutoHide.Create;
-begin
-  Timer := TTimer.Create(nil);
-  Timer.Enabled := False;
-  Timer.OnTimer := TimerExecute;
-  StepCount := AutoHideStepCount;
-  Duration := 0.5;
-end;
-
-destructor TCoolDockAutoHide.Destroy;
-begin
-  Timer.Free;
-  inherited Destroy;
-end;
-
-procedure TCoolDockAutoHide.TimerExecute(Sender: TObject);
-begin
-  if Direction = 1 then begin
-    Position := Position + 1 / StepCount;
-    if Position > 1 then begin
-      Position := 1;
-      Timer.Enabled := False;
-      ControlVisible := True;
-    end;
-  end else
-  if Direction = -1 then begin
-    Position := Position - 1 / StepCount;
-    if Position < 1 then begin
-      Position := 0;
-      Timer.Enabled := False;
-      ControlVisible := False;
-    end;
-  end;
-  UpdateBounds;
-end;
 
 end.
 
