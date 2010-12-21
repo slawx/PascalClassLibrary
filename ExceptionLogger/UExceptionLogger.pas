@@ -5,6 +5,7 @@ unit UExceptionLogger;
 interface
 
 uses
+  {$ifdef windows}Windows,{$endif}
   Classes, SysUtils, UStackTrace, CustomLineInfo, Forms;
 
 type
@@ -15,6 +16,7 @@ type
   private
     FMaxCallStackDepth: Integer;
     FLogFileName: string;
+    function GetAppVersion: string;
     procedure MakeReport;
     procedure SetMaxCallStackDepth(const AValue: Integer);
   public
@@ -48,6 +50,7 @@ resourcestring
   STime = 'Time';
   SProcessID = 'Process ID';
   SThreadID = 'Thread ID';
+  SVersion = 'Version';
 
 procedure Register;
 begin
@@ -80,6 +83,7 @@ begin
     Add(SExceptionClass + ': ' + LastException.ClassName);
     Add(SMessage + ': ' + LastException.Message);
     Add(SApplication + ': ' + Application.Title);
+    Add(SVersion + ': ' + GetAppVersion);
     Add(STime + ': ' + DateTimeToStr(Now));
     Add(SProcessID + ': ' + IntToStr(GetProcessID));
     Add(SThreadID + ': ' + IntToStr(GetThreadID));
@@ -118,11 +122,11 @@ begin
     for I := 0 to StackTrace.Count - 1 do
     with TStackFrameInfo(StackTrace[I]) do begin
       Line := IntToStr(Index) + ': ' + IntToHex(Address, 8) + ' in ' + FunctionName + ' ' +
-        Source + '(' + IntToStr(LineNumber) + ')' + #13#10;
+        Source + '(' + IntToStr(LineNumber) + ')' + LineEnding;
       if Length(Line) > 0 then
         Write(Line[1], Length(Line));
     end;
-    Line := #13#10;
+    Line := LineEnding;
     Write(Line[1], Length(Line));
   finally
     LogFile.Free;
@@ -178,6 +182,35 @@ procedure TExceptionLogger.SetMaxCallStackDepth(const AValue: Integer);
 begin
   FMaxCallStackDepth := AValue;
   StackTrace.MaxDepth := AValue;
+end;
+
+function TExceptionLogger.GetAppVersion: string;
+var
+  Size, Size2: DWord;
+  Pt, Pt2: Pointer;
+begin
+  {$ifdef windows}
+  Size := GetFileVersionInfoSize(PChar(ParamStr(0)), Size2);
+  if Size > 0 then
+  begin
+    GetMem(Pt, Size);
+    try
+       GetFileVersionInfo(PChar (ParamStr(0)), 0, Size, Pt);
+       VerQueryValue(Pt, '\', Pt2, Size2);
+       with TVSFixedFileInfo(Pt2^) do
+       begin
+         Result := IntToStr(HiWord(dwFileVersionMS)) + '.' +
+           IntToStr(LoWord(dwFileVersionMS)) + '.' +
+           IntToStr(HiWord(dwFileVersionLS)) + '.' +
+           IntToStr(LoWord(dwFileVersionLS));
+      end;
+    finally
+      FreeMem(Pt);
+    end;
+  end;
+  {$else}
+  Result := '';
+  {$endif}
 end;
 
 end.

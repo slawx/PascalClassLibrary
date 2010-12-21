@@ -33,3 +33,7 @@ msgstr "ID vlákna"
 msgid "Time"
 msgstr "Čas"
 
+#: uexceptionlogger.sversion
+msgid "Version"
+msgstr ""
+

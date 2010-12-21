@@ -25,3 +25,7 @@ msgstr ""
 msgid "Time"
 msgstr ""
 
+#: uexceptionlogger.sversion
+msgid "Version"
+msgstr ""
+
