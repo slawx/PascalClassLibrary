@@ -32,7 +32,7 @@
         <Type Value="Include"/>
       </Item3>
       <Item4>
-        <Filename Value="Generic\GenericObjectList.inc"/>
+        <Filename Value="Generic\GenericListObject.inc"/>
         <Type Value="Include"/>
       </Item4>
       <Item5>
@@ -80,8 +80,7 @@
         <UnitName Value="SpecializedSet"/>
       </Item15>
       <Item16>
-        <Filename Value="Specialized\SpecializedObjectList.pas"/>
-        <UnitName Value="SpecializedObjectList"/>
+        <Filename Value="Generic\GenericListString.inc"/>
       </Item16>
     </Files>
     <Type Value="RunAndDesignTime"/>
@@ -99,4 +98,4 @@
       <Version Value="2"/>
     </PublishOptions>
   </Package>
-</CONFIG>
+</CONFIG>

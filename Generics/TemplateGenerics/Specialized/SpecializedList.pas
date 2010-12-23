@@ -51,14 +51,14 @@ type
 {$I 'GenericList.inc'}
 
 // TListString<Integer, string>
-{$DEFINE TGListIndex := Integer}
-{$DEFINE TGListItem := string}
-{$DEFINE TGList := TListString}
-{$DEFINE TGListSortCompare := TListStringSortCompare}
-{$DEFINE TGListToStringConverter := TListStringToStringConverter}
-{$DEFINE TGListFromStringConverter := TListStringFromStringConverter}
+{$DEFINE TGListStringIndex := Integer}
+{$DEFINE TGListStringItem := string}
+{$DEFINE TGListString := TListString}
+{$DEFINE TGListStringSortCompare := TListStringSortCompare}
+{$DEFINE TGListStringToStringConverter := TListStringToStringConverter}
+{$DEFINE TGListStringFromStringConverter := TListStringFromStringConverter}
 {$DEFINE INTERFACE}
-{$I 'GenericList.inc'}
+{$I 'GenericListString.inc'}
 
 // TListByte<Integer, Byte>
 {$DEFINE TGListIndex := Integer}
@@ -79,6 +79,18 @@ type
 {$DEFINE TGListFromStringConverter := TListFromStringConverterChar}
 {$DEFINE INTERFACE}
 {$I 'GenericList.inc'}
+
+// TListObject<Integer, TObject>
+{$DEFINE TGListObjectIndex := Integer}
+{$DEFINE TGListObjectItem := TObject}
+{$DEFINE TGListObjectList := TObjectListListObject}
+{$DEFINE TGListObject := TListObject}
+{$DEFINE TGListObjectSortCompare := TObjectListSortCompareObject}
+{$DEFINE TGListObjectToStringConverter := TObjectListToStringConverterObject}
+{$DEFINE TGListObjectFromStringConverter := TObjectListFromStringConverterObject}
+{$DEFINE INTERFACE}
+{$I 'GenericListObject.inc'}
+
 
 { TListChar }
 
@@ -139,14 +151,14 @@ implementation
 {$I 'GenericList.inc'}
 
 // TListString<Integer, string>
-{$DEFINE TGListIndex := Integer}
-{$DEFINE TGListItem := string}
-{$DEFINE TGList := TListString}
-{$DEFINE TGListSortCompare := TListStringSortCompare}
-{$DEFINE TGListToStringConverter := TListStringToStringConverter}
-{$DEFINE TGListFromStringConverter := TListStringFromStringConverter}
+{$DEFINE TGListStringIndex := Integer}
+{$DEFINE TGListStringItem := string}
+{$DEFINE TGListString := TListString}
+{$DEFINE TGListStringSortCompare := TListStringSortCompare}
+{$DEFINE TGListStringToStringConverter := TListStringToStringConverter}
+{$DEFINE TGListStringFromStringConverter := TListStringFromStringConverter}
 {$DEFINE IMPLEMENTATION}
-{$I 'GenericList.inc'}
+{$I 'GenericListString.inc'}
 
 // TListByte<Integer, Byte>
 {$DEFINE TGListIndex := Integer}
@@ -167,6 +179,18 @@ implementation
 {$DEFINE TGListFromStringConverter := TListFromStringConverterChar}
 {$DEFINE IMPLEMENTATION}
 {$I 'GenericList.inc'}
+
+// TListObject<Integer, TObject>
+{$DEFINE TGListObjectIndex := Integer}
+{$DEFINE TGListObjectItem := TObject}
+{$DEFINE TGListObjectList := TObjectListListObject}
+{$DEFINE TGListObject := TListObject}
+{$DEFINE TGListObjectSortCompare := TObjectListSortCompareObject}
+{$DEFINE TGListObjectToStringConverter := TObjectListToStringConverterObject}
+{$DEFINE TGListObjectFromStringConverter := TObjectListFromStringConverterObject}
+{$DEFINE IMPLEMENTATION}
+{$I 'GenericListObject.inc'}
+
 
 
 function StrToStr(Value: string): string;

@@ -25,7 +25,7 @@
     function Add(Item: TGListItem): TGListIndex;
     procedure AddArray(Values: array of TGListItem);
     procedure AddList(List: TGList);
-    procedure Assign(List: TGList);
+    procedure Assign(Source: TGList); virtual;
     procedure Clear; virtual;
     procedure Contract;
     procedure Delete(Index: TGListIndex); virtual;
@@ -125,14 +125,14 @@ begin
   until I >= R;
 end;
 
-procedure TGList.Assign(List: TGList);
+procedure TGList.Assign(Source: TGList);
 var
   I: Integer;
 begin
-  Count := List.Count;
+  Count := Source.Count;
   I := 0;
   while I < Count do begin
-    Items[I] := List[I];
+    Items[I] := Source[I];
     I := I + 1;
   end;
 end;
@@ -466,4 +466,4 @@ begin
 end;
 
 {$UNDEF IMPLEMENTATION}
-{$ENDIF}
+{$ENDIF}
