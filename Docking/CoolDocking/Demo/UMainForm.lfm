@@ -43,6 +43,7 @@ object MainForm: TMainForm
     TabsEnabled = False
     DefaultTabsPos = hpAuto
     DefaultHeaderPos = hpAuto
+    DefaultMoveSpeed = 0
     Customize = CoolDockCustomize1
     ShowIcons = False
     left = 384

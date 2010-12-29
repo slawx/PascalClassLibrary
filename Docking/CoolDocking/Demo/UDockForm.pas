@@ -15,6 +15,7 @@ type
   TDockForm = class(TForm)
     CoolDockClient1: TCoolDockClient;
     Memo1: TMemo;
+    procedure FormDestroy(Sender: TObject);
   private
     { private declarations }
   public
@@ -27,6 +28,15 @@ var
 implementation
 
 {$R *.lfm}
+
+{ TDockForm }
+
+procedure TDockForm.FormDestroy(Sender: TObject);
+var
+  Temp: string;
+begin
+  Temp := Name;
+end;
 
 end.
 

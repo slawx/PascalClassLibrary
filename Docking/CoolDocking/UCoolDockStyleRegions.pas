@@ -16,8 +16,11 @@ type
   { TCoolDockStyleRegions }
 
   TCoolDockStyleRegions = class(TCoolDockStyle)
-    Header: TCoolDockHeader;
+  private
+  public
     Panels: TObjectList; // TObjectList<TCoolDockStyleRegionsPanel>
+    function GetHeaderPos: THeaderPos; override;
+    procedure SetHeaderPos(const AValue: THeaderPos); override;
     constructor Create(AManager: TObject);
     destructor Destroy; override;
     procedure UpdateClientSize; override;
@@ -30,6 +33,16 @@ uses
 
 
 { TCoolDockStyleRegions }
+
+function TCoolDockStyleRegions.GetHeaderPos: THeaderPos;
+begin
+//  Result := TCoolDockManager(Manager).;
+end;
+
+procedure TCoolDockStyleRegions.SetHeaderPos(const AValue: THeaderPos);
+begin
+  inherited SetHeaderPos(AValue);
+end;
 
 constructor TCoolDockStyleRegions.Create(AManager: TObject);
 var
@@ -70,8 +83,6 @@ begin
     TCoolDockClientPanel(DockPanels[I]).DockPanelPaint(Self);
   end;
 end;
-
-
 
 end.
 

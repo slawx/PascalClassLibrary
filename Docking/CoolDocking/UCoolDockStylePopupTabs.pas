@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, Controls, SysUtils, ComCtrls, ExtCtrls,
-  UCoolDockStyleTabs, UCoolDockStyle;
+  UCoolDockStyleTabs, UCoolDockStyle, UCoolDockClientPanel;
 
 type
   { TCoolDockAutoHide }
@@ -51,6 +51,7 @@ type
       Shift: TShiftState; X, Y: Integer);
     constructor Create(AManager: TObject);
     destructor Destroy; override;
+  private
   end;
 
 
@@ -180,25 +181,12 @@ begin
 end;
 
 constructor TCoolDockStylePopupTabs.Create(AManager: TObject);
+var
+  I: Integer;
 begin
+  inherited;
+
   AutoHide := TCoolDockAutoHide.Create;
-  TabImageList := TImageList.Create(TCoolDockManager(AManager).DockSite);
-  with TabImageList do begin
-  end;
-  TabControl := TTabControl.Create(TCoolDockManager(AManager).DockSite);
-  with TabControl do begin
-    Parent := TCoolDockManager(AManager).DockSite;
-    Visible := False;
-    Align := alTop;
-    Height := 24;
-    OnChange := TabControlChange;
-    PopupMenu := TCoolDockManager(Manager).PopupMenu;
-    TTabControlNoteBookStrings(Tabs).NoteBook.OnMouseLeave := TabControlMouseLeave;
-    TTabControlNoteBookStrings(Tabs).NoteBook.OnMouseDown := TabControlMouseDown;
-    TTabControlNoteBookStrings(Tabs).NoteBook.OnMouseUp := TabControlMouseUp;
-    OnMouseUp := TabControlMouseUp;
-    Images := TabImageList;
-  end;
 end;
 
 destructor TCoolDockStylePopupTabs.Destroy;

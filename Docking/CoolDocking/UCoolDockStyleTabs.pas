@@ -5,7 +5,7 @@ unit UCoolDockStyleTabs;
 interface
 
 uses
-  Classes, Controls, ExtCtrls, ComCtrls, SysUtils,
+  Classes, Controls, ExtCtrls, ComCtrls, SysUtils, Dialogs,
   Menus, UCoolDockStyle, Forms, UCoolDockClientPanel;
 
 type
@@ -24,14 +24,16 @@ type
       Shift: TShiftState; X, Y: Integer);
     procedure TabControlMouseUp(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
-    constructor Create(AManager: TObject);
-    destructor Destroy; override;
     procedure InsertControl(NewPanel: TCoolDockClientPanel;
       AControl: TControl; InsertAt: TAlign); override;
     procedure UpdateClientSize; override;
   private
     FTabsPos: THeaderPos;
   public
+    constructor Create(AManager: TObject);
+    destructor Destroy; override;
+    procedure ChangeVisible(Control: TWinControl; Visible: Boolean); override;
+    procedure Switch(Index: Integer); override;
     procedure SetTabsPos(const AValue: THeaderPos);
     procedure PopupMenuTabCloseClick(Sender: TObject);
     property TabsPos: THeaderPos read FTabsPos write SetTabsPos;
@@ -52,13 +54,13 @@ end;
 
 procedure TCoolDockStyleTabs.TabControlMouseLeave(Sender: TObject);
 begin
-(*  if MouseDown then
+  if MouseDown then
+  with TCoolDockManager(Manager) do
   if (TabControl.TabIndex <> -1) then begin
-    TCoolDockClientPanel(FDockPanels[TabControl.TabIndex]).ClientAreaPanel.DockSite := False;
-    DragManager.DragStart(TCoolDockClientPanel(FDockPanels[TabControl.TabIndex]).Control, False, 1);
+    TCoolDockClientPanel(DockPanels[TabControl.TabIndex]).ClientAreaPanel.DockSite := False;
+    DragManager.DragStart(TCoolDockClientPanel(DockPanels[TabControl.TabIndex]).Control, False, 1);
   end;
   MouseDown := False;
-  *)
 end;
 
 procedure TCoolDockStyleTabs.TabControlChange(Sender: TObject);
@@ -68,14 +70,18 @@ begin
   // Hide all clients
   with TCoolDockManager(Manager) do
   for I := 0 to DockPanels.Count - 1 do begin
-    TCoolDockClientPanel(DockPanels[I]).ClientAreaPanel.Visible := False;
+    TCoolDockClientPanel(DockPanels[I]).Control.Hide;
+    TCoolDockClientPanel(DockPanels[I]).ClientAreaPanel.Hide;
     TCoolDockClientPanel(DockPanels[I]).ClientAreaPanel.Parent := DockSite;
     TCoolDockClientPanel(DockPanels[I]).Control.Align := alClient;
-    TCoolDockClientPanel(DockPanels[I]).Control.Visible := False;
+    //ShowMessage(TCoolDockClientPanel(DockPanels[I]).Control.ClassName);
+    Application.ProcessMessages;
 
     // Workaround for "Cannot focus" error
     TForm(TCoolDockClientPanel(DockPanels[I]).Control).ActiveControl := nil;
   end;
+
+  // Show selected
   with TCoolDockManager(Manager) do
   if (TabControl.TabIndex <> -1) and (DockPanels.Count > TabControl.TabIndex) then begin
     with TCoolDockClientPanel(DockPanels[TabControl.TabIndex]), ClientAreaPanel do begin
@@ -92,6 +98,7 @@ begin
       end else begin
       *)
         //Parent := DockSite;
+        //Show;
         Visible := True;
         UpdateClientSize;
 //      end;
@@ -159,14 +166,19 @@ begin
     TCoolDockClientPanel(DockPanels[I]).ClientAreaPanel.Visible := False;
     TCoolDockClientPanel(DockPanels[I]).Visible := False;
   end;
-  TabControlChange(Self);
 end;
 
 destructor TCoolDockStyleTabs.Destroy;
 begin
-  TabControl.Visible := False;
-  TabControl.Tabs.Clear;
+  TabControl.Free;
+  TabImageList.Free;
   inherited Destroy;
+end;
+
+procedure TCoolDockStyleTabs.Switch(Index: Integer);
+begin
+  inherited Switch(Index);
+  TabControl.TabIndex := Index;
 end;
 
 procedure TCoolDockStyleTabs.InsertControl(NewPanel: TCoolDockClientPanel;
@@ -192,6 +204,18 @@ begin
     TCoolDockClientPanel(DockPanels[I]).ClientAreaPanel.Width := DockSite.Width;
     TCoolDockClientPanel(DockPanels[I]).ClientAreaPanel.Height := DockSite.Height - TabControl.Height;
     //TCoolDockClientPanel(FDockPanels[I]).DockPanelPaint(Self);
+  end;
+end;
+
+procedure TCoolDockStyleTabs.ChangeVisible(Control: TWinControl; Visible: Boolean);
+var
+  I: Integer;
+begin
+  inherited;
+  if not Visible then
+  if Assigned(TWinControl(Control).DockManager) then
+  with TCoolDockManager(TWinControl(Control).DockManager) do begin
+//    ShowMessage(IntToStr(DockPanels.Count));
   end;
 end;
 

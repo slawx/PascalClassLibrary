@@ -1,0 +1,79 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Project-Id-Version: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: Jiří Hajda <software@mezservis.cz>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ucooldockpopupmenu.scloseform
+msgid "Close"
+msgstr "Zavřít"
+
+#: ucooldockpopupmenu.scustomize
+msgid "Customize..."
+msgstr "Upravit..."
+
+#: ucooldockpopupmenu.sdocklist
+msgid "List"
+msgstr "Seznam"
+
+#: ucooldockpopupmenu.sdockpopuplist
+msgid "Popup list"
+msgstr "Vysouvací seznam"
+
+#: ucooldockpopupmenu.sdockpopuptabs
+msgid "Popup tabs"
+msgstr "Vysouvací záložky"
+
+#: ucooldockpopupmenu.sdockstyle
+msgid "Style"
+msgstr "Styl"
+
+#: ucooldockpopupmenu.sdocktabs
+msgid "Tabs"
+msgstr "Záložky"
+
+#: ucooldockpopupmenu.senternewwindowname
+msgid "Enter new window name"
+msgstr "Zadejte nové jméno okna"
+
+#: ucooldockpopupmenu.sposition
+msgid "Position"
+msgstr "Pozice"
+
+#: ucooldockpopupmenu.spositionauto
+msgid "Auto"
+msgstr "Automaticky"
+
+#: ucooldockpopupmenu.spositionbottom
+msgid "Bottom"
+msgstr "Dole"
+
+#: ucooldockpopupmenu.spositionleft
+msgid "Left"
+msgstr "Vlevo"
+
+#: ucooldockpopupmenu.spositionright
+msgid "Right"
+msgstr "Vpravo"
+
+#: ucooldockpopupmenu.spositiontop
+msgid "Top"
+msgstr "Nahoře"
+
+#: ucooldockpopupmenu.srenameform
+msgid "Rename"
+msgstr "Přejmenovat"
+
+#: ucooldockpopupmenu.srenamewindow
+msgid "Rename window"
+msgstr "Přejmenovat okno"
+
+#: ucooldockpopupmenu.sundock
+msgid "Undock"
+msgstr "Odkotvit"
+

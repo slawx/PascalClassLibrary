@@ -6,6 +6,7 @@ object DockForm: TDockForm
   Caption = 'DockForm'
   ClientHeight = 240
   ClientWidth = 320
+  OnDestroy = FormDestroy
   LCLVersion = '0.9.29'
   object Memo1: TMemo
     Left = 0
@@ -16,7 +17,7 @@ object DockForm: TDockForm
     TabOrder = 0
   end
   object CoolDockClient1: TCoolDockClient
-    Dockable = True
+    Floatable = False
     Master = MainForm.CoolDockMaster1
     left = 40
     top = 24

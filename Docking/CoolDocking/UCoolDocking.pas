@@ -31,31 +31,45 @@ type
     Panel: TPanel;
     CoolDockClient: TCoolDockClient;
     procedure FormShow(Sender : TObject);
+    procedure FormHide(Sender : TObject);
     constructor Create(TheOwner: TComponent); override;
+    destructor Destroy; override;
+  private
+    procedure PanelVisibleChange(Sender: TObject);
   end;
 
   TDockStyle = (dsList, dsTabs, dsPopupTabs, dsPopupList);
+
+  // TObjectList<TCoolDockClientPanel>
+
+  { TCoolDockPanels }
+
+  TCoolDockPanels = class(TObjectList)
+    destructor Destroy; override;
+  end;
 
   { TCoolDockManager }
 
   TCoolDockManager = class(TDockManager)
   private
     FMaster: TCoolDockMaster;
-    DockStyleHandler: TCoolDockStyle;
     FDockStyle: TDockStyle;
     FDockDirection: TDockDirection;
     FDockSite: TWinControl;
-    FDockPanels: TObjectList; // TObjectList<TCoolDockClientPanel>
-    function FindControlInPanels(Control: TControl): TCoolDockClientPanel;
+    FDockPanels: TCoolDockPanels;
     function GetDockSite: TWinControl;
+    function GetHeaderPos: THeaderPos;
     function GetMoveDuration: Integer;
     procedure InsertControlPanel(Control: TControl; InsertAt: TAlign;
       DropCtl: TControl);
     procedure SetDockStyle(const AValue: TDockStyle);
+    procedure SetHeaderPos(const AValue: THeaderPos);
     procedure SetMaster(const AValue: TCoolDockMaster);
     procedure SetMoveDuration(const AValue: Integer);
+    procedure SetVisible(const AValue: Boolean);
     procedure UpdateClientSize;
   public
+    DockStyleHandler: TCoolDockStyle;
     PopupMenu: TCoolDockPopupMenu;
     constructor Create(ADockSite: TWinControl); override;
     destructor Destroy; override;
@@ -81,12 +95,15 @@ type
     procedure SetReplacingControl(Control: TControl); override;
     function AutoFreeByControl: Boolean; override;
 
+    function FindControlInPanels(Control: TControl): TCoolDockClientPanel;
     function CreateContainer(InsertAt: TAlign): TCoolDockConjoinForm;
-    property DockPanels: TObjectList read FDockPanels write FDockPanels;
+    property DockPanels: TCoolDockPanels read FDockPanels write FDockPanels;
     property DockStyle: TDockStyle read FDockStyle write SetDockStyle;
     property MoveDuration: Integer read GetMoveDuration write SetMoveDuration;
     property Master: TCoolDockMaster read FMaster write SetMaster;
     property DockSite: TWinControl read GetDockSite;
+    property HeaderPos: THeaderPos read GetHeaderPos write SetHeaderPos;
+    property Visible: Boolean write SetVisible;
   end;
 
   { TCoolDockMaster }
@@ -193,6 +210,16 @@ begin
   RegisterComponents('CoolDocking', [TCoolDockWindowList]);
 end;
 
+{ TCoolDockPanels }
+
+destructor TCoolDockPanels.Destroy;
+var
+  Temp: Integer;
+begin
+  Temp := Count;
+  inherited Destroy;
+end;
+
 
 { TCoolDockManager }
 
@@ -213,6 +240,11 @@ begin
   Result := FDockSite;
 end;
 
+function TCoolDockManager.GetHeaderPos: THeaderPos;
+begin
+
+end;
+
 function TCoolDockManager.GetMoveDuration: Integer;
 begin
 
@@ -225,18 +257,19 @@ var
 begin
   inherited Create(ADockSite);
   FDockSite := ADockSite;
-  FDockPanels := TObjectList.Create;
+  FDockPanels := TCoolDockPanels.Create;
 
   FDockStyle := dsTabs; // To initialize style value have to be different
   DockStyle := dsList;
   PopupMenu := TCoolDockPopupMenu.Create(Self);
+  PopupMenu.Parent := ADockSite;
 end;
 
 destructor TCoolDockManager.Destroy;
 begin
   PopupMenu.Free;
-  FDockPanels.Free;
   DockStyleHandler.Free;
+  FDockPanels.Free;
   inherited Destroy;
 end;
 
@@ -308,7 +341,8 @@ begin
       OwnerDockManager := Self;
       if DockStyle = dsList then Visible := True;
       Align := alClient;
-      Header.PopupMenu := PopupMenu;
+      Header.PopupMenu := Self.PopupMenu;
+      //PopupMenu.Parent := Self.DockSite;
     end;
     if (Control is TForm) and Assigned((Control as TForm).Icon) then
       NewPanel.Header.Icon.Picture.Assign((Control as TForm).Icon);
@@ -416,7 +450,9 @@ begin
   //inherited;
   if Control.HostDockSite = Self.FDockSite then begin
     ClientPanel := FindControlInPanels(Control);
+
     //if Assigned(ClientPanel) then ClientPanel.Splitter.Free;
+    //Control.RemoveHandlerOnVisibleChanged(ClientPanel.VisibleChange);
     FDockPanels.Remove(ClientPanel);
     if FDockSite.DockClientCount = 2 then FDockDirection := ddNone;
     UpdateClientSize;
@@ -473,6 +509,7 @@ begin
     DockStyleHandler.Free;
     if AValue = dsTabs then begin
       DockStyleHandler := TCoolDockStyleTabs.Create(Self);
+      TCoolDockStyleTabs(DockStyleHandler).TabControlChange(Self);
     end else
     if AValue = dsList then begin
       DockStyleHandler := TCoolDockStyleRegions.Create(Self);
@@ -487,6 +524,11 @@ begin
   UpdateClientSize;
 end;
 
+procedure TCoolDockManager.SetHeaderPos(const AValue: THeaderPos);
+begin
+
+end;
+
 procedure TCoolDockManager.SetMaster(const AValue: TCoolDockMaster);
 begin
   if FMaster = AValue then Exit;
@@ -495,6 +537,14 @@ end;
 
 procedure TCoolDockManager.SetMoveDuration(const AValue: Integer);
 begin
+end;
+
+procedure TCoolDockManager.SetVisible(const AValue: Boolean);
+var
+  I: Integer;
+begin
+//  for I := 0 to DockPanels.Count - 1 do
+//    TCoolDockClientPanel(DockPanels[I]).Visible := AValue;
 end;
 
 procedure TCoolDockManager.UpdateClientSize;
@@ -506,7 +556,21 @@ end;
 
 procedure TCoolDockConjoinForm.FormShow(Sender: TObject);
 begin
-  //Panel.Show;
+  Panel.Show;
+  TCoolDockManager(Panel.DockManager).Visible := True;
+end;
+
+procedure TCoolDockConjoinForm.FormHide(Sender: TObject);
+var
+  I: Integer;
+begin
+  Panel.Hide;
+  TCoolDockManager(Panel.DockManager).Visible := False;
+  // Hide all docked childs
+  with TCoolDockManager(Panel.DockManager) do
+  for I := 0 to DockPanels.Count - 1 do
+    if Assigned(TCoolDockClientPanel(DockPanels[I]).Control) then
+    TCoolDockClientPanel(DockPanels[I]).Control.Hide;
 end;
 
 constructor TCoolDockConjoinForm.Create(TheOwner: TComponent);
@@ -516,6 +580,7 @@ begin
   with Panel do begin
     Parent := Self;
     Name := Parent.Name + '_Panel';
+    Caption := '';
     DockSite := True;
     UseDockManager := True;
     Align := alClient;
@@ -529,6 +594,20 @@ begin
     Name := Owner.Name + '_CoolDockClient';
   end;
   OnShow := FormShow;
+  OnHide := FormHide;
+
+  Panel.AddHandlerOnVisibleChanged(PanelVisibleChange);
+end;
+
+destructor TCoolDockConjoinForm.Destroy;
+begin
+  Panel.RemoveHandlerOnVisibleChanged(PanelVisibleChange);
+  inherited;
+end;
+
+procedure TCoolDockConjoinForm.PanelVisibleChange(Sender: TObject);
+begin
+  Visible := Panel.Visible;
 end;
 
 { TCoolDockMaster }

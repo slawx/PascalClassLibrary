@@ -13,6 +13,14 @@ msgstr ""
 msgid "List"
 msgstr ""
 
+#: ucooldockpopupmenu.sdockpopuplist
+msgid "Popup list"
+msgstr ""
+
+#: ucooldockpopupmenu.sdockpopuptabs
+msgid "Popup tabs"
+msgstr ""
+
 #: ucooldockpopupmenu.sdockstyle
 msgid "Style"
 msgstr ""

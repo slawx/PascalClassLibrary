@@ -5,7 +5,7 @@ unit UCoolDockPopupMenu;
 interface
 
 uses
-  Classes, SysUtils, Menus, Controls, Dialogs;
+  Classes, SysUtils, Menus, Controls, Dialogs, UCoolDockClientPanel;
 
 type
 
@@ -17,6 +17,8 @@ type
     constructor Create(AManager: TObject);
     procedure PopupMenuListClick(Sender: TObject);
     procedure PopupMenuTabsClick(Sender: TObject);
+    procedure PopupMenuPopupListClick(Sender: TObject);
+    procedure PopupMenuPopupTabsClick(Sender: TObject);
     procedure PopupMenuCloseClick(Sender: TObject);
     procedure PopupMenuRenameClick(Sender: TObject);
     procedure PopupMenuPositionAutoClick(Sender: TObject);
@@ -37,6 +39,8 @@ resourcestring
   SDockStyle = 'Style';
   SDockList = 'List';
   SDockTabs = 'Tabs';
+  SDockPopupList = 'Popup list';
+  SDockPopupTabs = 'Popup tabs';
   SCloseForm = 'Close';
   SRenameForm = 'Rename';
   SPosition = 'Position';
@@ -62,6 +66,8 @@ begin
   inherited Create(nil);
   Manager := AManager;
 
+  Name := TCoolDockManager(AManager).DockSite.Name + '_' + 'PopupMenu';
+
   NewMenuItem := TMenuItem.Create(Self);
   NewMenuItem.Caption := SDockStyle;
   Items.Add(NewMenuItem);
@@ -74,6 +80,16 @@ begin
   NewMenuItem2 := TMenuItem.Create(NewMenuItem);
   NewMenuItem2.Caption := SDockTabs;
   NewMenuItem2.OnClick := PopupMenuTabsClick;
+  NewMenuItem.Add(NewMenuItem2);
+
+  NewMenuItem2 := TMenuItem.Create(NewMenuItem);
+  NewMenuItem2.Caption := SDockPopupList;
+  NewMenuItem2.OnClick := PopupMenuPopupListClick;
+  NewMenuItem.Add(NewMenuItem2);
+
+  NewMenuItem2 := TMenuItem.Create(NewMenuItem);
+  NewMenuItem2.Caption := SDockPopupTabs;
+  NewMenuItem2.OnClick := PopupMenuPopupTabsClick;
   NewMenuItem.Add(NewMenuItem2);
 
   NewMenuItem := TMenuItem.Create(Self);
@@ -124,149 +140,21 @@ begin
   NewMenuItem.Caption := SCustomize;
   NewMenuItem.OnClick := PopupMenuCustomizeClick;
   Items.Add(NewMenuItem);
-
-  (*  // Tabs popup
-
-  PopupMenuTabs := TPopupMenu.Create(FDockSite);
-  PopupMenuTabs.Name := ADockSite.Name + '_' + 'PopupMenuTabs';
-
-  NewMenuItem := TMenuItem.Create(PopupMenuTabs);
-  NewMenuItem.Caption := SDockStyle;
-  PopupMenuTabs.Items.Add(NewMenuItem);
-
-  NewMenuItem2 := TMenuItem.Create(NewMenuItem);
-  NewMenuItem2.Caption := SDockList;
-  NewMenuItem2.OnClick := PopupMenuListClick;
-  NewMenuItem.Add(NewMenuItem2);
-
-  NewMenuItem2 := TMenuItem.Create(NewMenuItem);
-  NewMenuItem2.Caption := SDockTabs;
-  NewMenuItem2.OnClick := PopupMenuTabsClick;
-  NewMenuItem.Add(NewMenuItem2);
-
-  NewMenuItem := TMenuItem.Create(PopupMenuTabs);
-  NewMenuItem.Caption := SPosition;
-  PopupMenuTabs.Items.Add(NewMenuItem);
-
-  NewMenuItem2 := TMenuItem.Create(NewMenuItem);
-  NewMenuItem2.Caption := SPositionAuto;
-  NewMenuItem2.OnClick := PopupMenuPositionAutoClick;
-  NewMenuItem.Add(NewMenuItem2);
-
-  NewMenuItem2 := TMenuItem.Create(NewMenuItem);
-  NewMenuItem2.Caption := SPositionTop;
-  NewMenuItem2.OnClick := PopupMenuPositionTopClick;
-  NewMenuItem.Add(NewMenuItem2);
-
-  NewMenuItem2 := TMenuItem.Create(NewMenuItem);
-  NewMenuItem2.Caption := SPositionLeft;
-  NewMenuItem2.OnClick := PopupMenuPositionLeftClick;
-  NewMenuItem.Add(NewMenuItem2);
-
-  NewMenuItem2 := TMenuItem.Create(NewMenuItem);
-  NewMenuItem2.Caption := SPositionBottom;
-  NewMenuItem2.OnClick := PopupMenuPositionBottomClick;
-  NewMenuItem.Add(NewMenuItem2);
-
-  NewMenuItem2 := TMenuItem.Create(NewMenuItem);
-  NewMenuItem2.Caption := SPositionRight;
-  NewMenuItem2.OnClick := PopupMenuPositionRightClick;
-  NewMenuItem.Add(NewMenuItem2);
-
-  NewMenuItem := TMenuItem.Create(PopupMenuTabs);
-  NewMenuItem.Caption := SCloseForm;
-  NewMenuItem.OnClick := PopupMenuCloseClick;
-  PopupMenuTabs.Items.Add(NewMenuItem);
-
-  NewMenuItem := TMenuItem.Create(PopupMenuTabs);
-  NewMenuItem.Caption := SRenameForm;
-  NewMenuItem.OnClick := PopupMenuRenameClick;
-  PopupMenuTabs.Items.Add(NewMenuItem);
-
-  NewMenuItem := TMenuItem.Create(PopupMenuTabs);
-  NewMenuItem.Caption := SUndock;
-  NewMenuItem.OnClick := PopupMenuUndockClick;
-  PopupMenuTabs.Items.Add(NewMenuItem);
-
-  NewMenuItem := TMenuItem.Create(PopupMenuTabs);
-  NewMenuItem.Caption := SCustomize;
-  NewMenuItem.OnClick := PopupMenuCustomizeClick;
-  PopupMenuTabs.Items.Add(NewMenuItem);
-
-  // Header popup
-
-  PopupMenuHeader := TPopupMenu.Create(FDockSite);
-  PopupMenuHeader.Name := ADockSite.Name + '_' + 'PopupMenuHeader';
-
-  NewMenuItem := TMenuItem.Create(PopupMenuHeader);
-  NewMenuItem.Caption := SDockStyle;
-  PopupMenuHeader.Items.Add(NewMenuItem);
-
-  NewMenuItem2 := TMenuItem.Create(NewMenuItem);
-  NewMenuItem2.Caption := SDockList;
-  NewMenuItem2.OnClick := PopupMenuListClick;
-  NewMenuItem.Add(NewMenuItem2);
-
-  NewMenuItem2 := TMenuItem.Create(NewMenuItem);
-  NewMenuItem2.Caption := SDockTabs;
-  NewMenuItem2.OnClick := PopupMenuTabsClick;
-  NewMenuItem.Add(NewMenuItem2);
-
-  NewMenuItem := TMenuItem.Create(PopupMenuHeader);
-  NewMenuItem.Caption := SPosition;
-  PopupMenuHeader.Items.Add(NewMenuItem);
-
-  NewMenuItem2 := TMenuItem.Create(NewMenuItem);
-  NewMenuItem2.Caption := SPositionAuto;
-  NewMenuItem2.OnClick := PopupMenuPositionAutoClick;
-  NewMenuItem.Add(NewMenuItem2);
-
-  NewMenuItem2 := TMenuItem.Create(NewMenuItem);
-  NewMenuItem2.Caption := SPositionTop;
-  NewMenuItem2.OnClick := PopupMenuPositionTopClick;
-  NewMenuItem.Add(NewMenuItem2);
-
-  NewMenuItem2 := TMenuItem.Create(NewMenuItem);
-  NewMenuItem2.Caption := SPositionLeft;
-  NewMenuItem2.OnClick := PopupMenuPositionLeftClick;
-  NewMenuItem.Add(NewMenuItem2);
-
-  NewMenuItem2 := TMenuItem.Create(NewMenuItem);
-  NewMenuItem2.Caption := SPositionBottom;
-  NewMenuItem2.OnClick := PopupMenuPositionBottomClick;
-  NewMenuItem.Add(NewMenuItem2);
-
-  NewMenuItem2 := TMenuItem.Create(NewMenuItem);
-  NewMenuItem2.Caption := SPositionRight;
-  NewMenuItem2.OnClick := PopupMenuPositionRightClick;
-  NewMenuItem.Add(NewMenuItem2);
-
-  NewMenuItem := TMenuItem.Create(PopupMenuHeader);
-  NewMenuItem.Caption := SCloseForm;
-  NewMenuItem.OnClick := PopupMenuCloseClick;
-  PopupMenuHeader.Items.Add(NewMenuItem);
-
-  NewMenuItem := TMenuItem.Create(PopupMenuHeader);
-  NewMenuItem.Caption := SRenameForm;
-  NewMenuItem.OnClick := PopupMenuRenameClick;
-  PopupMenuHeader.Items.Add(NewMenuItem);
-
-  NewMenuItem := TMenuItem.Create(PopupMenuHeader);
-  NewMenuItem.Caption := SUndock;
-  NewMenuItem.OnClick := PopupMenuUndockClick;
-  PopupMenuHeader.Items.Add(NewMenuItem);
-
-  NewMenuItem := TMenuItem.Create(PopupMenuHeader);
-  NewMenuItem.Caption := SCustomize;
-  NewMenuItem.OnClick := PopupMenuCustomizeClick;
-  PopupMenuHeader.Items.Add(NewMenuItem);
-  *)
-
 end;
 
 procedure TCoolDockPopupMenu.PopupMenuTabsClick(Sender: TObject);
 begin
   TCoolDockManager(Manager).DockStyle := dsTabs;
+end;
+
+procedure TCoolDockPopupMenu.PopupMenuPopupListClick(Sender: TObject);
+begin
+  TCoolDockManager(Manager).DockStyle := dsPopupList;
+end;
+
+procedure TCoolDockPopupMenu.PopupMenuPopupTabsClick(Sender: TObject);
+begin
+  TCoolDockManager(Manager).DockStyle := dsPopupTabs;
 end;
 
 procedure TCoolDockPopupMenu.PopupMenuCloseClick(Sender: TObject);
@@ -276,7 +164,7 @@ begin
   Control := FindLCLControl(Mouse.CursorPos);
   if Assigned(Control) then
     ShowMessage(Control.ClassName);
-//  DockSiteTForm(TCoolDockManager(TControl(Sender).Parent.Parent.Parent.DockManager).FDockSite).Close;
+  //DockSiteTForm(TCoolDockManager(TControl(Sender).Parent.Parent.Parent.DockManager).FDockSite).Close;
 end;
 
 procedure TCoolDockPopupMenu.PopupMenuRenameClick(Sender: TObject);
@@ -290,27 +178,30 @@ end;
 
 procedure TCoolDockPopupMenu.PopupMenuPositionAutoClick(Sender: TObject);
 begin
-  //TabsPos := hpAuto;
+  TCoolDockManager(Manager).HeaderPos := hpAuto;
 end;
 
 procedure TCoolDockPopupMenu.PopupMenuPositionLeftClick(Sender: TObject);
+var
+  Control: TControl;
 begin
-  //TabsPos := hpLeft;
+  Control := FindLCLControl(Mouse.CursorPos);
+  TCoolDockManager(Manager).HeaderPos := hpLeft;
 end;
 
 procedure TCoolDockPopupMenu.PopupMenuPositionRightClick(Sender: TObject);
 begin
-  //TabsPos := hpRight;
+  TCoolDockManager(Manager).HeaderPos := hpRight;
 end;
 
 procedure TCoolDockPopupMenu.PopupMenuPositionTopClick(Sender: TObject);
 begin
-  //TabsPos := hpTop;
+  TCoolDockManager(Manager).HeaderPos := hpTop;
 end;
 
 procedure TCoolDockPopupMenu.PopupMenuPositionBottomClick(Sender: TObject);
 begin
-  //TabsPos := hpBottom;
+  TCoolDockManager(Manager).HeaderPos := hpBottom;
 end;
 
 procedure TCoolDockPopupMenu.PopupMenuUndockClick(Sender: TObject);

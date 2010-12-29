@@ -70,13 +70,13 @@ begin
   ConjoinedDockForm1.Name := 'Model';;
   //TCoolDockManager(ConjoinedDockForm1.Panel.DockManager).TabsPos := hpLeft;
   ConjoinedDockForm1.ManualDock(Panel1);
-  //TCoolDockManager(ConjoinedDockForm1.Panel.DockManager).DockStyle := dsTabs;
+  TCoolDockManager(ConjoinedDockForm1.Panel.DockManager).DockStyle := dsTabs;
   NewDockForm.ManualDock(ConjoinedDockForm1.Panel);
   NewDockForm.ManualDock(ConjoinedDockForm1.Panel);
-  NewDockForm.ManualDock(TForm(DockForms[0]));
-  NewDockForm.ManualDock(TForm(DockForms[0]));
-  NewDockForm.ManualDock(TForm(DockForms[0]));
-//  TCustomDockManager(TDockForm(DockForms[0]).DockManager).DockStyle := dsTabs;
+  //NewDockForm.ManualDock(TForm(DockForms[0]));
+  //NewDockForm.ManualDock(TForm(DockForms[0]));
+  //NewDockForm.ManualDock(TForm(DockForms[0]));
+  //TCustomDockManager(TDockForm(DockForms[0]).DockManager).DockStyle := dsTabs;
 end;
 
 procedure TMainForm.MenuItem2Click(Sender: TObject);
@@ -93,6 +93,7 @@ function TMainForm.NewDockForm: TDockForm;
 begin
   Result := TDockForm.Create(Self);
   Result.Name := 'Form' + IntToStr(FormIndex);
+  Result.Caption := Result.Name;
   Result.Memo1.Text := Result.Name;
   //Result.DragKind := dkDock;
   //Result.DragMode := dmAutomatic;

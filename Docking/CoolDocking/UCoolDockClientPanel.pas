@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, Controls, SysUtils, Forms, StdCtrls, ExtCtrls, Graphics,
-  Buttons, UCoolDockPopupMenu;
+  Buttons;
 
 type
 
@@ -37,14 +37,16 @@ type
     FAutoHide: Boolean;
     FHeaderPos: THeaderPos;
     FShowHeader: Boolean;
+    FControl: TControl;
     function GetAutoHideEnabled: Boolean;
+    function GetControl: TControl;
     procedure SetAutoHide(const AValue: Boolean);
     procedure SetAutoHideEnabled(const AValue: Boolean);
+    procedure SetControl(const AValue: TControl);
     procedure SetHeaderPos(const AValue: THeaderPos);
     procedure SetShowHeader(const AValue: Boolean);
   public
     OwnerDockManager: TObject; // TCoolDockManager;
-    Control: TControl;
     Splitter: TSplitter;
     ClientAreaPanel: TPanel;
     Header: TCoolDockHeader;
@@ -59,6 +61,7 @@ type
     property AutoHideEnabled: Boolean read GetAutoHideEnabled
       write SetAutoHideEnabled;
     property HeaderPos: THeaderPos read FHeaderPos write SetHeaderPos;
+    property Control: TControl read GetControl write SetControl;
   end;
 
 implementation
@@ -77,16 +80,37 @@ end;
 
 procedure TCoolDockClientPanel.VisibleChange(Sender: TObject);
 var
-  Visible: Boolean;
+  ControlVisible: Boolean;
+  Temp: TControl;
+  Temp2: TControl;
 begin
-  (*if Assigned(Control) then begin
-    Visible := Control.Visible;
-    if Assigned(ClientAreaPanel) then
-      ClientAreaPanel.Visible := Visible;
+  Temp := TControl(Sender);
+  if Assigned(Control) then
+  begin
+
+    ControlVisible := TControl(Sender).Visible;
+    (*if Assigned(ClientAreaPanel) then
+      ClientAreaPanel.Visible := ControlVisible;
     if Assigned(Splitter) then
-      Splitter.Visible := Visible;
-    OwnerDockManager.UpdateClientSize;
-  end;*)
+      Splitter.Visible := ControlVisible;
+      *)
+//    if Assigned(TCoolDockManager(OwnerDockManager).DockStyleHandler) then
+    if Assigned(OwnerDockManager) then
+    with TCoolDockManager(OwnerDockManager) do
+    if Assigned(DockStyleHandler) then
+    with DockStyleHandler do begin
+      if ControlVisible then
+        Switch(DockPanels.IndexOf(FindControlInPanels(TControl(Sender))));
+      //UpdateClientSize;
+      ChangeVisible(TWinControl(Control), ControlVisible);
+      // Show parent control
+      Temp := TControl(Sender).HostDockSite;
+
+      if ControlVisible then
+        TControl(Sender).HostDockSite.Visible := ControlVisible;
+    end;
+    if csDestroying in Control.ComponentState then Control := nil;
+  end;
 end;
 
 procedure TCoolDockClientPanel.SetAutoHide(const AValue: Boolean);
@@ -99,9 +123,19 @@ function TCoolDockClientPanel.GetAutoHideEnabled: Boolean;
 begin
 end;
 
+function TCoolDockClientPanel.GetControl: TControl;
+begin
+  Result := FControl;
+end;
+
 procedure TCoolDockClientPanel.SetAutoHideEnabled(const AValue: Boolean);
 begin
 
+end;
+
+procedure TCoolDockClientPanel.SetControl(const AValue: TControl);
+begin
+  FControl := AValue;
 end;
 
 procedure TCoolDockClientPanel.SetHeaderPos(const AValue: THeaderPos);
@@ -147,18 +181,29 @@ begin
 end;
 
 destructor TCoolDockClientPanel.Destroy;
+var
+  Temp: TControl;
 begin
+  Temp := Control;
+  //if ClientAreaPanel.GetControlIndex(Control) <> - 1 then
+  if Assigned(Control) then
+    Control.RemoveHandlerOnVisibleChanged(VisibleChange);
+  // If panel is destroyed undock docket control
+  //TWinControl(Control).ManualFloat(TWinControl(Control).BoundsRect);
+
   inherited Destroy;
 end;
 
 procedure TCoolDockClientPanel.ResizeExecute(Sender: TObject);
 begin
-  Control.Top := GrabberSize;
-  Control.Left := 0;
-  Control.Width := Width;
-  Control.Height := Height - GrabberSize;
-  //Control.SetBounds(0, GrabberSize, Width - Control.Left,
-  //  Height - Control.Top);
+  if Assigned(Control) then begin
+    Control.Top := GrabberSize;
+    Control.Left := 0;
+    Control.Width := Width;
+    Control.Height := Height - GrabberSize;
+    //Control.SetBounds(0, GrabberSize, Width - Control.Left,
+    //  Height - Control.Top);
+  end;
 end;
 
 procedure TCoolDockClientPanel.DockPanelPaint(Sender: TObject);
