@@ -83,11 +83,11 @@ type
 // TListObject<Integer, TObject>
 {$DEFINE TGListObjectIndex := Integer}
 {$DEFINE TGListObjectItem := TObject}
-{$DEFINE TGListObjectList := TObjectListListObject}
+{$DEFINE TGListObjectList := TListObjectList}
 {$DEFINE TGListObject := TListObject}
-{$DEFINE TGListObjectSortCompare := TObjectListSortCompareObject}
-{$DEFINE TGListObjectToStringConverter := TObjectListToStringConverterObject}
-{$DEFINE TGListObjectFromStringConverter := TObjectListFromStringConverterObject}
+{$DEFINE TGListObjectSortCompare := TListObjectSortCompare}
+{$DEFINE TGListObjectToStringConverter := TListObjectToStringConverter}
+{$DEFINE TGListObjectFromStringConverter := TListObjectFromStringConverter}
 {$DEFINE INTERFACE}
 {$I 'GenericListObject.inc'}
 
@@ -101,6 +101,22 @@ TListChar = class(TListCharBase)
   procedure Trim;
   procedure TrimLeft;
   procedure TrimRight;
+end;
+
+// TListMethodBase<Integer, TMethod>
+{$DEFINE TGListIndex := Integer}
+{$DEFINE TGListItem := TMethod}
+{$DEFINE TGList := TListMethodBase}
+{$DEFINE TGListSortCompare := TListMethodSortCompare}
+{$DEFINE TGListToStringConverter := TListMethodToStringConverter}
+{$DEFINE TGListFromStringConverter := TListMethodFromStringConverter}
+{$DEFINE INTERFACE}
+{$I 'GenericList.inc'}
+
+// TListMethod<Integer, TMethod>
+TListMethod = class(TListMethodBase)
+  procedure CallAll;
+  procedure CallNotifyEvents(Sender: TObject);
 end;
 
 function StrToStr(Value: string): string;
@@ -183,14 +199,23 @@ implementation
 // TListObject<Integer, TObject>
 {$DEFINE TGListObjectIndex := Integer}
 {$DEFINE TGListObjectItem := TObject}
-{$DEFINE TGListObjectList := TObjectListListObject}
+{$DEFINE TGListObjectList := TListObjectList}
 {$DEFINE TGListObject := TListObject}
-{$DEFINE TGListObjectSortCompare := TObjectListSortCompareObject}
-{$DEFINE TGListObjectToStringConverter := TObjectListToStringConverterObject}
-{$DEFINE TGListObjectFromStringConverter := TObjectListFromStringConverterObject}
+{$DEFINE TGListObjectSortCompare := TListObjectSortCompare}
+{$DEFINE TGListObjectToStringConverter := TListObjectToStringConverter}
+{$DEFINE TGListObjectFromStringConverter := TListObjectFromStringConverter}
 {$DEFINE IMPLEMENTATION}
 {$I 'GenericListObject.inc'}
 
+// TListMethod<Integer, TMethod>
+{$DEFINE TGListIndex := Integer}
+{$DEFINE TGListItem := TMethod}
+{$DEFINE TGList := TListMethodBase}
+{$DEFINE TGListSortCompare := TListMethodSortCompare}
+{$DEFINE TGListToStringConverter := TListMethodToStringConverter}
+{$DEFINE TGListFromStringConverter := TListMethodFromStringConverter}
+{$DEFINE IMPLEMENTATION}
+{$I 'GenericList.inc'}
 
 
 function StrToStr(Value: string): string;
@@ -244,6 +269,28 @@ begin
     I := I - 1;
   if I >= 0 then
     DeleteItems(I + 1, Count - I - 1);
+end;
+
+procedure TListMethod.CallAll;
+var
+  I: TGListIndex;
+begin
+  I := 0;
+  while (I < Count) do begin
+    Items[I];
+    I := I + 1;
+  end;
+end;
+
+procedure TListMethod.CallNotifyEvents(Sender: TObject);
+var
+  I: TGListIndex;
+begin
+  I := 0;
+  while (I < Count) do begin
+    TNotifyEvent(Items[I])(Sender);
+    I := I + 1;
+  end;
 end;
 
 end.

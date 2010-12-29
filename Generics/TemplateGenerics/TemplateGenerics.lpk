@@ -17,7 +17,7 @@
       </Other>
     </CompilerOptions>
     <Description Value="Generic classes implemented as templates."/>
-    <Version Minor="2"/>
+    <Version Minor="3"/>
     <Files Count="16">
       <Item1>
         <Filename Value="ReadMe.txt"/>
@@ -91,8 +91,8 @@
       </Item1>
     </RequiredPkgs>
     <UsageOptions>
-      <IncludePath Value="Generic\"/>
-      <UnitPath Value="$(PkgOutDir)\"/>
+      <IncludePath Value="Generic"/>
+      <UnitPath Value="$(PkgOutDir)"/>
     </UsageOptions>
     <PublishOptions>
       <Version Value="2"/>
