@@ -2,12 +2,12 @@ unit USqlDatabase;
 
 {$mode Delphi}{$H+}
 
-// Upraveno: 28.10.2010
+// Modified: 2010-12-24
 
 interface
 
 uses
-  SysUtils, Classes, Dialogs, mysql50, TypInfo, SpecializedObjectList,
+  SysUtils, Classes, Dialogs, mysql50, TypInfo,
   SpecializedDictionary, SpecializedList;
 
 type

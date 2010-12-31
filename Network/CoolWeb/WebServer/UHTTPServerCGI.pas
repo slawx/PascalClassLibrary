@@ -22,6 +22,9 @@ type
 
 implementation
 
+resourcestring
+  SEnvironmentVariables = 'Environment variables:';
+
 { THTTPServerCGI }
 
 constructor THTTPServerCGI.Create;
@@ -106,7 +109,7 @@ var
 begin
   inherited;
   with HandlerData, Response.Stream do begin
-    WriteString('<h5>Environment variables:</h5>');
+    WriteString('<h5>' + SEnvironmentVariables + '</h5>');
     WriteString('<table border="1">');
     for I := 0 to EnvVars.Count - 1 do begin
       WriteString('<tr><td>' + EnvVars.Names[I] + '</td><td>' +

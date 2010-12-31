@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, UTCPServer, UCommon, UMemoryStreamEx, UMIMEType,
-  Synautil, SpecializedObjectList, SpecializedList;
+  Synautil, SpecializedList;
 
 type
   THTTPServer = class;
@@ -112,6 +112,7 @@ procedure HTTPExceptionHide(Obj: TObject; Addr: Pointer; FrameCount: Longint; Fr
 resourcestring
   SEmptyHTTPHandler = 'No handler defined for HTTP server.';
   SFileNotFound = 'File %s not found.';
+  SPageNotFound = 'Page %s not found.';
 
 implementation
 
@@ -162,7 +163,7 @@ end;
 procedure THTTPServer.ErrorResponse(HandlerData: THTTPHandlerData);
 begin
   with HandlerData, Response.Stream do begin
-    WriteString('<html><body>Page ' + Request.Path + ' not found.</body></html>');
+    WriteString('<html><body>' + Format(SPageNotFound, [Request.Path]) + '</body></html>');
   end;
 end;
 
@@ -193,7 +194,7 @@ begin
     end else
     with Response.Stream do begin
       WriteLn(Format(SFileNotFound, [Request.Path]));
-      WriteString('<html><body>File ' + Request.Path + ' not found.</body></html>');
+      WriteString('<html><body>' + Format(SFileNotFound, [Request.Path]) + '</body></html>');
     end;
   end;
 end;
@@ -385,22 +386,22 @@ begin
   hstdout := @stdout;
   WriteLn(hstdout^, 'Content-type: text/html');
   WriteLn(hstdout^);
-  Writeln(hstdout^, 'An unhandled exception occurred at $', HexStr(PtrUInt(Addr), SizeOf(PtrUInt) * 2), ' :');
+  Writeln(hstdout^, 'An unhandled exception occurred at $', HexStr(PtrUInt(Addr), SizeOf(PtrUInt) * 2), ' :<br/>');
   if Obj is exception then
    begin
      Message := Exception(Obj).ClassName + ' : ' + Exception(Obj).Message;
-     Writeln(hstdout^, Message);
+     Writeln(hstdout^, Message + '<br/>');
    end
   else
-    Writeln(hstdout^, 'Exception object ', Obj.ClassName, ' is not of class Exception.');
-  Writeln(hstdout^, BackTraceStrFunc(Addr));
+    Writeln(hstdout^, 'Exception object ', Obj.ClassName, ' is not of class Exception.<br/>');
+  Writeln(hstdout^, BackTraceStrFunc(Addr) + '<br/>');
   if (FrameCount > 0) then
     begin
       for i := 0 to FrameCount - 1 do
         if I < Length(TArrayOfPointer(Frames)) then
-          Writeln(hstdout^, BackTraceStrFunc(TArrayOfPointer(Frames)[i]));
+          Writeln(hstdout^, BackTraceStrFunc(TArrayOfPointer(Frames)[i]) + '<br/>');
     end;
-  Writeln(hstdout^,'');
+  Writeln(hstdout^, '');
 end;
 
 procedure HTTPExceptionHide(Obj: TObject; Addr: Pointer; FrameCount: Longint; Frames: PPointer);
@@ -432,7 +433,7 @@ begin
         if I < Length(TArrayOfPointer(Frames)) then
           Writeln(hstderr^, BackTraceStrFunc(TArrayOfPointer(Frames)[i]));
     end;
-  Writeln(hstderr^,'');
+  Writeln(hstderr^, '');
 end;
 
 end.

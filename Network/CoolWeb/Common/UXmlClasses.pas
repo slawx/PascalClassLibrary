@@ -4,7 +4,7 @@ unit UXmlClasses;
 
 interface
 
-uses Classes, SysUtils, StrUtils, SpecializedList, SpecializedObjectList,
+uses Classes, SysUtils, StrUtils, SpecializedList,
   SpecializedDictionary;
 
 type

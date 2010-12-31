@@ -5,7 +5,7 @@ unit UHtmlClasses;
 interface
 
 uses
-  UXmlClasses, Classes, SysUtils, SpecializedList, SpecializedObjectList;
+  UXmlClasses, Classes, SysUtils, SpecializedList;
 
 type
   TDomainAddress = class(TPersistent)
@@ -89,6 +89,15 @@ type
     Text: string;
   end;
 
+  { THtmlLineBreak }
+
+  THtmlLineBreak = class(THtmlElement)
+  private
+    function GetAsXmlElement: TXmlElement; override;
+  public
+    constructor Create;
+  end;
+
   THtmlBlock = class(THtmlElement)
   private
     function GetAsXmlElement: TXmlElement; override;
@@ -124,6 +133,33 @@ type
     Size: THtmlSize;
     Source: TURL;
     AlternateText: string;
+    constructor Create;
+    destructor Destroy; override;
+  end;
+
+  THtmlInputType = (itText, itComboBox, itRadioButton, itReset, itPassword,
+    itSubmit, itHidden, itFileSelect, itButton, itCheckBox);
+
+  { THtmlInput }
+
+  THtmlInput = class(THtmlElement)
+  private
+    function GetAsXmlElement: TXmlElement; override;
+  public
+    InputType: THtmlInputType;
+    Value: Variant;
+    constructor Create;
+    destructor Destroy; override;
+  end;
+
+  { THtmlForm }
+
+  THtmlForm = class(THtmlBlock)
+  private
+  public
+    Method: string;
+    Action: TURL;
+    function GetAsXmlElement: TXmlElement; override;
     constructor Create;
     destructor Destroy; override;
   end;
@@ -212,6 +248,79 @@ begin
   end;
 end;
 
+{ THtmlLineBreak }
+
+function THtmlLineBreak.GetAsXmlElement: TXmlElement;
+begin
+  Result := inherited GetAsXmlElement;
+  TXmlTag(Result).Name := 'br';
+end;
+
+constructor THtmlLineBreak.Create;
+begin
+end;
+
+{ THtmlInput }
+
+function THtmlInput.GetAsXmlElement: TXmlElement;
+var
+  InputTypeString: string;
+begin
+  Result := TXmlTag.Create;
+  with TXmlTag(Result) do begin
+    Name := 'input';
+    case InputType of
+      itButton: InputTypeString := 'button';
+      itRadioButton: InputTypeString := 'radio';
+      itCheckBox: InputTypeString := 'checkbox';
+      itText: InputTypeString := 'text';
+      itFileSelect: InputTypeString := 'file';
+      itSubmit: InputTypeString := 'submit';
+      itHidden: InputTypeString := 'hidden';
+      itPassword: InputTypeString := 'password';
+    end;
+    Attributes.Add('type', InputTypeString);
+    Attributes.Add('value', Value);
+    Attributes.Add('name', Name);
+  end;
+end;
+
+constructor THtmlInput.Create;
+begin
+
+end;
+
+destructor THtmlInput.Destroy;
+begin
+  inherited Destroy;
+end;
+
+{ THtmlForm }
+
+function THtmlForm.GetAsXmlElement: TXmlElement;
+begin
+  Result := TXmlTag.Create;
+  with TXmlTag(Result) do begin
+    Name := 'form';
+    Attributes.Add('action', Action.AsString);
+    Attributes.Add('method', Method);
+  end;
+end;
+
+constructor THtmlForm.Create;
+begin
+  inherited;
+  Action := TURL.Create;
+  BlockType := btBlockLevel;
+  Method := 'get';
+end;
+
+destructor THtmlForm.Destroy;
+begin
+  Action.Free;
+  inherited Destroy;
+end;
+
 { THtmlDocument }
 
 constructor THtmlDocument.Create;
@@ -293,6 +402,7 @@ end;
 
 constructor THtmlBlock.Create;
 begin
+  inherited;
   SubItems := TListObject.Create;
 end;
 
@@ -322,7 +432,13 @@ end;
 
 function THtmlElement.GetAsXmlElement: TXmlElement;
 begin
-
+  Result := TXmlTag.Create;
+  with TXmlTag(Result).Attributes do begin
+    if Name <> '' then Add('name', Name);
+    if Style <> '' then Add('style', Style);
+    if ClassId <> '' then Add('class', ClassId);
+    if Id <> '' then Add('id', Id);
+  end;
 end;
 
 { TIpAddress }
@@ -471,8 +587,8 @@ begin
     StrArray := TListString.Create;
     StrArray.Explode(Value, '.', StrToStr);
     SetLength(Levels, StrArray.Count);
-    for I := 0 to StrArray.Count do
-      Levels[StrArray.Count - I] := StrArray[I];
+    for I := 0 to StrArray.Count - 1 do
+      Levels[StrArray.Count - 1 - I] := StrArray[I];
   finally
     StrArray.Free;
   end;

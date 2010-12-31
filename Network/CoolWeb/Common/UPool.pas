@@ -5,7 +5,7 @@ unit UPool;
 interface
 
 uses
-  Classes, SysUtils, syncobjs, SpecializedObjectList;
+  Classes, SysUtils, syncobjs, SpecializedList;
 
 type
 
