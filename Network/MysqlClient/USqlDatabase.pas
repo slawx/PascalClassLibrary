@@ -2,13 +2,13 @@ unit USqlDatabase;
 
 {$mode Delphi}{$H+}
 
-// Upraveno: 28.10.2010
+// Modified: 2010-12-24
 
 interface
 
 uses
-  SysUtils, Classes, Dialogs, mysql50, TypInfo, UStringListEx,
-  ListObject, DictionaryStringString;
+  SysUtils, Classes, Dialogs, mysql50, TypInfo,
+  SpecializedDictionary, SpecializedList;
 
 type
   EQueryError = class(Exception);
@@ -51,8 +51,8 @@ type
     procedure CreateDatabase;
     procedure CreateTable(Name: string);
     procedure CreateColumn(Table, ColumnName: string; ColumnType: TTypeKind);
-    function Query(Data: string): TDbRows;
-    function Select(ATable: string; Filter: string = '*'; Condition: string = '1'): TDbRows;
+    procedure Query(DbRows: TDbRows; Data: string);
+    procedure Select(DbRows: TDbRows; ATable: string; Filter: string = '*'; Condition: string = '1');
     procedure Delete(ATable: string; Condition: string = '1');
     procedure Insert(ATable: string; Data: TDictionaryStringString);
     procedure Update(ATable: string; Data: TDictionaryStringString; Condition: string = '1');
@@ -112,23 +112,28 @@ begin
   Result := StrToFloat(S);
 end;
 
+function StrToStr(Value: string): string;
+begin
+  Result := Value;
+end;
+
 function SQLToDateTime(Value: string): TDateTime;
 var
-  Parts: TStringListEx;
-  DateParts: TStringListEx;
-  TimeParts: TStringListEx;
+  Parts: TListString;
+  DateParts: TListString;
+  TimeParts: TListString;
 begin
   try
-    Parts := TStringListEx.Create;
-    DateParts := TStringListEx.Create;
-    TimeParts := TStringListEx.Create;
+    Parts := TListString.Create;
+    DateParts := TListString.Create;
+    TimeParts := TListString.Create;
 
-    Parts.Explode(' ', Value);
-    DateParts.Explode('-', Parts[0]);
+    Parts.Explode(Value, ' ', StrToStr);
+    DateParts.Explode(Parts[0], '-', StrToStr);
     Result := EncodeDate(StrToInt(DateParts[0]), StrToInt(DateParts[1]),
       StrToInt(DateParts[2]));
     if Parts.Count > 1 then begin
-      TimeParts.Explode(':', Parts[1]);
+      TimeParts.Explode(Parts[1], ':', StrToStr);
       Result := Result + EncodeTime(StrToInt(TimeParts[0]), StrToInt(TimeParts[1]),
         StrToInt(TimeParts[2]), 0);
     end;
@@ -166,7 +171,8 @@ begin
     raise EQueryError.Create(Format(SDatabaseQueryError, [LastErrorMessage]));
 
   try
-    Rows := Query('SET NAMES ' + Encoding);
+    Rows := TDbRows.Create;
+    Query(Rows, 'SET NAMES ' + Encoding);
   finally
     Rows.Free;
   end;
@@ -193,22 +199,23 @@ begin
   System.Delete(DbNames, 1, 1);
   System.Delete(DbValues, 1, 1);
   try
-    DbResult := Query('INSERT INTO `' + Table + '` (' + DbNames + ') VALUES (' + DbValues + ')');
+    DbResult := TDbRows.Create;
+    Query(DbResult, 'INSERT INTO `' + Table + '` (' + DbNames + ') VALUES (' + DbValues + ')');
   finally
     DbResult.Free;
   end;
 end;
 
-function TSqlDatabase.Query(Data: string): TDbRows;
+procedure TSqlDatabase.Query(DbRows: TDbRows; Data: string);
 var
   I, II: Integer;
   DbResult: PMYSQL_RES;
   DbRow: MYSQL_ROW;
 begin
+  DbRows.Clear;
   //DebugLog('SqlDatabase query: '+Data);
   RepeatLastAction := False;
   LastQuery := Data;
-  Result := TDbRows.Create;
   mysql_query(FSession, PChar(Data));
   if LastErrorNumber <> 0 then begin
     raise EQueryError.Create(Format(SDatabaseQueryError, [LastErrorMessage]));
@@ -216,11 +223,11 @@ begin
 
   DbResult := mysql_store_result(FSession);
   if Assigned(DbResult) then begin
-    Result.Count := mysql_num_rows(DbResult);
-    for I := 0 to Result.Count - 1 do begin
+    DbRows.Count := mysql_num_rows(DbResult);
+    for I := 0 to DbRows.Count - 1 do begin
       DbRow := mysql_fetch_row(DbResult);
-      Result[I] := TDictionaryStringString.Create;
-      with Result[I] do begin
+      DbRows[I] := TDictionaryStringString.Create;
+      with DbRows[I] do begin
         for II := 0 to mysql_num_fields(DbResult) - 1 do begin
           Add(mysql_fetch_field_direct(DbResult, II)^.Name,
             PChar((DbRow + II)^));
@@ -252,16 +259,17 @@ begin
   System.Delete(DbNames, 1, 1);
   System.Delete(DbValues, 1, 1);
   try
-    DbResult := Query('REPLACE INTO `' + Table + '` (' + DbNames + ') VALUES (' + DbValues + ')');
+    DbResult := TDbRows.Create;
+    Query(DbResult, 'REPLACE INTO `' + Table + '` (' + DbNames + ') VALUES (' + DbValues + ')');
   finally
     DbResult.Free;
   end;
 end;
 
-function TSqlDatabase.Select(ATable: string; Filter: string = '*'; Condition: string = '1'): TDbRows;
+procedure TSqlDatabase.Select(DbRows: TDbRows; ATable: string; Filter: string = '*'; Condition: string = '1');
 begin
   Table := ATable;
-  Result := Query('SELECT ' + Filter + ' FROM `' + Table + '` WHERE ' + Condition);
+  Query(DbRows, 'SELECT ' + Filter + ' FROM `' + Table + '` WHERE ' + Condition);
 end;
 
 procedure TSqlDatabase.Update(ATable: string; Data: TDictionaryStringString; Condition: string = '1');
@@ -281,7 +289,8 @@ begin
   end;
   System.Delete(DbValues, 1, 1);
   try
-    DbResult := Query('UPDATE `' + Table + '` SET (' + DbValues + ') WHERE ' + Condition);
+    DbResult := TDbRows.Create;
+    Query(DbResult, 'UPDATE `' + Table + '` SET (' + DbValues + ') WHERE ' + Condition);
   finally
     DbResult.Free;
   end;
@@ -298,7 +307,8 @@ var
 begin
   Table := ATable;
   try
-    DbResult := Query('DELETE FROM `' + Table + '` WHERE ' + Condition);
+    DbResult := TDbRows.Create;
+    Query(DbResult, 'DELETE FROM `' + Table + '` WHERE ' + Condition);
   finally
     DbResult.Free;
   end;
@@ -340,19 +350,32 @@ end;
 procedure TSqlDatabase.CreateDatabase;
 var
   TempDatabase: string;
+  DbRows: TDbRows;
 begin
   TempDatabase := Database;
   Database := 'mysql';
   Connect;
-  Query('CREATE DATABASE ' + TempDatabase);
+  try
+    DbRows := TDbRows.Create;
+    Query(DbRows, 'CREATE DATABASE ' + TempDatabase);
+  finally
+    DbRows.Free;
+  end;
   Disconnect;
   Database := TempDatabase;
 end;
 
 procedure TSqlDatabase.CreateTable(Name: string);
+var
+  DbRows: TDbRows;
 begin
-  Query('CREATE TABLE `' + Name + '`' +
-  ' (`Id` INT NOT NULL AUTO_INCREMENT, PRIMARY KEY (`Id`));');
+  try
+    DbRows := TDbRows.Create;
+    Query(DbRows, 'CREATE TABLE `' + Name + '`' +
+    ' (`Id` INT NOT NULL AUTO_INCREMENT, PRIMARY KEY (`Id`));');
+  finally
+    DbRows.Free;
+  end;
 end;
 
 procedure TSqlDatabase.CreateColumn(Table, ColumnName: string;
@@ -360,9 +383,16 @@ procedure TSqlDatabase.CreateColumn(Table, ColumnName: string;
 const
   ColTypes: array[0..17] of string = ('', 'INT', 'CHAR', 'INT', 'DOUBLE',
   'VARCHAR(255)', 'SET', 'INT', '', '', 'TEXT', 'TEXT', '', '', '', '', '', '');
+var
+  DbRows: TDbRows;
 begin
-  Query('ALTER TABLE `' + Table + '` ADD `' + ColumnName + '` ' +
-    ColTypes[Integer(ColumnType)] + ' NOT NULL');
+  try
+    DbRows := TDbRows.Create;
+    Query(DbRows, 'ALTER TABLE `' + Table + '` ADD `' + ColumnName + '` ' +
+      ColTypes[Integer(ColumnType)] + ' NOT NULL');
+  finally
+    DbRows.Free;
+  end;
 end;
 
 destructor TSqlDatabase.Destroy;
