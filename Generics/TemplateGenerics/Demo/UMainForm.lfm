@@ -1,12 +1,12 @@
 object MainForm: TMainForm
-  Left = 388
-  Height = 397
-  Top = 121
-  Width = 478
+  Left = 261
+  Height = 520
+  Top = 104
+  Width = 692
   ActiveControl = ButtonIntegerList
   Caption = 'Template generics demo'
-  ClientHeight = 397
-  ClientWidth = 478
+  ClientHeight = 520
+  ClientWidth = 692
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   LCLVersion = '0.9.29'
@@ -19,16 +19,6 @@ object MainForm: TMainForm
     OnClick = ButtonIntegerListClick
     TabOrder = 0
   end
-  object MemoOutput: TMemo
-    Left = 144
-    Height = 384
-    Top = 8
-    Width = 328
-    Anchors = [akTop, akLeft, akRight, akBottom]
-    ReadOnly = True
-    ScrollBars = ssAutoBoth
-    TabOrder = 1
-  end
   object ButtonStringList: TButton
     Left = 8
     Height = 25
@@ -36,7 +26,7 @@ object MainForm: TMainForm
     Width = 128
     Caption = 'TListString'
     OnClick = ButtonStringListClick
-    TabOrder = 2
+    TabOrder = 1
   end
   object ButtonDictionaryString: TButton
     Left = 8
@@ -45,7 +35,7 @@ object MainForm: TMainForm
     Width = 128
     Caption = 'TDictionaryString'
     OnClick = ButtonDictionaryStringClick
-    TabOrder = 3
+    TabOrder = 2
   end
   object ButtonQueueInteger: TButton
     Left = 8
@@ -54,7 +44,7 @@ object MainForm: TMainForm
     Width = 128
     Caption = 'TQueueInteger'
     OnClick = ButtonQueueIntegerClick
-    TabOrder = 4
+    TabOrder = 3
   end
   object ButtonCharList: TButton
     Left = 7
@@ -63,16 +53,17 @@ object MainForm: TMainForm
     Width = 129
     Caption = 'TListChar(TString)'
     OnClick = ButtonCharListClick
-    TabOrder = 5
+    TabOrder = 4
   end
   object ButtonBenchmarkList: TButton
     Left = 8
-    Height = 25
-    Top = 367
+    Height = 24
+    Top = 491
     Width = 128
+    Anchors = [akLeft, akBottom]
     Caption = 'Benchmark list'
     OnClick = ButtonBenchmarkListClick
-    TabOrder = 6
+    TabOrder = 5
   end
   object ButtonListObject: TButton
     Left = 7
@@ -81,15 +72,44 @@ object MainForm: TMainForm
     Width = 129
     Caption = 'TListObject'
     OnClick = ButtonListObjectClick
-    TabOrder = 7
+    TabOrder = 6
   end
   object ButtonBenchmarkDictionary: TButton
     Left = 10
     Height = 25
-    Top = 336
+    Top = 459
     Width = 126
+    Anchors = [akLeft, akBottom]
     Caption = 'Benchmark dictionary'
     OnClick = ButtonBenchmarkDictionaryClick
+    TabOrder = 7
+  end
+  object ButtonMatrixInteger: TButton
+    Left = 7
+    Height = 25
+    Top = 192
+    Width = 129
+    Caption = 'TMatrixInteger'
+    OnClick = ButtonMatrixIntegerClick
     TabOrder = 8
+  end
+  object ListViewOutput: TListView
+    Left = 144
+    Height = 507
+    Top = 8
+    Width = 542
+    Anchors = [akTop, akLeft, akRight, akBottom]
+    Columns = <    
+      item
+        Caption = 'Action'
+        Width = 200
+      end    
+      item
+        Caption = 'Value'
+        Width = 316
+      end>
+    ReadOnly = True
+    TabOrder = 9
+    ViewStyle = vsReport
   end
 end
