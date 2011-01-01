@@ -18,7 +18,7 @@
     </CompilerOptions>
     <Description Value="Generic classes implemented as templates."/>
     <Version Minor="3"/>
-    <Files Count="16">
+    <Files Count="20">
       <Item1>
         <Filename Value="ReadMe.txt"/>
         <Type Value="Text"/>
@@ -81,7 +81,24 @@
       </Item15>
       <Item16>
         <Filename Value="Generic\GenericListString.inc"/>
+        <UnitName Value="GenericListString"/>
       </Item16>
+      <Item17>
+        <Filename Value="Generic\GenericMatrix.inc"/>
+        <UnitName Value="GenericMatrix"/>
+      </Item17>
+      <Item18>
+        <Filename Value="Generic\GenericPoint.inc"/>
+        <Type Value="Include"/>
+      </Item18>
+      <Item19>
+        <Filename Value="Specialized\SpecializedPoint.pas"/>
+        <UnitName Value="SpecializedPoint"/>
+      </Item19>
+      <Item20>
+        <Filename Value="Specialized\SpecializedMatrix.pas"/>
+        <UnitName Value="SpecializedMatrix"/>
+      </Item20>
     </Files>
     <Type Value="RunAndDesignTime"/>
     <RequiredPkgs Count="1">
@@ -98,4 +115,4 @@
       <Version Value="2"/>
     </PublishOptions>
   </Package>
-</CONFIG>
+</CONFIG>

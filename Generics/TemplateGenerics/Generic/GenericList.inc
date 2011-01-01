@@ -16,10 +16,11 @@
     function GetLast: TGListItem;
     function GetFirst: TGListItem;
     procedure SetCapacity(const AValue: TGListIndex);
+    procedure SetCapacityOptimized(const NewCapacity: TGListIndex);
     procedure SetLast(AValue: TGListItem);
     procedure SetFirst(AValue: TGListItem);
     procedure Put(Index: TGListIndex; const AValue: TGListItem); virtual;
-    procedure SetCount(const AValue: TGListIndex);
+    procedure SetCount(const AValue: TGListIndex); virtual;
     procedure QuickSort(L, R : TGListIndex; Compare: TGListSortCompare);
   public
     function Add(Item: TGListItem): TGListIndex;
@@ -27,11 +28,9 @@
     procedure AddList(List: TGList);
     procedure Assign(Source: TGList); virtual;
     procedure Clear; virtual;
-    procedure Contract;
     procedure Delete(Index: TGListIndex); virtual;
     procedure DeleteItems(Index, Count: TGListIndex);
     function EqualTo(List: TGList): Boolean;
-    procedure Expand;
     function Extract(Item: TGListItem): TGListItem;
     procedure Exchange(Index1, Index2: TGListIndex);
     property First: TGListItem read GetFirst write SetFirst;
@@ -77,7 +76,33 @@ end;
 
 procedure TGList.SetCapacity(const AValue: TGListIndex);
 begin
+  if (AValue < FCount) then
+    raise EListError.CreateFmt(SListCapacityError, [AValue]);
   SetLength(FItems, AValue);
+end;
+
+procedure TGList.SetCapacityOptimized(const NewCapacity: TGListIndex);
+var
+  IncSize: TGListIndex;
+begin
+  if NewCapacity > Capacity then begin
+    IncSize := NewCapacity - Capacity;
+    // Expand
+    if FCount = Capacity then begin
+      IncSize := 4;
+      if Capacity > 3 then IncSize := IncSize + 4;
+      if Capacity > 8 then IncSize := IncSize + 8;
+      if Capacity > 63 then IncSize := IncSize + Capacity shr 2; // Grow by one quarter
+      Capacity := Capacity + IncSize;
+    end;
+  end else
+  if NewCapacity < Capacity then begin
+    // Contract
+    if (Capacity > 256) and (FCount < Capacity shr 2) then
+    begin
+      Capacity := Capacity shr 1;
+    end;
+  end;
 end;
 
 function TGList.Get(Index: TGListIndex): TGListItem;
@@ -92,8 +117,11 @@ end;
 
 procedure TGList.SetCount(const AValue: TGListIndex);
 begin
-  SetLength(FItems, AValue);
+  if (AValue < 0) then
+    raise EListError.CreateFmt(SListCountError, [AValue]);
+  if AValue > Capacity then SetCapacityOptimized(AValue); // Before FCount change
   FCount := AValue;
+  if AValue < Capacity then SetCapacityOptimized(AValue); // After FCount change
 end;
 
 procedure TGList.QuickSort(L, R: TGListIndex; Compare: TGListSortCompare);
@@ -104,13 +132,13 @@ begin
  repeat
    I := L;
    J := R;
-   P := FItems[ (L + R) div 2 ];
+   P := FItems[(L + R) div 2];
    repeat
      while Compare(P, FItems[I]) > 0 do
        I := I + 1;
      while Compare(P, FItems[J]) < 0 do
        J := J - 1;
-     If I <= J then
+     if I <= J then
      begin
        Q := FItems[I];
        FItems[I] := FItems[J];
@@ -127,34 +155,13 @@ end;
 
 procedure TGList.Assign(Source: TGList);
 var
-  I: Integer;
+  I: TGListIndex;
 begin
   Count := Source.Count;
   I := 0;
   while I < Count do begin
     Items[I] := Source[I];
     I := I + 1;
-  end;
-end;
-
-procedure TGList.Expand;
-var
-  IncSize: TGListIndex;
-begin
-  if FCount = Capacity then begin
-    IncSize := 4;
-    if Capacity > 3 then IncSize := IncSize + 4;
-    if Capacity > 8 then IncSize := IncSize + 8;
-    if Capacity > 63 then IncSize := IncSize + Capacity shr 2;
-    Capacity := Capacity + IncSize;
-  end;
-end;
-
-procedure TGList.Contract;
-begin
-  if (Capacity > 256) and (FCount < Capacity shr 2) then
-  begin
-    Capacity := Capacity shr 1;
   end;
 end;
 
@@ -183,7 +190,7 @@ procedure TGList.Insert(Index: TGListIndex; Item: TGListItem);
 begin
   if (Index < 0) or (Index > FCount ) then
     raise EListError.CreateFmt(SListIndexError, [Index]);
-  if FCount = Capacity then Expand;
+  if FCount = Capacity then SetCapacityOptimized(Capacity + 1);
   if Index < FCount then
     System.Move(FItems[Index], FItems[Index + 1], (FCount - Index) * SizeOf(TGListItem));
   FItems[Index] := Item;
@@ -399,11 +406,9 @@ end;
 
 function TGList.Add(Item: TGListItem): TGListIndex;
 begin
-  if FCount = Capacity then
-    Self.Expand;
-  FItems[FCount] := Item;
-  Result := FCount;
-  FCount := FCount + 1;
+  Count := Count + 1;
+  Result := FCount - 1;
+  FItems[Result] := Item;
 end;
 
 procedure TGList.AddList(List: TGList);
@@ -429,7 +434,7 @@ begin
     raise EListError.CreateFmt(SListIndexError, [Index]);
   FCount := FCount - 1;
   System.Move(FItems[Index + 1], FItems[Index], (FCount - Index) * SizeOf(TGListItem));
-  Contract;
+  SetCapacityOptimized(Capacity - 1);
 end;
 
 procedure TGList.DeleteItems(Index, Count: TGListIndex);
@@ -444,11 +449,13 @@ begin
 end;
 
 procedure TGList.Fill(Start, Count: TGListIndex; Value: TGListItem);
+var
+  I: TGListIndex;
 begin
-  while Count > 0 do begin
-    Items[Start] := Value;
-    Count := Count - 1;
-    Start := Start + 1;
+  I := Start;
+  while I < Count do begin
+    Items[I] := Value;
+    I := I + 1;
   end;
 end;
 
@@ -466,4 +473,4 @@ begin
 end;
 
 {$UNDEF IMPLEMENTATION}
-{$ENDIF}
+{$ENDIF}

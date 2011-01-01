@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
   ComCtrls, SpecializedList, SpecializedDictionary, SpecializedQueue,
-  DateUtils, SpecializedObjectList;
+  DateUtils;
 
 type
 
@@ -35,7 +35,8 @@ type
     procedure FormDestroy(Sender: TObject);
   private
   public
-    procedure WriteLn(Text: string);
+    Bitmap: TBitmap;
+    procedure WriteLn(Text: string = '');
   end;
 
 var
@@ -60,6 +61,7 @@ begin
   WriteLn('TListInteger test');
   List := TListInteger.Create;
   with List do try
+    WriteLn('AddArray([10, 20, 30, 40])');
     AddArray([10, 20, 30, 40]);
     WriteLn('Implode: ' + Implode(',', IntToStr));
     Clear;
@@ -73,6 +75,9 @@ begin
     WriteLn('First: ' + IntToStr(First));
     WriteLn('Last: ' + IntToStr(Last));
     MoveItems(3, 2, 3);
+    WriteLn('Implode: ' + Implode(',', IntToStr));
+    WriteLn('Insert(5, 11)');
+    Insert(5, 11);
     WriteLn('Implode: ' + Implode(',', IntToStr));
   finally
     Free;
@@ -274,6 +279,7 @@ begin
 
   try
     List2 := TList.Create;
+    WriteLn;
     WriteLn('Test TList...');
     StartTime := Now;
     repeat
@@ -394,6 +400,7 @@ begin
   try
     Dictionary2 := TStringList.Create;
     Dictionary2.NameValueSeparator := '|';
+    WriteLn;
     WriteLn('TStringList...');
     I := 0;
     StartTime := Now;
@@ -467,7 +474,7 @@ procedure TMainForm.FormDestroy(Sender: TObject);
 begin
 end;
 
-procedure TMainForm.WriteLn(Text: string);
+procedure TMainForm.WriteLn(Text: string = '');
 begin
   MemoOutput.Lines.Add(Text);
 end;

@@ -8,7 +8,8 @@ interface
 
 uses
     SpecializedList, SpecializedDictionary, SpecializedStack, SpecializedTree, 
-  SpecializedQueue, SpecializedSet, LazarusPackageIntf;
+  SpecializedQueue, SpecializedSet, SpecializedPoint, SpecializedMatrix, 
+  LazarusPackageIntf;
 
 implementation
 
