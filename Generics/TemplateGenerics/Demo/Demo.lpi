@@ -57,8 +57,8 @@
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="73"/>
-        <CursorPos X="53" Y="79"/>
+        <TopLine Value="404"/>
+        <CursorPos X="49" Y="419"/>
         <UsageCount Value="233"/>
         <Bookmarks Count="1">
           <Item0 X="65" Y="221" ID="2"/>
@@ -310,7 +310,7 @@
       </Unit31>
       <Unit32>
         <Filename Value="../Generic/GenericList.inc"/>
-        <EditorIndex Value="6"/>
+        <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
         <TopLine Value="170"/>
         <CursorPos X="82" Y="183"/>
@@ -415,117 +415,106 @@
         <UsageCount Value="91"/>
       </Unit45>
       <Unit46>
-        <Filename Value="../Specialized/SpecializedList.pas"/>
-        <UnitName Value="SpecializedList"/>
-        <EditorIndex Value="7"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="161"/>
-        <CursorPos X="17" Y="287"/>
-        <UsageCount Value="102"/>
-        <Loaded Value="True"/>
-      </Unit46>
-      <Unit47>
         <Filename Value="../Generic/GenericMatrix.inc"/>
-        <EditorIndex Value="8"/>
+        <EditorIndex Value="3"/>
         <WindowIndex Value="0"/>
         <TopLine Value="311"/>
         <CursorPos X="48" Y="331"/>
         <UsageCount Value="103"/>
         <Loaded Value="True"/>
-      </Unit47>
-      <Unit48>
+      </Unit46>
+      <Unit47>
         <Filename Value="../../../../../lazarus/trunk/lcl/graphics.pp"/>
         <UnitName Value="Graphics"/>
         <WindowIndex Value="0"/>
         <TopLine Value="2624"/>
         <CursorPos X="37" Y="2636"/>
         <UsageCount Value="90"/>
-      </Unit48>
-      <Unit49>
+      </Unit47>
+      <Unit48>
         <Filename Value="../../../../../lazarus/trunk/lcl/interfaces/carbon/issues.xml"/>
         <WindowIndex Value="0"/>
         <TopLine Value="94"/>
         <CursorPos X="1" Y="1"/>
         <UsageCount Value="6"/>
         <DefaultSyntaxHighlighter Value="XML"/>
-      </Unit49>
-      <Unit50>
+      </Unit48>
+      <Unit49>
         <Filename Value="/usr/share/fpcsrc/rtl/objpas/classes/classesh.inc"/>
-        <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
         <TopLine Value="199"/>
         <CursorPos X="14" Y="213"/>
         <UsageCount Value="28"/>
-        <Loaded Value="True"/>
-      </Unit50>
-      <Unit51>
+      </Unit49>
+      <Unit50>
         <Filename Value="/usr/share/fpcsrc/rtl/objpas/classes/lists.inc"/>
-        <EditorIndex Value="5"/>
         <WindowIndex Value="0"/>
         <TopLine Value="199"/>
         <CursorPos X="3" Y="201"/>
         <UsageCount Value="28"/>
-        <Loaded Value="True"/>
-      </Unit51>
-      <Unit52>
+      </Unit50>
+      <Unit51>
         <Filename Value="../Generic/GenericListObject.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="21" Y="20"/>
         <UsageCount Value="19"/>
-      </Unit52>
-      <Unit53>
+      </Unit51>
+      <Unit52>
         <Filename Value="/usr/share/fpcsrc/rtl/objpas/objpas.pp"/>
         <UnitName Value="objpas"/>
-        <EditorIndex Value="3"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="27" Y="26"/>
         <UsageCount Value="28"/>
-        <Loaded Value="True"/>
-      </Unit53>
-      <Unit54>
+      </Unit52>
+      <Unit53>
         <Filename Value="/usr/share/fpcsrc/rtl/inc/systemh.inc"/>
-        <EditorIndex Value="4"/>
         <WindowIndex Value="0"/>
         <TopLine Value="381"/>
         <CursorPos X="3" Y="398"/>
         <UsageCount Value="28"/>
-        <Loaded Value="True"/>
-      </Unit54>
-      <Unit55>
+      </Unit53>
+      <Unit54>
         <Filename Value="/usr/share/fpcsrc/rtl/inc/varianth.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="475"/>
         <CursorPos X="10" Y="503"/>
         <UsageCount Value="7"/>
-      </Unit55>
-      <Unit56>
+      </Unit54>
+      <Unit55>
         <Filename Value="../../../../../lazarus/trunk/lcl/include/control.inc"/>
-        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
         <TopLine Value="2270"/>
         <CursorPos X="22" Y="2273"/>
         <UsageCount Value="19"/>
-        <Loaded Value="True"/>
-      </Unit56>
-      <Unit57>
+      </Unit55>
+      <Unit56>
         <Filename Value="../Specialized/SpecializedMatrix.pas"/>
         <UnitName Value="SpecializedMatrix"/>
-        <EditorIndex Value="9"/>
+        <EditorIndex Value="4"/>
         <WindowIndex Value="0"/>
         <TopLine Value="31"/>
         <CursorPos X="38" Y="62"/>
         <UsageCount Value="18"/>
         <Loaded Value="True"/>
-      </Unit57>
-      <Unit58>
+      </Unit56>
+      <Unit57>
         <Filename Value="../ReadMe.txt"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="28" Y="10"/>
         <UsageCount Value="9"/>
         <DefaultSyntaxHighlighter Value="None"/>
+      </Unit57>
+      <Unit58>
+        <Filename Value="../../../../../Programy/Lazarus/fpc/2.4.3/source/rtl/objpas/dateutil.inc"/>
+        <EditorIndex Value="1"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="38"/>
+        <CursorPos X="3" Y="50"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
       </Unit58>
     </Units>
     <JumpHistory Count="30" HistoryIndex="29">
@@ -622,32 +611,32 @@
         <Caret Line="359" Column="19" TopLine="350"/>
       </Position23>
       <Position24>
-        <Filename Value="/usr/share/fpcsrc/rtl/objpas/classes/lists.inc"/>
-        <Caret Line="679" Column="23" TopLine="677"/>
+        <Filename Value="../Generic/GenericList.inc"/>
+        <Caret Line="193" Column="31" TopLine="180"/>
       </Position24>
       <Position25>
         <Filename Value="../Generic/GenericList.inc"/>
-        <Caret Line="193" Column="31" TopLine="180"/>
+        <Caret Line="184" Column="20" TopLine="170"/>
       </Position25>
       <Position26>
-        <Filename Value="../Specialized/SpecializedList.pas"/>
-        <Caret Line="104" Column="1" TopLine="1"/>
-      </Position26>
-      <Position27>
-        <Filename Value="../Specialized/SpecializedList.pas"/>
-        <Caret Line="296" Column="1" TopLine="269"/>
-      </Position27>
-      <Position28>
-        <Filename Value="../Generic/GenericList.inc"/>
-        <Caret Line="184" Column="20" TopLine="170"/>
-      </Position28>
-      <Position29>
-        <Filename Value="../Specialized/SpecializedList.pas"/>
-        <Caret Line="296" Column="1" TopLine="269"/>
-      </Position29>
-      <Position30>
         <Filename Value="../Generic/GenericList.inc"/>
         <Caret Line="184" Column="19" TopLine="170"/>
+      </Position26>
+      <Position27>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="42" Column="51" TopLine="20"/>
+      </Position27>
+      <Position28>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="458" Column="36" TopLine="440"/>
+      </Position28>
+      <Position29>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="7" Column="52" TopLine="1"/>
+      </Position29>
+      <Position30>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="526" Column="1" TopLine="502"/>
       </Position30>
     </JumpHistory>
   </ProjectOptions>

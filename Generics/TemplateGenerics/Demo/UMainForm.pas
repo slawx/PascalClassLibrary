@@ -38,7 +38,9 @@ type
     procedure FormDestroy(Sender: TObject);
   private
   public
+    MeasureDuration: TDateTime;
     Bitmap: TBitmap;
+    procedure UpdateButtonState(Enabled: Boolean);
     procedure WriteOutput(Text1: string = ''; Text2: string = '');
   end;
 
@@ -53,6 +55,7 @@ implementation
 
 procedure TMainForm.FormCreate(Sender: TObject);
 begin
+  MeasureDuration := 100 * OneMillisecond;
 end;
 
 procedure TMainForm.ButtonIntegerListClick(Sender: TObject);
@@ -235,13 +238,14 @@ begin
   LabelTestName.Caption := 'Generic specialized TListObject vs. classic non-generic TList benchmark';
   ListViewOutput.Clear;
   try
+    UpdateButtonState(False);
     List := TListPointer.Create;
     List2 := TList.Create;
 
     StartTime := Now;
     repeat
       List.Add(1);
-    until (Now - StartTime) > OneSecond;
+    until (Now - StartTime) > MeasureDuration;
     WriteOutput('TListPointer.Add', IntToStr(List.Count) + ' ops/sec');
     List.Clear;
     Application.ProcessMessages;
@@ -249,7 +253,7 @@ begin
     StartTime := Now;
     repeat
       List2.Add(1);
-    until (Now - StartTime) > OneSecond;
+    until (Now - StartTime) > MeasureDuration;
     WriteOutput('TList.Add', IntToStr(List2.Count) + ' ops/sec');
     List2.Clear;
     Application.ProcessMessages;
@@ -257,7 +261,7 @@ begin
     StartTime := Now;
     repeat
       List.Insert(0, 1);
-    until (Now - StartTime) > OneSecond;
+    until (Now - StartTime) > MeasureDuration;
     WriteOutput('TListPointer.Insert', IntToStr(List.Count) + ' ops/sec');
     List.Clear;
     Application.ProcessMessages;
@@ -265,7 +269,7 @@ begin
     StartTime := Now;
     repeat
       List2.Insert(0, 1);
-    until (Now - StartTime) > OneSecond;
+    until (Now - StartTime) > MeasureDuration;
     WriteOutput('TList.Insert', IntToStr(List2.Count) + ' ops/sec');
     List2.Clear;
     Application.ProcessMessages;
@@ -277,7 +281,7 @@ begin
     repeat
       List.Delete(0);
       Inc(I);
-    until (Now - StartTime) > OneSecond;
+    until (Now - StartTime) > MeasureDuration;
     WriteOutput('TListPointer.Delete', IntToStr(I) + ' ops/sec');
     List.Clear;
     Application.ProcessMessages;
@@ -289,7 +293,7 @@ begin
     repeat
       List2.Delete(0);
       Inc(I);
-    until (Now - StartTime) > OneSecond;
+    until (Now - StartTime) > MeasureDuration;
     WriteOutput('TList.Delete', IntToStr(I) + ' ops/sec');
     Application.ProcessMessages;
 
@@ -300,7 +304,7 @@ begin
     repeat
       List.Move(300000, 700000);
       Inc(I);
-    until (Now - StartTime) > OneSecond;
+    until (Now - StartTime) > MeasureDuration;
     WriteOutput('TListPointer.Move', IntToStr(I) + ' ops/sec');
     List.Clear;
     Application.ProcessMessages;
@@ -312,7 +316,7 @@ begin
     repeat
       List2.Move(300000, 700000);
       Inc(I);
-    until (Now - StartTime) > OneSecond;
+    until (Now - StartTime) > MeasureDuration;
     WriteOutput('TList.Move', IntToStr(I) + ' ops/sec');
     Application.ProcessMessages;
 
@@ -323,7 +327,7 @@ begin
     repeat
       List.Exchange(300000, 700000);
       Inc(I);
-    until (Now - StartTime) > OneSecond;
+    until (Now - StartTime) > MeasureDuration;
     WriteOutput('TListPointer.Exchange', IntToStr(I) + ' ops/sec');
     List.Clear;
     Application.ProcessMessages;
@@ -335,7 +339,7 @@ begin
     repeat
       List2.Exchange(300000, 700000);
       Inc(I);
-    until (Now - StartTime) > OneSecond;
+    until (Now - StartTime) > MeasureDuration;
     WriteOutput('TList.Exchange', IntToStr(I) + ' ops/sec');
     Application.ProcessMessages;
 
@@ -346,7 +350,7 @@ begin
     repeat
       List.IndexOf(Pointer(I mod List.Count));
       Inc(I);
-    until (Now - StartTime) > OneSecond;
+    until (Now - StartTime) > MeasureDuration;
     WriteOutput('TListPointer.IndexOf', IntToStr(I) + ' ops/sec');
     List.Clear;
     Application.ProcessMessages;
@@ -358,11 +362,12 @@ begin
     repeat
       List2.IndexOf(Pointer(I mod List2.Count));
       Inc(I);
-    until (Now - StartTime) > OneSecond;
+    until (Now - StartTime) > MeasureDuration;
     WriteOutput('TList.IndexOf', IntToStr(I) + ' ops/sec');
     Application.ProcessMessages;
 
   finally
+    UpdateButtonState(True);
     List.Free;
     List2.Free;
   end;
@@ -379,6 +384,7 @@ begin
   LabelTestName.Caption := 'Generic specialized TDictionaryStringString vs. classic non-generic TStringList benchmark';
   ListViewOutput.Clear;
   try
+    UpdateButtonState(False);
     Dictionary := TDictionaryStringString.Create;
     Dictionary2 := TStringList.Create;
     Dictionary2.NameValueSeparator := '|';
@@ -388,7 +394,7 @@ begin
     repeat
       Dictionary.Add(IntToStr(I), IntToStr(I));
       I := I + 1;
-    until (Now - StartTime) > OneSecond;
+    until (Now - StartTime) > MeasureDuration;
     WriteOutput('TDictionaryStringString.Add', IntToStr(Dictionary.Count) + ' ops/sec');
     Application.ProcessMessages;
 
@@ -397,7 +403,7 @@ begin
     repeat
       Dictionary2.Add(IntToStr(I) + Dictionary2.NameValueSeparator + IntToStr(I));
       I := I + 1;
-    until (Now - StartTime) > OneSecond;
+    until (Now - StartTime) > MeasureDuration;
     WriteOutput('TStringList.Add', IntToStr(Dictionary2.Count) + ' ops/sec');
     Application.ProcessMessages;
 
@@ -406,7 +412,7 @@ begin
     repeat
       R := Dictionary.Values[IntToStr(I mod Dictionary.Count)];
       I := I + 1;
-    until (Now - StartTime) > OneSecond;
+    until (Now - StartTime) > MeasureDuration;
     WriteOutput('TDictionaryStringString.Values', IntToStr(I) + ' ops/sec');
     Application.ProcessMessages;
 
@@ -415,7 +421,7 @@ begin
     repeat
       R := Dictionary2.Values[IntToStr(I mod Dictionary2.Count)];
       I := I + 1;
-    until (Now - StartTime) > OneSecond;
+    until (Now - StartTime) > MeasureDuration;
     WriteOutput('TStringList.Values', IntToStr(I) + ' ops/sec');
     Application.ProcessMessages;
 
@@ -424,7 +430,7 @@ begin
     repeat
       R := Dictionary.Keys[I mod Dictionary.Count];
       I := I + 1;
-    until (Now - StartTime) > OneSecond;
+    until (Now - StartTime) > MeasureDuration;
     WriteOutput('TDictionaryStringString.Keys', IntToStr(I) + ' ops/sec');
     Application.ProcessMessages;
 
@@ -433,7 +439,7 @@ begin
     repeat
       R := Dictionary2.Names[I mod Dictionary2.Count];
       I := I + 1;
-    until (Now - StartTime) > OneSecond;
+    until (Now - StartTime) > MeasureDuration;
     WriteOutput('TStringList.Keys(Names)', IntToStr(I) + ' ops/sec');
     Application.ProcessMessages;
 
@@ -442,7 +448,7 @@ begin
     repeat
       R := Dictionary.Items[I mod Dictionary.Count].Value;
       I := I + 1;
-    until (Now - StartTime) > OneSecond;
+    until (Now - StartTime) > MeasureDuration;
     WriteOutput('TDictionaryStringString.Items', IntToStr(I) + ' ops/sec');
     Application.ProcessMessages;
 
@@ -451,11 +457,12 @@ begin
     repeat
       R := Dictionary2.ValueFromIndex[I mod Dictionary2.Count];
       I := I + 1;
-    until (Now - StartTime) > OneSecond;
+    until (Now - StartTime) > MeasureDuration;
     WriteOutput('TStringList.Items(ValueFromIndex)', IntToStr(I) + ' ops/sec');
     Application.ProcessMessages;
 
   finally
+    UpdateButtonState(True);
     Dictionary.Free;
     Dictionary2.Free;
   end;
@@ -491,6 +498,19 @@ end;
 
 procedure TMainForm.FormDestroy(Sender: TObject);
 begin
+end;
+
+procedure TMainForm.UpdateButtonState(Enabled: Boolean);
+begin
+  ButtonBenchmarkDictionary.Enabled := Enabled;
+  ButtonBenchmarkList.Enabled := Enabled;
+  ButtonCharList.Enabled := Enabled;
+  ButtonDictionaryString.Enabled := Enabled;
+  ButtonIntegerList.Enabled := Enabled;
+  ButtonListObject.Enabled := Enabled;
+  ButtonMatrixInteger.Enabled := Enabled;
+  ButtonQueueInteger.Enabled := Enabled;
+  ButtonStringList.Enabled := Enabled;
 end;
 
 procedure TMainForm.WriteOutput(Text1: string = ''; Text2: string = '');

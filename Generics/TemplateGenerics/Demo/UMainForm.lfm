@@ -9,7 +9,7 @@ object MainForm: TMainForm
   ClientWidth = 692
   OnCreate = FormCreate
   OnDestroy = FormDestroy
-  LCLVersion = '0.9.29'
+  LCLVersion = '0.9.31'
   object ButtonIntegerList: TButton
     Left = 8
     Height = 25
