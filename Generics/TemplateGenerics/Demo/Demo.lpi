@@ -311,10 +311,11 @@
       </Unit31>
       <Unit32>
         <Filename Value="../Generic/GenericList.inc"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="6"/>
         <WindowIndex Value="0"/>
         <TopLine Value="462"/>
-        <CursorPos X="30" Y="470"/>
+        <CursorPos X="40" Y="470"/>
         <UsageCount Value="107"/>
         <Loaded Value="True"/>
       </Unit32>
@@ -519,11 +520,10 @@
       </Unit58>
       <Unit59>
         <Filename Value="../../../../../Programy/Lazarus/fpc/2.4.3/source/rtl/objpas/classes/classesh.inc"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
         <TopLine Value="649"/>
-        <CursorPos X="23" Y="661"/>
+        <CursorPos X="38" Y="671"/>
         <UsageCount Value="10"/>
         <Loaded Value="True"/>
       </Unit59>

@@ -18,6 +18,7 @@ type
 {$DEFINE TGTreeSortCompare := TTreeSortCompareInteger}
 {$DEFINE TGTreeToStringConverter := TTreeToStringConverterInteger}
 {$DEFINE TGTreeFromStringConverter := TTreeFromStringConverterInteger}
+{$DEFINE TGTreeItemArray := TTreeIntegerItemArray}
 {$DEFINE INTERFACE}
 {$I 'GenericTree.inc'}
 
@@ -30,6 +31,7 @@ type
 {$DEFINE TGTreeSortCompare := TTreeSortCompareString}
 {$DEFINE TGTreeToStringConverter := TTreeToStringConverterString}
 {$DEFINE TGTreeFromStringConverter := TTreeFromStringConverterString}
+{$DEFINE TGTreeItemArray := TTreeStringItemArray}
 {$DEFINE INTERFACE}
 {$I 'GenericTree.inc'}
 
@@ -42,6 +44,7 @@ type
 {$DEFINE TGTreeSortCompare := TTreeSortComparePointer}
 {$DEFINE TGTreeToStringConverter := TTreeToStringConverterPointer}
 {$DEFINE TGTreeFromStringConverter := TTreeFromStringConverterPointer}
+{$DEFINE TGTreeItemArray := TTreePointerItemArray}
 {$DEFINE INTERFACE}
 {$I 'GenericTree.inc'}
 
@@ -59,6 +62,7 @@ implementation
 {$DEFINE TGTreeSortCompare := TTreeSortCompareInteger}
 {$DEFINE TGTreeToStringConverter := TTreeToStringConverterInteger}
 {$DEFINE TGTreeFromStringConverter := TTreeFromStringConverterInteger}
+{$DEFINE TGTreeItemArray := TTreeIntegerItemArray}
 {$DEFINE IMPLEMENTATION}
 {$I 'GenericTree.inc'}
 
@@ -71,6 +75,7 @@ implementation
 {$DEFINE TGTreeSortCompare := TTreeSortCompareString}
 {$DEFINE TGTreeToStringConverter := TTreeToStringConverterString}
 {$DEFINE TGTreeFromStringConverter := TTreeFromStringConverterString}
+{$DEFINE TGTreeItemArray := TTreeStringItemArray}
 {$DEFINE IMPLEMENTATION}
 {$I 'GenericTree.inc'}
 
@@ -83,6 +88,7 @@ implementation
 {$DEFINE TGTreeSortCompare := TTreeSortComparePointer}
 {$DEFINE TGTreeToStringConverter := TTreeToStringConverterPointer}
 {$DEFINE TGTreeFromStringConverter := TTreeFromStringConverterPointer}
+{$DEFINE TGTreeItemArray := TTreePointerItemArray}
 {$DEFINE IMPLEMENTATION}
 {$I 'GenericTree.inc'}
 

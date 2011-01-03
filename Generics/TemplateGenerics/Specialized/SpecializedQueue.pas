@@ -18,6 +18,7 @@ type
 {$DEFINE TGQueueSortCompare := TQueueSortCompareInteger}
 {$DEFINE TGQueueToStringConverter := TQueueToStringConverterInteger}
 {$DEFINE TGQueueFromStringConverter := TQueueFromStringConverterInteger}
+{$DEFINE TGQueueItemArray := TQueueIntegerItemArray}
 {$DEFINE INTERFACE}
 {$I 'GenericQueue.inc'}
 
@@ -29,6 +30,7 @@ type
 {$DEFINE TGQueueSortCompare := TQueueSortComparePointer}
 {$DEFINE TGQueueToStringConverter := TQueueToStringConverterPointer}
 {$DEFINE TGQueueFromStringConverter := TQueueFromStringConverterPointer}
+{$DEFINE TGQueueItemArray := TQueuePointerItemArray}
 {$DEFINE INTERFACE}
 {$I 'GenericQueue.inc'}
 
@@ -40,6 +42,7 @@ type
 {$DEFINE TGQueueSortCompare := TQueueSortCompareByte}
 {$DEFINE TGQueueToStringConverter := TQueueToStringConverterByte}
 {$DEFINE TGQueueFromStringConverter := TQueueFromStringConverterByte}
+{$DEFINE TGQueueItemArray := TQueueByteItemArray}
 {$DEFINE INTERFACE}
 {$I 'GenericQueue.inc'}
 
@@ -56,6 +59,7 @@ implementation
 {$DEFINE TGQueueSortCompare := TQueueSortCompareInteger}
 {$DEFINE TGQueueToStringConverter := TQueueToStringConverterInteger}
 {$DEFINE TGQueueFromStringConverter := TQueueFromStringConverterInteger}
+{$DEFINE TGQueueItemArray := TQueueIntegerItemArray}
 {$DEFINE IMPLEMENTATION}
 {$I '..\Generic\GenericQueue.inc'}
 
@@ -67,6 +71,7 @@ implementation
 {$DEFINE TGQueueSortCompare := TQueueSortComparePointer}
 {$DEFINE TGQueueToStringConverter := TQueueToStringConverterPointer}
 {$DEFINE TGQueueFromStringConverter := TQueueFromStringConverterPointer}
+{$DEFINE TGQueueItemArray := TQueuePointerItemArray}
 {$DEFINE IMPLEMENTATION}
 {$I 'GenericQueue.inc'}
 
@@ -78,6 +83,7 @@ implementation
 {$DEFINE TGQueueSortCompare := TQueueSortCompareByte}
 {$DEFINE TGQueueToStringConverter := TQueueToStringConverterByte}
 {$DEFINE TGQueueFromStringConverter := TQueueFromStringConverterByte}
+{$DEFINE TGQueueItemArray := TQueueByteItemArray}
 {$DEFINE IMPLEMENTATION}
 {$I 'GenericQueue.inc'}
 

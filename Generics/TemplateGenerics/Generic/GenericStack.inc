@@ -6,6 +6,7 @@
 {$DEFINE TGListSortCompare := TGStackSortCompare}
 {$DEFINE TGListToStringConverter := TGStackToStringConverter}
 {$DEFINE TGListFromStringConverter := TGStackFromStringConverter}
+{$DEFINE TGListItemArray := TGStackItemArray}
 {$DEFINE INTERFACE}
 {$I 'GenericList.inc'}
 
@@ -40,6 +41,7 @@
 {$DEFINE TGListSortCompare := TGStackSortCompare}
 {$DEFINE TGListToStringConverter := TGStackToStringConverter}
 {$DEFINE TGListFromStringConverter := TGStackFromStringConverter}
+{$DEFINE TGListItemArray := TGStackItemArray}
 {$DEFINE IMPLEMENTATION}
 {$I 'GenericList.inc'}
 
@@ -67,4 +69,4 @@ begin
 end;
 
 {$UNDEF IMPLEMENTATION}
-{$ENDIF}
+{$ENDIF}

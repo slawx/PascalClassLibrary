@@ -5,6 +5,7 @@
   TGListSortCompare = function(const Item1, Item2: TGListItem): Integer of object;
   TGListToStringConverter = function(Item: TGListItem): string;
   TGListFromStringConverter = function(Text: string): TGListItem;
+  TGListItemArray = array of TGListItem;
 
   // TGList<TGListIndex, TGListItem> = class
   TGList = class
@@ -31,12 +32,13 @@
     procedure Delete(Index: TGListIndex); virtual;
     procedure DeleteItems(Index, Count: TGListIndex);
     function EqualTo(List: TGList): Boolean;
-    function Extract(Item: TGListItem): TGListItem;
     procedure Exchange(Index1, Index2: TGListIndex);
+    procedure Explode(Text, Separator: string; Converter: TGListFromStringConverter; SlicesCount: Integer = -1);
+    function Extract(Item: TGListItem): TGListItem;
     property First: TGListItem read GetFirst write SetFirst;
     procedure Fill(Start, Count: TGListIndex; Value: TGListItem);
+    function GetArray: TGListItemArray;
     function Implode(Separator: string; Converter: TGListToStringConverter): string;
-    procedure Explode(Text, Separator: string; Converter: TGListFromStringConverter; SlicesCount: Integer = -1);
     function IndexOf(Item: TGListItem; Start: TGListIndex = 0): TGListIndex;
     function IndexOfList(List: TGList; Start: TGListIndex = 0): TGListIndex;
     procedure Insert(Index: TGListIndex; Item: TGListItem);
@@ -47,7 +49,7 @@
     function Remove(Item: TGListItem): TGListIndex;
     procedure Reverse;
     procedure Sort(Compare: TGListSortCompare);
-    procedure SetArray(Values: array of TGListItem);
+    procedure SetArray(Values: TGListItemArray);
     property Count: TGListIndex read FCount write SetCount;
     property Capacity: TGListIndex read GetCapacity write SetCapacity;
     property Items[Index: TGListIndex]: TGListItem read Get write Put; default;
@@ -124,6 +126,18 @@ begin
   if AValue < Capacity then SetCapacityOptimized(AValue); // After FCount change
 end;
 
+function TGList.GetArray: TGListItemArray;
+var
+  I: Integer;
+begin
+  SetLength(Result, Count);
+  I := 0;
+  while I < Count do begin
+    Result[I] := FItems[I];
+    I := I + 1;
+  end;
+end;
+
 procedure TGList.QuickSort(L, R: TGListIndex; Compare: TGListSortCompare);
 var
   I, J: TGListIndex;
@@ -180,7 +194,6 @@ end;
 function TGList.IndexOf(Item: TGListItem; Start: TGListIndex): TGListIndex;
 begin
   Result := Start;
-  // Use slower CompareMem instead of (FItems[Result] <> Item) to support records
   while (Result < FCount) and
   not CompareMem(Addr(FItems[Result]), Addr(Item), SizeOf(TGListItem)) do
     Result := Result + 1;
@@ -357,7 +370,7 @@ begin
   end;
 end;
 
-procedure TGList.SetArray(Values: array of TGListItem);
+procedure TGList.SetArray(Values: TGListItemArray);
 var
   I: TGListIndex;
 begin
@@ -474,4 +487,4 @@ begin
 end;
 
 {$UNDEF IMPLEMENTATION}
-{$ENDIF}
+{$ENDIF}
