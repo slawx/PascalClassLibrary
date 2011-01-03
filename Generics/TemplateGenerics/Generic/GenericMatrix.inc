@@ -5,6 +5,7 @@
   TGMatrixSortCompare = function(const Item1, Item2: TGMatrixItem): Integer of object;
   TGMatrixToStringConverter = function(Item: TGMatrixItem): string;
   TGMatrixFromStringConverter = function(Text: string): TGMatrixItem;
+  TGMatrixRow = array of TGMatrixItem;
 
   TGMatrixIndex = record
     X: TGMatrixIndexX;
@@ -27,7 +28,7 @@
     procedure SetCount(const AValue: TGMatrixIndex);
   public
     function Add(Item: TGMatrixItem): TGMatrixIndex;
-    procedure AddArray(Values: array of TGMatrixItem);
+    procedure AddMatrix(Values: array of TGMatrixRow);
     procedure AddList(List: TGMatrix);
     procedure Assign(Source: TGMatrix);
     procedure Clear; virtual;
@@ -41,7 +42,7 @@
     procedure Exchange(Index1, Index2: TGMatrixIndex);
     property First: TGMatrixItem read GetFirst write SetFirst;
     procedure Fill(Start, Count: TGMatrixIndex; Value: TGMatrixItem);
-    function Implode(Separator: string; Converter: TGMatrixToStringConverter): string;
+    function Implode(RowSeparator, ColSeparator: string; Converter: TGMatrixToStringConverter): string;
     procedure Explode(Text, Separator: string; Converter: TGMatrixFromStringConverter; SlicesCount: Integer = -1);
     function IndexOf(Item: TGMatrixItem; Start: TGMatrixIndex = 0): TGMatrixIndex;
     function IndexOfList(List: TGMatrix; Start: TGMatrixIndex = 0): TGMatrixIndex;
@@ -362,7 +363,7 @@ begin
     QuickSort(0, FCount - 1, Compare); *)
 end;
 
-procedure TGMatrix.AddArray(Values: array of TGMatrixItem);
+procedure TGMatrix.AddMatrix(Values: array of TGMatrixRow);
 var
   I: TGMatrixIndex;
 begin
@@ -396,18 +397,25 @@ begin
   end; *)
 end;
 
-function TGMatrix.Implode(Separator: string; Converter: TGMatrixToStringConverter): string;
+function TGMatrix.Implode(RowSeparator, ColSeparator: string; Converter: TGMatrixToStringConverter): string;
 var
-  I: TGMatrixIndex;
+  Y: TGMatrixIndexY;
+  X: TGMatrixIndexX;
 begin
-(*  Result := '';
-  I := 0;
-  while I < Count do begin
-    Result := Result + Converter(Items[I]);
-    if I < (Count - 1) then
-      Result := Result + Separator;
-    I := I + 1;
-  end; *)
+  Result := '';
+  Y := 0;
+  while Y < Count.Y do begin
+    X := 0;
+    while X < Count.X do begin
+      Result := Result + Converter(Items[Y, X]);
+      if X < (Count.X - 1) then
+        Result := Result + ColSeparator;
+      X := X + 1;
+    end;
+    if Y < (Count.Y - 1) then
+      Result := Result + RowSeparator;
+    Y := Y + 1;
+  end;
 end;
 
 procedure TGMatrix.Explode(Text, Separator: string; Converter: TGMatrixFromStringConverter; SlicesCount: Integer = -1);

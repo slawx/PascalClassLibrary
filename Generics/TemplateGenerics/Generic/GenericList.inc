@@ -180,6 +180,7 @@ end;
 function TGList.IndexOf(Item: TGListItem; Start: TGListIndex): TGListIndex;
 begin
   Result := Start;
+  // Use slower CompareMem instead of (FItems[Result] <> Item) to support records
   while (Result < FCount) and
   not CompareMem(Addr(FItems[Result]), Addr(Item), SizeOf(TGListItem)) do
     Result := Result + 1;

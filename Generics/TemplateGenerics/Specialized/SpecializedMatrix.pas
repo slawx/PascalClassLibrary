@@ -15,6 +15,7 @@ type
 {$DEFINE TGMatrixIndexY := Integer}
 {$DEFINE TGMatrixItem := Integer}
 {$DEFINE TGMatrixIndex := TMatrixIntegerIndex}
+{$DEFINE TGMatrixRow := TMatrixIntegerRow}
 {$DEFINE TGMatrix := TMatrixInteger}
 {$DEFINE TGMatrixSortCompare := TMatrixIntegerSortCompare}
 {$DEFINE TGMatrixToStringConverter := TMatrixIntegerToStringConverter}
@@ -27,6 +28,7 @@ type
 {$DEFINE TGMatrixIndexY := Integer}
 {$DEFINE TGMatrixItem := TObject}
 {$DEFINE TGMatrixIndex := TMatrixObjectIndex}
+{$DEFINE TGMatrixRow := TMatrixObjectRow}
 {$DEFINE TGMatrix := TMatrixObject}
 {$DEFINE TGMatrixSortCompare := TMatrixObjectSortCompare}
 {$DEFINE TGMatrixToStringConverter := TMatrixObjectToStringConverter}
@@ -44,6 +46,7 @@ implementation
 {$DEFINE TGMatrixIndexY := Integer}
 {$DEFINE TGMatrixItem := Integer}
 {$DEFINE TGMatrixIndex := TMatrixIntegerIndex}
+{$DEFINE TGMatrixRow := TMatrixIntegerRow}
 {$DEFINE TGMatrix := TMatrixInteger}
 {$DEFINE TGMatrixSortCompare := TMatrixIntegerSortCompare}
 {$DEFINE TGMatrixToStringConverter := TMatrixIntegerToStringConverter}
@@ -56,6 +59,7 @@ implementation
 {$DEFINE TGMatrixIndexY := Integer}
 {$DEFINE TGMatrixItem := TObject}
 {$DEFINE TGMatrixIndex := TMatrixObjectIndex}
+{$DEFINE TGMatrixRow := TMatrixObjectRow}
 {$DEFINE TGMatrix := TMatrixObject}
 {$DEFINE TGMatrixSortCompare := TMatrixObjectSortCompare}
 {$DEFINE TGMatrixToStringConverter := TMatrixObjectToStringConverter}

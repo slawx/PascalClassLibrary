@@ -23,6 +23,7 @@ type
     ButtonDictionaryString: TButton;
     ButtonIntegerList: TButton;
     ButtonStringList: TButton;
+    LabelTestName: TLabel;
     ListViewOutput: TListView;
     procedure ButtonBenchmarkDictionaryClick(Sender: TObject);
     procedure ButtonBenchmarkListClick(Sender: TObject);
@@ -60,7 +61,7 @@ var
   I: Integer;
 begin
   ListViewOutput.Clear;
-  WriteOutput('TListInteger test');
+  LabelTestName.Caption := 'TListInteger test';
   List := TListInteger.Create;
   with List do try
     AddArray([10, 20, 30, 40]);
@@ -89,27 +90,19 @@ var
   I: Integer;
 begin
   ListViewOutput.Clear;
-  WriteOutput('TListInteger test');
+  LabelTestName.Caption := 'TMatrixInteger test';
   Matrix := TMatrixInteger.Create;
   with Matrix do try
-    WriteOutput('AddMatrix([10, 20, 30, 40])');
-    //AddMatrix([10, 20, 30, 40]);
-    WriteOutput('Implode: ' + Implode(',', IntToStr));
+    Count := CreateIndex(2, 2);
+    WriteOutput('Count := CreateIndex(2, 2)', '[' + Implode('; ', ', ', IntToStr) + ']');
+    Fill(CreateIndex(0, 0), Count, 1);
+    WriteOutput('Fill(1)', '[' + Implode('; ', ', ', IntToStr) + ']');
+    Count := CreateIndex(3, 3);
+    WriteOutput('Count := CreateIndex(3, 3)', '[' + Implode('; ', ', ', IntToStr) + ']');
+    WriteOutput('Count [Y, X]', IntToStr(Count.Y) + ', ' + IntToStr(Count.X));
     Clear;
-    for I := 0 to 10 do Add(I);
-    WriteOutput('Implode: ' + Implode(',', IntToStr));
-    WriteOutput('Count: Y: ' + IntToStr(Count.Y) + ', ' + IntToStr(Count.X));
-    WriteOutput('Implode: ' + Implode(',', IntToStr));
-    WriteOutput('Reverse');
-    Reverse;
-    WriteOutput('Implode: ' + Implode(',', IntToStr));
-    WriteOutput('First: ' + IntToStr(First));
-    WriteOutput('Last: ' + IntToStr(Last));
-    //MoveItems(3, 2, 3);
-    WriteOutput('Implode: ' + Implode(',', IntToStr));
-    WriteOutput('Insert(5, 11)');
-    //Insert(5, 11);
-    WriteOutput('Implode: ' + Implode(',', IntToStr));
+    WriteOutput('Clear', '[' + Implode('; ', ', ', IntToStr) + ']');
+    WriteOutput('Count [Y, X]', IntToStr(Count.Y) + ', ' + IntToStr(Count.X));
   finally
     Free;
   end;
@@ -126,7 +119,7 @@ var
   I: Integer;
 begin
   ListViewOutput.Clear;
-  WriteOutput('TListObject test');
+  LabelTestName.Caption := 'TListObject test';
   List := TListObject.Create;
   with List do try
     AddArray([TObject.Create, TObject.Create, TObject.Create, TObject.Create]);
@@ -151,7 +144,7 @@ var
   I: Integer;
 begin
   ListViewOutput.Clear;
-  WriteOutput('TQueueInteger test');
+  LabelTestName.Caption := 'TQueueInteger test';
   Queue := TQueueInteger.Create;
   with Queue do try
     Enqueue(1);
@@ -177,7 +170,7 @@ var
   Dictionary: TDictionaryStringString;
 begin
   ListViewOutput.Clear;
-  WriteOutput('TDictionaryString test');
+  LabelTestName.Caption := 'TDictionaryString test';
   Dictionary := TDictionaryStringString.Create;
   with Dictionary do try
     Add('Key1', 'Value1');
@@ -203,10 +196,12 @@ end;
 procedure TMainForm.ButtonCharListClick(Sender: TObject);
 var
   List: TListChar;
+  List2: TListChar;
 begin
   ListViewOutput.Clear;
-  WriteOutput('TListChar test');
+  LabelTestName.Caption := 'TListChar test';
   List := TListChar.Create;
+  List2 := TListChar.Create;
   with List do try
     AddArray([' ', ' ', 'A', 'b', 'c', 'd', ' ']);
     WriteOutput('AddArray(['' '', '' '', ''A'', ''b'', ''c'', ''d'', '' ''])',
@@ -221,7 +216,11 @@ begin
     WriteOutput('UpperCase', '''' + Implode('', CharToStr) + '''');
     LowerCase;
     WriteOutput('LowerCase', '''' + Implode('', CharToStr) + '''');
+    WriteOutput('IndexOf(''c'')', IntToStr(IndexOf('c')));
+    List2.AddArray(['c', 'b']);
+    WriteOutput('IndexOfList(''cb'')', IntToStr(IndexOfList(List2)));
   finally
+    List2.Free;
     Free;
   end;
 end;
@@ -233,6 +232,7 @@ var
   StartTime: TDateTime;
   I: Integer;
 begin
+  LabelTestName.Caption := 'Generic specialized TListObject vs. classic non-generic TList benchmark';
   ListViewOutput.Clear;
   try
     List := TListPointer.Create;
@@ -376,6 +376,7 @@ var
   I: Integer;
   R: string;
 begin
+  LabelTestName.Caption := 'Generic specialized TDictionaryStringString vs. classic non-generic TStringList benchmark';
   ListViewOutput.Clear;
   try
     Dictionary := TDictionaryStringString.Create;

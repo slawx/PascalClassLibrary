@@ -95,8 +95,8 @@ object MainForm: TMainForm
   end
   object ListViewOutput: TListView
     Left = 144
-    Height = 507
-    Top = 8
+    Height = 491
+    Top = 24
     Width = 542
     Anchors = [akTop, akLeft, akRight, akBottom]
     Columns = <    
@@ -111,5 +111,13 @@ object MainForm: TMainForm
     ReadOnly = True
     TabOrder = 9
     ViewStyle = vsReport
+  end
+  object LabelTestName: TLabel
+    Left = 144
+    Height = 14
+    Top = 8
+    Width = 10
+    Caption = '   '
+    ParentColor = False
   end
 end
