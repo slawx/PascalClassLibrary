@@ -55,14 +55,14 @@ object MainForm: TMainForm
     OnClick = ButtonCharListClick
     TabOrder = 4
   end
-  object ButtonBenchmarkList: TButton
-    Left = 8
+  object ButtonBenchmarkListString: TButton
+    Left = 10
     Height = 24
-    Top = 491
+    Top = 456
     Width = 128
     Anchors = [akLeft, akBottom]
-    Caption = 'Benchmark list'
-    OnClick = ButtonBenchmarkListClick
+    Caption = 'TListString'
+    OnClick = ButtonBenchmarkListStringClick
     TabOrder = 5
   end
   object ButtonListObject: TButton
@@ -77,10 +77,10 @@ object MainForm: TMainForm
   object ButtonBenchmarkDictionary: TButton
     Left = 10
     Height = 25
-    Top = 459
+    Top = 424
     Width = 126
     Anchors = [akLeft, akBottom]
-    Caption = 'Benchmark dictionary'
+    Caption = 'TDictionaryStringString'
     OnClick = ButtonBenchmarkDictionaryClick
     TabOrder = 7
   end
@@ -119,5 +119,24 @@ object MainForm: TMainForm
     Width = 10
     Caption = '   '
     ParentColor = False
+  end
+  object Label1: TLabel
+    Left = 10
+    Height = 14
+    Top = 408
+    Width = 62
+    Anchors = [akLeft, akBottom]
+    Caption = 'Benchmarks:'
+    ParentColor = False
+  end
+  object ButtonBenchmarkListPointer: TButton
+    Left = 8
+    Height = 24
+    Top = 488
+    Width = 128
+    Anchors = [akLeft, akBottom]
+    Caption = 'TListPointer'
+    OnClick = ButtonBenchmarkListPointerClick
+    TabOrder = 10
   end
 end

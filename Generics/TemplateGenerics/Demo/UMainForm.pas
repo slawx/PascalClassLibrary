@@ -15,18 +15,21 @@ type
 
   TMainForm = class(TForm)
     ButtonBenchmarkDictionary: TButton;
+    ButtonBenchmarkListPointer: TButton;
     ButtonListObject: TButton;
-    ButtonBenchmarkList: TButton;
+    ButtonBenchmarkListString: TButton;
     ButtonCharList: TButton;
     ButtonMatrixInteger: TButton;
     ButtonQueueInteger: TButton;
     ButtonDictionaryString: TButton;
     ButtonIntegerList: TButton;
     ButtonStringList: TButton;
+    Label1: TLabel;
     LabelTestName: TLabel;
     ListViewOutput: TListView;
     procedure ButtonBenchmarkDictionaryClick(Sender: TObject);
-    procedure ButtonBenchmarkListClick(Sender: TObject);
+    procedure ButtonBenchmarkListPointerClick(Sender: TObject);
+    procedure ButtonBenchmarkListStringClick(Sender: TObject);
     procedure ButtonCharListClick(Sender: TObject);
     procedure ButtonDictionaryStringClick(Sender: TObject);
     procedure ButtonIntegerListClick(Sender: TObject);
@@ -228,142 +231,145 @@ begin
   end;
 end;
 
-procedure TMainForm.ButtonBenchmarkListClick(Sender: TObject);
+procedure TMainForm.ButtonBenchmarkListStringClick(Sender: TObject);
 var
-  List: TListPointer;
-  List2: TList;
+  List: TListString;
+  List2: TStringList;
   StartTime: TDateTime;
   I: Integer;
+const
+  SampleText: string = 'text';
+  SampleCount: Integer = 100000;
 begin
-  LabelTestName.Caption := 'Generic specialized TListObject vs. classic non-generic TList benchmark';
+  LabelTestName.Caption := 'Generic specialized TListString vs. classic non-generic TStringList benchmark';
   ListViewOutput.Clear;
   try
     UpdateButtonState(False);
-    List := TListPointer.Create;
-    List2 := TList.Create;
+    List := TListString.Create;
+    List2 := TStringList.Create;
 
     StartTime := Now;
     repeat
-      List.Add(1);
+      List.Add(SampleText);
     until (Now - StartTime) > MeasureDuration;
-    WriteOutput('TListPointer.Add', IntToStr(List.Count) + ' ops/sec');
+    WriteOutput('TListString.Add', IntToStr(List.Count) + ' ops');
     List.Clear;
     Application.ProcessMessages;
 
     StartTime := Now;
     repeat
-      List2.Add(1);
+      List2.Add(SampleText);
     until (Now - StartTime) > MeasureDuration;
-    WriteOutput('TList.Add', IntToStr(List2.Count) + ' ops/sec');
+    WriteOutput('TStringList.Add', IntToStr(List2.Count) + ' ops');
     List2.Clear;
     Application.ProcessMessages;
 
     StartTime := Now;
     repeat
-      List.Insert(0, 1);
+      List.Insert(0, SampleText);
     until (Now - StartTime) > MeasureDuration;
-    WriteOutput('TListPointer.Insert', IntToStr(List.Count) + ' ops/sec');
+    WriteOutput('TListString.Insert', IntToStr(List.Count) + ' ops');
     List.Clear;
     Application.ProcessMessages;
 
     StartTime := Now;
     repeat
-      List2.Insert(0, 1);
+      List2.Insert(0, SampleText);
     until (Now - StartTime) > MeasureDuration;
-    WriteOutput('TList.Insert', IntToStr(List2.Count) + ' ops/sec');
+    WriteOutput('TStringList.Insert', IntToStr(List2.Count) + ' ops');
     List2.Clear;
     Application.ProcessMessages;
 
-    for I := 0 to 1000000 do
-      List.Add(1);
+    for I := 0 to SampleCount - 1 do
+      List.Add(SampleText);
     StartTime := Now;
     I := 0;
     repeat
       List.Delete(0);
       Inc(I);
     until (Now - StartTime) > MeasureDuration;
-    WriteOutput('TListPointer.Delete', IntToStr(I) + ' ops/sec');
+    WriteOutput('TListString.Delete', IntToStr(I) + ' ops');
     List.Clear;
     Application.ProcessMessages;
 
-    for I := 0 to 1000000 do
-      List2.Add(1);
+    for I := 0 to SampleCount - 1 do
+      List2.Add(SampleText);
     StartTime := Now;
     I := 0;
     repeat
       List2.Delete(0);
       Inc(I);
     until (Now - StartTime) > MeasureDuration;
-    WriteOutput('TList.Delete', IntToStr(I) + ' ops/sec');
+    WriteOutput('TStringList.Delete', IntToStr(I) + ' ops');
     Application.ProcessMessages;
 
-    for I := 0 to 1000000 do
-      List.Add(1);
+    for I := 0 to SampleCount - 1 do
+      List.Add(SampleText);
     StartTime := Now;
     I := 0;
     repeat
-      List.Move(300000, 700000);
+      List.Move(Round(SampleCount * 0.3), Round(SampleCount * 0.7));
       Inc(I);
     until (Now - StartTime) > MeasureDuration;
-    WriteOutput('TListPointer.Move', IntToStr(I) + ' ops/sec');
+    WriteOutput('TListString.Move', IntToStr(I) + ' ops');
     List.Clear;
     Application.ProcessMessages;
 
-    for I := 0 to 1000000 do
-    List2.Add(1);
+    for I := 0 to SampleCount - 1 do
+      List2.Add(SampleText);
     StartTime := Now;
     I := 0;
     repeat
-      List2.Move(300000, 700000);
+      List2.Move(Round(SampleCount * 0.3), Round(SampleCount * 0.7));
       Inc(I);
     until (Now - StartTime) > MeasureDuration;
-    WriteOutput('TList.Move', IntToStr(I) + ' ops/sec');
+    WriteOutput('TStringList.Move', IntToStr(I) + ' ops');
     Application.ProcessMessages;
 
-    for I := 0 to 1000000 do
-      List.Add(1);
+    for I := 0 to SampleCount - 1 do
+      List.Add(SampleText);
     StartTime := Now;
     I := 0;
     repeat
-      List.Exchange(300000, 700000);
+      List.Exchange(Round(SampleCount * 0.3), Round(SampleCount * 0.7));
       Inc(I);
     until (Now - StartTime) > MeasureDuration;
-    WriteOutput('TListPointer.Exchange', IntToStr(I) + ' ops/sec');
+    WriteOutput('TListString.Exchange', IntToStr(I) + ' ops');
     List.Clear;
     Application.ProcessMessages;
 
-    for I := 0 to 1000000 do
-    List2.Add(1);
+    for I := 0 to SampleCount - 1 do
+    List2.Add(SampleText);
     StartTime := Now;
     I := 0;
     repeat
-      List2.Exchange(300000, 700000);
+      List2.Exchange(Round(SampleCount * 0.3), Round(SampleCount * 0.7));
       Inc(I);
     until (Now - StartTime) > MeasureDuration;
-    WriteOutput('TList.Exchange', IntToStr(I) + ' ops/sec');
+    WriteOutput('TStringList.Exchange', IntToStr(I) + ' ops');
     Application.ProcessMessages;
 
-    for I := 0 to 1000000 do
-      List.Add(1);
+    for I := 0 to SampleCount - 1 do
+      List.Add(SampleText + IntToStr(I));
     StartTime := Now;
     I := 0;
     repeat
-      List.IndexOf(Pointer(I mod List.Count));
+      List.IndexOf(SampleText + IntToStr(I mod List.Count));
       Inc(I);
     until (Now - StartTime) > MeasureDuration;
-    WriteOutput('TListPointer.IndexOf', IntToStr(I) + ' ops/sec');
+    WriteOutput('TListString.IndexOf', IntToStr(I) + ' ops');
     List.Clear;
     Application.ProcessMessages;
 
-    for I := 0 to 1000000 do
-    List2.Add(1);
+    for I := 0 to SampleCount - 1 do
+      List2.Add(SampleText + IntToStr(I));
     StartTime := Now;
     I := 0;
     repeat
-      List2.IndexOf(Pointer(I mod List2.Count));
+      List2.IndexOf(SampleText + IntToStr(I mod List2.Count));
       Inc(I);
     until (Now - StartTime) > MeasureDuration;
-    WriteOutput('TList.IndexOf', IntToStr(I) + ' ops/sec');
+    WriteOutput('TStringList.IndexOf', IntToStr(I) + ' ops');
     Application.ProcessMessages;
 
   finally
@@ -395,7 +401,7 @@ begin
       Dictionary.Add(IntToStr(I), IntToStr(I));
       I := I + 1;
     until (Now - StartTime) > MeasureDuration;
-    WriteOutput('TDictionaryStringString.Add', IntToStr(Dictionary.Count) + ' ops/sec');
+    WriteOutput('TDictionaryStringString.Add', IntToStr(Dictionary.Count) + ' ops');
     Application.ProcessMessages;
 
     I := 0;
@@ -404,7 +410,7 @@ begin
       Dictionary2.Add(IntToStr(I) + Dictionary2.NameValueSeparator + IntToStr(I));
       I := I + 1;
     until (Now - StartTime) > MeasureDuration;
-    WriteOutput('TStringList.Add', IntToStr(Dictionary2.Count) + ' ops/sec');
+    WriteOutput('TStringList.Add', IntToStr(Dictionary2.Count) + ' ops');
     Application.ProcessMessages;
 
     I := 0;
@@ -413,7 +419,7 @@ begin
       R := Dictionary.Values[IntToStr(I mod Dictionary.Count)];
       I := I + 1;
     until (Now - StartTime) > MeasureDuration;
-    WriteOutput('TDictionaryStringString.Values', IntToStr(I) + ' ops/sec');
+    WriteOutput('TDictionaryStringString.Values', IntToStr(I) + ' ops');
     Application.ProcessMessages;
 
     I := 0;
@@ -422,7 +428,7 @@ begin
       R := Dictionary2.Values[IntToStr(I mod Dictionary2.Count)];
       I := I + 1;
     until (Now - StartTime) > MeasureDuration;
-    WriteOutput('TStringList.Values', IntToStr(I) + ' ops/sec');
+    WriteOutput('TStringList.Values', IntToStr(I) + ' ops');
     Application.ProcessMessages;
 
     I := 0;
@@ -431,7 +437,7 @@ begin
       R := Dictionary.Keys[I mod Dictionary.Count];
       I := I + 1;
     until (Now - StartTime) > MeasureDuration;
-    WriteOutput('TDictionaryStringString.Keys', IntToStr(I) + ' ops/sec');
+    WriteOutput('TDictionaryStringString.Keys', IntToStr(I) + ' ops');
     Application.ProcessMessages;
 
     I := 0;
@@ -440,7 +446,7 @@ begin
       R := Dictionary2.Names[I mod Dictionary2.Count];
       I := I + 1;
     until (Now - StartTime) > MeasureDuration;
-    WriteOutput('TStringList.Keys(Names)', IntToStr(I) + ' ops/sec');
+    WriteOutput('TStringList.Keys(Names)', IntToStr(I) + ' ops');
     Application.ProcessMessages;
 
     I := 0;
@@ -449,7 +455,7 @@ begin
       R := Dictionary.Items[I mod Dictionary.Count].Value;
       I := I + 1;
     until (Now - StartTime) > MeasureDuration;
-    WriteOutput('TDictionaryStringString.Items', IntToStr(I) + ' ops/sec');
+    WriteOutput('TDictionaryStringString.Items', IntToStr(I) + ' ops');
     Application.ProcessMessages;
 
     I := 0;
@@ -458,13 +464,160 @@ begin
       R := Dictionary2.ValueFromIndex[I mod Dictionary2.Count];
       I := I + 1;
     until (Now - StartTime) > MeasureDuration;
-    WriteOutput('TStringList.Items(ValueFromIndex)', IntToStr(I) + ' ops/sec');
+    WriteOutput('TStringList.Items(ValueFromIndex)', IntToStr(I) + ' ops');
     Application.ProcessMessages;
 
   finally
     UpdateButtonState(True);
     Dictionary.Free;
     Dictionary2.Free;
+  end;
+end;
+
+procedure TMainForm.ButtonBenchmarkListPointerClick(Sender: TObject);
+var
+  List: TListPointer;
+  List2: TList;
+  StartTime: TDateTime;
+  I: Integer;
+const
+  SampleCount: Integer = 100000;
+begin
+  LabelTestName.Caption := 'Generic specialized TListObject vs. classic non-generic TList benchmark';
+  ListViewOutput.Clear;
+  try
+    UpdateButtonState(False);
+    List := TListPointer.Create;
+    List2 := TList.Create;
+
+    StartTime := Now;
+    repeat
+      List.Add(1);
+    until (Now - StartTime) > MeasureDuration;
+    WriteOutput('TListPointer.Add', IntToStr(List.Count) + ' ops');
+    List.Clear;
+    Application.ProcessMessages;
+
+    StartTime := Now;
+    repeat
+      List2.Add(1);
+    until (Now - StartTime) > MeasureDuration;
+    WriteOutput('TList.Add', IntToStr(List2.Count) + ' ops');
+    List2.Clear;
+    Application.ProcessMessages;
+
+    StartTime := Now;
+    repeat
+      List.Insert(0, 1);
+    until (Now - StartTime) > MeasureDuration;
+    WriteOutput('TListPointer.Insert', IntToStr(List.Count) + ' ops');
+    List.Clear;
+    Application.ProcessMessages;
+
+    StartTime := Now;
+    repeat
+      List2.Insert(0, 1);
+    until (Now - StartTime) > MeasureDuration;
+    WriteOutput('TList.Insert', IntToStr(List2.Count) + ' ops');
+    List2.Clear;
+    Application.ProcessMessages;
+
+    for I := 0 to SampleCount - 1 do
+      List.Add(1);
+    StartTime := Now;
+    I := 0;
+    repeat
+      List.Delete(0);
+      Inc(I);
+    until (Now - StartTime) > MeasureDuration;
+    WriteOutput('TListPointer.Delete', IntToStr(I) + ' ops');
+    List.Clear;
+    Application.ProcessMessages;
+
+    for I := 0 to SampleCount - 1 do
+      List2.Add(1);
+    StartTime := Now;
+    I := 0;
+    repeat
+      List2.Delete(0);
+      Inc(I);
+    until (Now - StartTime) > MeasureDuration;
+    WriteOutput('TList.Delete', IntToStr(I) + ' ops');
+    Application.ProcessMessages;
+
+    for I := 0 to SampleCount - 1 do
+      List.Add(1);
+    StartTime := Now;
+    I := 0;
+    repeat
+      List.Move(Round(SampleCount * 0.3), Round(SampleCount * 0.7));
+      Inc(I);
+    until (Now - StartTime) > MeasureDuration;
+    WriteOutput('TListPointer.Move', IntToStr(I) + ' ops');
+    List.Clear;
+    Application.ProcessMessages;
+
+    for I := 0 to SampleCount - 1 do
+    List2.Add(1);
+    StartTime := Now;
+    I := 0;
+    repeat
+      List2.Move(Round(SampleCount * 0.3), Round(SampleCount * 0.7));
+      Inc(I);
+    until (Now - StartTime) > MeasureDuration;
+    WriteOutput('TList.Move', IntToStr(I) + ' ops');
+    Application.ProcessMessages;
+
+    for I := 0 to SampleCount - 1 do
+      List.Add(1);
+    StartTime := Now;
+    I := 0;
+    repeat
+      List.Exchange(Round(SampleCount * 0.3), Round(SampleCount * 0.7));
+      Inc(I);
+    until (Now - StartTime) > MeasureDuration;
+    WriteOutput('TListPointer.Exchange', IntToStr(I) + ' ops');
+    List.Clear;
+    Application.ProcessMessages;
+
+    for I := 0 to SampleCount - 1 do
+    List2.Add(1);
+    StartTime := Now;
+    I := 0;
+    repeat
+      List2.Exchange(Round(SampleCount * 0.3), Round(SampleCount * 0.7));
+      Inc(I);
+    until (Now - StartTime) > MeasureDuration;
+    WriteOutput('TList.Exchange', IntToStr(I) + ' ops');
+    Application.ProcessMessages;
+
+    for I := 0 to SampleCount - 1 do
+      List.Add(1);
+    StartTime := Now;
+    I := 0;
+    repeat
+      List.IndexOf(Pointer(I mod List.Count));
+      Inc(I);
+    until (Now - StartTime) > MeasureDuration;
+    WriteOutput('TListPointer.IndexOf', IntToStr(I) + ' ops');
+    List.Clear;
+    Application.ProcessMessages;
+
+    for I := 0 to SampleCount - 1 do
+    List2.Add(1);
+    StartTime := Now;
+    I := 0;
+    repeat
+      List2.IndexOf(Pointer(I mod List2.Count));
+      Inc(I);
+    until (Now - StartTime) > MeasureDuration;
+    WriteOutput('TList.IndexOf', IntToStr(I) + ' ops');
+    Application.ProcessMessages;
+
+  finally
+    UpdateButtonState(True);
+    List.Free;
+    List2.Free;
   end;
 end;
 
@@ -503,7 +656,7 @@ end;
 procedure TMainForm.UpdateButtonState(Enabled: Boolean);
 begin
   ButtonBenchmarkDictionary.Enabled := Enabled;
-  ButtonBenchmarkList.Enabled := Enabled;
+  ButtonBenchmarkListString.Enabled := Enabled;
   ButtonCharList.Enabled := Enabled;
   ButtonDictionaryString.Enabled := Enabled;
   ButtonIntegerList.Enabled := Enabled;
