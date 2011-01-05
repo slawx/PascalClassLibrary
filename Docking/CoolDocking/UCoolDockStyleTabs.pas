@@ -31,6 +31,7 @@ type
     FTabsPos: THeaderPos;
   public
     constructor Create(AManager: TObject);
+    procedure SetVisible(const AValue: Boolean); override;
     destructor Destroy; override;
     procedure ChangeVisible(Control: TWinControl; Visible: Boolean); override;
     procedure Switch(Index: Integer); override;
@@ -207,6 +208,19 @@ begin
   end;
 end;
 
+procedure TCoolDockStyleTabs.SetVisible(const AValue: Boolean);
+begin
+  inherited SetVisible(AValue);
+  with TCoolDockManager(Manager) do
+    if (TabControl.TabIndex >= 0) and (TabControl.TabIndex < DockPanels.Count) then
+      with TCoolDockClientPanel(DockPanels[TabControl.TabIndex]) do begin
+        //Show;
+        if AValue then Control.Show;
+        //TabControl.Show;
+        //ClientAreaPanel.Show;
+      end;
+end;
+
 procedure TCoolDockStyleTabs.ChangeVisible(Control: TWinControl; Visible: Boolean);
 var
   I: Integer;
@@ -215,7 +229,13 @@ begin
   if not Visible then
   if Assigned(TWinControl(Control).DockManager) then
   with TCoolDockManager(TWinControl(Control).DockManager) do begin
-//    ShowMessage(IntToStr(DockPanels.Count));
+//    ShowMessage(IntToStr(TabControl.TabIndex) + ' ' + IntToStr(DockPanels.Count));
+//    TabControl.Tabs[0].;
+//    if (TabControl.TabIndex >= 0) and (TabControl.TabIndex < DockPanels.Count) then begin
+//      TCoolDockClientPanel(DockPanels[TabControl.TabIndex]).Show;
+//      TCoolDockClientPanel(DockPanels[TabControl.TabIndex]).Control.Show;
+//    end;
+    //    ShowMessage(IntToStr(DockPanels.Count));
   end;
 end;
 

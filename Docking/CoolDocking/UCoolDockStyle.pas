@@ -22,7 +22,9 @@ type
     procedure UpdateClientSize; virtual;
     procedure Switch(Index: Integer); virtual;
     procedure ChangeVisible(Control: TWinControl; Visible: Boolean); virtual;
+    procedure SetVisible(const AValue: Boolean); virtual;
     property HeaderPos: THeaderPos read GetHeaderPos write SetHeaderPos;
+    property Visible: Boolean write SetVisible;
   end;
 
 implementation
@@ -31,6 +33,11 @@ uses
   UCoolDocking;
 
 { TCoolDockStyle }
+
+procedure TCoolDockStyle.SetVisible(const AValue: Boolean);
+begin
+
+end;
 
 function TCoolDockStyle.GetHeaderPos: THeaderPos;
 begin

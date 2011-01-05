@@ -543,6 +543,7 @@ procedure TCoolDockManager.SetVisible(const AValue: Boolean);
 var
   I: Integer;
 begin
+  DockStyleHandler.Visible := AValue;
 //  for I := 0 to DockPanels.Count - 1 do
 //    TCoolDockClientPanel(DockPanels[I]).Visible := AValue;
 end;

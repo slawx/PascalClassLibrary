@@ -2,7 +2,7 @@
 
   TGList = class;
 
-  TGListSortCompare = function(const Item1, Item2: TGListItem): Integer of object;
+  TGListSortCompare = function(Item1, Item2: TGListItem): Integer of object;
   TGListToStringConverter = function(Item: TGListItem): string;
   TGListFromStringConverter = function(Text: string): TGListItem;
   TGListItemArray = array of TGListItem;
@@ -90,13 +90,13 @@ begin
   if NewCapacity > Capacity then begin
     IncSize := NewCapacity - Capacity;
     // Expand
-    if FCount = Capacity then begin
+    if IncSize = 1 then begin
       IncSize := 4;
       if Capacity > 3 then IncSize := IncSize + 4;
       if Capacity > 8 then IncSize := IncSize + 8;
       if Capacity > 63 then IncSize := IncSize + Capacity shr 2; // Grow by one quarter
-      Capacity := Capacity + IncSize;
     end;
+    Capacity := Capacity + IncSize;
   end else
   if NewCapacity < Capacity then begin
     // Contract
