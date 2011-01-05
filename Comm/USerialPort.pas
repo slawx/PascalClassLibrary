@@ -5,7 +5,7 @@ unit USerialPort;
 interface
 
 uses
-  Classes, SysUtils, SynaSer, StdCtrls, Windows, Dialogs;
+  Classes, SysUtils, SynaSer, StdCtrls, Dialogs;
 
 type
   TBaudRate = (br110, br300, br600, br1200, br2400, br4800,
@@ -23,10 +23,7 @@ type
 
   TSerialPortReceiveThread = class(TThread)
     Parent: TSerialPort;
-    Stream: TMemoryStream;
     procedure Execute; override;
-    constructor Create(CreateSuspended: Boolean;
-      const StackSize: SizeUInt = DefaultStackSize);
     destructor Destroy; override;
   end;
 
@@ -45,9 +42,9 @@ type
     FParity: TParity;
     FStopBits: TStopBits;
     FReceiveThread: TSerialPortReceiveThread;
+    FReceiveBuffer: TMemoryStream;
     function GetBaudRateNumeric: Integer;
     function GetName: string;
-    function GetReceiveBuffer:TMemoryStream;
     procedure SetBaudRate(const AValue: TBaudRate);
     procedure SetBaudRateNumeric(const AValue: Integer);
     procedure SetDataBits(const AValue: TDataBits);
@@ -70,7 +67,7 @@ type
     property Active: Boolean read FActive write SetActive;
     property RTS: Boolean read FRTS write SetRTS;
     property DTR: Boolean read FDTR write SetDTR;
-    property ReceiveBuffer: TMemoryStream read GetReceiveBuffer;
+    property ReceiveBuffer: TMemoryStream read FReceiveBuffer;
 
     property BaudRateNumeric: Integer read GetBaudRateNumeric write SetBaudRateNumeric;
     property OnReceiveData: TReceiveDataEvent read FOnReceiveData write FOnReceiveData;
@@ -87,6 +84,11 @@ const
 
 implementation
 
+resourcestring
+  SAssignmentError = 'Assignment error';
+  SWrongNumericBaudRate = 'Wrong numeric baud rate %s';
+  SWrongDataBitsNumber = 'Wrong data bits number %s';
+
 { TSerialPort }
 
 procedure TSerialPort.SetActive(const AValue: Boolean);
@@ -94,7 +96,8 @@ begin
   if not FActive and AValue then begin
     FActive := True;
     Open;
-    FActive := FHandle <> INVALID_HANDLE_VALUE
+    FActive := FHandle <> INVALID_HANDLE_VALUE;
+    if not FActive then FreeAndNil(FReceiveThread);
   end else
   if FActive and not AValue then begin
     FActive := False;
@@ -136,6 +139,8 @@ end;
 procedure TSerialPort.Open;
 begin
   Connect(FName);
+  //set_fDtrControl(DCB, 1);
+  //DCB.flags := ;
   SetBaudRate(FBaudRate);
   SetParity(FParity);
   SetStopBits(FStopBits);
@@ -143,16 +148,23 @@ begin
   SetFlowControl(FFlowControl);
   SetDTR(FDTR);
   SetRTS(FRTS);
+
+  FReceiveThread := TSerialPortReceiveThread.Create(True);
+  FReceiveThread.FreeOnTerminate := False;
+  FReceiveThread.Parent := Self;
+  FReceiveThread.Start;
 end;
 
 procedure TSerialPort.Close;
 begin
+  FreeAndNil(FReceiveThread);
   CloseSocket;
 end;
 
 constructor TSerialPort.Create;
 begin
   inherited Create;
+  FReceiveBuffer := TMemoryStream.Create;
   FBaudRate := br9600;
   FName := 'COM1';
   FDataBits := 8;
@@ -162,18 +174,13 @@ begin
   FDTR := False;
   FRTS := False;
   Active := False;
-
-  FReceiveThread := TSerialPortReceiveThread.Create(True);
-  FReceiveThread.FreeOnTerminate := False;
-  FReceiveThread.Parent := Self;
-  FReceiveThread.Resume;
 end;
 
 destructor TSerialPort.Destroy;
 begin
-  FReceiveThread.Terminate;
-  FReceiveThread.WaitFor;
-  FReceiveThread.Destroy;
+  Active := False;
+  FReceiveThread.Free;
+  ReceiveBuffer.Free;
   inherited Destroy;
 end;
 
@@ -188,7 +195,7 @@ begin
     FlowControl := TSerialPort(Source).FlowControl;
     DTR := TSerialPort(Source).DTR;
     RTS := TSerialPort(Source).RTS;
-  end else raise Exception.Create('Assignment error');
+  end else raise Exception.Create(SAssignmentError);
 end;
 
 procedure TSerialPort.SetBaudRate(const AValue: TBaudRate);
@@ -211,11 +218,6 @@ begin
   Result := FName;
 end;
 
-function TSerialPort.GetReceiveBuffer:TMemoryStream;
-begin
-  Result := FReceiveThread.Stream;
-end;
-
 procedure TSerialPort.SetBaudRateNumeric(const AValue: Integer);
 begin
   case AValue of
@@ -234,14 +236,14 @@ begin
     115200: BaudRate := br115200;
     128000: BaudRate := br128000;
     256000: BaudRate := br256000;
-    else raise Exception.Create('Wrong numeric baud rate');
+    else raise Exception.CreateFmt(SWrongNumericBaudRate, [AValue]);
   end;
 end;
 
 procedure TSerialPort.SetDataBits(const AValue: TDataBits);
 begin
   if (AValue >= 5) and (AValue <= 8) then FDataBits := AValue
-    else raise Exception.Create('Wrong data bits number');
+    else raise Exception.CreateFmt(SWrongDataBitsNumber, [IntToStr(AValue)]);
   if FActive then begin
     GetCommState;
     DCB.ByteSize := AValue;
@@ -252,7 +254,13 @@ end;
 procedure TSerialPort.SetDTR(const AValue: Boolean);
 begin
   FDTR := AValue;
-  if FActive then SetDTRF(FDTR);
+  if FFlowControl = fcNone then
+    DCB.flags := DCB.flags and (not (dcb_DtrControlEnable * 3)) or
+    (dcb_DtrControlEnable * Byte(AValue));
+  if FActive then begin
+    if FFlowControl = fcNone then SetCommState
+    else SetDTRF(FDTR);
+  end;
 end;
 
 procedure TSerialPort.SetFlowControl(const AValue: TFlowControl);
@@ -262,10 +270,10 @@ begin
     GetCommState;
     case AValue of
       fcNone: DCB.flags := 0;
-      fcSoftware: DCB.flags := DCB.Flags or dcb_OutX or dcb_InX;
-      fcHardware: DCB.flags := DCB.Flags
-        or dcb_OutxCtsFlow or dcb_OutxDsrFlow
-        or dcb_DtrControlHandshake  or dcb_RtsControlHandshake;
+      fcSoftware: DCB.flags := dcb_OutX or dcb_InX or
+        dcb_DtrControlEnable or dcb_RtsControlEnable;
+      fcHardware: DCB.flags := dcb_OutxCtsFlow or dcb_OutxDsrFlow
+        or dcb_DtrControlHandshake or dcb_RtsControlHandshake;
     end;
     SetCommState;
   end;
@@ -279,35 +287,31 @@ var
   Buffer: array of Byte;
 begin
   InBufferUsed := 0;
-  with Parent do
-  repeat
-    if InBufferUsed = 0 then Sleep(1);
-    if Active then begin
-      InBufferUsed := WaitingData;
-      if InBufferUsed > 0 then begin
-        SetLength(Buffer, InBufferUsed);
-        RecvBuffer(Buffer, Length(Buffer));
+  with Parent do repeat
+    try
+      if InBufferUsed = 0 then Sleep(1);
+      if Active then begin
+        InBufferUsed := WaitingData;
+        if InBufferUsed > 0 then begin
+          SetLength(Buffer, InBufferUsed);
+          RecvBuffer(Buffer, Length(Buffer));
 
-        Stream.Size := Length(Buffer);
-        Stream.Position := 0;
-        Stream.Write(Buffer[0], Length(Buffer));
-        if Assigned(Parent.FOnReceiveData) then
-          Parent.FOnReceiveData(Stream);
+          Parent.FReceiveBuffer.Size := Length(Buffer);
+          Parent.FReceiveBuffer.Position := 0;
+          Parent.FReceiveBuffer.Write(Buffer[0], Length(Buffer));
+          if Assigned(Parent.FOnReceiveData) then
+            Parent.FOnReceiveData(Parent.FReceiveBuffer);
+        end else InBufferUsed := 0;
       end else InBufferUsed := 0;
-    end else InBufferUsed := 0;
+    except
+      on E: Exception do
+        //MainForm.ExceptionLogger1.ThreadExceptionHandler(Self, E);
+    end;
   until Terminated;
-end;
-
-constructor TSerialPortReceiveThread.Create(CreateSuspended: Boolean;
-  const StackSize: SizeUInt);
-begin
-  inherited;
-  Stream := TMemoryStream.Create;
 end;
 
 destructor TSerialPortReceiveThread.Destroy;
 begin
-  Stream.Destroy;
   inherited;
 end;
 

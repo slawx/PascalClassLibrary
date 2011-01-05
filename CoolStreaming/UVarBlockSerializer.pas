@@ -10,7 +10,7 @@ unit UVarBlockSerializer;
 interface
 
 uses
-  Classes, DateUtils, UStreamHelper, Math, Dialogs, SysUtils, USubStream,
+  Classes, DateUtils, UStreamHelper, Math, SysUtils, USubStream,
   Contnrs, SpecializedList;
 
 const

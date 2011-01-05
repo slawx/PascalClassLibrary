@@ -5,8 +5,8 @@ unit UCommFrame;
 interface
 
 uses
-  Classes, UMemoryStreamEx, Dialogs, SysUtils,
-  Forms, UCommPin;
+  Classes, UStreamHelper, Dialogs, SysUtils,
+  UCommPin;
 
 const
   SpecialChar = $fe;
@@ -21,7 +21,7 @@ type
   TCommFrame = class
   private
     LastCharIsSpecialChar: Boolean;
-    ReceiveBuffer: TMemoryStreamEx;
+    ReceiveBuffer: TStreamHelper;
     FrameState: TFrameState;
     FFrameErrorCount: Integer;
     FCRCErrorCount: Integer;
@@ -30,8 +30,8 @@ type
     RawDataPin: TCommPin;
     FrameDataPin: TCommPin;
     PacketLoss: Real;
-    procedure RawDataReceive(Stream: TStream);
-    procedure FrameDataReceive(Stream: TStream);
+    procedure RawDataReceive(Sender: TCommPin; Stream: TStream);
+    procedure FrameDataReceive(Sender: TCommPin; Stream: TStream);
     constructor Create;
     destructor Destroy; override;
     property FrameErrorCount: Integer read FFrameErrorCount;
@@ -45,7 +45,7 @@ implementation
 
 constructor TCommFrame.Create;
 begin
-  ReceiveBuffer := TMemoryStreamEx.Create;
+  ReceiveBuffer := TStreamHelper.Create;
   RawDataPin := TCommPin.Create;
   RawDataPin.OnReceive := RawDataReceive;
   FrameDataPin := TCommPin.Create;
@@ -61,9 +61,9 @@ begin
   inherited;
 end;
 
-procedure TCommFrame.FrameDataReceive(Stream: TStream);
+procedure TCommFrame.FrameDataReceive(Sender: TCommPin; Stream: TStream);
 var
-  RawData: TMemoryStreamEx;
+  RawData: TStreamHelper;
   I: Integer;
   Character: Byte;
   CRC: Byte;
@@ -74,31 +74,35 @@ begin
 
   // Byte stuffing
   Stream.Position := 0;
-  RawData := TMemoryStreamEx.Create;
-  RawData.WriteByte(SpecialChar);
-  RawData.WriteByte(ControlCodeFrameStart);
-  for I := 0 to Stream.Size - 1 do begin
-    Character := TMemoryStreamEx(Stream).ReadByte;
+  try
+    RawData := TStreamHelper.Create;
+    RawData.WriteByte(SpecialChar);
+    RawData.WriteByte(ControlCodeFrameStart);
+    for I := 0 to Stream.Size - 1 do begin
+      Character := Stream.ReadByte;
+      if Character = SpecialChar then begin
+        RawData.WriteByte(SpecialChar);
+        RawData.WriteByte(ControlCodeSpecialChar);
+      end else RawData.WriteByte(Character);
+    end;
+
+    Character := CRC;
     if Character = SpecialChar then begin
       RawData.WriteByte(SpecialChar);
       RawData.WriteByte(ControlCodeSpecialChar);
     end else RawData.WriteByte(Character);
-  end;
 
-  Character := CRC;
-  if Character = SpecialChar then begin
     RawData.WriteByte(SpecialChar);
-    RawData.WriteByte(ControlCodeSpecialChar);
-  end else RawData.WriteByte(Character);
+    RawData.WriteByte(ControlCodeFrameEnd);
+    //if Random >= PacketLoss then
+      RawDataPin.Send(RawData);
 
-  RawData.WriteByte(SpecialChar);
-  RawData.WriteByte(ControlCodeFrameEnd);
-  //if Random >= PacketLoss then
-    RawDataPin.Send(RawData);
-  RawData.Free;
+  finally
+    RawData.Free;
+  end;
 end;
 
-procedure TCommFrame.RawDataReceive(Stream: TStream);
+procedure TCommFrame.RawDataReceive(Sender: TCommPin; Stream: TStream);
 var
   Character: Byte;
   CRC: Byte;
@@ -106,7 +110,7 @@ var
   I: Integer;
 begin
   for I := 0 to Stream.Size - 1 do begin
-    Character := TMemoryStreamEx(Stream).ReadByte;
+    Character := Stream.ReadByte;
     if LastCharIsSpecialChar then begin
       if Character = ControlCodeSpecialChar then begin
           ReceiveBuffer.WriteByte(SpecialChar)
@@ -114,7 +118,7 @@ begin
         if Character = ControlCodeFrameStart then begin
           if FrameState = fsInside then
             Inc(FFrameErrorCount);
-          ReceiveBuffer.Clear;
+          ReceiveBuffer.Size := 0;
           FrameState := fsInside;
         end else
         if Character = ControlCodeFrameEnd then begin
@@ -122,7 +126,7 @@ begin
             // Check CRC
             if ReceiveBuffer.Size > 0 then begin
               ReceiveBuffer.Position := ReceiveBuffer.Size - 1;
-              CRC := TMemoryStreamEx(ReceiveBuffer).ReadByte;
+              CRC := ReceiveBuffer.ReadByte;
               ReceiveBuffer.Size := ReceiveBuffer.Size - 1;
               ExpectedCRC := GetStreamCRC8(ReceiveBuffer);
 

@@ -1,0 +1,77 @@
+<?xml version="1.0"?>
+<CONFIG>
+  <Package Version="3">
+    <PathDelim Value="\"/>
+    <Name Value="PinConnection"/>
+    <CompilerOptions>
+      <Version Value="9"/>
+      <PathDelim Value="\"/>
+      <SearchPaths>
+        <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)\"/>
+      </SearchPaths>
+      <Other>
+        <CompilerPath Value="$(CompPath)"/>
+      </Other>
+    </CompilerOptions>
+    <Files Count="9">
+      <Item1>
+        <Filename Value="UCommFrame.pas"/>
+        <UnitName Value="UCommFrame"/>
+      </Item1>
+      <Item2>
+        <Filename Value="UCommHub.pas"/>
+        <UnitName Value="UCommHub"/>
+      </Item2>
+      <Item3>
+        <Filename Value="UCommPin.pas"/>
+        <UnitName Value="UCommPin"/>
+      </Item3>
+      <Item4>
+        <Filename Value="UCommProtocol.pas"/>
+        <UnitName Value="UCommProtocol"/>
+      </Item4>
+      <Item5>
+        <Filename Value="UCommSerialPort.pas"/>
+        <UnitName Value="UCommSerialPort"/>
+      </Item5>
+      <Item6>
+        <Filename Value="UCommSocket.pas"/>
+        <UnitName Value="UCommSocket"/>
+      </Item6>
+      <Item7>
+        <Filename Value="UCommThread.pas"/>
+        <UnitName Value="UCommThread"/>
+      </Item7>
+      <Item8>
+        <Filename Value="UPacketBurst.pas"/>
+        <UnitName Value="UPacketBurst"/>
+      </Item8>
+      <Item9>
+        <Filename Value="USerialPort.pas"/>
+        <UnitName Value="USerialPort"/>
+      </Item9>
+    </Files>
+    <Type Value="RunAndDesignTime"/>
+    <RequiredPkgs Count="4">
+      <Item1>
+        <PackageName Value="synapse"/>
+      </Item1>
+      <Item2>
+        <PackageName Value="Common"/>
+      </Item2>
+      <Item3>
+        <PackageName Value="CoolStreaming"/>
+      </Item3>
+      <Item4>
+        <PackageName Value="FCL"/>
+        <MinVersion Major="1" Valid="True"/>
+      </Item4>
+    </RequiredPkgs>
+    <UsageOptions>
+      <UnitPath Value="$(PkgOutDir)"/>
+    </UsageOptions>
+    <PublishOptions>
+      <Version Value="2"/>
+    </PublishOptions>
+  </Package>
+</CONFIG>

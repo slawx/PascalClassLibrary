@@ -1,9 +1,11 @@
 unit UPacketBurst;
 
+{$mode Delphi}{$H+}
+
 interface
 
 uses
-  Classes, CommPort, UPin, UMemoryStreamEx, SyncObjs;
+  Classes, UCommPin, SyncObjs, UStreamHelper;
 
 type
   TPacketBurst = class;
@@ -18,15 +20,15 @@ type
     SendThreadEvent: TEvent;
     SendThread: TPacketBurstSendThread;
     SendStreamLock: TCriticalSection;
-    SendStream: TMemoryStreamEx;
-    ReceiveStream: TMemoryStreamEx;
-    procedure PacketSingleReceive(Stream: TStream);
-    procedure PacketBurstReceive(Stream: TStream);
+    SendStream: TStreamHelper;
+    ReceiveStream: TStreamHelper;
+    procedure PacketSingleReceive(Sender: TCommPin; Stream: TStream);
+    procedure PacketBurstReceive(Sender: TCommPin; Stream: TStream);
   public
     SendPeriod: Integer; // ms
     SendBurstSize: Integer;
-    PacketSinglePin: TPin;
-    PacketBurstPin: TPin;
+    PacketSinglePin: TCommPin;
+    PacketBurstPin: TCommPin;
     destructor Destroy; override;
     constructor Create;
   end;
@@ -37,13 +39,13 @@ implementation
 
 constructor TPacketBurst.Create;
 begin
-  PacketSinglePin := TPin.Create;
+  PacketSinglePin := TCommPin.Create;
   PacketSinglePin.OnReceive := PacketSingleReceive;
-  PacketBurstPin := TPin.Create;
+  PacketBurstPin := TCommPin.Create;
   PacketBurstPin.OnReceive := PacketBurstReceive;
   SendThread := TPacketBurstSendThread.Create(True);
   SendThread.PacketBurst := Self;
-  SendThread.Resume;
+  SendThread.Start;
 end;
 
 destructor TPacketBurst.Destroy;
@@ -54,35 +56,41 @@ begin
   inherited;
 end;
 
-procedure TPacketBurst.PacketBurstReceive(Stream: TStream);
+procedure TPacketBurst.PacketBurstReceive(Sender: TCommPin; Stream: TStream);
 var
-  PacketStream: TMemoryStreamEx;
+  PacketStream: TStreamHelper;
   Size: Word;
 begin
-  PacketStream := TMemoryStreamEx.Create;
-  ReceiveStream.Seek(0, soFromEnd);
-  ReceiveStream.WriteStream(Stream);
-  ReceiveStream.Position := 0;
-  Size := ReceiveStream.ReadWord;
-  while Size < ReceiveStream.Size do begin
-    PacketStream.Clear;
-    PacketStream.ReadStream(TStream(ReceiveStream), Size);
-    PacketSinglePin.Send(PacketStream);
+  try
+    PacketStream := TStreamHelper.Create;
+    ReceiveStream.Seek(0, soFromEnd);
+    ReceiveStream.WriteStream(Stream, Stream.Size);
+    ReceiveStream.Position := 0;
     Size := ReceiveStream.ReadWord;
+    while Size < ReceiveStream.Size do begin
+      PacketStream.Stream.Size := 0;
+      PacketStream.ReadStream(TStream(ReceiveStream), Size);
+      PacketSinglePin.Send(PacketStream);
+      Size := ReceiveStream.ReadWord;
+    end;
+  finally
+    PacketStream.Free;
   end;
-  PacketStream.Free;
 end;
 
-procedure TPacketBurst.PacketSingleReceive(Stream: TStream);
+procedure TPacketBurst.PacketSingleReceive(Sender: TCommPin; Stream: TStream);
 var
   SignalEvent: Boolean;
 begin
-  SendStreamLock.Acquire;
-  SendStream.WriteWord(Stream.Size);
-  Stream.Position := 0;
-  SendStream.WriteStream(Stream);
-  SignalEvent := SendStream.Size > SendBurstSize;
-  SendStreamLock.Release;
+  try
+    SendStreamLock.Acquire;
+    SendStream.WriteWord(Stream.Size);
+    Stream.Position := 0;
+    SendStream.WriteStream(Stream, Stream.Size);
+    SignalEvent := SendStream.Size > SendBurstSize;
+  finally
+    SendStreamLock.Release;
+  end;
   if SignalEvent then SendThreadEvent.SetEvent;
 end;
 
@@ -90,28 +98,33 @@ end;
 
 procedure TPacketBurstSendThread.Execute;
 var
-  Stream: TMemoryStreamEx;
+  Stream: TStreamHelper;
 begin
   inherited;
-  Stream := TMemoryStreamEx.Create;
-  with PacketBurst do
-  repeat
-    if SendThreadEvent.WaitFor(SendPeriod) = wrSignaled then begin
-      SendStreamLock.Acquire;
-      SendStream.Position := 0;
-      if SendStream.Size < SendBurstSize then begin
-        PacketBurstPin.Send(SendStream);
-        SendStream.Clear;
-      end else
-      while (SendStream.Size - SendStream.Position) > SendBurstSize do begin
-        Stream.Clear;
-        SendStream.ReadStream(TStream(Stream), SendBurstSize);
-        PacketBurstPin.Send(Stream);
+  try
+    Stream := TStreamHelper.Create;
+    with PacketBurst do
+    repeat
+      if SendThreadEvent.WaitFor(SendPeriod) = wrSignaled then
+      try
+        SendStreamLock.Acquire;
+        SendStream.Position := 0;
+        if SendStream.Size < SendBurstSize then begin
+          PacketBurstPin.Send(SendStream);
+          SendStream.Stream.Size := 0;
+        end else
+        while (SendStream.Size - SendStream.Position) > SendBurstSize do begin
+          Stream.Stream.Size := 0;
+          SendStream.ReadStream(TStream(Stream), SendBurstSize);
+          PacketBurstPin.Send(Stream);
+        end;
+      finally
+        SendStreamLock.Release;
       end;
-      SendStreamLock.Release;
-    end;
-  until Terminated;
-  Stream.Free;
+    until Terminated;
+  finally
+    Stream.Free;
+  end;
 end;
 
 end.

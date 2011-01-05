@@ -10,16 +10,12 @@ uses
 type
   TCommSerialPort = class(TSerialPort)
   private
-    FTxCount: Integer;
-    FRxCount: Integer;
-    procedure Receive(Stream: TStream);
+    procedure Receive(Sender: TCommPin; Stream: TStream);
     procedure ReceiveData(Stream: TMemoryStream);
   public
-    DataPin: TCommPin;
+    Pin: TCommPin;
     destructor Destroy; override;
     constructor Create;
-    property TxCount: Integer read FTxCount;
-    property RxCount: Integer read FRxCount;
   end;
 
 
@@ -30,28 +26,26 @@ implementation
 
 procedure TCommSerialPort.ReceiveData(Stream: TMemoryStream);
 begin
-  Inc(FRxCount, Stream.Size);
-  DataPin.Send(Stream);
+  Pin.Send(Stream);
 end;
 
 constructor TCommSerialPort.Create;
 begin
   inherited;
-  DataPin := TCommPin.Create;
-  DataPin.OnReceive := Receive;
+  Pin := TCommPin.Create;
+  Pin.OnReceive := Receive;
   OnReceiveData := ReceiveData;
 end;
 
 destructor TCommSerialPort.Destroy;
 begin
   OnReceiveData := nil;
-  DataPin.Destroy;
+  Pin.Free;
   inherited;
 end;
 
-procedure TCommSerialPort.Receive(Stream: TStream);
+procedure TCommSerialPort.Receive(Sender: TCommPin; Stream: TStream);
 begin
-  Inc(FTxCount, Stream.Size);
   Stream.Position := 0;
   repeat
     SendStreamRaw(Stream);
