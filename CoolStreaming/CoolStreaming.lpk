@@ -8,7 +8,7 @@
       <Version Value="9"/>
       <PathDelim Value="\"/>
       <SearchPaths>
-        <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)\"/>
+        <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
       </SearchPaths>
       <Other>
         <CompilerPath Value="$(CompPath)"/>
@@ -17,7 +17,7 @@
     <Description Value="Contains various streaming classes."/>
     <License Value="GNU/GPL"/>
     <Version Minor="1"/>
-    <Files Count="5">
+    <Files Count="6">
       <Item1>
         <Filename Value="UStreamHelper.pas"/>
         <UnitName Value="UStreamHelper"/>
@@ -38,6 +38,10 @@
         <Filename Value="UTextFileStream.pas"/>
         <UnitName Value="UTextFileStream"/>
       </Item5>
+      <Item6>
+        <Filename Value="UBitStream.pas"/>
+        <UnitName Value="UBitStream"/>
+      </Item6>
     </Files>
     <Type Value="RunAndDesignTime"/>
     <RequiredPkgs Count="2">

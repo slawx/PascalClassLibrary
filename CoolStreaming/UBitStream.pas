@@ -101,7 +101,7 @@ end;
 
 function TBitStream.Seek(Offset:LongInt;Origin:TSeekOrigin):LongInt;
 begin
-
+  Result := 0;
 end;
 
 function TBitStream.Read(var Buffer; Count:Longint):Longint;
@@ -203,6 +203,9 @@ var
   PosInByte: Byte;
   Data: Byte;
 begin
+  if Count < 0 then
+    raise EReadError.Create(SReadError);
+
   Result := 0;
   if (FSize > 0) and (FPosition < FSize) and (FPosition >= 0) then begin
     if (FPosition + Count) > FSize then Count := FSize - FPosition;
@@ -240,6 +243,9 @@ begin
 end;
 
 begin
+  if Count < 0 then
+    raise EWriteError.Create(SWriteError);
+
   BitCount := Count;
   ByteCount := Ceil(Count / 8);
   BytePos := FPosition mod 8;
@@ -281,6 +287,8 @@ end;
 constructor TMemoryBitStream.Create;
 begin
   FStream := TMemoryStream.Create;
+  FPosition := 0;
+  FSize := 0;
 end;
 
 destructor TMemoryBitStream.Destroy;

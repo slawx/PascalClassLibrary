@@ -8,7 +8,7 @@ interface
 
 uses
     UStreamHelper, USubStream, UVarBlockSerializer, UBufferedFileStream, 
-  UTextFileStream, LazarusPackageIntf;
+  UTextFileStream, UBitStream, LazarusPackageIntf;
 
 implementation
 

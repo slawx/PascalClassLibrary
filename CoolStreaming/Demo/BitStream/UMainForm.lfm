@@ -7,7 +7,7 @@ object MainForm: TMainForm
   ClientHeight = 414
   ClientWidth = 613
   OnShow = FormShow
-  LCLVersion = '0.9.29'
+  LCLVersion = '0.9.31'
   object Memo1: TMemo
     Left = 7
     Height = 372

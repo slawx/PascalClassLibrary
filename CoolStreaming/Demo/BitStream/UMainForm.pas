@@ -14,6 +14,7 @@ const
 type
   TByteArray = array of Byte;
 
+
   { TMainForm }
 
   TMainForm = class(TForm)
