@@ -3,16 +3,20 @@
   <Package Version="3">
     <PathDelim Value="\"/>
     <Name Value="PinConnection"/>
+    <Author Value="Chronos"/>
     <CompilerOptions>
       <Version Value="9"/>
       <PathDelim Value="\"/>
       <SearchPaths>
-        <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)\"/>
+        <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
       </SearchPaths>
       <Other>
         <CompilerPath Value="$(CompPath)"/>
       </Other>
     </CompilerOptions>
+    <Description Value="System for class bidirectional communication interconnection."/>
+    <License Value="GNU/GPL"/>
+    <Version Minor="1"/>
     <Files Count="9">
       <Item1>
         <Filename Value="UCommFrame.pas"/>

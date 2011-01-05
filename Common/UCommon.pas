@@ -3,20 +3,34 @@ unit UCommon;
 interface
 
 uses
-  Windows, SysUtils, ShFolder, ShellAPI;
+  Windows, Classes, SysUtils, SpecializedList; //, ShFolder, ShellAPI;
 
 type
   TArrayOfByte = array of Byte;
   TArrayOfString = array of string;
 
-function DelTree(DirName : string): Boolean;
+  TUserNameFormat = (
+    unfNameUnknown = 0, // Unknown name type.
+    unfNameFullyQualifiedDN = 1,  // Fully qualified distinguished name
+    unfNameSamCompatible = 2, // Windows NT® 4.0 account name
+    unfNameDisplay = 3,  // A "friendly" display name
+    unfNameUniqueId = 6, // GUID string that the IIDFromString function returns
+    unfNameCanonical = 7,  // Complete canonical name
+    unfNameUserPrincipal = 8, // User principal name
+    unfNameCanonicalEx = 9,
+    unfNameServicePrincipal = 10,  // Generalized service principal name
+    unfDNSDomainName = 11);
+
+
 function IntToBin(Data: Cardinal; Count: Byte): string;
 function TryHexToInt(Data: string; var Value: Integer): Boolean;
 function TryBinToInt(Data: string; var Value: Integer): Boolean;
-function GetSpecialFolderPath(Folder: Integer): string;
+//function DelTree(DirName : string): Boolean;
+//function GetSpecialFolderPath(Folder: Integer): string;
 function BCDToInt(Value: Byte): Byte;
 function CompareByteArray(Data1, Data2: TArrayOfByte): Boolean;
 function GetUserName: string;
+function LoggedOnUserNameEx(Format: TUserNameFormat): string;
 function SplitString(var Text: string; Count: Word): string;
 function GetBit(Variable: QWord; Index: Byte): Boolean;
 procedure SetBit(var Variable: QWord; Index: Byte; State: Boolean);
@@ -26,7 +40,7 @@ function AddLeadingZeroes(const aNumber, Length : integer) : string;
 
 implementation
 
-function DelTree(DirName : string): Boolean;
+(*function DelTree(DirName : string): Boolean;
 var
   SHFileOpStruct : TSHFileOpStruct;
   DirBuf : array [0..255] of char;
@@ -48,14 +62,14 @@ begin
   except
      Result := False;
   end;
-end;
+end;*)
 
 function BCDToInt(Value: Byte): Byte;
 begin
   Result := (Value shr 4) * 10 + (Value and 15);
 end;
 
-function GetSpecialFolderPath(Folder: Integer): string;
+(*function GetSpecialFolderPath(Folder: Integer): string;
 const
   SHGFP_TYPE_CURRENT = 0;
 var
@@ -66,7 +80,7 @@ begin
     Result := path
   else
     Result := '';
-end;
+end;*)
 
 function IntToBin(Data: Cardinal; Count: Byte): string;
 var
@@ -155,6 +169,21 @@ begin
   if Windows.GetUserName(PChar(Result), L) and (L > 0) then
     SetLength(Result, StrLen(PChar(Result))) else
     Result := '';
+end;
+
+procedure GetUserNameEx(NameFormat: DWORD;
+  lpNameBuffer: LPSTR; nSize: PULONG); stdcall;
+  external 'secur32.dll' Name 'GetUserNameExA';
+
+
+function LoggedOnUserNameEx(Format: TUserNameFormat): string;
+var
+  UserName: array[0..250] of Char;
+  Size: DWORD;
+begin
+  Size := 250;
+  GetUserNameEx(Integer(Format), @UserName, @Size);
+  Result := UTF8Encode(UserName);
 end;
 
 function SplitString(var Text: string; Count: Word): string;
