@@ -5,7 +5,7 @@ unit USubStream;
 interface
 
 uses
-  Classes, SysUtils, UBase;
+  Classes, SysUtils;
 
 type
 
