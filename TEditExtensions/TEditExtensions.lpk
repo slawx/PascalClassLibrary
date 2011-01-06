@@ -8,7 +8,7 @@
       <Version Value="9"/>
       <PathDelim Value="\"/>
       <SearchPaths>
-        <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)\"/>
+        <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
       </SearchPaths>
       <Other>
         <CompilerPath Value="$(CompPath)"/>
@@ -17,12 +17,17 @@
     <Description Value="TEdit extended components"/>
     <License Value="GNU/GPL"/>
     <Version Minor="1"/>
-    <Files Count="1">
+    <Files Count="2">
       <Item1>
-        <Filename Value="UEditTime.pas"/>
+        <Filename Value="UTimeEdit.pas"/>
         <HasRegisterProc Value="True"/>
-        <UnitName Value="UEditTime"/>
+        <UnitName Value="UTimeEdit"/>
       </Item1>
+      <Item2>
+        <Filename Value="UIPv4Edit.pas"/>
+        <HasRegisterProc Value="True"/>
+        <UnitName Value="UIPv4Edit"/>
+      </Item2>
     </Files>
     <Type Value="RunAndDesignTime"/>
     <RequiredPkgs Count="2">

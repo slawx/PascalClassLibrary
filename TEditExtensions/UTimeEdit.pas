@@ -1,4 +1,4 @@
-unit UEditTime;
+unit UTimeEdit;
 
 {$mode Delphi}{$H+}
 
@@ -42,14 +42,14 @@ begin
   NewText := Text;
   Delete(NewText, SelStart + 1, 1);
   if TryStrToTime(NewText, Temp) then
-    Time := Temp;
+    FTime := Temp;
+  SetTime(FTime);
 end;
 
 procedure TTimeEdit.SetTime(const AValue: TTime);
 var
   LastPos: Integer;
 begin
-  if FTime = AValue then Exit;
   FTime := AValue;
 
   LastPos := SelStart;
@@ -65,6 +65,7 @@ end;
 constructor TTimeEdit.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
+  OnChange := ChangeExecute;
 end;
 
 destructor TTimeEdit.Destroy;

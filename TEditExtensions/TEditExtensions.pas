@@ -7,13 +7,14 @@ unit TEditExtensions;
 interface
 
 uses
-  UEditTime, LazarusPackageIntf;
+  UTimeEdit, UIPv4Edit, LazarusPackageIntf;
 
 implementation
 
 procedure Register; 
 begin
-  RegisterUnit('UEditTime', @UEditTime.Register); 
+  RegisterUnit('UTimeEdit', @UTimeEdit.Register); 
+  RegisterUnit('UIPv4Edit', @UIPv4Edit.Register); 
 end; 
 
 initialization
