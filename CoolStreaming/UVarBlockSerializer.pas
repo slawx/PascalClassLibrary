@@ -691,7 +691,7 @@ begin
   Items.Clear;
 end;
 
-function TVarBlockIndexed.TestIndex(Index:Integer):Boolean;
+function TVarBlockIndexed.TestIndex(Index: Integer):Boolean;
 begin
   if (Index >= 0) and (Index < Items.Count) then
     Result := Assigned(Items[Index])

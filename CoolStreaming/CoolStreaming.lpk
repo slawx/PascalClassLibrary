@@ -17,7 +17,7 @@
     <Description Value="Contains various streaming classes."/>
     <License Value="GNU/GPL"/>
     <Version Minor="1"/>
-    <Files Count="6">
+    <Files Count="7">
       <Item1>
         <Filename Value="UStreamHelper.pas"/>
         <UnitName Value="UStreamHelper"/>
@@ -42,6 +42,10 @@
         <Filename Value="UBitStream.pas"/>
         <UnitName Value="UBitStream"/>
       </Item6>
+      <Item7>
+        <Filename Value="UDynNumber.pas"/>
+        <UnitName Value="UDynNumber"/>
+      </Item7>
     </Files>
     <Type Value="RunAndDesignTime"/>
     <RequiredPkgs Count="2">

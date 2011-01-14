@@ -77,11 +77,11 @@ end;
 
 function TBitStream.GetSize: LongInt;
 var
-  p: LongInt;
+  P: LongInt;
 begin
-  p := Seek(0, soCurrent);
+  P := Seek(0, soCurrent);
   GetSize := Seek(0, soEnd);
-  Seek(p, soBeginning);
+  Seek(P, soBeginning);
 end;
 
 procedure TBitStream.SetBit(Index: Integer;const AValue: Boolean);
@@ -181,7 +181,7 @@ begin
   Seek(AValue, soBeginning);
 end;
 
-procedure TMemoryBitStream.SetSize(const AValue:LongInt);
+procedure TMemoryBitStream.SetSize(const AValue: LongInt);
 begin
   FSize := AValue;
   Stream.Size := Ceil(AValue / 8);
