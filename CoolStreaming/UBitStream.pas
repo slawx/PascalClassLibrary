@@ -35,8 +35,8 @@ type
 
     function ReadBit: Boolean;
     procedure WriteBit(AValue: Boolean);
-    function ReadByte: Byte;
-    procedure WriteByte(AValue: Byte);
+    function ReadNumber(Count: Byte): QWord;
+    procedure WriteNumber(AValue: QWord; Count: Byte);
   end;
 
   { TMemoryBitStream }
@@ -154,14 +154,14 @@ begin
   Write(AValue, 1);
 end;
 
-function TBitStream.ReadByte:Byte;
+function TBitStream.ReadNumber(Count: Byte): QWord;
 begin
-  Read(Result, 8);
+  Read(Result, Count);
 end;
 
-procedure TBitStream.WriteByte(AValue:Byte);
+procedure TBitStream.WriteNumber(AValue: QWord; Count: Byte);
 begin
-  Write(AValue, 8);
+  Write(AValue, Count);
 end;
 
 { TMemoryBitStream }
@@ -298,4 +298,4 @@ begin
 end;
 
 end.
-
+

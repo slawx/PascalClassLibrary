@@ -26,6 +26,7 @@ implementation
 procedure TDynamicNumber.Write(Value: QWord);
 var
   C: Integer;
+  Parts: array of Integer;
 begin
   C := 0;
   for C := 0 to Value do
@@ -50,4 +51,4 @@ begin
 end;
 
 end.
-
+

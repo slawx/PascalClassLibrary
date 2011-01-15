@@ -3,7 +3,7 @@ unit UBufferedFileStream;
 interface
 
 uses
-  Classes;
+  Classes, SysUtils;
 
 type
   TBufferedFileStream = class(TStream)
@@ -51,7 +51,7 @@ begin
   {$IFDEF MSWINDOWS}
     Create(AFilename, Mode, 0);
   {$ELSE}
-    Create(AFilename, Mode, FileAccessRights);
+    Create(AFilename, Mode, 0);
   {$ENDIF}
 end;
 
@@ -174,4 +174,4 @@ begin
   Result := TotalWritedCount;
 end;
 
-end.
+end.
