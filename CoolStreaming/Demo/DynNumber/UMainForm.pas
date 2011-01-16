@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  ComCtrls, UDynNumber, Math;
+  ComCtrls, Spin, UDynNumber, Math;
 
 type
 
@@ -15,14 +15,23 @@ type
   TMainForm = class(TForm)
     Button1: TButton;
     Button2: TButton;
+    Button3: TButton;
+    Button4: TButton;
     Edit1: TEdit;
+    Edit2: TEdit;
+    Edit3: TEdit;
     ListView1: TListView;
+    PageControl1: TPageControl;
+    SpinEdit1: TSpinEdit;
+    TabSheet1: TTabSheet;
+    TabSheet2: TTabSheet;
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
+    procedure Button3Click(Sender: TObject);
+    procedure Button4Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
   private
-    { private declarations }
   public
     DynamicNumber: TDynamicNumber;
   end; 
@@ -43,25 +52,20 @@ var
   C: Integer;
   Parts: array of Integer;
   N: TDynamicNumber;
-  Line: string;
   NewItem: TListItem;
 begin
   try
     N := TDynamicNumber.Create;
     ListView1.BeginUpdate;
     ListView1.Clear;
-    for I := 0 to 10000 do begin
+    for I := 0 to SpinEdit1.Value do begin
       N.Stream.Size := 0;
-      N.Write(I);
-      Line := '';
-      N.Stream.Position := 0;
-      for J := 0 to N.Stream.Size - 1 do
-        Line := Line + IntToStr(Integer(N.Stream.ReadBit));
+      N.WriteNumber(I);
       NewItem := ListView1.Items.Add;
       NewItem.Caption := IntToStr(I);
       J := Floor(Log2(I)) + 1;
       NewItem.SubItems.Add(FloatToStr(Round((1 - (J / N.Stream.Size)) * 100) / 100));
-      NewItem.SubItems.Add(Line);
+      NewItem.SubItems.Add(N.Stream.AsString);
     end;
   finally
     ListView1.EndUpdate;
@@ -78,7 +82,6 @@ var
   PartIndex: Integer;
   MaxValue: Integer;
   J: Integer;
-  Line: string;
   NewItem: TListItem;
   N: TDynamicNumber;
 const
@@ -90,7 +93,7 @@ begin
     N := TDynamicNumber.Create;
     ListView1.BeginUpdate;
     ListView1.Clear;
-    for II := 0 to 20000 do begin
+    for II := 0 to SpinEdit1.Value do begin
       I := II * Step;
     // Write
     N.Stream.Size := 0;
@@ -108,11 +111,7 @@ begin
     NewItem.Caption := IntToStr(I);
     J := Floor(Log2(I)) + 1;
     NewItem.SubItems.Add(FloatToStr(Round((1 - (J / N.Stream.Size)) * 100) / 100));
-    Line := '';
-    N.Stream.Position := 0;
-    for J := 0 to N.Stream.Size - 1 do
-      Line := Line + IntToStr(Integer(N.Stream.ReadBit));
-    NewItem.SubItems.Add(Line);
+    NewItem.SubItems.Add(N.Stream.AsString);
 
     // Increment value
     for J := 0 to Step - 1 do begin
@@ -137,6 +136,34 @@ begin
     end;
   finally
     ListView1.EndUpdate;
+    N.Free;
+  end;
+end;
+
+procedure TMainForm.Button3Click(Sender: TObject);
+var
+  N: TDynamicNumber;
+begin
+  try
+    N := TDynamicNumber.Create;
+    N.Stream.Size := 0;
+    N.WriteNumber(StrToInt64(Edit1.Text));
+    N.Stream.Position := 0;
+    Edit2.Text := N.Stream.AsString;
+  finally
+    N.Free;
+  end;
+end;
+
+procedure TMainForm.Button4Click(Sender: TObject);
+var
+  N: TDynamicNumber;
+begin
+  try
+    N := TDynamicNumber.Create;
+    N.Stream.AsString := Edit2.Text;
+    Edit3.Text := IntToStr(N.ReadNumber);
+  finally
     N.Free;
   end;
 end;

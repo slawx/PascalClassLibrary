@@ -2,59 +2,125 @@ object MainForm: TMainForm
   Left = 321
   Height = 495
   Top = 114
-  Width = 550
+  Width = 669
   Caption = 'DynNumber Demo'
   ClientHeight = 495
-  ClientWidth = 550
+  ClientWidth = 669
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   LCLVersion = '0.9.31'
-  object Edit1: TEdit
+  object PageControl1: TPageControl
     Left = 8
-    Height = 25
+    Height = 480
     Top = 8
-    Width = 320
-    TabOrder = 0
-    Text = '1'
-  end
-  object Button1: TButton
-    Left = 336
-    Height = 25
-    Top = 5
-    Width = 75
-    Caption = 'Encode'
-    OnClick = Button1Click
-    TabOrder = 1
-  end
-  object Button2: TButton
-    Left = 416
-    Height = 25
-    Top = 7
-    Width = 75
-    Caption = 'Generate'
-    OnClick = Button2Click
-    TabOrder = 2
-  end
-  object ListView1: TListView
-    Left = 8
-    Height = 448
-    Top = 40
-    Width = 536
+    Width = 656
+    ActivePage = TabSheet2
     Anchors = [akTop, akLeft, akRight, akBottom]
-    Columns = <    
-      item
-        Caption = 'Number'
-        Width = 70
-      end    
-      item
-        Caption = 'Overhead'
-        Width = 70
-      end    
-      item
-        Caption = 'Value'
-        Width = 375
-      end>
-    TabOrder = 3
-    ViewStyle = vsReport
+    TabIndex = 1
+    TabOrder = 0
+    object TabSheet1: TTabSheet
+      Caption = 'Generator'
+      ClientHeight = 449
+      ClientWidth = 652
+      object Button1: TButton
+        Left = 11
+        Height = 25
+        Top = 10
+        Width = 75
+        Caption = 'Generate'
+        OnClick = Button1Click
+        TabOrder = 0
+      end
+      object Button2: TButton
+        Left = 374
+        Height = 25
+        Top = 11
+        Width = 75
+        Caption = 'test'
+        OnClick = Button2Click
+        TabOrder = 1
+      end
+      object SpinEdit1: TSpinEdit
+        Left = 99
+        Height = 25
+        Top = 10
+        Width = 106
+        MaxValue = 100000000
+        TabOrder = 2
+        Value = 10000
+      end
+      object ListView1: TListView
+        Left = 11
+        Height = 400
+        Top = 43
+        Width = 635
+        Anchors = [akTop, akLeft, akRight, akBottom]
+        Columns = <        
+          item
+            Caption = 'Number'
+            Width = 70
+          end        
+          item
+            Caption = 'Overhead'
+            Width = 70
+          end        
+          item
+            Caption = 'Value'
+            Width = 494
+          end>
+        TabOrder = 3
+        ViewStyle = vsReport
+      end
+    end
+    object TabSheet2: TTabSheet
+      Caption = 'Encoder'
+      ClientHeight = 449
+      ClientWidth = 652
+      object Edit1: TEdit
+        Left = 8
+        Height = 25
+        Top = 8
+        Width = 638
+        Anchors = [akTop, akLeft, akRight]
+        TabOrder = 0
+        Text = '1'
+      end
+      object Button3: TButton
+        Left = 8
+        Height = 25
+        Top = 42
+        Width = 142
+        Caption = 'Encode'
+        OnClick = Button3Click
+        TabOrder = 1
+      end
+      object Edit2: TEdit
+        Left = 6
+        Height = 25
+        Top = 75
+        Width = 638
+        Anchors = [akTop, akLeft, akRight]
+        TabOrder = 2
+        Text = '1'
+      end
+      object Button4: TButton
+        Left = 8
+        Height = 25
+        Top = 107
+        Width = 142
+        Caption = 'Decode'
+        OnClick = Button4Click
+        TabOrder = 3
+      end
+    end
+  end
+  object Edit3: TEdit
+    Left = 16
+    Height = 25
+    Top = 176
+    Width = 638
+    Anchors = [akTop, akLeft, akRight]
+    TabOrder = 1
+    Text = '1'
   end
 end

@@ -27,6 +27,8 @@ type
     function Read(var Buffer; Count: Longint): Longint; virtual;
     function CopyFrom(Source: TBitStream; Count: LongInt): LongInt;
     function Write(const Buffer; Count: Longint): Longint; virtual;
+    function GetString: string;
+    procedure SetString(const AValue: string);
     procedure ReadBuffer(var Buffer; Count: Longint);
     procedure WriteBuffer(const Buffer; Count: Longint);
     property Position: LongInt read GetPosition write SetPosition;
@@ -37,6 +39,7 @@ type
     procedure WriteBit(AValue: Boolean);
     function ReadNumber(Count: Byte): QWord;
     procedure WriteNumber(AValue: QWord; Count: Byte);
+    property AsString: string read GetString write SetString;
   end;
 
   { TMemoryBitStream }
@@ -157,11 +160,32 @@ end;
 function TBitStream.ReadNumber(Count: Byte): QWord;
 begin
   Read(Result, Count);
+  Result := Result and ((QWord(1) shl Count) - 1);
 end;
 
 procedure TBitStream.WriteNumber(AValue: QWord; Count: Byte);
 begin
   Write(AValue, Count);
+end;
+
+function TBitStream.GetString: string;
+var
+  I: Integer;
+begin
+  Result := '';
+  Position := 0;
+  for I := 0 to Size - 1 do
+    Result := Result + IntToStr(Integer(ReadBit));
+end;
+
+procedure TBitStream.SetString(const AValue: string);
+var
+  I: Integer;
+begin
+  Size := 0;
+  for I := 1 to Length(AValue) do
+    WriteBit(Boolean(StrToInt(AValue[I])));
+  Position := 0;
 end;
 
 { TMemoryBitStream }
@@ -203,7 +227,7 @@ var
   PosInByte: Byte;
   Data: Byte;
 begin
-  if Count < 0 then
+  if (Count < 0) or (Count > (Size - Position)) then
     raise EReadError.Create(SReadError);
 
   Result := 0;
