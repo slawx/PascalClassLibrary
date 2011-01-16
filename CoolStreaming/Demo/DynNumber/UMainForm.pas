@@ -50,7 +50,7 @@ begin
     N := TDynamicNumber.Create;
     ListView1.BeginUpdate;
     ListView1.Clear;
-    for I := 0 to 16 do begin
+    for I := 0 to 10000 do begin
       N.Stream.Size := 0;
       N.Write(I);
       Line := '';
@@ -59,7 +59,8 @@ begin
         Line := Line + IntToStr(Integer(N.Stream.ReadBit));
       NewItem := ListView1.Items.Add;
       NewItem.Caption := IntToStr(I);
-      NewItem.SubItems.Add('');
+      J := Floor(Log2(I)) + 1;
+      NewItem.SubItems.Add(FloatToStr(Round((1 - (J / N.Stream.Size)) * 100) / 100));
       NewItem.SubItems.Add(Line);
     end;
   finally
@@ -71,6 +72,7 @@ end;
 procedure TMainForm.Button2Click(Sender: TObject);
 var
   I: Integer;
+  II: Integer;
   Count: Integer;
   Parts: array of Integer;
   PartIndex: Integer;
@@ -79,6 +81,8 @@ var
   Line: string;
   NewItem: TListItem;
   N: TDynamicNumber;
+const
+  Step = 1;
 begin
   Count := 1;
   SetLength(Parts, Count);
@@ -86,8 +90,8 @@ begin
     N := TDynamicNumber.Create;
     ListView1.BeginUpdate;
     ListView1.Clear;
-    for I := 0 to 1000 do begin
-
+    for II := 0 to 20000 do begin
+      I := II * Step;
     // Write
     N.Stream.Size := 0;
     for J := 0 to Count - 2 do
@@ -103,7 +107,7 @@ begin
     NewItem := ListView1.Items.Add;
     NewItem.Caption := IntToStr(I);
     J := Floor(Log2(I)) + 1;
-    NewItem.SubItems.Add(FloatToStr(1 - (J / N.Stream.Size)));
+    NewItem.SubItems.Add(FloatToStr(Round((1 - (J / N.Stream.Size)) * 100) / 100));
     Line := '';
     N.Stream.Position := 0;
     for J := 0 to N.Stream.Size - 1 do
@@ -111,10 +115,11 @@ begin
     NewItem.SubItems.Add(Line);
 
     // Increment value
+    for J := 0 to Step - 1 do begin
     PartIndex := Count - 1;
     repeat
       Parts[PartIndex] := Parts[PartIndex] + 1;
-      if PartIndex > 0 then MaxValue := 1 shl (Parts[PartIndex - 1] + 1)
+      if PartIndex > 0 then MaxValue := 1 shl (Parts[PartIndex - 1] + 1 + PartIndex)
         else MaxValue := 2;
       if Parts[PartIndex] >= MaxValue then begin
         Parts[PartIndex] := 0;
@@ -128,6 +133,7 @@ begin
         end;
       end else Break;
     until False;
+    end;
     end;
   finally
     ListView1.EndUpdate;

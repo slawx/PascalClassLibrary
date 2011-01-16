@@ -38,17 +38,15 @@
         <PackageName Value="LCL"/>
       </Item2>
     </RequiredPackages>
-    <Units Count="14">
+    <Units Count="15">
       <Unit0>
         <Filename Value="DynNumberDemo.lpr"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="DynNumberDemo"/>
-        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="41" Y="19"/>
-        <UsageCount Value="36"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="39"/>
       </Unit0>
       <Unit1>
         <Filename Value="UMainForm.pas"/>
@@ -59,49 +57,49 @@
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="67"/>
-        <CursorPos X="23" Y="89"/>
-        <UsageCount Value="36"/>
+        <TopLine Value="39"/>
+        <CursorPos X="24" Y="53"/>
+        <UsageCount Value="39"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit1>
       <Unit2>
         <Filename Value="..\..\UDynNumber.pas"/>
         <UnitName Value="UDynNumber"/>
-        <EditorIndex Value="2"/>
+        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
         <TopLine Value="11"/>
-        <CursorPos X="49" Y="26"/>
-        <UsageCount Value="18"/>
+        <CursorPos X="8" Y="14"/>
+        <UsageCount Value="20"/>
         <Loaded Value="True"/>
       </Unit2>
       <Unit3>
         <Filename Value="..\..\UBitStream.pas"/>
         <UnitName Value="UBitStream"/>
-        <EditorIndex Value="5"/>
+        <EditorIndex Value="4"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="17"/>
-        <CursorPos X="49" Y="33"/>
-        <UsageCount Value="18"/>
+        <TopLine Value="37"/>
+        <CursorPos X="14" Y="53"/>
+        <UsageCount Value="20"/>
         <Loaded Value="True"/>
       </Unit3>
       <Unit4>
         <Filename Value="..\..\UBufferedFileStream.pas"/>
         <UnitName Value="UBufferedFileStream"/>
-        <EditorIndex Value="3"/>
+        <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
         <TopLine Value="38"/>
         <CursorPos X="30" Y="54"/>
-        <UsageCount Value="18"/>
+        <UsageCount Value="20"/>
         <Loaded Value="True"/>
       </Unit4>
       <Unit5>
         <Filename Value="..\..\..\..\..\..\..\..\usr\share\fpcsrc\2.4.0\rtl\objpas\classes\classesh.inc"/>
-        <EditorIndex Value="4"/>
+        <EditorIndex Value="3"/>
         <WindowIndex Value="0"/>
         <TopLine Value="773"/>
         <CursorPos X="17" Y="789"/>
-        <UsageCount Value="18"/>
+        <UsageCount Value="20"/>
         <Loaded Value="True"/>
       </Unit5>
       <Unit6>
@@ -162,124 +160,135 @@
         <CursorPos X="10" Y="324"/>
         <UsageCount Value="10"/>
       </Unit13>
+      <Unit14>
+        <Filename Value="..\..\..\..\..\..\..\..\usr\share\fpcsrc\2.4.0\rtl\inc\mathh.inc"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="62"/>
+        <CursorPos X="14" Y="78"/>
+        <UsageCount Value="11"/>
+      </Unit14>
     </Units>
-    <JumpHistory Count="29" HistoryIndex="28">
+    <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
         <Filename Value="UMainForm.pas"/>
-        <Caret Line="101" Column="1" TopLine="87"/>
+        <Caret Line="56" Column="1" TopLine="39"/>
       </Position1>
       <Position2>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="102" Column="1" TopLine="87"/>
+        <Filename Value="..\..\UDynNumber.pas"/>
+        <Caret Line="31" Column="1" TopLine="21"/>
       </Position2>
       <Position3>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="103" Column="1" TopLine="87"/>
+        <Filename Value="..\..\UDynNumber.pas"/>
+        <Caret Line="32" Column="1" TopLine="21"/>
       </Position3>
       <Position4>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="104" Column="1" TopLine="87"/>
+        <Filename Value="..\..\UDynNumber.pas"/>
+        <Caret Line="33" Column="1" TopLine="21"/>
       </Position4>
       <Position5>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="105" Column="1" TopLine="87"/>
+        <Filename Value="..\..\UDynNumber.pas"/>
+        <Caret Line="34" Column="1" TopLine="21"/>
       </Position5>
       <Position6>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="106" Column="1" TopLine="87"/>
+        <Filename Value="..\..\UDynNumber.pas"/>
+        <Caret Line="31" Column="1" TopLine="21"/>
       </Position6>
       <Position7>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="79" Column="1" TopLine="63"/>
+        <Filename Value="..\..\UDynNumber.pas"/>
+        <Caret Line="32" Column="1" TopLine="21"/>
       </Position7>
       <Position8>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="94" Column="1" TopLine="77"/>
+        <Filename Value="..\..\UDynNumber.pas"/>
+        <Caret Line="35" Column="1" TopLine="21"/>
       </Position8>
       <Position9>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="96" Column="1" TopLine="77"/>
+        <Filename Value="..\..\UDynNumber.pas"/>
+        <Caret Line="36" Column="1" TopLine="21"/>
       </Position9>
       <Position10>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="97" Column="1" TopLine="77"/>
+        <Filename Value="..\..\UDynNumber.pas"/>
+        <Caret Line="37" Column="1" TopLine="21"/>
       </Position10>
       <Position11>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="99" Column="1" TopLine="87"/>
+        <Filename Value="..\..\UDynNumber.pas"/>
+        <Caret Line="38" Column="1" TopLine="21"/>
       </Position11>
       <Position12>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="81" Column="15" TopLine="63"/>
+        <Filename Value="..\..\UDynNumber.pas"/>
+        <Caret Line="36" Column="1" TopLine="21"/>
       </Position12>
       <Position13>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="80" Column="15" TopLine="62"/>
+        <Filename Value="..\..\UDynNumber.pas"/>
+        <Caret Line="37" Column="1" TopLine="21"/>
       </Position13>
       <Position14>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="81" Column="15" TopLine="63"/>
+        <Filename Value="..\..\UBitStream.pas"/>
+        <Caret Line="164" Column="1" TopLine="149"/>
       </Position14>
       <Position15>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="48" Column="15" TopLine="32"/>
+        <Filename Value="..\..\UBitStream.pas"/>
+        <Caret Line="246" Column="1" TopLine="230"/>
       </Position15>
       <Position16>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="122" Column="17" TopLine="102"/>
+        <Filename Value="..\..\UBitStream.pas"/>
+        <Caret Line="249" Column="1" TopLine="230"/>
       </Position16>
       <Position17>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="78" Column="33" TopLine="78"/>
+        <Filename Value="..\..\UBitStream.pas"/>
+        <Caret Line="250" Column="1" TopLine="230"/>
       </Position17>
       <Position18>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="93" Column="19" TopLine="77"/>
+        <Filename Value="..\..\UBitStream.pas"/>
+        <Caret Line="251" Column="1" TopLine="230"/>
       </Position18>
       <Position19>
         <Filename Value="..\..\UBitStream.pas"/>
-        <Caret Line="38" Column="51" TopLine="22"/>
+        <Caret Line="252" Column="1" TopLine="230"/>
       </Position19>
       <Position20>
         <Filename Value="..\..\UBitStream.pas"/>
-        <Caret Line="162" Column="33" TopLine="142"/>
+        <Caret Line="253" Column="1" TopLine="230"/>
       </Position20>
       <Position21>
         <Filename Value="..\..\UBitStream.pas"/>
-        <Caret Line="38" Column="41" TopLine="22"/>
+        <Caret Line="254" Column="1" TopLine="230"/>
       </Position21>
       <Position22>
         <Filename Value="..\..\UBitStream.pas"/>
-        <Caret Line="157" Column="48" TopLine="141"/>
+        <Caret Line="255" Column="1" TopLine="230"/>
       </Position22>
       <Position23>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="93" Column="19" TopLine="77"/>
+        <Filename Value="..\..\UBitStream.pas"/>
+        <Caret Line="257" Column="1" TopLine="230"/>
       </Position23>
       <Position24>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="105" Column="16" TopLine="75"/>
+        <Filename Value="..\..\UBitStream.pas"/>
+        <Caret Line="258" Column="1" TopLine="231"/>
       </Position24>
       <Position25>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="91" Column="24" TopLine="75"/>
+        <Filename Value="..\..\UBitStream.pas"/>
+        <Caret Line="241" Column="1" TopLine="231"/>
       </Position25>
       <Position26>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="99" Column="80" TopLine="84"/>
+        <Filename Value="..\..\UBitStream.pas"/>
+        <Caret Line="242" Column="1" TopLine="231"/>
       </Position26>
       <Position27>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="92" Column="14" TopLine="82"/>
+        <Filename Value="..\..\UBitStream.pas"/>
+        <Caret Line="243" Column="1" TopLine="231"/>
       </Position27>
       <Position28>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="105" Column="37" TopLine="89"/>
+        <Filename Value="..\..\UBitStream.pas"/>
+        <Caret Line="193" Column="1" TopLine="177"/>
       </Position28>
       <Position29>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="106" Column="61" TopLine="89"/>
+        <Filename Value="..\..\UBitStream.pas"/>
+        <Caret Line="194" Column="1" TopLine="177"/>
       </Position29>
+      <Position30>
+        <Filename Value="..\..\UBitStream.pas"/>
+        <Caret Line="53" Column="14" TopLine="37"/>
+      </Position30>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
