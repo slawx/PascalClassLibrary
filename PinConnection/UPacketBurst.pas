@@ -5,7 +5,7 @@ unit UPacketBurst;
 interface
 
 uses
-  Classes, UCommPin, SyncObjs, UStreamHelper;
+  Classes, UCommPin, SyncObjs, UStreamHelper, UCommon, SysUtils;
 
 type
   TPacketBurst = class;
@@ -102,6 +102,7 @@ var
 begin
   inherited;
   try
+  try
     Stream := TStreamHelper.Create;
     with PacketBurst do
     repeat
@@ -124,6 +125,10 @@ begin
     until Terminated;
   finally
     Stream.Free;
+  end;
+  except
+    on E: Exception do
+      if Assigned(ExceptionHandler) then ExceptionHandler(Self, E);
   end;
 end;
 

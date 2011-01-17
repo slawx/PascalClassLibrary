@@ -5,7 +5,7 @@ unit UCommThread;
 interface
 
 uses
-  Classes, SysUtils, blcksock, UCommPin, SyncObjs, UStreamHelper;
+  Classes, SysUtils, blcksock, UCommPin, SyncObjs, UStreamHelper, UCommon;
 
 type
   TCommThread = class;
@@ -15,6 +15,7 @@ type
   { TCommThreadReceiveThread }
 
   TCommThreadReceiveThread = class(TThread)
+  public
     Parent: TCommThread;
     Stream: TMemoryStream;
     procedure Execute; override;
@@ -129,7 +130,7 @@ begin
       end;
     except
       on E: Exception do
-        //MainForm.ExceptionLogger1.ThreadExceptionHandler(Self, E);
+        if Assigned(ExceptionHandler) then ExceptionHandler(Self, E);
     end;
   until Terminated;
 

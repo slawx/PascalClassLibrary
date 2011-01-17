@@ -109,11 +109,15 @@ end;
 
 function TGList.Get(Index: TGListIndex): TGListItem;
 begin
+  if (Index < 0) or (Index >= Count) then
+    raise EListError.CreateFmt(SListIndexError, [Index]);
   Result := FItems[Index];
 end;
 
 procedure TGList.Put(Index: TGListIndex; const AValue: TGListItem);
 begin
+  if (Index < 0) or (Index >= Count) then
+    raise EListError.CreateFmt(SListIndexError, [Index]);
   FItems[Index] := AValue;
 end;
 
@@ -174,7 +178,7 @@ begin
   Count := Source.Count;
   I := 0;
   while I < Count do begin
-    Items[I] := Source[I];
+    FItems[I] := Source[I];
     I := I + 1;
   end;
 end;
@@ -246,7 +250,7 @@ begin
   if FCount = 0 then
     raise EListError.CreateFmt(SListIndexError, [0])
   else
-    Result := Items[FCount - 1];
+    Result := FItems[FCount - 1];
 end;
 
 procedure TGList.SetLast(AValue: TGListItem);
@@ -254,7 +258,7 @@ begin
   if FCount = 0 then
     raise EListError.CreateFmt(SListIndexError, [0])
   else
-    Items[FCount - 1] := AValue;
+    FItems[FCount - 1] := AValue;
 end;
 
 function TGList.GetFirst: TGListItem;
@@ -262,7 +266,7 @@ begin
   if FCount = 0 then
     raise EListError.CreateFmt(SListIndexError, [0])
   else
-    Result := Items[0];
+    Result := FItems[0];
 end;
 
 procedure TGList.SetFirst(AValue: TGListItem);
@@ -270,7 +274,7 @@ begin
   if FCount = 0 then
     raise EListError.CreateFmt(SListIndexError, [0])
   else
-    Items[0] := AValue;
+    FItems[0] := AValue;
 end;
 
 procedure TGList.Move(CurIndex, NewIndex: TGListIndex);
@@ -400,7 +404,7 @@ begin
   Result := '';
   I := 0;
   while I < Count do begin
-    Result := Result + Converter(Items[I]);
+    Result := Result + Converter(FItems[I]);
     if I < (Count - 1) then
       Result := Result + Separator;
     I := I + 1;
@@ -468,7 +472,7 @@ var
 begin
   I := Start;
   while I < Count do begin
-    Items[I] := Value;
+    FItems[I] := Value;
     I := I + 1;
   end;
 end;

@@ -21,6 +21,17 @@ type
 {$DEFINE INTERFACE}
 {$I 'GenericList.inc'}
 
+// TListBoolean<Integer, Boolean>
+{$DEFINE TGListIndex := Integer}
+{$DEFINE TGListItem := Boolean}
+{$DEFINE TGList := TListBoolean}
+{$DEFINE TGListSortCompare := TListBooleanSortCompare}
+{$DEFINE TGListToStringConverter := TListBooleanToStringConverter}
+{$DEFINE TGListFromStringConverter := TListBooleanFromStringConverter}
+{$DEFINE TGListItemArray := TListBooleanItemArray}
+{$DEFINE INTERFACE}
+{$I 'GenericList.inc'}
+
 // TListSmallInt<Integer, SmallInt>
 {$DEFINE TGListIndex := Integer}
 {$DEFINE TGListItem := SmallInt}
@@ -147,13 +158,24 @@ implementation
 {$I 'GenericList.inc'}
 
 // TListSmallInt<Integer, SmallInt>
-{$DEFINE TGListIndex:=Integer}
-{$DEFINE TGListItem:=SmallInt}
-{$DEFINE TGList:=TListSmallInt}
-{$DEFINE TGListSortCompare:=TListSmallIntSortCompare}
-{$DEFINE TGListToStringConverter:=TListSmallIntToStringConverter}
-{$DEFINE TGListFromStringConverter:=TListSmallIntFromStringConverter}
+{$DEFINE TGListIndex := Integer}
+{$DEFINE TGListItem := SmallInt}
+{$DEFINE TGList := TListSmallInt}
+{$DEFINE TGListSortCompare := TListSmallIntSortCompare}
+{$DEFINE TGListToStringConverter := TListSmallIntToStringConverter}
+{$DEFINE TGListFromStringConverter := TListSmallIntFromStringConverter}
 {$DEFINE TGListItemArray := TListSmallIntItemArray}
+{$DEFINE IMPLEMENTATION}
+{$I 'GenericList.inc'}
+
+// TListBoolean<Integer, Boolean>
+{$DEFINE TGListIndex := Integer}
+{$DEFINE TGListItem := Boolean}
+{$DEFINE TGList := TListBoolean}
+{$DEFINE TGListSortCompare := TListBooleanSortCompare}
+{$DEFINE TGListToStringConverter := TListBooleanToStringConverter}
+{$DEFINE TGListFromStringConverter := TListBooleanFromStringConverter}
+{$DEFINE TGListItemArray := TListBooleanItemArray}
 {$DEFINE IMPLEMENTATION}
 {$I 'GenericList.inc'}
 

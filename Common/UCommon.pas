@@ -3,11 +3,12 @@ unit UCommon;
 interface
 
 uses
-  Windows, Classes, SysUtils, SpecializedList; //, ShFolder, ShellAPI;
+  Windows, Classes, SysUtils, SpecializedList, StrUtils; //, ShFolder, ShellAPI;
 
 type
   TArrayOfByte = array of Byte;
   TArrayOfString = array of string;
+  TExceptionEvent = procedure(Sender: TObject; E: Exception) of object;
 
   TUserNameFormat = (
     unfNameUnknown = 0, // Unknown name type.
@@ -21,6 +22,8 @@ type
     unfNameServicePrincipal = 10,  // Generalized service principal name
     unfDNSDomainName = 11);
 
+var
+  ExceptionHandler: TExceptionEvent;
 
 function IntToBin(Data: Cardinal; Count: Byte): string;
 function TryHexToInt(Data: string; var Value: Integer): Boolean;
@@ -37,6 +40,7 @@ procedure SetBit(var Variable: QWord; Index: Byte; State: Boolean);
 procedure SetBit(var Variable: Cardinal; Index: Byte; State: Boolean);
 procedure SetBit(var Variable: Word; Index: Byte; State: Boolean);
 function AddLeadingZeroes(const aNumber, Length : integer) : string;
+function LastPos(const SubStr: String; const S: String): Integer;
 
 implementation
 
@@ -63,6 +67,13 @@ begin
      Result := False;
   end;
 end;*)
+
+function LastPos(const SubStr: String; const S: String): Integer;
+begin
+  Result := Pos(ReverseString(SubStr), ReverseString(S));
+  if (Result <> 0) then
+    Result := ((Length(S) - Length(SubStr)) + 1) - Result + 1;
+end;
 
 function BCDToInt(Value: Byte): Byte;
 begin

@@ -5,7 +5,7 @@ unit UCommSocket;
 interface
 
 uses
-  Classes, SysUtils, blcksock, UCommPin;
+  Classes, SysUtils, blcksock, UCommPin, UCommon;
 
 type
   TCommSocket = class;
@@ -15,6 +15,7 @@ type
   { TCommSocketReceiveThread }
 
   TCommSocketReceiveThread = class(TThread)
+  public
     Parent: TCommSocket;
     Stream: TMemoryStream;
     procedure Execute; override;
@@ -109,7 +110,7 @@ begin
       end else InBufferUsed := 0;
     except
       on E: Exception do
-        //MainForm.ExceptionLogger1.ThreadExceptionHandler(Self, E);
+        if Assigned(ExceptionHandler) then ExceptionHandler(Self, E);
     end;
   until Terminated;
 end;

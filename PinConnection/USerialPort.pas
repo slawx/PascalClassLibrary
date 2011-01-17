@@ -5,7 +5,7 @@ unit USerialPort;
 interface
 
 uses
-  Classes, SysUtils, SynaSer, StdCtrls, Dialogs;
+  Classes, SysUtils, SynaSer, StdCtrls, Dialogs, UCommon;
 
 type
   TBaudRate = (br110, br300, br600, br1200, br2400, br4800,
@@ -22,6 +22,7 @@ type
   { TSerialPortReceiveThread }
 
   TSerialPortReceiveThread = class(TThread)
+  public
     Parent: TSerialPort;
     procedure Execute; override;
     destructor Destroy; override;
@@ -305,7 +306,7 @@ begin
       end else InBufferUsed := 0;
     except
       on E: Exception do
-        //MainForm.ExceptionLogger1.ThreadExceptionHandler(Self, E);
+        if Assigned(ExceptionHandler) then ExceptionHandler(Self, E);
     end;
   until Terminated;
 end;

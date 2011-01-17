@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  CustomLineInfo, Spin, ComCtrls, Contnrs, UStackTrace;
+  CustomLineInfo, ComCtrls, UStackTrace;
 
 type
 

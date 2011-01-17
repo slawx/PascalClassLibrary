@@ -146,9 +146,9 @@ begin
     Height := 24;
     OnChange := TabControlChange;
     PopupMenu := TCoolDockManager(Manager).PopupMenu;
-    TTabControlNoteBookStrings(Tabs).NoteBook.OnMouseLeave := TabControlMouseLeave;
-    TTabControlNoteBookStrings(Tabs).NoteBook.OnMouseDown := TabControlMouseDown;
-    TTabControlNoteBookStrings(Tabs).NoteBook.OnMouseUp := TabControlMouseUp;
+    //TTabControlNoteBookStrings(Tabs).NoteBook.OnMouseLeave := TabControlMouseLeave;
+    //TTabControlNoteBookStrings(Tabs).NoteBook.OnMouseDown := TabControlMouseDown;
+    //TTabControlNoteBookStrings(Tabs).NoteBook.OnMouseUp := TabControlMouseUp;
     OnMouseUp := TabControlMouseUp;
     Images := TabImageList;
   end;

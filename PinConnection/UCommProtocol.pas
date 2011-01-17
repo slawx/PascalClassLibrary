@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, UVarBlockSerializer, syncobjs, UCommPin,
-  UDebugLog, UStreamHelper, StopWatch, SpecializedList;
+  UDebugLog, UStreamHelper, StopWatch, SpecializedList, UCommon;
 
 type
   ECommResponseCodeError = class(Exception);
@@ -62,7 +62,6 @@ type
   { TRetransmitCheckThread }
 
   TRetransmitCheckThread = class(TThread)
-  private
   public
     Parent: TCommProtocol;
     CheckPeriod: Integer;
@@ -473,7 +472,7 @@ begin
         Sleep(CheckPeriod);
       except
         on E: Exception do begin
-          //MainForm.ExceptionLogger1.ThreadExceptionHandler(Self, E);
+          if Assigned(ExceptionHandler) then ExceptionHandler(Self, E);
         end;
       end;
     until Terminated;
