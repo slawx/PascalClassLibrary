@@ -5,8 +5,8 @@ unit UListViewSort;
 interface
 
 uses
-  Windows, Types, Classes, ComCtrls, Contnrs, Graphics, SysUtils, StdCtrls, Controls,
-  DateUtils, CommCtrl;
+  Windows, Types, Classes, ComCtrls, Contnrs, Graphics, SysUtils, StdCtrls,
+  Controls, DateUtils, CommCtrl, Dialogs, SpecializedList;
 
 type
   TSortOrder = (soNone, soUp, soDown);
@@ -27,8 +27,6 @@ type
     FOrder: TSortOrder;
     procedure SetListView(const Value: TListView);
     procedure ColumnClick(Sender: TObject; Column: TListColumn);
-    procedure QuickSort(SortList: TObjectList; L, R: Integer;
-      SCompare: TCompareEvent);
     procedure Sort(Compare: TCompareEvent);
     procedure DrawCheckMark(Item: TListItem; Checked: Boolean);
     procedure GetCheckBias(var XBias, YBias, BiasTop, BiasLeft: Integer;
@@ -40,8 +38,8 @@ type
     procedure SetColumn(const Value: Integer);
     procedure SetOrder(const Value: TSortOrder);
   public
-    List: TObjectList;
-    Source: TObjectList;
+    List: TListObject;
+    Source: TListObject;
     constructor Create;
     destructor Destroy; override;
     function CompareTime(Time1, Time2: TDateTime): Integer;
@@ -99,39 +97,8 @@ end;
 procedure TListViewSort.Sort(Compare: TCompareEvent);
 begin
   if (List.Count > 0) then
-    QuickSort(List, 0, List.Count - 1, Compare);
+    List.Sort(Compare);
 end;
-
-procedure TListViewSort.QuickSort(SortList: TObjectList; L, R: Integer;
-  SCompare: TCompareEvent);
-var
-  I, J: Integer;
-  P, T: Pointer;
-begin
-  repeat
-    I := L;
-    J := R;
-    P := SortList[(L + R) shr 1];
-    repeat
-      while SCompare(SortList[I], P) < 0 do
-        Inc(I);
-      while SCompare(SortList[J], P) > 0 do
-        Dec(J);
-      if I <= J then
-      begin
-        T := SortList[I];
-        SortList[I] := SortList[J];
-        SortList[J] := T;
-        Inc(I);
-        Dec(J);
-      end;
-    until I > J;
-    if L < J then
-      QuickSort(SortList, L, J, SCompare);
-    L := I;
-  until I >= R;
-end;
-
 
 procedure TListViewSort.Refresh;
 begin
@@ -142,17 +109,26 @@ begin
   if ListView.Items.Count <> List.Count then
     ListView.Items.Count := List.Count;
   if Assigned(FOnCompareItem) then Sort(FOnCompareItem);
+  ListView.Items[-1]; // Workaround for not show first row if selected
   ListView.Refresh;
+  // Workaround for not working item selection on first row
+  if not Assigned(ListView.Selected) then begin
+    ListView.Items.Count := 0;
+    ListView.Items.Count := List.Count;
+  end;
+  //if ListView.Items.Count > 0 then
+  //    ListView.Items[0].Selected := True;
+  //ListView.Selected := nil;
   UpdateColumns;
 end;
 
 const
-  W_64: Word = 64; {Width of thumbnail in ICON view mode}
-  H_64: Word = 64; {Height of thumbnail size}
-  CheckWidth: Word = 14; {Width of check mark box}
-  CheckHeight: Word = 14; {Height of checkmark}
-  CheckBiasTop: Word = 2; {This aligns the checkbox to be in centered}
-  CheckBiasLeft: Word = 3; {In the row of the list item display}
+  W_64: Integer = 64; {Width of thumbnail in ICON view mode}
+  H_64: Integer = 64; {Height of thumbnail size}
+  CheckWidth: Integer = 14; {Width of check mark box}
+  CheckHeight: Integer = 14; {Height of checkmark}
+  CheckBiasTop: Integer = 2; {This aligns the checkbox to be in centered}
+  CheckBiasLeft: Integer = 3; {In the row of the list item display}
 
 function TListViewSort.CompareBoolean(Value1, Value2: Boolean): Integer;
 begin
@@ -183,7 +159,7 @@ end;
 
 constructor TListViewSort.Create;
 begin
-  List := TObjectList.Create;
+  List := TListObject.Create;
   List.OwnsObjects := False;
 end;
 
@@ -201,16 +177,31 @@ var
   OldColor: TColor;
   BiasTop, BiasLeft: Integer;
   Rect1: TRect;
+  lRect: TRect;
+  ItemLeft: Integer;
 begin
+  Item.Left := 0;
   GetCheckBias(XBias, YBias, BiasTop, BiasLeft, ListView);
   OldColor := ListView.Canvas.Pen.Color;
-  TP1 := Item.GetPosition;
+  //TP1 := Item.GetPosition;
+  lRect := Item.DisplayRect(drBounds); // Windows 7 workaround
+  TP1.X := lRect.Left;
+  TP1.Y := lRect.Top;
+  //ShowMessage(IntToStr(Item.Index) + ', ' + IntToStr(GetScrollPos(Item.ListView.Handle, SB_VERT)) + '  ' +
+  //  IntToHex(Integer(Item), 8) + ', ' + IntToStr(TP1.X) + ', ' + IntToStr(TP1.Y));
+
 //  if Checked then
     ListView.Canvas.Brush.Color := clWhite;
-  Rect1.Left := Item.Left - CheckWidth - BiasLeft + 1 + XBias;
+  ItemLeft := Item.Left;
+  ItemLeft := 23; // Windows 7 workaround
+  
+  Rect1.Left := ItemLeft - CheckWidth - BiasLeft + 1 + XBias;
+  //ShowMessage(IntToStr(Tp1.Y) + ', ' + IntToStr(BiasTop) + ', ' + IntToStr(XBias));
   Rect1.Top := Tp1.Y + BiasTop + 1 + YBias;
-  Rect1.Right := Item.Left - BiasLeft - 1 + XBias;
+  Rect1.Right := ItemLeft - BiasLeft - 1 + XBias;
   Rect1.Bottom := Tp1.Y + BiasTop + CheckHeight - 1 + YBias;
+  //ShowMessage(IntToStr(Rect1.Left) + ', ' + IntToStr(Rect1.Top) + ', ' + IntToStr(Rect1.Right) + ', ' + IntToStr(Rect1.Bottom));
+
   ListView.Canvas.FillRect(Rect1);
   //if Checked then ListView.Canvas.Brush.Color := clBlack
   ListView.Canvas.Brush.Color := clBlack;
@@ -219,21 +210,22 @@ begin
     Rect1.Right + 1, Rect1.Bottom + 1));
   if Checked then begin
     ListView.Canvas.Pen.Color := clBlack;
-    ListView.Canvas.MoveTo(Item.Left - BiasLeft - 2 + XBias - 2,
+    ListView.Canvas.MoveTo(ItemLeft - BiasLeft - 2 + XBias - 2,
       Tp1.Y + BiasTop + 3 + YBias);
-    ListView.Canvas.LineTo(Item.Left - BiasLeft - (CheckWidth div 2) + XBias,
+    ListView.Canvas.LineTo(ItemLeft - BiasLeft - (CheckWidth div 2) + XBias,
       Tp1.Y + BiasTop + (CheckHeight - 4) + YBias);
-    ListView.Canvas.LineTo(Item.Left - BiasLeft - (CheckWidth - 3) + XBias,
+    ListView.Canvas.LineTo(ItemLeft - BiasLeft - (CheckWidth - 3) + XBias,
       Tp1.Y + BiasTop + (CheckHeight div 2) + YBias - 1);
 
-    ListView.Canvas.MoveTo(Item.Left - BiasLeft - 2 - 1 + XBias - 2,
+    ListView.Canvas.MoveTo(ItemLeft - BiasLeft - 2 - 1 + XBias - 2,
       Tp1.Y + BiasTop + 3 + YBias);
-    ListView.Canvas.LineTo(Item.Left - BiasLeft - (CheckWidth div 2) - 1 + XBias,
+    ListView.Canvas.LineTo(ItemLeft - BiasLeft - (CheckWidth div 2) - 1 + XBias,
       Tp1.Y + BiasTop + (CheckHeight - 4) + YBias);
-    ListView.Canvas.LineTo(Item.Left - BiasLeft - (CheckWidth - 3) - 1 + XBias,
+    ListView.Canvas.LineTo(ItemLeft - BiasLeft - (CheckWidth - 3) - 1 + XBias,
       Tp1.Y + BiasTop + (CheckHeight div 2) + YBias - 1);
   end;
-  ListView.Canvas.Brush.Color := ListView.Color;
+  //ListView.Canvas.Brush.Color := ListView.Color;
+  ListView.Canvas.Brush.Color := clWindow;
   ListView.Canvas.Pen.Color := OldColor;
 end;
 
@@ -259,24 +251,32 @@ end;
 procedure TListViewSort.ListViewCustomDrawItem(Sender: TCustomListView;
   Item: TListItem; State: TCustomDrawState; var DefaultDraw: Boolean);
 begin
-  if ListView.Checkboxes then
-    DrawCheckMark(Item, Item.Checked);
-  if Assigned(FOnCustomDraw) then
-    FOnCustomDraw(Sender, Item, State, DefaultDraw);  
+  if Assigned(Item) then begin
+    if ListView.Checkboxes then
+      DrawCheckMark(Item, Item.Checked);
+    if Assigned(FOnCustomDraw) then
+      FOnCustomDraw(Sender, Item, State, DefaultDraw);
+  end;
 end;
 
 procedure TListViewSort.ListViewClick(Sender: TObject);
 var
   Item: TListItem;
   Pos: TPoint;
+  DefaultDraw: Boolean;
 begin
   Pos := ListView.ScreenToClient(Mouse.CursorPos);
   Item := ListView.GetItemAt(Pos.X, Pos.Y);
+  //ShowMessage(IntToStr(Item.Index) + ', ' + IntToStr(Pos.X) + ', ' + IntToStr(Pos.Y));
   if Assigned(Item) and (Pos.X < 20) then begin
+
     Item.Checked := not Item.Checked;
-    ListView.UpdateItems(Item.Index, Item.Index);
+    //ShowMessage(IntToStr(Item.Index) + ', ' +BoolToStr(Item.Checked));
     if Assigned(ListView.OnChange) then
       ListView.OnChange(Self, Item, ctState);
+    DefaultDraw := False;
+    ListViewCustomDrawItem(ListView, Item, [], DefaultDraw);
+      //ListView.UpdateItems(Item.Index, Item.Index);
   end;
 end;
 
