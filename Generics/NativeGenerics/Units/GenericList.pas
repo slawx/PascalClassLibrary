@@ -63,6 +63,29 @@ type
     property Last: TItem read GetLast write SetLast;
   end;
 
+  TGListObject<TItem> = class(TGList<TItem>)
+  private
+    procedure Put(Index: Integer; const AValue: TItem); override;
+  public
+    OwnsObjects: Boolean;
+    procedure Delete(Index: Integer); override;
+    procedure Clear; override;
+    procedure Assign(Source: TGList<TItem>); override;
+    constructor Create;
+    destructor Destroy; override;
+  end;
+
+  TGListString<TItem> = class(TGList<TItem>)
+  private
+  public
+    procedure Delete(Index: Integer); override;
+    procedure Clear; override;
+    procedure Assign(Source: TGList<TItem>); override;
+    constructor Create;
+    destructor Destroy; override;
+  end;
+
+
 implementation
 
 uses
@@ -487,6 +510,90 @@ begin
   Temp := FItems[Index1];
   FItems[Index1] := FItems[Index2];
   FItems[Index2] := Temp;
+end;
+
+{ TGListObject }
+
+procedure TGListObject<TItem>.Assign(Source: TGList<TItem>);
+begin
+  Clear;
+  OwnsObjects := False;
+  inherited;
+end;
+
+procedure TGListObject<TItem>.Put(Index: Integer; const AValue: TItem);
+begin
+  if OwnsObjects then FItems[Index].Free;
+  inherited Put(Index, AValue);
+end;
+
+procedure TGListObject<TItem>.Delete(Index: Integer);
+begin
+  if OwnsObjects then FItems[Index].Free;
+  inherited Delete(Index);
+end;
+
+procedure TGListObject<TItem>.Clear;
+var
+  I: Integer;
+begin
+  if OwnsObjects then begin
+    I := 0;
+    while I < Count do begin
+      FItems[I].Free;
+      I := I + 1;
+    end;
+  end;
+  inherited Clear;
+end;
+
+constructor TGListObject<TItem>.Create;
+begin
+  inherited;
+  OwnsObjects := True;
+end;
+
+destructor TGListObject<TItem>.Destroy;
+begin
+  Clear;
+  inherited Destroy;
+end;
+
+{ TGListString }
+
+procedure TGListString<TItem>.Assign(Source: TGList<TItem>);
+begin
+  Clear;
+  inherited;
+end;
+
+procedure TGListString<TItem>.Delete(Index: Integer);
+begin
+  FItems[Index] := '';
+  inherited Delete(Index);
+end;
+
+procedure TGListString<TItem>.Clear;
+var
+  I: Integer;
+begin
+  I := 0;
+  while I < Count do begin
+    FItems[I] := '';
+    I := I + 1;
+  end;
+  inherited Clear;
+end;
+
+constructor TGListString<TItem>.Create;
+begin
+  inherited;
+end;
+
+destructor TGListString<TItem>.Destroy;
+begin
+  Clear;
+  inherited Destroy;
 end;
 
 end.

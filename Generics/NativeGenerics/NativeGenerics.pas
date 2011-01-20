@@ -7,7 +7,8 @@ unit NativeGenerics;
 interface
 
 uses
-  GenericList, LazarusPackageIntf;
+  GenericList, GenericTree, GenericDictionary, GenericQueue, GenericRange, 
+  GenericSet, GenericStack, LazarusPackageIntf;
 
 implementation
 

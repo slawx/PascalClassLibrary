@@ -3,25 +3,62 @@
   <Package Version="3">
     <PathDelim Value="\"/>
     <Name Value="NativeGenerics"/>
+    <Author Value="Chronos"/>
     <CompilerOptions>
       <Version Value="9"/>
       <PathDelim Value="\"/>
       <SearchPaths>
+        <OtherUnitFiles Value="Units"/>
         <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)\"/>
       </SearchPaths>
+      <CodeGeneration>
+        <Checks>
+          <IOChecks Value="True"/>
+          <RangeChecks Value="True"/>
+          <OverflowChecks Value="True"/>
+          <StackChecks Value="True"/>
+        </Checks>
+      </CodeGeneration>
       <Other>
         <CompilerPath Value="$(CompPath)"/>
       </Other>
     </CompilerOptions>
-    <Files Count="2">
+    <Description Value="Native generics library."/>
+    <License Value="GNU/GPL"/>
+    <Version Minor="1"/>
+    <Files Count="8">
       <Item1>
         <Filename Value="ReadMe.txt"/>
         <Type Value="Text"/>
       </Item1>
       <Item2>
-        <Filename Value="GenericList.pas"/>
+        <Filename Value="Units\GenericList.pas"/>
         <UnitName Value="GenericList"/>
       </Item2>
+      <Item3>
+        <Filename Value="Units\GenericTree.pas"/>
+        <UnitName Value="GenericTree"/>
+      </Item3>
+      <Item4>
+        <Filename Value="Units\GenericDictionary.pas"/>
+        <UnitName Value="GenericDictionary"/>
+      </Item4>
+      <Item5>
+        <Filename Value="Units\GenericQueue.pas"/>
+        <UnitName Value="GenericQueue"/>
+      </Item5>
+      <Item6>
+        <Filename Value="Units\GenericRange.pas"/>
+        <UnitName Value="GenericRange"/>
+      </Item6>
+      <Item7>
+        <Filename Value="Units\GenericSet.pas"/>
+        <UnitName Value="GenericSet"/>
+      </Item7>
+      <Item8>
+        <Filename Value="Units\GenericStack.pas"/>
+        <UnitName Value="GenericStack"/>
+      </Item8>
     </Files>
     <Type Value="RunAndDesignTime"/>
     <RequiredPkgs Count="2">

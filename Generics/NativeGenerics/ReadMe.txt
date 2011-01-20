@@ -12,3 +12,7 @@ Email: robie@centrum.cz
 
 Main subversion repository:
 http://svn.zdechov.net/svn/PascalClassLibrary/Generics/NativeGenerics
+
+
+Require FPC version 2.5.1 and newer
+
