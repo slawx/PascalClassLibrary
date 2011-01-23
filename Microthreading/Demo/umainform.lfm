@@ -1,0 +1,83 @@
+object Form1: TForm1
+  Left = 445
+  Height = 510
+  Top = 107
+  Width = 703
+  Caption = 'MicroThreading demo'
+  ClientHeight = 510
+  ClientWidth = 703
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  LCLVersion = '0.9.31'
+  object Button1: TButton
+    Left = 9
+    Height = 25
+    Top = 13
+    Width = 151
+    Caption = 'Add new microthread'
+    OnClick = Button1Click
+    TabOrder = 0
+  end
+  object ListView1: TListView
+    Left = 310
+    Height = 483
+    Top = 24
+    Width = 386
+    Anchors = [akTop, akLeft, akRight, akBottom]
+    Columns = <    
+      item
+        Caption = 'Id'
+      end    
+      item
+        Caption = 'Name'
+      end    
+      item
+        Caption = 'Usage'
+      end    
+      item
+        Caption = 'Priority'
+      end    
+      item
+        Caption = 'State'
+        Width = 165
+      end>
+    ReadOnly = True
+    RowSelect = True
+    TabOrder = 1
+    ViewStyle = vsReport
+  end
+  object Label1: TLabel
+    Left = 312
+    Height = 14
+    Top = 8
+    Width = 85
+    Caption = 'Microthread list'
+    ParentColor = False
+  end
+  object Memo1: TMemo
+    Left = 10
+    Height = 419
+    Top = 88
+    Width = 294
+    Anchors = [akTop, akLeft, akBottom]
+    TabOrder = 2
+  end
+  object Button2: TButton
+    Left = 176
+    Height = 25
+    Top = 13
+    Width = 75
+    Caption = 'Button2'
+    OnClick = Button2Click
+    TabOrder = 3
+  end
+  object Button3: TButton
+    Left = 10
+    Height = 25
+    Top = 57
+    Width = 75
+    Caption = 'Coroutine'
+    OnClick = Button3Click
+    TabOrder = 4
+  end
+end
