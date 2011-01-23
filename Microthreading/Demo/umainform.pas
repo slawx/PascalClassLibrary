@@ -144,13 +144,14 @@ procedure TForm1.Worker(MicroThread: TMicroThread);
 var
   I: Integer;
 begin
-  //Memo1.Lines.Add('Work');
-  //with MicroThread do
-  //for I := 0 to 100 do begin
-  //  Memo1.Lines.Add(InttoStr(Id) + ': ' + IntToStr(I));
-    //Sleep(10);
-  //  Yield;
-  //end;
+  with MicroThread do begin
+    Memo1.Lines.Add('Worker ' + IntToStr(Id));
+    for I := 0 to 10 do begin
+      Memo1.Lines.Add(InttoStr(Id) + ': ' + IntToStr(I));
+      SysUtils.Sleep(10 * Id);
+      Yield;
+    end;
+  end;
 end;
 
 end.
