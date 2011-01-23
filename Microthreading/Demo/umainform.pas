@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  ComCtrls, UMicroThreading, Coroutine;
+  ComCtrls, ExtCtrls, UMicroThreading, Coroutine, DateUtils;
 
 type
 
@@ -25,11 +25,13 @@ type
     Label1: TLabel;
     ListView1: TListView;
     Memo1: TMemo;
+    Timer1: TTimer;
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
     procedure Button3Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
+    procedure Timer1Timer(Sender: TObject);
   private
     procedure Worker(MicroThread: TMicroThread);
   public
@@ -64,6 +66,7 @@ end;
 procedure TForm1.FormCreate(Sender: TObject);
 begin
   Scheduler := TMicroThreadScheduler.Create;
+  Scheduler.FreeMicroThreadOnFinish := False;
   Test := TTest.Create;
 end;
 
@@ -73,7 +76,11 @@ var
 begin
   for I := 0 to 1 do
     Scheduler.Add('Worker', Worker);
-  Scheduler.Start;
+  repeat
+    Scheduler.Start;
+    Application.ProcessMessages;
+    Sleep(1);
+  until Scheduler.MicroThreadCount = 0;
 end;
 
 procedure TForm1.Button2Click(Sender: TObject);
@@ -140,6 +147,31 @@ begin
   Scheduler.Free;
 end;
 
+procedure TForm1.Timer1Timer(Sender: TObject);
+var
+  I: Integer;
+  NewItem: TListItem;
+begin
+  try
+    ListView1.BeginUpdate;
+    ListView1.Clear;
+    Scheduler.Lock.Acquire;
+    for I := 0 to Scheduler.MicroThreads.Count - 1 do
+    with TMicroThread(Scheduler.MicroThreads[I]) do begin
+      NewItem := ListView1.Items.Add;
+      NewItem.Caption := IntToStr(Id);
+      NewItem.SubItems.Add(Name);
+      NewItem.SubItems.Add('');
+      NewItem.SubItems.Add(IntToStr(Priority));
+      NewItem.SubItems.Add(MicroThreadStateText[State]);
+      NewItem.SubItems.Add(FloatToStr(ExecutionTime));
+    end;
+  finally
+    Scheduler.Lock.Release;
+    ListView1.EndUpdate;
+  end;
+end;
+
 procedure TForm1.Worker(MicroThread: TMicroThread);
 var
   I: Integer;
@@ -148,8 +180,7 @@ begin
     Memo1.Lines.Add('Worker ' + IntToStr(Id));
     for I := 0 to 10 do begin
       Memo1.Lines.Add(InttoStr(Id) + ': ' + IntToStr(I));
-      SysUtils.Sleep(10 * Id);
-      Yield;
+      Sleep(100 * Id * OneMillisecond);
     end;
   end;
 end;

@@ -6,7 +6,8 @@ unit UMicroThreading;
 interface
 
 uses
-  Classes, SysUtils, Contnrs, SyncObjs;
+  Classes, SysUtils, Contnrs, SyncObjs, DateUtils,
+  BaseUnix, UnixUtil, Unix;
 
 type
   TMicroThread = class;
@@ -20,7 +21,8 @@ type
       False: (B, C: Pointer;);
   end;
 
-  TMicroThreadState = (tsReady, tsRunning, tsSleeping, tsBlocked, tsSuspended);
+  TMicroThreadState = (tsReady, tsRunning, tsWaiting, tsBlocked, tsSuspended,
+    tsSleeping, tsFinished);
 
   { TMicroThread }
 
@@ -31,6 +33,7 @@ type
     FStackSize: Integer;
     FExecutionStartTime: TDateTime;
     FExecutionEndTime: TDateTime;
+    FExecutionTime: TDateTime;
     FStackPointer: Pointer;
     FBasePointer: Pointer;
     FWakeupTime: TDateTime;
@@ -45,6 +48,7 @@ type
     constructor Create;
     destructor Destroy; override;
     property Method: TStartEvent read FMethod write FMethod;
+    property ExecutionTime: TDateTime read FExecutionTime;
   end;
 
   TThreadPool = class(TObjectList)
@@ -55,24 +59,49 @@ type
 
   TMicroThreadScheduler = class
   private
+    FFreeMicroThreadOnFinish: Boolean;
     ThreadPool: TThreadPool;
-    MicroThreads: TObjectList; // TList<TMicroThread>
-    Lock: TCriticalSection;
     RoundRobinIndex: Integer;
     LastId: Integer;
     FMainStackPointer: Pointer;
     FMainBasePointer: Pointer;
     FSelected: TMicroThread;
     FTempPointer: Pointer;
+    function GetMicroThreadCount: Integer;
     procedure Yield(MicroThread: TMicroThread);
   public
+    MicroThreads: TObjectList; // TList<TMicroThread>
+    Lock: TCriticalSection;
     function Add(Name: string; Method: TStartEvent): TMicroThread;
     constructor Create;
     destructor Destroy; override;
     procedure Start;
+    property MicroThreadCount: Integer read GetMicroThreadCount;
+    property FreeMicroThreadOnFinish: Boolean read FFreeMicroThreadOnFinish
+      write FFreeMicroThreadOnFinish;
   end;
 
+const
+  MicroThreadStateText: array[TMicroThreadState] of string = ('Ready', 'Running',
+    'Waiting', 'Blocked', 'Suspended', 'Sleeping', 'Finished');
+
 implementation
+
+
+function SystemTicks: Int64;
+{$IFDEF Windows}
+begin
+  QueryPerformanceCounter(Result);
+  //Result := Int64(TimeStampToMSecs(DateTimeToTimeStamp(Now)) * 1000) // an alternative Win32 timebase
+{$ELSE}
+var t : timeval;
+begin
+  fpgettimeofday(@t,nil);
+   // Build a 64 bit microsecond tick from the seconds and microsecond longints
+  Result := (Int64(t.tv_sec) * 1000000) + t.tv_usec;
+{$ENDIF}
+end;
+
 
 { TMicroThread }
 
@@ -83,8 +112,8 @@ end;
 
 procedure TMicroThread.Sleep(Duration: TDateTime);
 begin
-  FWakeupTime := Now + Duration;
-  State := tsBlocked;
+  FWakeUpTime := Now + Duration;
+  State := tsSleeping;
   Yield;
 end;
 
@@ -123,6 +152,7 @@ begin
   Lock := TCriticalSection.Create;
   MicroThreads := TObjectList.Create;
   ThreadPool := TThreadPool.Create;
+  FFreeMicroThreadOnFinish := True;
 end;
 
 destructor TMicroThreadScheduler.Destroy;
@@ -148,8 +178,11 @@ var
   I: Integer;
 begin
   if Assigned(MicroThread) then begin
-    MicroThread.FExecutionStartTime := Now;
-    MicroThread.State := tsSleeping;
+    MicroThread.FExecutionEndTime := Now;
+    MicroThread.FExecutionTime := MicroThread.FExecutionTime +
+      (MicroThread.FExecutionEndTime - MicroThread.FExecutionStartTime);
+    if MicroThread.State = tsRunning then
+      MicroThread.State := tsWaiting;
     asm
       // Store microthread stack
       mov eax, MicroThread
@@ -178,11 +211,18 @@ begin
     if RoundRobinIndex >= MicroThreads.Count then
       RoundRobinIndex := 0;
     while (I < MicroThreads.Count) and (TMicroThread(MicroThreads[RoundRobinIndex]).State <> tsReady) and
-(TMicroThread(MicroThreads[RoundRobinIndex]).State <> tsSleeping) do begin
-      Inc(I);
-      Inc(RoundRobinIndex);
-      if RoundRobinIndex >= MicroThreads.Count then
-        RoundRobinIndex := 0;
+(TMicroThread(MicroThreads[RoundRobinIndex]).State <> tsWaiting) do begin
+      // WakeUp sleeping threads
+      if (TMicroThread(MicroThreads[RoundRobinIndex]).State = tsSleeping) and
+        (TMicroThread(MicroThreads[RoundRobinIndex]).FWakeupTime < Now) then
+          TMicroThread(MicroThreads[RoundRobinIndex]).State := tsWaiting else
+      begin
+        // Go to next thread
+        Inc(I);
+        Inc(RoundRobinIndex);
+        if RoundRobinIndex >= MicroThreads.Count then
+          RoundRobinIndex := 0;
+      end;
     end;
     if I < MicroThreads.Count then begin
       FSelected := TMicroThread(MicroThreads[RoundRobinIndex]);
@@ -228,15 +268,17 @@ begin
         mov edx, [eax].TMicroThreadScheduler.FMainBasePointer
         mov ebp, edx
       end;
-      // Microthread is finished, remove it from queue
-      try
-        Lock.Acquire;
-        MicroThreads.Delete(MicroThreads.IndexOf(FSelected));
-      finally
-        Lock.Release;
-      end;
+      if FFreeMicroThreadOnFinish then begin
+        // Microthread is finished, remove it from queue
+        try
+          Lock.Acquire;
+          MicroThreads.Delete(MicroThreads.IndexOf(FSelected));
+        finally
+          Lock.Release;
+        end;
+      end else FSelected.State := tsFinished;
     end else
-    if FSelected.State = tsSleeping then begin
+    if FSelected.State = tsWaiting then begin
       // Execute selected thread
       FSelected.State := tsRunning;
       FSelected.FExecutionStartTime := Now;
@@ -254,6 +296,16 @@ begin
         mov ebp, edx
       end;
     end;
+  end;
+end;
+
+function TMicroThreadScheduler.GetMicroThreadCount: Integer;
+begin
+  try
+    Lock.Acquire;
+    Result := MicroThreads.Count;
+  finally
+    Lock.Release;
   end;
 end;
 

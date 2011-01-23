@@ -39,7 +39,11 @@ object Form1: TForm1
       end    
       item
         Caption = 'State'
-        Width = 165
+        Width = 60
+      end    
+      item
+        Caption = 'Execution time'
+        Width = 105
       end>
     ReadOnly = True
     RowSelect = True
@@ -79,5 +83,11 @@ object Form1: TForm1
     Caption = 'Coroutine'
     OnClick = Button3Click
     TabOrder = 4
+  end
+  object Timer1: TTimer
+    Interval = 100
+    OnTimer = Timer1Timer
+    left = 399
+    top = 87
   end
 end
