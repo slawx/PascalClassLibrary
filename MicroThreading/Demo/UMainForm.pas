@@ -40,8 +40,7 @@ type
   public
     Scheduler: TMicroThreadScheduler;
     Test: TTest;
-    Terminate: Boolean;
-  end; 
+  end;
 
 var
   Form1: TForm1; 
@@ -72,28 +71,24 @@ begin
   Scheduler := TMicroThreadScheduler.Create;
   Scheduler.FreeMicroThreadOnFinish := False;
   Test := TTest.Create;
+  DoubleBuffered := True;
+  ListView1.DoubleBuffered := True;
 end;
 
 procedure TForm1.Button1Click(Sender: TObject);
 var
   I: Integer;
-  Executed: Integer;
 begin
   if Button1.Caption = 'Start scheduler' then begin
     Button1.Caption := 'Stop scheduler';
-    Terminate := False;
     Scheduler.MicroThreads.Clear;
     Memo1.Clear;
     for I := 0 to 20 do
       Scheduler.Add('Worker', Worker);
-    repeat
-      Executed := Scheduler.Execute(10);
-      Application.ProcessMessages;
-      if Executed = 0 then Sleep(1);
-    until (Scheduler.MicroThreadCount = 0) or Terminate;
+    Scheduler.Start;
   end else begin
     Button1.Caption := 'Start scheduler';
-    Terminate := True;
+    Scheduler.Stop;
   end;
 end;
 
@@ -157,7 +152,7 @@ end;
 
 procedure TForm1.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
-  Terminate := True;
+  Scheduler.Stop;
 end;
 
 procedure TForm1.FormDestroy(Sender: TObject);

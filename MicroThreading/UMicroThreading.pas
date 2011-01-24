@@ -8,7 +8,7 @@ interface
 uses
   {$IFDEF Windows}Windows,{$ENDIF}
   {$IFDEF Linux}BaseUnix, UnixUtil, Unix,{$ENDIF}
-  Classes, SysUtils, Contnrs, SyncObjs, DateUtils, Dialogs;
+  Classes, SysUtils, Contnrs, SyncObjs, DateUtils, Dialogs, Forms;
 
 type
   TMicroThread = class;
@@ -65,6 +65,7 @@ type
     FFrequency: Int64;
     FExecuteCount: Integer;
     FExecutedCount: Integer;
+    FTerminated: Boolean;
     function GetMicroThreadCount: Integer;
     procedure Yield(MicroThread: TMicroThread);
   public
@@ -75,6 +76,8 @@ type
     constructor Create;
     destructor Destroy; override;
     function Execute(Count: Integer): Integer;
+    procedure Start;
+    procedure Stop;
     property MicroThreadCount: Integer read GetMicroThreadCount;
     property FreeMicroThreadOnFinish: Boolean read FFreeMicroThreadOnFinish
       write FFreeMicroThreadOnFinish;
@@ -166,6 +169,7 @@ end;
 
 destructor TMicroThreadScheduler.Destroy;
 begin
+  FTerminated := True;
   ThreadPool.Free;
   MicroThreads.Free;
   Lock.Free;
@@ -178,6 +182,23 @@ begin
   FExecutedCount := 0;
   Yield(nil);
   Result := FExecutedCount;
+end;
+
+procedure TMicroThreadScheduler.Start;
+var
+  Executed: Integer;
+begin
+  FTerminated := False;
+  repeat
+    Executed := Execute(10);
+    Application.ProcessMessages;
+    if Executed = 0 then Sleep(1);
+  until FTerminated;
+end;
+
+procedure TMicroThreadScheduler.Stop;
+begin
+  FTerminated := True;
 end;
 
 var
