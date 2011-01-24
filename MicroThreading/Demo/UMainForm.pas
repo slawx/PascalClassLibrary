@@ -23,20 +23,24 @@ type
     Button2: TButton;
     Button3: TButton;
     Label1: TLabel;
+    Label2: TLabel;
     ListView1: TListView;
     Memo1: TMemo;
     Timer1: TTimer;
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
     procedure Button3Click(Sender: TObject);
+    procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
+    procedure ListView1Data(Sender: TObject; Item: TListItem);
     procedure Timer1Timer(Sender: TObject);
   private
     procedure Worker(MicroThread: TMicroThread);
   public
     Scheduler: TMicroThreadScheduler;
     Test: TTest;
+    Terminate: Boolean;
   end; 
 
 var
@@ -73,14 +77,24 @@ end;
 procedure TForm1.Button1Click(Sender: TObject);
 var
   I: Integer;
+  Executed: Integer;
 begin
-  for I := 0 to 1 do
-    Scheduler.Add('Worker', Worker);
-  repeat
-    Scheduler.Start;
-    Application.ProcessMessages;
-    Sleep(1);
-  until Scheduler.MicroThreadCount = 0;
+  if Button1.Caption = 'Start scheduler' then begin
+    Button1.Caption := 'Stop scheduler';
+    Terminate := False;
+    Scheduler.MicroThreads.Clear;
+    Memo1.Clear;
+    for I := 0 to 20 do
+      Scheduler.Add('Worker', Worker);
+    repeat
+      Executed := Scheduler.Execute(10);
+      Application.ProcessMessages;
+      if Executed = 0 then Sleep(1);
+    until (Scheduler.MicroThreadCount = 0) or Terminate;
+  end else begin
+    Button1.Caption := 'Start scheduler';
+    Terminate := True;
+  end;
 end;
 
 procedure TForm1.Button2Click(Sender: TObject);
@@ -141,35 +155,42 @@ begin
   Test.Invoke;
 end;
 
+procedure TForm1.FormClose(Sender: TObject; var CloseAction: TCloseAction);
+begin
+  Terminate := True;
+end;
+
 procedure TForm1.FormDestroy(Sender: TObject);
 begin
   Test.Free;
   Scheduler.Free;
 end;
 
-procedure TForm1.Timer1Timer(Sender: TObject);
-var
-  I: Integer;
-  NewItem: TListItem;
+procedure TForm1.ListView1Data(Sender: TObject; Item: TListItem);
 begin
   try
-    ListView1.BeginUpdate;
-    ListView1.Clear;
     Scheduler.Lock.Acquire;
-    for I := 0 to Scheduler.MicroThreads.Count - 1 do
-    with TMicroThread(Scheduler.MicroThreads[I]) do begin
-      NewItem := ListView1.Items.Add;
-      NewItem.Caption := IntToStr(Id);
-      NewItem.SubItems.Add(Name);
-      NewItem.SubItems.Add('');
-      NewItem.SubItems.Add(IntToStr(Priority));
-      NewItem.SubItems.Add(MicroThreadStateText[State]);
-      NewItem.SubItems.Add(FloatToStr(ExecutionTime));
+    if Item.Index < Scheduler.MicroThreads.Count then
+    with TMicroThread(Scheduler.MicroThreads[Item.Index]) do begin
+      Item.Caption := IntToStr(Id);
+      Item.SubItems.Add(Name);
+      Item.SubItems.Add('');
+      Item.SubItems.Add(IntToStr(Priority));
+      Item.SubItems.Add(MicroThreadStateText[State]);
+      Item.SubItems.Add(FloatToStr(ExecutionTime));
     end;
   finally
     Scheduler.Lock.Release;
-    ListView1.EndUpdate;
   end;
+end;
+
+procedure TForm1.Timer1Timer(Sender: TObject);
+begin
+  ListView1.Items.Count := Scheduler.MicroThreadCount;
+  ListView1.Items[-1];
+  ListView1.Refresh;
+  Label2.Caption := DateTimeToStr(Scheduler.GetNow) + ' ' +
+    FloatToStr(Frac(Scheduler.GetNow / OneSecond));
 end;
 
 procedure TForm1.Worker(MicroThread: TMicroThread);
@@ -178,9 +199,11 @@ var
 begin
   with MicroThread do begin
     Memo1.Lines.Add('Worker ' + IntToStr(Id));
-    for I := 0 to 10 do begin
-      Memo1.Lines.Add(InttoStr(Id) + ': ' + IntToStr(I));
-      Sleep(100 * Id * OneMillisecond);
+    for I := 0 to 1000 do begin
+      Memo1.Lines.Add(IntToStr(Id) + ': ' + IntToStr(I) + ' ' +
+        FloatToStr(ExecutionTime));
+      //Sleep(1 * Id * OneMillisecond);
+      Yield;
     end;
   end;
 end;

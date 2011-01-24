@@ -1,11 +1,12 @@
 object Form1: TForm1
-  Left = 445
+  Left = 298
   Height = 510
-  Top = 107
+  Top = 144
   Width = 703
   Caption = 'MicroThreading demo'
   ClientHeight = 510
   ClientWidth = 703
+  OnClose = FormClose
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   LCLVersion = '0.9.31'
@@ -13,8 +14,8 @@ object Form1: TForm1
     Left = 9
     Height = 25
     Top = 13
-    Width = 151
-    Caption = 'Add new microthread'
+    Width = 119
+    Caption = 'Start scheduler'
     OnClick = Button1Click
     TabOrder = 0
   end
@@ -45,16 +46,18 @@ object Form1: TForm1
         Caption = 'Execution time'
         Width = 105
       end>
+    OwnerData = True
     ReadOnly = True
     RowSelect = True
     TabOrder = 1
     ViewStyle = vsReport
+    OnData = ListView1Data
   end
   object Label1: TLabel
     Left = 312
     Height = 14
     Top = 8
-    Width = 85
+    Width = 74
     Caption = 'Microthread list'
     ParentColor = False
   end
@@ -64,6 +67,7 @@ object Form1: TForm1
     Top = 88
     Width = 294
     Anchors = [akTop, akLeft, akBottom]
+    ScrollBars = ssAutoBoth
     TabOrder = 2
   end
   object Button2: TButton
@@ -83,6 +87,14 @@ object Form1: TForm1
     Caption = 'Coroutine'
     OnClick = Button3Click
     TabOrder = 4
+  end
+  object Label2: TLabel
+    Left = 10
+    Height = 14
+    Top = 40
+    Width = 32
+    Caption = 'Label2'
+    ParentColor = False
   end
   object Timer1: TTimer
     Interval = 100

@@ -2,7 +2,7 @@
   This source is only used to compile and install the package.
  }
 
-unit Microthreading; 
+unit MicroThreading; 
 
 interface
 
@@ -16,5 +16,5 @@ begin
 end; 
 
 initialization
-  RegisterPackage('Microthreading', @Register); 
+  RegisterPackage('MicroThreading', @Register); 
 end.

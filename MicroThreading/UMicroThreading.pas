@@ -1,25 +1,20 @@
 unit UMicroThreading;
 
-{$mode objfpc}{$H+}
+{$mode Delphi}{$H+}
 {$asmmode intel}
 
 interface
 
 uses
-  Classes, SysUtils, Contnrs, SyncObjs, DateUtils,
-  BaseUnix, UnixUtil, Unix;
+  {$IFDEF Windows}Windows,{$ENDIF}
+  {$IFDEF Linux}BaseUnix, UnixUtil, Unix,{$ENDIF}
+  Classes, SysUtils, Contnrs, SyncObjs, DateUtils, Dialogs;
 
 type
   TMicroThread = class;
   TMicroThreadScheduler = class;
 
   TStartEvent = procedure(MicroThread: TMicroThread) of object;
-
-  TCallerAddr = packed record
-    case Boolean of
-      True: (A: TStartEvent;);
-      False: (B, C: Pointer;);
-  end;
 
   TMicroThreadState = (tsReady, tsRunning, tsWaiting, tsBlocked, tsSuspended,
     tsSleeping, tsFinished);
@@ -67,15 +62,19 @@ type
     FMainBasePointer: Pointer;
     FSelected: TMicroThread;
     FTempPointer: Pointer;
+    FFrequency: Int64;
+    FExecuteCount: Integer;
+    FExecutedCount: Integer;
     function GetMicroThreadCount: Integer;
     procedure Yield(MicroThread: TMicroThread);
   public
     MicroThreads: TObjectList; // TList<TMicroThread>
     Lock: TCriticalSection;
+    function GetNow: TDateTime;
     function Add(Name: string; Method: TStartEvent): TMicroThread;
     constructor Create;
     destructor Destroy; override;
-    procedure Start;
+    function Execute(Count: Integer): Integer;
     property MicroThreadCount: Integer read GetMicroThreadCount;
     property FreeMicroThreadOnFinish: Boolean read FFreeMicroThreadOnFinish
       write FFreeMicroThreadOnFinish;
@@ -88,21 +87,6 @@ const
 implementation
 
 
-function SystemTicks: Int64;
-{$IFDEF Windows}
-begin
-  QueryPerformanceCounter(Result);
-  //Result := Int64(TimeStampToMSecs(DateTimeToTimeStamp(Now)) * 1000) // an alternative Win32 timebase
-{$ELSE}
-var t : timeval;
-begin
-  fpgettimeofday(@t,nil);
-   // Build a 64 bit microsecond tick from the seconds and microsecond longints
-  Result := (Int64(t.tv_sec) * 1000000) + t.tv_usec;
-{$ENDIF}
-end;
-
-
 { TMicroThread }
 
 procedure TMicroThread.Yield;
@@ -112,7 +96,7 @@ end;
 
 procedure TMicroThread.Sleep(Duration: TDateTime);
 begin
-  FWakeUpTime := Now + Duration;
+  FWakeUpTime := Scheduler.GetNow + Duration;
   State := tsSleeping;
   Yield;
 end;
@@ -123,6 +107,7 @@ begin
   FStack := GetMem(FStackSize);
   FBasePointer := FStack + FStackSize;
   FStackPointer := FBasePointer - 20;
+  FExecutionTime := 0;
 end;
 
 destructor TMicroThread.Destroy;
@@ -131,7 +116,27 @@ begin
   inherited Destroy;
 end;
 
+
 { TMicroThreadScheduler }
+
+function TMicroThreadScheduler.GetNow: TDateTime;
+var
+  {$IFDEF Linux}T: TimeVal;{$ENDIF}
+  {$IFDEF Windows}TimerValue: Int64;{$ENDIF}
+begin
+  {$IFDEF Windows}
+  QueryPerformanceCounter(TimerValue);
+  //Result := Int64(TimeStampToMSecs(DateTimeToTimeStamp(Now)) * 1000) // an alternative Win32 timebase
+  Result := TimerValue / FFrequency;
+  {$ENDIF}
+  {$IFDEF Linux}
+  fpgettimeofday(@t, nil);
+   // Build a 64 bit microsecond tick from the seconds and microsecond longints
+  Result := (Int64(t.tv_sec) * 1000000) + t.tv_usec;
+  {$ENDIF}
+
+  Result := (Trunc(Now / OneSecond) + Frac(Result)) * OneSecond;
+end;
 
 function TMicroThreadScheduler.Add(Name: string; Method: TStartEvent
   ): TMicroThread;
@@ -153,6 +158,10 @@ begin
   MicroThreads := TObjectList.Create;
   ThreadPool := TThreadPool.Create;
   FFreeMicroThreadOnFinish := True;
+  {$IFDEF Windows}
+  QueryPerformanceFrequency(FFrequency);
+  {$ENDIF}
+  RoundRobinIndex := -1;
 end;
 
 destructor TMicroThreadScheduler.Destroy;
@@ -163,10 +172,12 @@ begin
   inherited Destroy;
 end;
 
-procedure TMicroThreadScheduler.Start;
+function TMicroThreadScheduler.Execute(Count: Integer): Integer;
 begin
-  RoundRobinIndex := -1;
+  FExecuteCount := Count;
+  FExecutedCount := 0;
   Yield(nil);
+  Result := FExecutedCount;
 end;
 
 var
@@ -176,9 +187,11 @@ var
 procedure TMicroThreadScheduler.Yield(MicroThread: TMicroThread);
 var
   I: Integer;
+  Time: TDateTime;
 begin
+  Time := GetNow;
   if Assigned(MicroThread) then begin
-    MicroThread.FExecutionEndTime := Now;
+    MicroThread.FExecutionEndTime := Time;
     MicroThread.FExecutionTime := MicroThread.FExecutionTime +
       (MicroThread.FExecutionEndTime - MicroThread.FExecutionStartTime);
     if MicroThread.State = tsRunning then
@@ -214,7 +227,7 @@ begin
 (TMicroThread(MicroThreads[RoundRobinIndex]).State <> tsWaiting) do begin
       // WakeUp sleeping threads
       if (TMicroThread(MicroThreads[RoundRobinIndex]).State = tsSleeping) and
-        (TMicroThread(MicroThreads[RoundRobinIndex]).FWakeupTime < Now) then
+        (TMicroThread(MicroThreads[RoundRobinIndex]).FWakeupTime < Time) then
           TMicroThread(MicroThreads[RoundRobinIndex]).State := tsWaiting else
       begin
         // Go to next thread
@@ -231,7 +244,8 @@ begin
     Lock.Release;
   end;
 
-  if Assigned(FSelected) then begin
+  if Assigned(FSelected) and (FExecutedCount < FExecuteCount) then begin
+    Inc(FExecutedCount);
     asm
       // Store scheduler stack
       mov eax, Self
@@ -242,7 +256,7 @@ begin
     end;
     if FSelected.State = tsReady then begin
       FSelected.State := tsRunning;
-      FSelected.FExecutionStartTime := Now;
+      FSelected.FExecutionStartTime := Time;
       FTempPointer := FSelected.FStackPointer;
       asm
         // Restore microthread stack
@@ -268,6 +282,9 @@ begin
         mov edx, [eax].TMicroThreadScheduler.FMainBasePointer
         mov ebp, edx
       end;
+      FSelected.FExecutionEndTime := Time;
+      FSelected.FExecutionTime := FSelected.FExecutionTime +
+       (FSelected.FExecutionEndTime - FSelected.FExecutionStartTime);
       if FFreeMicroThreadOnFinish then begin
         // Microthread is finished, remove it from queue
         try
@@ -281,7 +298,7 @@ begin
     if FSelected.State = tsWaiting then begin
       // Execute selected thread
       FSelected.State := tsRunning;
-      FSelected.FExecutionStartTime := Now;
+      FSelected.FExecutionStartTime := Time;
       FTempPointer := FSelected.FStackPointer;
       asm
         // Restore microthread stack

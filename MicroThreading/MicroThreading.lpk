@@ -1,11 +1,12 @@
 <?xml version="1.0"?>
 <CONFIG>
   <Package Version="3">
-    <Name Value="Microthreading"/>
+    <Name Value="MicroThreading"/>
     <CompilerOptions>
       <Version Value="9"/>
       <SearchPaths>
-        <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)/"/>
+        <OtherUnitFiles Value="Other"/>
+        <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
       </SearchPaths>
       <Other>
         <CompilerPath Value="$(CompPath)"/>
@@ -13,20 +14,23 @@
     </CompilerOptions>
     <Files Count="2">
       <Item1>
-        <Filename Value="umicrothreading.pas"/>
+        <Filename Value="UMicroThreading.pas"/>
         <UnitName Value="UMicroThreading"/>
       </Item1>
       <Item2>
-        <Filename Value="Coroutine.pas"/>
+        <Filename Value="Other/Coroutine.pas"/>
         <UnitName Value="Coroutine"/>
       </Item2>
     </Files>
     <Type Value="RunAndDesignTime"/>
-    <RequiredPkgs Count="1">
+    <RequiredPkgs Count="2">
       <Item1>
+        <PackageName Value="LCL"/>
+      </Item1>
+      <Item2>
         <PackageName Value="FCL"/>
         <MinVersion Major="1" Valid="True"/>
-      </Item1>
+      </Item2>
     </RequiredPkgs>
     <UsageOptions>
       <UnitPath Value="$(PkgOutDir)"/>
