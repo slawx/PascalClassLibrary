@@ -74,6 +74,13 @@ type
     procedure Execute; override;
   end;
 
+  { TMicroThreadSchedulerPoolThread }
+
+  TMicroThreadSchedulerPoolThread = class(TThread)
+    Scheduler: TMicroThreadScheduler;
+    procedure Execute; override;
+  end;
+
   TThreadPool = class(TObjectList)
 
   end;
@@ -123,6 +130,24 @@ const
     'Running', 'Blocked', 'Suspended', 'Sleeping');
 
 implementation
+
+{ TMicroThreadSchedulerPoolThread }
+
+procedure TMicroThreadSchedulerPoolThread.Execute;
+var
+  ExecutedCount: Integer;
+begin
+  inherited Execute;
+  try
+    repeat
+      ExecutedCount := Scheduler.Execute(10);
+      if ExecutedCount = 0 then Sleep(1);
+    until Terminated;
+  except
+    on E: Exception do
+      //ExceptionHandler(E);
+  end;
+end;
 
 { TMicroThreadMethod }
 
