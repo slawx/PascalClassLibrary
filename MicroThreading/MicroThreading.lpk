@@ -2,6 +2,7 @@
 <CONFIG>
   <Package Version="3">
     <Name Value="MicroThreading"/>
+    <Author Value="Chronos"/>
     <CompilerOptions>
       <Version Value="9"/>
       <SearchPaths>
@@ -12,6 +13,9 @@
         <CompilerPath Value="$(CompPath)"/>
       </Other>
     </CompilerOptions>
+    <Description Value="Micro threading subsystem. "/>
+    <License Value="GNU/GPL"/>
+    <Version Minor="1"/>
     <Files Count="2">
       <Item1>
         <Filename Value="UMicroThreading.pas"/>

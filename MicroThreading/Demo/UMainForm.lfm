@@ -14,7 +14,7 @@ object Form1: TForm1
     Left = 9
     Height = 25
     Top = 13
-    Width = 119
+    Width = 103
     Caption = 'Start scheduler'
     OnClick = Button1Click
     TabOrder = 0
@@ -63,17 +63,17 @@ object Form1: TForm1
   end
   object Memo1: TMemo
     Left = 10
-    Height = 419
-    Top = 88
+    Height = 379
+    Top = 128
     Width = 294
     Anchors = [akTop, akLeft, akBottom]
     ScrollBars = ssAutoBoth
     TabOrder = 2
   end
   object Button2: TButton
-    Left = 176
+    Left = 224
     Height = 25
-    Top = 13
+    Top = 96
     Width = 75
     Caption = 'Button2'
     OnClick = Button2Click
@@ -82,7 +82,7 @@ object Form1: TForm1
   object Button3: TButton
     Left = 10
     Height = 25
-    Top = 57
+    Top = 96
     Width = 75
     Caption = 'Coroutine'
     OnClick = Button3Click
@@ -91,10 +91,29 @@ object Form1: TForm1
   object Label2: TLabel
     Left = 10
     Height = 14
-    Top = 40
+    Top = 80
     Width = 32
     Caption = 'Label2'
     ParentColor = False
+  end
+  object Button4: TButton
+    Left = 136
+    Height = 25
+    Top = 12
+    Width = 75
+    Caption = 'Start workers'
+    OnClick = Button4Click
+    TabOrder = 5
+  end
+  object SpinEdit1: TSpinEdit
+    Left = 217
+    Height = 21
+    Top = 13
+    Width = 82
+    MaxValue = 100000
+    MinValue = 1
+    TabOrder = 6
+    Value = 20
   end
   object Timer1: TTimer
     Interval = 100

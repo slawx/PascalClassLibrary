@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  ComCtrls, ExtCtrls, UMicroThreading, Coroutine, DateUtils;
+  ComCtrls, ExtCtrls, Spin, UMicroThreading, Coroutine, DateUtils;
 
 type
 
@@ -22,14 +22,17 @@ type
     Button1: TButton;
     Button2: TButton;
     Button3: TButton;
+    Button4: TButton;
     Label1: TLabel;
     Label2: TLabel;
     ListView1: TListView;
     Memo1: TMemo;
+    SpinEdit1: TSpinEdit;
     Timer1: TTimer;
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
     procedure Button3Click(Sender: TObject);
+    procedure Button4Click(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -69,7 +72,6 @@ end;
 procedure TForm1.FormCreate(Sender: TObject);
 begin
   Scheduler := TMicroThreadScheduler.Create;
-  Scheduler.FreeMicroThreadOnFinish := False;
   Test := TTest.Create;
   DoubleBuffered := True;
   ListView1.DoubleBuffered := True;
@@ -83,8 +85,6 @@ begin
     Button1.Caption := 'Stop scheduler';
     Scheduler.MicroThreads.Clear;
     Memo1.Clear;
-    for I := 0 to 20 do
-      Scheduler.Add('Worker', Worker);
     Scheduler.Start;
   end else begin
     Button1.Caption := 'Start scheduler';
@@ -148,6 +148,14 @@ end;
 procedure TForm1.Button3Click(Sender: TObject);
 begin
   Test.Invoke;
+end;
+
+procedure TForm1.Button4Click(Sender: TObject);
+var
+  I: Integer;
+begin
+  for I := 0 to SpinEdit1.Value do
+    Scheduler.AddMethod(Worker);
 end;
 
 procedure TForm1.FormClose(Sender: TObject; var CloseAction: TCloseAction);
