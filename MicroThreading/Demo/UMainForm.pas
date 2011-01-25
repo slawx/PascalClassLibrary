@@ -87,7 +87,6 @@ var
 begin
   if Button1.Caption = 'Start scheduler' then begin
     Button1.Caption := 'Stop scheduler';
-    Scheduler.MicroThreads.Clear;
     Memo1.Clear;
     Scheduler.Start;
   end else begin
@@ -158,6 +157,7 @@ procedure TForm1.Button4Click(Sender: TObject);
 var
   I: Integer;
 begin
+  Scheduler.MicroThreads.Clear;
   for I := 0 to SpinEdit1.Value do
     Scheduler.AddMethod(Worker);
 end;

@@ -95,7 +95,6 @@ type
     FStackSize: Pointer;
     FStackPointer: Pointer;
     FBasePointer: Pointer;
-    FSelected: TMicroThread;
     FExecuteCount: Integer;
     FExecutedCount: Integer;
     FTerminated: Boolean;
@@ -104,7 +103,7 @@ type
   public
     Scheduler: TMicroThreadScheduler;
     CurrentMicroThread: TMicroThread;
-    procedure Yield(MicroThread: TMicroThread);
+    procedure Yield;
     constructor Create;
     destructor Destroy; override;
   end;
@@ -153,30 +152,30 @@ var
   StaticManager: TMicroThreadManager;
   StaticMicroThread: TMicroThread;
 
-  function GetMicroThreadId: Integer;
-  var
-    I: Integer;
-    CurrentStack: Pointer;
-  begin
-    asm
-      mov CurrentStack, sp
-    end;
-    with MainScheduler do begin
-      try
-        Lock.Acquire;
-        I := 0;
-        while (I < MicroThreads.Count) and
-          not ((CurrentStack >= TMicroThread(MicroThreads[I]).FStack) and
-          (CurrentStack <= (TMicroThread(MicroThreads[I]).FStack +
-          TMicroThread(MicroThreads[I]).FStackSize))) do Inc(I);
-        if I < MicroThreads.Count then begin
-          Result := TMicroThread(MicroThreads[I]).Id;
-        end else Result := -1;
-      finally
-        Lock.Release;
-      end;
+function GetMicroThreadId: Integer;
+var
+  I: Integer;
+  CurrentStack: Pointer;
+begin
+  asm
+    mov CurrentStack, sp
+  end;
+  with MainScheduler do begin
+    try
+      Lock.Acquire;
+      I := 0;
+      while (I < MicroThreads.Count) and
+        not ((CurrentStack >= TMicroThread(MicroThreads[I]).FStack) and
+        (CurrentStack <= (TMicroThread(MicroThreads[I]).FStack +
+        TMicroThread(MicroThreads[I]).FStackSize))) do Inc(I);
+      if I < MicroThreads.Count then begin
+        Result := TMicroThread(MicroThreads[I]).Id;
+      end else Result := -1;
+    finally
+      Lock.Release;
     end;
   end;
+end;
 
 { TMicroThreadManager }
 
@@ -186,32 +185,32 @@ begin
   FStackSize := StackBottom + StackLength;
   FExecuteCount := Count;
   FExecutedCount := 0;
-  Yield(nil);
+  Yield;
   Result := FExecutedCount;
 end;
 
-procedure TMicroThreadManager.Yield(MicroThread: TMicroThread);
+procedure TMicroThreadManager.Yield;
 var
   I: Integer;
   Time: TDateTime;
 begin
   Time := Scheduler.GetNow;
-  if Assigned(MicroThread) then begin
-    MicroThread.Manager := nil;
-    MicroThread.FExecutionEndTime := Time;
-    MicroThread.FExecutionTime := MicroThread.FExecutionTime +
-      (MicroThread.FExecutionEndTime - MicroThread.FExecutionStartTime);
-    if MicroThread.State = tsRunning then
-      MicroThread.State := tsWaiting;
+  if Assigned(CurrentMicroThread) then begin
+    CurrentMicroThread.FExecutionEndTime := Time;
+    CurrentMicroThread.FExecutionTime := CurrentMicroThread.FExecutionTime +
+      (CurrentMicroThread.FExecutionEndTime - CurrentMicroThread.FExecutionStartTime);
+    if CurrentMicroThread.State = tsRunning then
+      CurrentMicroThread.State := tsWaiting;
+    StaticMicroThread := CurrentMicroThread;
     asm
       // Store microthread stack
-      mov eax, MicroThread
+      mov eax, StaticMicroThread
       mov edx, esp
       mov [eax].TMicroThread.FStackPointer, edx
       mov edx, ebp
       mov [eax].TMicroThread.FBasePointer, edx
     end;
-    StaticManager := MicroThread.Manager;
+    StaticManager := CurrentMicroThread.Manager;
     asm
       // Restore scheduler stack
       mov eax, StaticManager  // Self is invalid before BP restore
@@ -220,15 +219,15 @@ begin
       mov edx, [eax].TMicroThreadManager.FBasePointer
       mov ebp, edx
     end;
+    CurrentMicroThread.Manager := nil;
     CurrentMicroThread := nil;
   end;
 
-  FSelected := Scheduler.GetNextMicroThread;
+  CurrentMicroThread := Scheduler.GetNextMicroThread;
 
-  if Assigned(FSelected) and (FExecutedCount < FExecuteCount) then begin
-    FSelected.Manager := Self;
+  if Assigned(CurrentMicroThread) and (FExecutedCount < FExecuteCount) then begin
+    CurrentMicroThread.Manager := Self;
     Inc(FExecutedCount);
-    CurrentMicroThread := FSelected;
     asm
       // Store scheduler stack
       mov eax, Self
@@ -237,22 +236,17 @@ begin
       mov edx, ebp
       mov [eax].TMicroThreadManager.FBasePointer, edx
     end;
-    if not FSelected.FExecuted then begin
-      FSelected.FExecuted := True;
-      FSelected.State := tsRunning;
-      FSelected.FExecutionStartTime := Time;
-      FTempPointer := FSelected.FStackPointer;
+    if not CurrentMicroThread.FExecuted then begin
+      CurrentMicroThread.FExecuted := True;
+      CurrentMicroThread.State := tsRunning;
+      CurrentMicroThread.FExecutionStartTime := Time;
+      StaticMicroThread := CurrentMicroThread;
       asm
         // Restore microthread stack
-        mov eax, Self
-        mov edx, [eax].TMicroThreadManager.FTempPointer
+        mov eax, StaticMicroThread
+        mov edx, [eax].TMicroThread.FStackPointer
         mov esp, edx
-      end;
-      StaticMicroThread := FSelected; // BP will be change and Self pointer will be invalid
-      FTempPointer := FSelected.FBasePointer;
-      asm
-        mov eax, Self
-        mov edx, [eax].TMicroThreadManager.FTempPointer
+        mov edx, [eax].TMicroThread.FBasePointer
         mov ebp, edx
       end;
       StaticMicroThread.Execute;
@@ -266,39 +260,42 @@ begin
         mov edx, [eax].TMicroThreadManager.FBasePointer
         mov ebp, edx
       end;
-      FSelected.Manager := nil;
-      FSelected.FExecutionEndTime := Time;
-      FSelected.FExecutionTime := FSelected.FExecutionTime +
-       (FSelected.FExecutionEndTime - FSelected.FExecutionStartTime);
-      FSelected.FFinished := True;
-      if FSelected.FFreeOnTerminate then begin
-        FSelected.Free;
-      end;;
+      CurrentMicroThread.Manager := nil;
+      CurrentMicroThread.FExecutionEndTime := Time;
+      CurrentMicroThread.FExecutionTime := CurrentMicroThread.FExecutionTime +
+       (CurrentMicroThread.FExecutionEndTime - CurrentMicroThread.FExecutionStartTime);
+      CurrentMicroThread.FFinished := True;
+      if CurrentMicroThread.FFreeOnTerminate then begin
+        CurrentMicroThread.Free;
+      end;
+      CurrentMicroThread := nil;
     end else
-    if FSelected.State = tsWaiting then begin
+    if CurrentMicroThread.State = tsWaiting then begin
       // Execute selected thread
-      FSelected.State := tsRunning;
-      FSelected.FExecutionStartTime := Time;
-      FTempPointer := FSelected.FStackPointer;
+      CurrentMicroThread.State := tsRunning;
+      CurrentMicroThread.FExecutionStartTime := Time;
+      FTempPointer := CurrentMicroThread.FStackPointer;
       asm
         // Restore microthread stack
         mov eax, Self
         mov edx, [eax].TMicroThreadManager.FTempPointer
         mov esp, edx
       end;
-      FTempPointer := FSelected.FBasePointer;
+      FTempPointer := CurrentMicroThread.FBasePointer;
       asm
         mov eax, Self
         mov edx, [eax].TMicroThreadManager.FTempPointer
         mov ebp, edx
       end;
     end;
+  end else begin
+    CurrentMicroThread := nil;
   end;
 end;
 
 constructor TMicroThreadManager.Create;
 begin
-
+  CurrentMicroThread := nil;
 end;
 
 destructor TMicroThreadManager.Destroy;
@@ -342,7 +339,7 @@ end;
 
 procedure TMicroThread.Yield;
 begin
-  Manager.Yield(Self);
+  Manager.Yield;
 end;
 
 procedure TMicroThread.WaitFor;
@@ -429,7 +426,7 @@ begin
   {$IFDEF Linux}
   fpgettimeofday(@t, nil);
    // Build a 64 bit microsecond tick from the seconds and microsecond longints
-  Result := (Int64(t.tv_sec) * 1000000) + t.tv_usec;
+  Result := t.tv_sec + t.tv_usec / 1000000;
   {$ENDIF}
 
   Result := (Trunc(Now / OneSecond) + Frac(Result)) * OneSecond;

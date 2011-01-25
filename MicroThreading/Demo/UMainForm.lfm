@@ -57,7 +57,7 @@ object Form1: TForm1
     Left = 312
     Height = 14
     Top = 8
-    Width = 74
+    Width = 85
     Caption = 'Microthread list'
     ParentColor = False
   end
@@ -92,7 +92,7 @@ object Form1: TForm1
     Left = 10
     Height = 14
     Top = 80
-    Width = 32
+    Width = 38
     Caption = 'Label2'
     ParentColor = False
   end
