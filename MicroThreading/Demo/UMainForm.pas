@@ -23,6 +23,8 @@ type
     Button2: TButton;
     Button3: TButton;
     Button4: TButton;
+    Button5: TButton;
+    Button6: TButton;
     Label1: TLabel;
     Label2: TLabel;
     ListView1: TListView;
@@ -33,6 +35,8 @@ type
     procedure Button2Click(Sender: TObject);
     procedure Button3Click(Sender: TObject);
     procedure Button4Click(Sender: TObject);
+    procedure Button5Click(Sender: TObject);
+    procedure Button6Click(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -156,6 +160,28 @@ var
 begin
   for I := 0 to SpinEdit1.Value do
     Scheduler.AddMethod(Worker);
+end;
+
+procedure TForm1.Button5Click(Sender: TObject);
+var
+  NewThread: TThread;
+  I: Integer;
+begin
+  try
+    I := 0;
+    while True do begin
+      NewThread := TThread.Create(True);
+      NewThread.FreeOnTerminate:= False;
+      Inc(I);
+    end;
+  except
+    ShowMessage('Application can create ' + IntToStr(I) +' TThread instances');
+  end;
+end;
+
+procedure TForm1.Button6Click(Sender: TObject);
+begin
+  ShowMessage(IntToStr(GetThreadID));
 end;
 
 procedure TForm1.FormClose(Sender: TObject; var CloseAction: TCloseAction);

@@ -1,7 +1,7 @@
 object Form1: TForm1
-  Left = 298
+  Left = 300
   Height = 510
-  Top = 144
+  Top = 137
   Width = 703
   Caption = 'MicroThreading demo'
   ClientHeight = 510
@@ -97,10 +97,10 @@ object Form1: TForm1
     ParentColor = False
   end
   object Button4: TButton
-    Left = 136
+    Left = 120
     Height = 25
     Top = 12
-    Width = 75
+    Width = 88
     Caption = 'Start workers'
     OnClick = Button4Click
     TabOrder = 5
@@ -114,6 +114,24 @@ object Form1: TForm1
     MinValue = 1
     TabOrder = 6
     Value = 20
+  end
+  object Button5: TButton
+    Left = 168
+    Height = 25
+    Top = 48
+    Width = 131
+    Caption = 'Get max TThread count'
+    OnClick = Button5Click
+    TabOrder = 7
+  end
+  object Button6: TButton
+    Left = 88
+    Height = 25
+    Top = 48
+    Width = 75
+    Caption = 'Button6'
+    OnClick = Button6Click
+    TabOrder = 8
   end
   object Timer1: TTimer
     Interval = 100
