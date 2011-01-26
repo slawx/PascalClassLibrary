@@ -44,6 +44,7 @@ type
     State: TMicroThreadState;
     Manager: TMicroThreadManager;
     Scheduler: TMicroThreadScheduler;
+    Completion: Single; // Can be used for progress information in range <0, 1>
     procedure Execute; virtual;
 
     // Internal execution
@@ -246,12 +247,16 @@ begin
         mov eax, StaticMicroThread
         mov edx, [eax].TMicroThread.FStackPointer
         mov esp, edx
+        push ebp
         mov edx, [eax].TMicroThread.FBasePointer
         mov ebp, edx
       end;
       StaticMicroThread.Execute;
+      asm
+        pop ebp
+      end;
       //FSelected.Method(FSelected);
-      StaticManager := StaticMicroThread.Manager;
+      StaticManager := CurrentMicroThread.Manager;
       asm
         // Restore scheduler stack
         mov eax, StaticManager // Self is invalid before BP restore
@@ -266,7 +271,14 @@ begin
        (CurrentMicroThread.FExecutionEndTime - CurrentMicroThread.FExecutionStartTime);
       CurrentMicroThread.FFinished := True;
       if CurrentMicroThread.FFreeOnTerminate then begin
-        CurrentMicroThread.Free;
+        // Microthread is finished, remove it from queue
+        with Scheduler do
+        try
+          Lock.Acquire;
+          MicroThreads.Delete(MicroThreads.IndexOf(CurrentMicroThread));
+        finally
+          Lock.Release;
+        end;
       end;
       CurrentMicroThread := nil;
     end else
@@ -386,15 +398,8 @@ end;
 
 destructor TMicroThread.Destroy;
 begin
-  Terminate;
-  WaitFor;
-  // Microthread is finished, remove it from queue
-  try
-    Manager.Scheduler.Lock.Acquire;
-    Manager.Scheduler.MicroThreads.Delete(Manager.Scheduler.MicroThreads.IndexOf(Self));
-  finally
-    Manager.Scheduler.Lock.Release;
-  end;
+  //Terminate;
+  //WaitFor;
   FreeMem(FStack);
   inherited Destroy;
 end;

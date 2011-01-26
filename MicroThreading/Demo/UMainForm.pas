@@ -207,6 +207,7 @@ begin
       Item.SubItems.Add(IntToStr(Priority));
       Item.SubItems.Add(MicroThreadStateText[State]);
       Item.SubItems.Add(FloatToStr(ExecutionTime));
+      Item.SubItems.Add(IntToStr(Trunc(Completion * 100)) + '%');
     end;
   finally
     Scheduler.Lock.Release;
@@ -225,12 +226,15 @@ end;
 procedure TForm1.Worker(MicroThread: TMicroThread);
 var
   I: Integer;
+const
+  TotalSteps = 100;
 begin
   with MicroThread do begin
     Memo1.Lines.Add('Worker ' + IntToStr(Id));
-    for I := 0 to 1000 do begin
+    for I := 0 to TotalSteps - 1 do begin
       Memo1.Lines.Add(IntToStr(Id) + ': ' + IntToStr(I) + ' ' +
         FloatToStr(ExecutionTime));
+      Completion := I / TotalSteps;
       //Sleep(1 * Id * OneMillisecond);
       Yield;
     end;

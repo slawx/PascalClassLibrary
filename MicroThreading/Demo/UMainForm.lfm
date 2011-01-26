@@ -1,11 +1,11 @@
 object Form1: TForm1
-  Left = 300
+  Left = 231
   Height = 510
-  Top = 137
-  Width = 703
+  Top = 48
+  Width = 798
   Caption = 'MicroThreading demo'
   ClientHeight = 510
-  ClientWidth = 703
+  ClientWidth = 798
   OnClose = FormClose
   OnCreate = FormCreate
   OnDestroy = FormDestroy
@@ -23,11 +23,12 @@ object Form1: TForm1
     Left = 310
     Height = 483
     Top = 24
-    Width = 386
+    Width = 481
     Anchors = [akTop, akLeft, akRight, akBottom]
     Columns = <    
       item
         Caption = 'Id'
+        Width = 40
       end    
       item
         Caption = 'Name'
@@ -44,7 +45,10 @@ object Form1: TForm1
       end    
       item
         Caption = 'Execution time'
-        Width = 105
+        Width = 70
+      end    
+      item
+        Caption = 'Completion'
       end>
     OwnerData = True
     ReadOnly = True
@@ -57,7 +61,7 @@ object Form1: TForm1
     Left = 312
     Height = 14
     Top = 8
-    Width = 85
+    Width = 74
     Caption = 'Microthread list'
     ParentColor = False
   end
@@ -92,7 +96,7 @@ object Form1: TForm1
     Left = 10
     Height = 14
     Top = 80
-    Width = 38
+    Width = 32
     Caption = 'Label2'
     ParentColor = False
   end

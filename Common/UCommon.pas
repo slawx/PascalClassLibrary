@@ -41,8 +41,25 @@ procedure SetBit(var Variable: Cardinal; Index: Byte; State: Boolean);
 procedure SetBit(var Variable: Word; Index: Byte; State: Boolean);
 function AddLeadingZeroes(const aNumber, Length : integer) : string;
 function LastPos(const SubStr: String; const S: String): Integer;
+function GenerateNewName(OldName: string): string;
 
 implementation
+
+function GenerateNewName(OldName: string): string;
+var
+  I: Integer;
+  Number: Integer;
+begin
+  Number := 1;
+  // Find number on end
+  if Length(OldName) > 0 then begin
+    I := Length(OldName);
+    while (I > 1) and ((OldName[I] >= '0') and (OldName[I] <= '9')) do Dec(I);
+    TryStrToInt(Copy(OldName, I + 1, Length(OldName) - I), Number);
+    Inc(Number)
+  end;
+  Result := Copy(OldName, 1, I) + IntToStr(Number);
+end;
 
 (*function DelTree(DirName : string): Boolean;
 var
