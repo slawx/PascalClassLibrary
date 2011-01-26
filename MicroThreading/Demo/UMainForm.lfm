@@ -1,7 +1,7 @@
-object Form1: TForm1
-  Left = 235
+object MainForm: TMainForm
+  Left = 263
   Height = 510
-  Top = 44
+  Top = 156
   Width = 798
   Caption = 'MicroThreading demo'
   ClientHeight = 510
@@ -10,13 +10,13 @@ object Form1: TForm1
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   LCLVersion = '0.9.31'
-  object Button1: TButton
+  object ButtonSchedulerStartStop: TButton
     Left = 9
     Height = 25
     Top = 13
     Width = 103
     Caption = 'Start scheduler'
-    OnClick = Button1Click
+    OnClick = ButtonSchedulerStartStopClick
     TabOrder = 0
   end
   object ListView1: TListView
@@ -83,15 +83,6 @@ object Form1: TForm1
     OnClick = Button2Click
     TabOrder = 3
   end
-  object Button3: TButton
-    Left = 10
-    Height = 25
-    Top = 208
-    Width = 75
-    Caption = 'Coroutine'
-    OnClick = Button3Click
-    TabOrder = 4
-  end
   object Label2: TLabel
     Left = 10
     Height = 14
@@ -100,49 +91,50 @@ object Form1: TForm1
     Caption = 'Label2'
     ParentColor = False
   end
-  object Button4: TButton
+  object ButtonAddWorkers: TButton
     Left = 10
     Height = 25
-    Top = 48
-    Width = 88
-    Caption = 'Start workers'
-    OnClick = Button4Click
-    TabOrder = 5
+    Top = 72
+    Width = 104
+    Caption = 'Add workers'
+    OnClick = ButtonAddWorkersClick
+    TabOrder = 4
   end
   object SpinEdit1: TSpinEdit
-    Left = 216
+    Left = 224
     Height = 21
-    Top = 48
-    Width = 82
+    Top = 76
+    Width = 74
     MaxValue = 100000
     MinValue = 1
-    TabOrder = 6
+    TabOrder = 5
     Value = 200
   end
-  object Button5: TButton
+  object ButtonGetMaxThread: TButton
     Left = 168
     Height = 25
     Top = 160
     Width = 131
     Caption = 'Get max TThread count'
-    OnClick = Button5Click
-    TabOrder = 7
+    OnClick = ButtonGetMaxThreadClick
+    TabOrder = 6
   end
-  object Button6: TButton
-    Left = 88
+  object ButtonShowThreadId: TButton
+    Left = 40
     Height = 25
     Top = 160
-    Width = 75
-    Caption = 'Button6'
-    OnClick = Button6Click
-    TabOrder = 8
+    Width = 123
+    Caption = 'Show thread id'
+    OnClick = ButtonShowThreadIdClick
+    TabOrder = 7
   end
   object SpinEdit2: TSpinEdit
-    Left = 216
+    Left = 224
     Height = 21
     Top = 13
-    Width = 82
-    TabOrder = 9
+    Width = 74
+    OnChange = SpinEdit2Change
+    TabOrder = 8
     Value = 1
   end
   object Label3: TLabel
@@ -154,12 +146,37 @@ object Form1: TForm1
     ParentColor = False
   end
   object Label4: TLabel
-    Left = 104
+    Left = 120
     Height = 14
-    Top = 48
+    Top = 79
     Width = 92
     Caption = 'Microthread count:'
     ParentColor = False
+  end
+  object Label5: TLabel
+    Left = 120
+    Height = 14
+    Top = 40
+    Width = 117
+    Caption = 'Logical processor count:'
+    ParentColor = False
+  end
+  object Label6: TLabel
+    Left = 248
+    Height = 14
+    Top = 40
+    Width = 13
+    Caption = '    '
+    ParentColor = False
+  end
+  object ButtonClearMicroThreads: TButton
+    Left = 10
+    Height = 25
+    Top = 102
+    Width = 104
+    Caption = 'Clear microthreads'
+    OnClick = ButtonClearMicroThreadsClick
+    TabOrder = 9
   end
   object Timer1: TTimer
     Interval = 100

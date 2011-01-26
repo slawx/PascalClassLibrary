@@ -10,97 +10,78 @@ uses
 
 type
 
-  { TTest }
+  { TMainForm }
 
-  TTest = class(TCoroutine)
-    procedure Execute; override;
-  end;
-
-  { TForm1 }
-
-  TForm1 = class(TForm)
-    Button1: TButton;
+  TMainForm = class(TForm)
+    ButtonSchedulerStartStop: TButton;
     Button2: TButton;
-    Button3: TButton;
-    Button4: TButton;
-    Button5: TButton;
-    Button6: TButton;
+    ButtonAddWorkers: TButton;
+    ButtonGetMaxThread: TButton;
+    ButtonShowThreadId: TButton;
+    ButtonClearMicroThreads: TButton;
     Label1: TLabel;
     Label2: TLabel;
     Label3: TLabel;
     Label4: TLabel;
+    Label5: TLabel;
+    Label6: TLabel;
     ListView1: TListView;
     Memo1: TMemo;
     SpinEdit1: TSpinEdit;
     SpinEdit2: TSpinEdit;
     Timer1: TTimer;
-    procedure Button1Click(Sender: TObject);
+    procedure ButtonSchedulerStartStopClick(Sender: TObject);
     procedure Button2Click(Sender: TObject);
-    procedure Button3Click(Sender: TObject);
-    procedure Button4Click(Sender: TObject);
-    procedure Button5Click(Sender: TObject);
-    procedure Button6Click(Sender: TObject);
+    procedure ButtonAddWorkersClick(Sender: TObject);
+    procedure ButtonGetMaxThreadClick(Sender: TObject);
+    procedure ButtonShowThreadIdClick(Sender: TObject);
+    procedure ButtonClearMicroThreadsClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure ListView1Data(Sender: TObject; Item: TListItem);
+    procedure SpinEdit2Change(Sender: TObject);
     procedure Timer1Timer(Sender: TObject);
   private
     procedure Worker(MicroThread: TMicroThread);
   public
     Scheduler: TMicroThreadScheduler;
-    Test: TTest;
   end;
 
 var
-  Form1: TForm1; 
+  MainForm: TMainForm;
 
 implementation
 
 { TTest }
 
-procedure TTest.Execute;
-var
-  I: Integer;
-begin
-//  for I := 0 to 100 do begin
-    Form1.Memo1.Lines.Add(IntToStr(I));
-      Sleep(10);
-      //raise Exception.Create('Test');
-      Yield;
-
-//  end;
-end;
-
 {$R *.lfm}
 
-{ TForm1 }
+{ TMainForm }
 
-procedure TForm1.FormCreate(Sender: TObject);
+procedure TMainForm.FormCreate(Sender: TObject);
 begin
   Scheduler := TMicroThreadScheduler.Create;
-  Test := TTest.Create;
   DoubleBuffered := True;
   ListView1.DoubleBuffered := True;
+  Label6.Caption := IntToStr(Scheduler.GetCPUCoreCount);
 end;
 
-procedure TForm1.Button1Click(Sender: TObject);
+procedure TMainForm.ButtonSchedulerStartStopClick(Sender: TObject);
 var
   I: Integer;
 begin
-  if Button1.Caption = 'Start scheduler' then begin
-    Button1.Caption := 'Stop scheduler';
+  if ButtonSchedulerStartStop.Caption = 'Start scheduler' then begin
+    ButtonSchedulerStartStop.Caption := 'Stop scheduler';
     Memo1.Clear;
-    Scheduler.ThreadPoolSize := SpinEdit2.Value;
-    Scheduler.Start;
+    Scheduler.Active := True;
   end else begin
-    Button1.Caption := 'Start scheduler';
-    Scheduler.Stop;
-    Scheduler.ThreadPoolSize := 0;
+    ButtonSchedulerStartStop.Caption := 'Start scheduler';
+    Scheduler.Active := False;
   end;
 end;
 
-procedure TForm1.Button2Click(Sender: TObject);
+procedure TMainForm.Button2Click(Sender: TObject);
 const
   MaxBlock = MaxInt - $f;
 type
@@ -153,21 +134,16 @@ begin
   //FrameAddr^.CallerAdr := FrameAddr2^.CallerAdr;
 end;
 
-procedure TForm1.Button3Click(Sender: TObject);
-begin
-  Test.Invoke;
-end;
-
-procedure TForm1.Button4Click(Sender: TObject);
+procedure TMainForm.ButtonAddWorkersClick(Sender: TObject);
 var
   I: Integer;
 begin
-  Scheduler.MicroThreads.Clear;
+  //Scheduler.FMicroThreads.Clear;
   for I := 0 to SpinEdit1.Value do
     Scheduler.AddMethod(Worker);
 end;
 
-procedure TForm1.Button5Click(Sender: TObject);
+procedure TMainForm.ButtonGetMaxThreadClick(Sender: TObject);
 var
   NewThread: TThread;
   I: Integer;
@@ -184,26 +160,34 @@ begin
   end;
 end;
 
-procedure TForm1.Button6Click(Sender: TObject);
+procedure TMainForm.ButtonShowThreadIdClick(Sender: TObject);
 begin
   ShowMessage(IntToStr(GetThreadID));
 end;
 
-procedure TForm1.FormClose(Sender: TObject; var CloseAction: TCloseAction);
+procedure TMainForm.ButtonClearMicroThreadsClick(Sender: TObject);
 begin
-  Scheduler.Stop;
+  try
+    Scheduler.MicroThreadsLock.Acquire;
+    Scheduler.MicroThreads.Clear;
+  finally
+    Scheduler.MicroThreadsLock.Release;
+  end;
 end;
 
-procedure TForm1.FormDestroy(Sender: TObject);
+procedure TMainForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
-  Test.Free;
+end;
+
+procedure TMainForm.FormDestroy(Sender: TObject);
+begin
   Scheduler.Free;
 end;
 
-procedure TForm1.ListView1Data(Sender: TObject; Item: TListItem);
+procedure TMainForm.ListView1Data(Sender: TObject; Item: TListItem);
 begin
   try
-    Scheduler.Lock.Acquire;
+    Scheduler.MicroThreadsLock.Acquire;
     if Item.Index < Scheduler.MicroThreads.Count then
     with TMicroThread(Scheduler.MicroThreads[Item.Index]) do begin
       Item.Caption := IntToStr(Id);
@@ -215,11 +199,16 @@ begin
       Item.SubItems.Add(IntToStr(Trunc(Completion * 100)) + '%');
     end;
   finally
-    Scheduler.Lock.Release;
+    Scheduler.MicroThreadsLock.Release;
   end;
 end;
 
-procedure TForm1.Timer1Timer(Sender: TObject);
+procedure TMainForm.SpinEdit2Change(Sender: TObject);
+begin
+  Scheduler.ThreadPoolSize := SpinEdit2.Value;
+end;
+
+procedure TMainForm.Timer1Timer(Sender: TObject);
 begin
   ListView1.Items.Count := Scheduler.MicroThreadCount;
   ListView1.Items[-1];
@@ -228,7 +217,7 @@ begin
     FloatToStr(Frac(Scheduler.GetNow / OneSecond));
 end;
 
-procedure TForm1.Worker(MicroThread: TMicroThread);
+procedure TMainForm.Worker(MicroThread: TMicroThread);
 var
   I: Integer;
   Q: Integer;
