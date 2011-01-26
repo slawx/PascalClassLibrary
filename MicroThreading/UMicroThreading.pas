@@ -274,17 +274,21 @@ begin
         // Restore microthread stack
         mov eax, StaticMicroThread
         mov edx, [eax].TMicroThread.FStackPointer
+        mov ecx, esp
         mov esp, edx
         push ebp // remember bp on micro thread stack for read back
+        push ecx
         mov edx, [eax].TMicroThread.FBasePointer
         mov ebp, edx
       end;
       StaticMicroThread.Execute;
       asm
+        pop edx
         pop ebp
+        mov esp, edx
       end;
       //FSelected.Method(FSelected);
-      StaticManager := FCurrentMicroThread.FManager;
+  (*    StaticManager := FCurrentMicroThread.FManager;
       asm
         // Restore FScheduler stack
         mov eax, StaticManager // Self is invalid before BP restore
@@ -293,6 +297,7 @@ begin
         mov edx, [eax].TMicroThreadManager.FBasePointer
         mov ebp, edx
       end;
+*)
       FCurrentMicroThread.FManager := nil;
       FCurrentMicroThread.FExecutionEndTime := CurrentTime;
       FCurrentMicroThread.FExecutionTime := FCurrentMicroThread.FExecutionTime +
@@ -560,7 +565,9 @@ procedure TMicroThreadScheduler.PoolThreadTerminated(Sender: TObject);
 begin
   try
     FThreadPoolLock.Acquire;
+    FThreadPool.OwnsObjects := False;
     FThreadPool.Delete(FThreadPool.IndexOf(Sender));
+    FThreadPool.OwnsObjects := True;
   finally
     FThreadPoolLock.Release;
   end;

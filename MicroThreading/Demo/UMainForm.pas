@@ -13,6 +13,7 @@ type
   { TMainForm }
 
   TMainForm = class(TForm)
+    Button1: TButton;
     Button2: TButton;
     ButtonAddWorkers: TButton;
     ButtonClearMicroThreads: TButton;
@@ -23,6 +24,7 @@ type
     GroupBox2: TGroupBox;
     Label1: TLabel;
     Label10: TLabel;
+    Label11: TLabel;
     Label2: TLabel;
     Label3: TLabel;
     Label4: TLabel;
@@ -41,6 +43,7 @@ type
     TabSheet3: TTabSheet;
     TimerRedraw: TTimer;
     TimerSchedulerStart: TTimer;
+    procedure Button1Click(Sender: TObject);
     procedure ButtonSchedulerStartStopClick(Sender: TObject);
     procedure Button2Click(Sender: TObject);
     procedure ButtonAddWorkersClick(Sender: TObject);
@@ -86,12 +89,17 @@ var
 begin
   if ButtonSchedulerStartStop.Caption = 'Start scheduler' then begin
     ButtonSchedulerStartStop.Caption := 'Stop scheduler';
-    Memo1.Clear;
+    Scheduler.ThreadPoolSize := SpinEdit2.Value;
     Scheduler.Active := True;
   end else begin
     ButtonSchedulerStartStop.Caption := 'Start scheduler';
     Scheduler.Active := False;
   end;
+end;
+
+procedure TMainForm.Button1Click(Sender: TObject);
+begin
+  Memo1.Clear;
 end;
 
 procedure TMainForm.Button2Click(Sender: TObject);
@@ -190,6 +198,7 @@ end;
 
 procedure TMainForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
+  Scheduler.Active := False;
 end;
 
 procedure TMainForm.FormDestroy(Sender: TObject);
