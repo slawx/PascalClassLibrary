@@ -6,30 +6,41 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  ComCtrls, ExtCtrls, Spin, UMicroThreading, Coroutine, DateUtils;
+  ComCtrls, ExtCtrls, Spin, UMicroThreading, Coroutine, DateUtils, UPlatform;
 
 type
 
   { TMainForm }
 
   TMainForm = class(TForm)
-    ButtonSchedulerStartStop: TButton;
     Button2: TButton;
     ButtonAddWorkers: TButton;
-    ButtonGetMaxThread: TButton;
-    ButtonShowThreadId: TButton;
     ButtonClearMicroThreads: TButton;
+    ButtonGetMaxThread: TButton;
+    ButtonSchedulerStartStop: TButton;
+    ButtonShowThreadId: TButton;
+    GroupBox1: TGroupBox;
+    GroupBox2: TGroupBox;
     Label1: TLabel;
+    Label10: TLabel;
     Label2: TLabel;
     Label3: TLabel;
     Label4: TLabel;
     Label5: TLabel;
     Label6: TLabel;
+    Label7: TLabel;
+    Label8: TLabel;
+    Label9: TLabel;
     ListView1: TListView;
     Memo1: TMemo;
+    PageControl1: TPageControl;
     SpinEdit1: TSpinEdit;
     SpinEdit2: TSpinEdit;
-    Timer1: TTimer;
+    TabSheet1: TTabSheet;
+    TabSheet2: TTabSheet;
+    TabSheet3: TTabSheet;
+    TimerRedraw: TTimer;
+    TimerSchedulerStart: TTimer;
     procedure ButtonSchedulerStartStopClick(Sender: TObject);
     procedure Button2Click(Sender: TObject);
     procedure ButtonAddWorkersClick(Sender: TObject);
@@ -39,9 +50,11 @@ type
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
+    procedure FormShow(Sender: TObject);
     procedure ListView1Data(Sender: TObject; Item: TListItem);
     procedure SpinEdit2Change(Sender: TObject);
-    procedure Timer1Timer(Sender: TObject);
+    procedure TimerRedrawTimer(Sender: TObject);
+    procedure TimerSchedulerStartTimer(Sender: TObject);
   private
     procedure Worker(MicroThread: TMicroThread);
   public
@@ -64,7 +77,7 @@ begin
   Scheduler := TMicroThreadScheduler.Create;
   DoubleBuffered := True;
   ListView1.DoubleBuffered := True;
-  Label6.Caption := IntToStr(Scheduler.GetCPUCoreCount);
+  Label6.Caption := IntToStr(GetLogicalProcessorCount);
 end;
 
 procedure TMainForm.ButtonSchedulerStartStopClick(Sender: TObject);
@@ -184,6 +197,10 @@ begin
   Scheduler.Free;
 end;
 
+procedure TMainForm.FormShow(Sender: TObject);
+begin
+end;
+
 procedure TMainForm.ListView1Data(Sender: TObject; Item: TListItem);
 begin
   try
@@ -197,6 +214,7 @@ begin
       Item.SubItems.Add(MicroThreadStateText[State]);
       Item.SubItems.Add(FloatToStr(ExecutionTime));
       Item.SubItems.Add(IntToStr(Trunc(Completion * 100)) + '%');
+      Item.SubItems.Add(IntToStr(StackUsed));
     end;
   finally
     Scheduler.MicroThreadsLock.Release;
@@ -208,13 +226,22 @@ begin
   Scheduler.ThreadPoolSize := SpinEdit2.Value;
 end;
 
-procedure TMainForm.Timer1Timer(Sender: TObject);
+procedure TMainForm.TimerRedrawTimer(Sender: TObject);
 begin
   ListView1.Items.Count := Scheduler.MicroThreadCount;
   ListView1.Items[-1];
   ListView1.Refresh;
-  Label2.Caption := DateTimeToStr(Scheduler.GetNow) + ' ' +
-    FloatToStr(Frac(Scheduler.GetNow / OneSecond));
+  Label2.Caption := DateTimeToStr(NowPrecise) + ' ' +
+    FloatToStr(Frac(NowPrecise / OneSecond));
+  Label9.Caption := IntToStr(Scheduler.ThreadPoolCount);
+  Label10.Caption := IntToStr(Scheduler.MicroThreadCount);
+end;
+
+procedure TMainForm.TimerSchedulerStartTimer(Sender: TObject);
+begin
+  TimerSchedulerStart.Enabled := False;
+  ButtonAddWorkers.Click;
+  ButtonSchedulerStartStop.Click;
 end;
 
 procedure TMainForm.Worker(MicroThread: TMicroThread);
@@ -225,10 +252,10 @@ const
   TotalSteps = 100;
 begin
   with MicroThread do begin
-    Memo1.Lines.Add('Worker ' + IntToStr(Id));
+    //Memo1.Lines.Add('Worker ' + IntToStr(Id));
     for I := 0 to TotalSteps - 1 do begin
       Q := 0;
-      while Q < 1000000 do Inc(Q);
+      while Q < 10000 do Inc(Q);
       //Memo1.Lines.Add(IntToStr(Id) + ': ' + IntToStr(I) + ' ' +
       //  FloatToStr(ExecutionTime));
       Completion := I / TotalSteps;

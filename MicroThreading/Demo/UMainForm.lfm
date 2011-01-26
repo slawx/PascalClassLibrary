@@ -1,187 +1,274 @@
 object MainForm: TMainForm
-  Left = 263
-  Height = 510
-  Top = 156
-  Width = 798
+  Left = 232
+  Height = 557
+  Top = 116
+  Width = 863
   Caption = 'MicroThreading demo'
-  ClientHeight = 510
-  ClientWidth = 798
+  ClientHeight = 557
+  ClientWidth = 863
   OnClose = FormClose
   OnCreate = FormCreate
   OnDestroy = FormDestroy
+  OnShow = FormShow
   LCLVersion = '0.9.31'
-  object ButtonSchedulerStartStop: TButton
-    Left = 9
-    Height = 25
-    Top = 13
-    Width = 103
-    Caption = 'Start scheduler'
-    OnClick = ButtonSchedulerStartStopClick
-    TabOrder = 0
-  end
-  object ListView1: TListView
-    Left = 310
-    Height = 483
-    Top = 24
-    Width = 481
-    Anchors = [akTop, akLeft, akRight, akBottom]
-    Columns = <    
-      item
-        Caption = 'Id'
-        Width = 40
-      end    
-      item
-        Caption = 'Name'
-      end    
-      item
-        Caption = 'Usage'
-      end    
-      item
-        Caption = 'Priority'
-      end    
-      item
-        Caption = 'State'
-        Width = 60
-      end    
-      item
-        Caption = 'Execution time'
-        Width = 70
-      end    
-      item
-        Caption = 'Completion'
-      end>
-    OwnerData = True
-    ReadOnly = True
-    RowSelect = True
-    TabOrder = 1
-    ViewStyle = vsReport
-    OnData = ListView1Data
-  end
-  object Label1: TLabel
-    Left = 312
-    Height = 14
+  object PageControl1: TPageControl
+    Left = 8
+    Height = 543
     Top = 8
-    Width = 74
-    Caption = 'Microthread list'
-    ParentColor = False
+    Width = 849
+    ActivePage = TabSheet2
+    Anchors = [akTop, akLeft, akRight, akBottom]
+    TabIndex = 1
+    TabOrder = 0
+    object TabSheet1: TTabSheet
+      Caption = 'Job control'
+      ClientHeight = 516
+      ClientWidth = 845
+      object ButtonAddWorkers: TButton
+        Left = 10
+        Height = 25
+        Top = 7
+        Width = 104
+        Caption = 'Add workers'
+        OnClick = ButtonAddWorkersClick
+        TabOrder = 0
+      end
+      object ButtonClearMicroThreads: TButton
+        Left = 10
+        Height = 25
+        Top = 37
+        Width = 140
+        Caption = 'Clear microthreads'
+        OnClick = ButtonClearMicroThreadsClick
+        TabOrder = 1
+      end
+      object Label4: TLabel
+        Left = 120
+        Height = 14
+        Top = 14
+        Width = 104
+        Caption = 'Microthread count:'
+        ParentColor = False
+      end
+      object SpinEdit1: TSpinEdit
+        Left = 224
+        Height = 21
+        Top = 11
+        Width = 74
+        MaxValue = 100000
+        MinValue = 1
+        TabOrder = 2
+        Value = 200
+      end
+      object Memo1: TMemo
+        Left = 382
+        Height = 267
+        Top = 14
+        Width = 294
+        Anchors = [akTop, akLeft, akBottom]
+        ScrollBars = ssAutoBoth
+        TabOrder = 3
+      end
+    end
+    object TabSheet2: TTabSheet
+      Caption = 'Scheduler state'
+      ClientHeight = 516
+      ClientWidth = 845
+      object ListView1: TListView
+        Left = 222
+        Height = 483
+        Top = 24
+        Width = 569
+        Anchors = [akTop, akLeft, akRight, akBottom]
+        Columns = <        
+          item
+            Caption = 'Id'
+            Width = 40
+          end        
+          item
+            Caption = 'Name'
+          end        
+          item
+            Caption = 'Usage'
+          end        
+          item
+            Caption = 'Priority'
+          end        
+          item
+            Caption = 'State'
+            Width = 60
+          end        
+          item
+            Caption = 'Execution time'
+            Width = 70
+          end        
+          item
+            Caption = 'Completion'
+          end        
+          item
+            Caption = 'Used stack'
+            Width = 178
+          end>
+        OwnerData = True
+        ReadOnly = True
+        RowSelect = True
+        TabOrder = 0
+        ViewStyle = vsReport
+        OnData = ListView1Data
+      end
+      object Label1: TLabel
+        Left = 222
+        Height = 14
+        Top = 7
+        Width = 85
+        Caption = 'Microthread list'
+        ParentColor = False
+      end
+      object GroupBox1: TGroupBox
+        Left = 6
+        Height = 81
+        Top = 143
+        Width = 205
+        Caption = 'State'
+        ClientHeight = 66
+        ClientWidth = 201
+        TabOrder = 1
+        object Label5: TLabel
+          Left = 9
+          Height = 14
+          Top = 4
+          Width = 135
+          Caption = 'Logical processor count:'
+          ParentColor = False
+        end
+        object Label6: TLabel
+          Left = 150
+          Height = 14
+          Top = 4
+          Width = 13
+          Caption = '    '
+          ParentColor = False
+        end
+        object Label7: TLabel
+          Left = 8
+          Height = 14
+          Top = 20
+          Width = 78
+          Caption = 'Thread count:'
+          ParentColor = False
+        end
+        object Label8: TLabel
+          Left = 9
+          Height = 14
+          Top = 36
+          Width = 107
+          Caption = 'Micro thread count:'
+          ParentColor = False
+        end
+        object Label9: TLabel
+          Left = 150
+          Height = 14
+          Top = 20
+          Width = 13
+          Caption = '    '
+          ParentColor = False
+        end
+        object Label10: TLabel
+          Left = 151
+          Height = 14
+          Top = 36
+          Width = 13
+          Caption = '    '
+          ParentColor = False
+        end
+      end
+      object GroupBox2: TGroupBox
+        Left = 6
+        Height = 126
+        Top = 7
+        Width = 206
+        Caption = 'Control'
+        ClientHeight = 111
+        ClientWidth = 202
+        TabOrder = 2
+        object ButtonSchedulerStartStop: TButton
+          Left = 8
+          Height = 25
+          Top = 7
+          Width = 103
+          Caption = 'Start scheduler'
+          OnClick = ButtonSchedulerStartStopClick
+          TabOrder = 0
+        end
+        object Label3: TLabel
+          Left = 8
+          Height = 14
+          Top = 46
+          Width = 78
+          Caption = 'Thread count:'
+          ParentColor = False
+        end
+        object SpinEdit2: TSpinEdit
+          Left = 96
+          Height = 21
+          Top = 39
+          Width = 74
+          OnChange = SpinEdit2Change
+          TabOrder = 1
+        end
+      end
+    end
+    object TabSheet3: TTabSheet
+      Caption = 'Testing'
+      ClientHeight = 516
+      ClientWidth = 845
+      object ButtonShowThreadId: TButton
+        Left = 14
+        Height = 25
+        Top = 47
+        Width = 147
+        Caption = 'Show thread id'
+        OnClick = ButtonShowThreadIdClick
+        TabOrder = 0
+      end
+      object ButtonGetMaxThread: TButton
+        Left = 14
+        Height = 25
+        Top = 79
+        Width = 147
+        Caption = 'Get max TThread count'
+        OnClick = ButtonGetMaxThreadClick
+        TabOrder = 1
+      end
+      object Label2: TLabel
+        Left = 78
+        Height = 14
+        Top = 135
+        Width = 38
+        Caption = 'Label2'
+        ParentColor = False
+      end
+      object Button2: TButton
+        Left = 14
+        Height = 25
+        Top = 15
+        Width = 147
+        Caption = 'Read stack frame info'
+        OnClick = Button2Click
+        TabOrder = 2
+      end
+    end
   end
-  object Memo1: TMemo
-    Left = 10
-    Height = 267
-    Top = 240
-    Width = 294
-    Anchors = [akTop, akLeft, akBottom]
-    ScrollBars = ssAutoBoth
-    TabOrder = 2
-  end
-  object Button2: TButton
-    Left = 224
-    Height = 25
-    Top = 208
-    Width = 75
-    Caption = 'Button2'
-    OnClick = Button2Click
-    TabOrder = 3
-  end
-  object Label2: TLabel
-    Left = 10
-    Height = 14
-    Top = 192
-    Width = 32
-    Caption = 'Label2'
-    ParentColor = False
-  end
-  object ButtonAddWorkers: TButton
-    Left = 10
-    Height = 25
-    Top = 72
-    Width = 104
-    Caption = 'Add workers'
-    OnClick = ButtonAddWorkersClick
-    TabOrder = 4
-  end
-  object SpinEdit1: TSpinEdit
-    Left = 224
-    Height = 21
-    Top = 76
-    Width = 74
-    MaxValue = 100000
-    MinValue = 1
-    TabOrder = 5
-    Value = 200
-  end
-  object ButtonGetMaxThread: TButton
-    Left = 168
-    Height = 25
-    Top = 160
-    Width = 131
-    Caption = 'Get max TThread count'
-    OnClick = ButtonGetMaxThreadClick
-    TabOrder = 6
-  end
-  object ButtonShowThreadId: TButton
-    Left = 40
-    Height = 25
-    Top = 160
-    Width = 123
-    Caption = 'Show thread id'
-    OnClick = ButtonShowThreadIdClick
-    TabOrder = 7
-  end
-  object SpinEdit2: TSpinEdit
-    Left = 224
-    Height = 21
-    Top = 13
-    Width = 74
-    OnChange = SpinEdit2Change
-    TabOrder = 8
-    Value = 1
-  end
-  object Label3: TLabel
-    Left = 120
-    Height = 14
-    Top = 20
-    Width = 69
-    Caption = 'Thread count:'
-    ParentColor = False
-  end
-  object Label4: TLabel
-    Left = 120
-    Height = 14
-    Top = 79
-    Width = 92
-    Caption = 'Microthread count:'
-    ParentColor = False
-  end
-  object Label5: TLabel
-    Left = 120
-    Height = 14
-    Top = 40
-    Width = 117
-    Caption = 'Logical processor count:'
-    ParentColor = False
-  end
-  object Label6: TLabel
-    Left = 248
-    Height = 14
-    Top = 40
-    Width = 13
-    Caption = '    '
-    ParentColor = False
-  end
-  object ButtonClearMicroThreads: TButton
-    Left = 10
-    Height = 25
-    Top = 102
-    Width = 104
-    Caption = 'Clear microthreads'
-    OnClick = ButtonClearMicroThreadsClick
-    TabOrder = 9
-  end
-  object Timer1: TTimer
+  object TimerRedraw: TTimer
     Interval = 100
-    OnTimer = Timer1Timer
-    left = 399
-    top = 87
+    OnTimer = TimerRedrawTimer
+    left = 427
+    top = 115
+  end
+  object TimerSchedulerStart: TTimer
+    Interval = 10
+    OnTimer = TimerSchedulerStartTimer
+    left = 429
+    top = 163
   end
 end

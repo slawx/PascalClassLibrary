@@ -1,3 +1,11 @@
+(* Not implemented yet
+- Stack limit checking
+- measurement of cpu usage by micro threads
+- microthread critical sections (no low level cpu blocking)
+- wait for single and multiple objects
+- micro thread priorty
+*)
+
 unit UMicroThreading;
 
 {$mode Delphi}{$H+}
@@ -6,9 +14,10 @@ unit UMicroThreading;
 interface
 
 uses
-  {$IFDEF Windows}Windows,{$ENDIF}
-  {$IFDEF Linux}BaseUnix, UnixUtil, Unix,{$ENDIF}
-  Classes, SysUtils, Contnrs, SyncObjs, DateUtils, Dialogs, Forms;
+  {$IFDEF UNIX}{$IFDEF UseCThreads}
+  cthreads,
+  {$ENDIF}{$ENDIF}
+  Classes, SysUtils, Contnrs, SyncObjs, DateUtils, Dialogs, Forms, UPlatform;
 
 const
   DefaultStackSize = $4000;
@@ -42,6 +51,7 @@ type
     FScheduler: TMicroThreadScheduler;
     FManager: TMicroThreadManager;
     FId: Integer;
+    function GetStackUsed: Integer;
   public
     Name: string;
     Priority: Integer;
@@ -68,6 +78,7 @@ type
     property Terminated: Boolean read FTerminated;
     property Scheduler: TMicroThreadScheduler read FScheduler;
     property Manager: TMicroThreadManager read FManager;
+    property StackUsed: Integer read GetStackUsed;
   end;
 
   TMicroThreadEvent = procedure(MicroThread: TMicroThread) of object;
@@ -79,17 +90,14 @@ type
     procedure Execute; override;
   end;
 
-  { TMicroThreadSchedulerPoolThread }
+  { TMicroThreadThread }
 
-  TMicroThreadSchedulerPoolThread = class(TThread)
+  TMicroThreadThread = class(TThread)
     Manager: TMicroThreadManager;
     procedure Execute; override;
     constructor Create(CreateSuspended: Boolean;
       const StackSize: SizeUInt = DefaultStackSize);
     destructor Destroy; override;
-  end;
-
-  TThreadPool = class(TObjectList)
   end;
 
   { TMicroThreadManager }
@@ -122,39 +130,39 @@ type
   TMicroThreadScheduler = class
   private
     FActive: Boolean;
-    FThreadPool: TThreadPool;
+    FThreadPool: TObjectList;
     FThreadPoolLock: TCriticalSection;
     FThreadPoolSize: Integer;
     FRoundRobinIndex: Integer;
     FLastId: Integer;
     FFrequency: Int64;
-    FTerminate: Boolean;
     FTerminated: Boolean;
     FMicroThreads: TObjectList; // TList<TMicroThread>
     FMainThreadManager: TMicroThreadManager;
     FMicroThreadsLock: TCriticalSection;
     FState: TMicroThreadSchedulerState;
     function GetMicroThreadCount: Integer;
+    function GetThreadPoolCount: Integer;
     function GetThreadPoolSize: Integer;
     procedure SetActive(const AValue: Boolean);
     procedure SetThreadPoolSize(const AValue: Integer);
     function GetNextMicroThread: TMicroThread;
-    procedure WaitFor;
     procedure Start;
     procedure Stop;
-    function ThreadPoolTerminated: Boolean;
+    procedure PoolThreadTerminated(Sender: TObject);
+    procedure UpdateThreadPoolSize;
   public
-    function GetNow: TDateTime;
     function Add(MicroThread: TMicroThread): Integer;
     function AddMethod(Method: TMicroThreadEvent): Integer;
-    function GetCPUCoreCount: Integer;
     constructor Create;
     destructor Destroy; override;
-    property MicroThreadCount: Integer read GetMicroThreadCount;
+    property ThreadPool: TObjectList read FThreadPool;
     property ThreadPoolSize: Integer read GetThreadPoolSize
       write SetThreadPoolSize;
+    property ThreadPoolCount: Integer read GetThreadPoolCount;
     property MicroThreads: TObjectList read FMicroThreads;
     property MicroThreadsLock: TCriticalSection read FMicroThreadsLock;
+    property MicroThreadCount: Integer read GetMicroThreadCount;
     property MainThreadManager: TMicroThreadManager read FMainThreadManager;
     property Active: Boolean read FActive write SetActive;
   end;
@@ -215,7 +223,7 @@ var
   I: Integer;
   CurrentTime: TDateTime;
 begin
-  CurrentTime := FScheduler.GetNow;
+  CurrentTime := NowPrecise;
   if Assigned(FCurrentMicroThread) then begin
     FCurrentMicroThread.FExecutionEndTime := CurrentTime;
     FCurrentMicroThread.FExecutionTime := FCurrentMicroThread.FExecutionTime +
@@ -267,7 +275,7 @@ begin
         mov eax, StaticMicroThread
         mov edx, [eax].TMicroThread.FStackPointer
         mov esp, edx
-        push ebp
+        push ebp // remember bp on micro thread stack for read back
         mov edx, [eax].TMicroThread.FBasePointer
         mov ebp, edx
       end;
@@ -335,9 +343,9 @@ begin
   inherited Destroy;
 end;
 
-{ TMicroThreadSchedulerPoolThread }
+{ TMicroThreadThread }
 
-procedure TMicroThreadSchedulerPoolThread.Execute;
+procedure TMicroThreadThread.Execute;
 var
   ExecutedCount: Integer;
 begin
@@ -353,14 +361,14 @@ begin
   end;
 end;
 
-constructor TMicroThreadSchedulerPoolThread.Create(CreateSuspended: Boolean;
+constructor TMicroThreadThread.Create(CreateSuspended: Boolean;
   const StackSize: SizeUInt);
 begin
   inherited;
   Manager := TMicroThreadManager.Create;
 end;
 
-destructor TMicroThreadSchedulerPoolThread.Destroy;
+destructor TMicroThreadThread.Destroy;
 begin
   Manager.Free;
   inherited Destroy;
@@ -376,6 +384,11 @@ end;
 
 
 { TMicroThread }
+
+function TMicroThread.GetStackUsed: Integer;
+begin
+  Result := FStack + FStackSize - FStackPointer;
+end;
 
 procedure TMicroThread.Execute;
 begin
@@ -397,7 +410,7 @@ end;
 
 procedure TMicroThread.Sleep(Duration: TDateTime);
 begin
-  FWakeUpTime := FScheduler.GetNow + Duration;
+  FWakeUpTime := NowPrecise + Duration;
   FState := tsSleeping;
   Yield;
 end;
@@ -460,32 +473,17 @@ end;
 
 { TMicroThreadScheduler }
 
-function TMicroThreadScheduler.GetNow: TDateTime;
-var
-  {$IFDEF Linux}T: TimeVal;{$ENDIF}
-  {$IFDEF Windows}TimerValue: Int64;{$ENDIF}
-begin
-  {$IFDEF Windows}
-  QueryPerformanceCounter(TimerValue);
-  //Result := Int64(TimeStampToMSecs(DateTimeToTimeStamp(Now)) * 1000) // an alternative Win32 timebase
-  Result := TimerValue / FFrequency;
-  {$ENDIF}
-
-  {$IFDEF Linux}
-  fpgettimeofday(@t, nil);
-   // Build a 64 bit microsecond tick from the seconds and microsecond longints
-  Result := t.tv_sec + t.tv_usec / 1000000;
-  {$ENDIF}
-
-  Result := (Trunc(Now / OneSecond) + Frac(Result)) * OneSecond;
-end;
-
 function TMicroThreadScheduler.Add(MicroThread: TMicroThread): Integer;
 begin
   Inc(FLastId);
   MicroThread.FScheduler := Self;
   MicroThread.FId := FLastId;
-  Result := FMicroThreads.Add(MicroThread);
+  try
+    FMicroThreadsLock.Acquire;
+    Result := FMicroThreads.Add(MicroThread);
+  finally
+    FMicroThreadsLock.Release;
+  end;
 end;
 
 function TMicroThreadScheduler.AddMethod(Method: TMicroThreadEvent): Integer;
@@ -498,24 +496,13 @@ begin
   Result := Add(NewMicroThread);
 end;
 
-function TMicroThreadScheduler.GetCPUCoreCount: Integer;
-var
-  SystemInfo: _SYSTEM_INFO;
-begin
-  GetSystemInfo(SystemInfo);
-  Result := SystemInfo.dwNumberOfProcessors;
-end;
-
 constructor TMicroThreadScheduler.Create;
 begin
   FTerminated := True;
   FMicroThreadsLock := TCriticalSection.Create;
   FMicroThreads := TObjectList.Create;
-  FThreadPool := TThreadPool.Create;
+  FThreadPool := TObjectList.Create;
   FThreadPoolLock := TCriticalSection.Create;
-  {$IFDEF Windows}
-  QueryPerformanceFrequency(FFrequency);
-  {$ENDIF}
   FRoundRobinIndex := -1;
   FMainThreadManager := TMicroThreadManager.Create;
   FMainThreadManager.FScheduler := Self;
@@ -537,14 +524,13 @@ var
   I: Integer;
 begin
   FTerminated := False;
-  FTerminate := False;
-  for I := 0 to FThreadPool.Count - 1 do
-    TMicroThreadSchedulerPoolThread(FThreadPool[I]).Start;
+  UpdateThreadPoolSize;
+  FState := ssRunning;
   repeat
     Executed := FMainThreadManager.Execute(10);
     Application.ProcessMessages;
     if Executed = 0 then Sleep(1);
-  until FTerminate;
+  until FState <> ssRunning;
   FTerminated := True;
 end;
 
@@ -552,32 +538,51 @@ procedure TMicroThreadScheduler.Stop;
 var
   I: Integer;
 begin
+  FState := ssTerminating;
   try
     FThreadPoolLock.Acquire;
     for I := 0 to FThreadPool.Count - 1 do begin
-      TMicroThreadSchedulerPoolThread(FThreadPool[I]).Terminate;
+      TMicroThreadThread(FThreadPool[I]).Terminate;
     end;
   finally
     FThreadPoolLock.Release;
   end;
-  FTerminate := True;
 
   // Wait for all thread managers to finish
   repeat
     Application.ProcessMessages;
     Sleep(1);
   until FTerminated and (ThreadPoolSize = 0);
+  FState := ssStopped;
 end;
 
-function TMicroThreadScheduler.ThreadPoolTerminated: Boolean;
-var
-  I: Integer;
+procedure TMicroThreadScheduler.PoolThreadTerminated(Sender: TObject);
 begin
   try
     FThreadPoolLock.Acquire;
-    I := 0;
-    while (I < FThreadPool.Count) and
-      (TMicroThreadSchedulerPoolThread(FThreadPool[I]).Terminated do
+    FThreadPool.Delete(FThreadPool.IndexOf(Sender));
+  finally
+    FThreadPoolLock.Release;
+  end;
+end;
+
+procedure TMicroThreadScheduler.UpdateThreadPoolSize;
+var
+  NewThread: TMicroThreadThread;
+begin
+  try
+    FThreadPoolLock.Acquire;
+    if FThreadPoolSize > FThreadPool.Count then begin
+      FThreadPool.Capacity := FThreadPoolSize;
+      while FThreadPool.Count < FThreadPoolSize do begin
+        NewThread := TMicroThreadThread.Create(True);
+        NewThread.Manager.FScheduler := Self;
+        NewThread.OnTerminate := PoolThreadTerminated;
+        ThreadPool.Add(NewThread);
+        NewThread.Resume;
+      end;
+    end else
+    ThreadPool.Count := FThreadPoolSize;
   finally
     FThreadPoolLock.Release;
   end;
@@ -588,7 +593,7 @@ var
   I: Integer;
   CurrentTime: TDateTime;
 begin
-  CurrentTime := GetNow;
+  CurrentTime := NowPrecise;
   Result := nil;
   try
     FMicroThreadsLock.Acquire;
@@ -628,6 +633,16 @@ begin
   end;
 end;
 
+function TMicroThreadScheduler.GetThreadPoolCount: Integer;
+begin
+  try
+    FThreadPoolLock.Acquire;
+    Result := FThreadPool.Count;
+  finally
+    FThreadPoolLock.Release;
+  end;
+end;
+
 function TMicroThreadScheduler.GetThreadPoolSize: Integer;
 begin
   Result := FThreadPoolSize;
@@ -644,11 +659,11 @@ end;
 procedure TMicroThreadScheduler.SetThreadPoolSize(const AValue: Integer);
 var
   I: Integer;
-  NewThread: TMicroThreadSchedulerPoolThread;
+  NewThread: TMicroThreadThread;
 begin
   FThreadPoolSize := AValue;
   if FState = ssRunning then
-    SetThreadPoolCount
+    UpdateThreadPoolSize;
 end;
 
 initialization

@@ -7,7 +7,7 @@ unit MicroThreading;
 interface
 
 uses
-  UMicroThreading, Coroutine, LazarusPackageIntf;
+  UMicroThreading, Coroutine, UPlatform, LazarusPackageIntf;
 
 implementation
 
