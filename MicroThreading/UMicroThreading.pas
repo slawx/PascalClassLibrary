@@ -33,38 +33,41 @@ type
     FStackPointer: Pointer;
     FStackSize: Integer;
     FBasePointer: Pointer;
-    FWakeupTime: TDateTime;
+    FWakeUpTime: TDateTime;
     FTerminated: Boolean;
     FExecuted: Boolean; // At first go through Execute method, then switch context
     FFinished: Boolean;
+    FSuspended: Boolean;
+    FState: TMicroThreadState;
+    FScheduler: TMicroThreadScheduler;
+    FManager: TMicroThreadManager;
+    FId: Integer;
   public
-    Id: Integer;
     Name: string;
     Priority: Integer;
-    State: TMicroThreadState;
-    Manager: TMicroThreadManager;
-    Scheduler: TMicroThreadScheduler;
     Completion: Single; // Can be used for progress information in range <0, 1>
     procedure Execute; virtual;
 
-    // Internal execution
     procedure Yield;
     procedure Sleep(Duration: TDateTime);
     function WaitForSignal(Signal: TEvent): TWaitResult;
-
-    // External execution
     procedure WaitFor;
     procedure Terminate;
     procedure Start;
-    procedure Stop;
+    procedure Resume;
+    procedure Suspend;
 
     constructor Create(CreateSuspended: Boolean;
       const StackSize: SizeUInt = DefaultStackSize);
     destructor Destroy; override;
+    property Id: Integer read FId;
+    property State: TMicroThreadState read FState;
     property ExecutionTime: TDateTime read FExecutionTime;
     property FreeOnTerminate: Boolean read FFreeOnTerminate
       write FFreeOnTerminate;
     property Terminated: Boolean read FTerminated;
+    property Scheduler: TMicroThreadScheduler read FScheduler;
+    property Manager: TMicroThreadManager read FManager;
   end;
 
   TMicroThreadEvent = procedure(MicroThread: TMicroThread) of object;
@@ -79,13 +82,14 @@ type
   { TMicroThreadSchedulerPoolThread }
 
   TMicroThreadSchedulerPoolThread = class(TThread)
-    Scheduler: TMicroThreadScheduler;
     Manager: TMicroThreadManager;
     procedure Execute; override;
+    constructor Create(CreateSuspended: Boolean;
+      const StackSize: SizeUInt = DefaultStackSize);
+    destructor Destroy; override;
   end;
 
   TThreadPool = class(TObjectList)
-
   end;
 
   { TMicroThreadManager }
@@ -115,9 +119,8 @@ type
   private
     ThreadPool: TThreadPool;
     RoundRobinIndex: Integer;
-    LastId: Integer;
+    FLastId: Integer;
     FFrequency: Int64;
-    FThreadPoolSize: Integer;
     FTerminated: Boolean;
     function GetMicroThreadCount: Integer;
     function GetThreadPoolSize: Integer;
@@ -170,7 +173,7 @@ begin
         (CurrentStack <= (TMicroThread(MicroThreads[I]).FStack +
         TMicroThread(MicroThreads[I]).FStackSize))) do Inc(I);
       if I < MicroThreads.Count then begin
-        Result := TMicroThread(MicroThreads[I]).Id;
+        Result := TMicroThread(MicroThreads[I]).FId;
       end else Result := -1;
     finally
       Lock.Release;
@@ -193,15 +196,15 @@ end;
 procedure TMicroThreadManager.Yield;
 var
   I: Integer;
-  Time: TDateTime;
+  CurrentTime: TDateTime;
 begin
-  Time := Scheduler.GetNow;
+  CurrentTime := Scheduler.GetNow;
   if Assigned(CurrentMicroThread) then begin
-    CurrentMicroThread.FExecutionEndTime := Time;
+    CurrentMicroThread.FExecutionEndTime := CurrentTime;
     CurrentMicroThread.FExecutionTime := CurrentMicroThread.FExecutionTime +
       (CurrentMicroThread.FExecutionEndTime - CurrentMicroThread.FExecutionStartTime);
-    if CurrentMicroThread.State = tsRunning then
-      CurrentMicroThread.State := tsWaiting;
+    if CurrentMicroThread.FState = tsRunning then
+      CurrentMicroThread.FState := tsWaiting;
     StaticMicroThread := CurrentMicroThread;
     asm
       // Store microthread stack
@@ -211,7 +214,7 @@ begin
       mov edx, ebp
       mov [eax].TMicroThread.FBasePointer, edx
     end;
-    StaticManager := CurrentMicroThread.Manager;
+    StaticManager := CurrentMicroThread.FManager;
     asm
       // Restore scheduler stack
       mov eax, StaticManager  // Self is invalid before BP restore
@@ -220,14 +223,14 @@ begin
       mov edx, [eax].TMicroThreadManager.FBasePointer
       mov ebp, edx
     end;
-    CurrentMicroThread.Manager := nil;
+    CurrentMicroThread.FManager := nil;
     CurrentMicroThread := nil;
   end;
 
   CurrentMicroThread := Scheduler.GetNextMicroThread;
 
   if Assigned(CurrentMicroThread) and (FExecutedCount < FExecuteCount) then begin
-    CurrentMicroThread.Manager := Self;
+    CurrentMicroThread.FManager := Self;
     Inc(FExecutedCount);
     asm
       // Store scheduler stack
@@ -239,8 +242,8 @@ begin
     end;
     if not CurrentMicroThread.FExecuted then begin
       CurrentMicroThread.FExecuted := True;
-      CurrentMicroThread.State := tsRunning;
-      CurrentMicroThread.FExecutionStartTime := Time;
+      CurrentMicroThread.FState := tsRunning;
+      CurrentMicroThread.FExecutionStartTime := CurrentTime;
       StaticMicroThread := CurrentMicroThread;
       asm
         // Restore microthread stack
@@ -256,7 +259,7 @@ begin
         pop ebp
       end;
       //FSelected.Method(FSelected);
-      StaticManager := CurrentMicroThread.Manager;
+      StaticManager := CurrentMicroThread.FManager;
       asm
         // Restore scheduler stack
         mov eax, StaticManager // Self is invalid before BP restore
@@ -265,8 +268,8 @@ begin
         mov edx, [eax].TMicroThreadManager.FBasePointer
         mov ebp, edx
       end;
-      CurrentMicroThread.Manager := nil;
-      CurrentMicroThread.FExecutionEndTime := Time;
+      CurrentMicroThread.FManager := nil;
+      CurrentMicroThread.FExecutionEndTime := CurrentTime;
       CurrentMicroThread.FExecutionTime := CurrentMicroThread.FExecutionTime +
        (CurrentMicroThread.FExecutionEndTime - CurrentMicroThread.FExecutionStartTime);
       CurrentMicroThread.FFinished := True;
@@ -284,8 +287,8 @@ begin
     end else
     if CurrentMicroThread.State = tsWaiting then begin
       // Execute selected thread
-      CurrentMicroThread.State := tsRunning;
-      CurrentMicroThread.FExecutionStartTime := Time;
+      CurrentMicroThread.FState := tsRunning;
+      CurrentMicroThread.FExecutionStartTime := CurrentTime;
       FTempPointer := CurrentMicroThread.FStackPointer;
       asm
         // Restore microthread stack
@@ -333,6 +336,19 @@ begin
   end;
 end;
 
+constructor TMicroThreadSchedulerPoolThread.Create(CreateSuspended: Boolean;
+  const StackSize: SizeUInt);
+begin
+  inherited;
+  Manager := TMicroThreadManager.Create;
+end;
+
+destructor TMicroThreadSchedulerPoolThread.Destroy;
+begin
+  Manager.Free;
+  inherited Destroy;
+end;
+
 { TMicroThreadMethod }
 
 procedure TMicroThreadMethod.Execute;
@@ -351,7 +367,7 @@ end;
 
 procedure TMicroThread.Yield;
 begin
-  Manager.Yield;
+  FManager.Yield;
 end;
 
 procedure TMicroThread.WaitFor;
@@ -364,8 +380,8 @@ end;
 
 procedure TMicroThread.Sleep(Duration: TDateTime);
 begin
-  FWakeUpTime := Scheduler.GetNow + Duration;
-  State := tsSleeping;
+  FWakeUpTime := FScheduler.GetNow + Duration;
+  FState := tsSleeping;
   Yield;
 end;
 
@@ -386,14 +402,21 @@ begin
   FStackPointer := FBasePointer - 20;
   FExecutionTime := 0;
   FTerminated := False;
-  if CreateSuspended then
-    State := tsSuspended;
+  if CreateSuspended then begin
+    FState := tsSuspended;
+    FSuspended := True;
+  end else FSuspended := False;
   FFreeOnTerminate := True;
 end;
 
 procedure TMicroThread.Terminate;
 begin
   FTerminated := True;
+end;
+
+procedure TMicroThread.Start;
+begin
+  FState := tsWaiting;
 end;
 
 destructor TMicroThread.Destroy;
@@ -404,14 +427,17 @@ begin
   inherited Destroy;
 end;
 
-procedure TMicroThread.Start;
+procedure TMicroThread.Resume;
 begin
-  State := tsWaiting;
+  FSuspended := False;
+  if FState = tsSuspended then
+    FState := tsWaiting;
 end;
 
-procedure TMicroThread.Stop;
+procedure TMicroThread.Suspend;
 begin
-  State := tsSuspended;
+  FSuspended := True;
+  //Yield;
 end;
 
 
@@ -439,9 +465,9 @@ end;
 
 function TMicroThreadScheduler.Add(MicroThread: TMicroThread): Integer;
 begin
-  Inc(LastId);
-  MicroThread.Scheduler := Self;
-  MicroThread.Id := LastId;
+  Inc(FLastId);
+  MicroThread.FScheduler := Self;
+  MicroThread.FId := FLastId;
   Result := MicroThreads.Add(MicroThread);
 end;
 
@@ -451,7 +477,7 @@ var
 begin
   NewMicroThread := TMicroThreadMethod.Create(False);
   NewMicroThread.Method := Method;
-  NewMicroThread.Scheduler := Self;
+  NewMicroThread.FScheduler := Self;
   Result := Add(NewMicroThread);
 end;
 
@@ -481,8 +507,11 @@ end;
 procedure TMicroThreadScheduler.Start;
 var
   Executed: Integer;
+  I: Integer;
 begin
   FTerminated := False;
+  for I := 0 to ThreadPool.Count - 1 do
+    TMicroThreadSchedulerPoolThread(ThreadPool[I]).Start;
   repeat
     Executed := MainThreadManager.Execute(10);
     Application.ProcessMessages;
@@ -491,14 +520,20 @@ begin
 end;
 
 procedure TMicroThreadScheduler.Stop;
+var
+  I: Integer;
 begin
+  for I := 0 to ThreadPool.Count - 1 do
+    TMicroThreadSchedulerPoolThread(ThreadPool[I]).Terminate;
   FTerminated := True;
 end;
 
 function TMicroThreadScheduler.GetNextMicroThread: TMicroThread;
 var
   I: Integer;
+  CurrentTime: TDateTime;
 begin
+  CurrentTime := GetNow;
   Result := nil;
   try
     Lock.Acquire;
@@ -509,9 +544,9 @@ begin
     while (I < MicroThreads.Count) and
      (TMicroThread(MicroThreads[RoundRobinIndex]).State <> tsWaiting) do begin
       // WakeUp sleeping threads
-      if (TMicroThread(MicroThreads[RoundRobinIndex]).State = tsSleeping) and
-        (TMicroThread(MicroThreads[RoundRobinIndex]).FWakeupTime < Time) then
-          TMicroThread(MicroThreads[RoundRobinIndex]).State := tsWaiting else
+      if (TMicroThread(MicroThreads[RoundRobinIndex]).FState = tsSleeping) and
+        (TMicroThread(MicroThreads[RoundRobinIndex]).FWakeupTime < CurrentTime) then
+          TMicroThread(MicroThreads[RoundRobinIndex]).FState := tsWaiting else
       begin
         // Go to next thread
         Inc(I);
@@ -540,12 +575,23 @@ end;
 
 function TMicroThreadScheduler.GetThreadPoolSize: Integer;
 begin
-  Result := FThreadPoolSize;
+  Result := ThreadPool.Count;
 end;
 
 procedure TMicroThreadScheduler.SetThreadPoolSize(const AValue: Integer);
+var
+  I: Integer;
+  NewThread: TMicroThreadSchedulerPoolThread;
 begin
-  FThreadPoolSize := AValue;
+  if AValue > ThreadPool.Count then begin
+    ThreadPool.Capacity := AValue;
+    while ThreadPool.Count < AValue do begin
+      NewThread := TMicroThreadSchedulerPoolThread.Create(True);
+      NewThread.Manager.Scheduler := Self;
+      ThreadPool.Add(NewThread);
+    end;
+  end else
+  ThreadPool.Count := AValue;
 end;
 
 initialization

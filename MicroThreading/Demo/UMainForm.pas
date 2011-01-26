@@ -27,9 +27,12 @@ type
     Button6: TButton;
     Label1: TLabel;
     Label2: TLabel;
+    Label3: TLabel;
+    Label4: TLabel;
     ListView1: TListView;
     Memo1: TMemo;
     SpinEdit1: TSpinEdit;
+    SpinEdit2: TSpinEdit;
     Timer1: TTimer;
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
@@ -88,10 +91,12 @@ begin
   if Button1.Caption = 'Start scheduler' then begin
     Button1.Caption := 'Stop scheduler';
     Memo1.Clear;
+    Scheduler.ThreadPoolSize := SpinEdit2.Value;
     Scheduler.Start;
   end else begin
     Button1.Caption := 'Start scheduler';
     Scheduler.Stop;
+    Scheduler.ThreadPoolSize := 0;
   end;
 end;
 
@@ -226,14 +231,17 @@ end;
 procedure TForm1.Worker(MicroThread: TMicroThread);
 var
   I: Integer;
+  Q: Integer;
 const
   TotalSteps = 100;
 begin
   with MicroThread do begin
     Memo1.Lines.Add('Worker ' + IntToStr(Id));
     for I := 0 to TotalSteps - 1 do begin
-      Memo1.Lines.Add(IntToStr(Id) + ': ' + IntToStr(I) + ' ' +
-        FloatToStr(ExecutionTime));
+      Q := 0;
+      while Q < 1000000 do Inc(Q);
+      //Memo1.Lines.Add(IntToStr(Id) + ': ' + IntToStr(I) + ' ' +
+      //  FloatToStr(ExecutionTime));
       Completion := I / TotalSteps;
       //Sleep(1 * Id * OneMillisecond);
       Yield;
