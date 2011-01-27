@@ -25,6 +25,7 @@ type
     Label1: TLabel;
     Label10: TLabel;
     Label11: TLabel;
+    Label12: TLabel;
     Label2: TLabel;
     Label3: TLabel;
     Label4: TLabel;
@@ -38,6 +39,7 @@ type
     PageControl1: TPageControl;
     SpinEdit1: TSpinEdit;
     SpinEdit2: TSpinEdit;
+    SpinEdit3: TSpinEdit;
     TabSheet1: TTabSheet;
     TabSheet2: TTabSheet;
     TabSheet3: TTabSheet;
@@ -56,11 +58,13 @@ type
     procedure FormShow(Sender: TObject);
     procedure ListView1Data(Sender: TObject; Item: TListItem);
     procedure SpinEdit2Change(Sender: TObject);
+    procedure SpinEdit3Change(Sender: TObject);
     procedure TimerRedrawTimer(Sender: TObject);
     procedure TimerSchedulerStartTimer(Sender: TObject);
   private
     procedure Worker(MicroThread: TMicroThread);
   public
+    Iterations: Integer;
     Scheduler: TMicroThreadScheduler;
   end;
 
@@ -208,6 +212,7 @@ end;
 
 procedure TMainForm.FormShow(Sender: TObject);
 begin
+  Iterations := SpinEdit3.Value;
 end;
 
 procedure TMainForm.ListView1Data(Sender: TObject; Item: TListItem);
@@ -235,9 +240,15 @@ begin
   Scheduler.ThreadPoolSize := SpinEdit2.Value;
 end;
 
+procedure TMainForm.SpinEdit3Change(Sender: TObject);
+begin
+  Iterations := SpinEdit3.Value;
+end;
+
 procedure TMainForm.TimerRedrawTimer(Sender: TObject);
 begin
-  ListView1.Items.Count := Scheduler.MicroThreadCount;
+  if ListView1.Items.Count <> Scheduler.MicroThreadCount then
+    ListView1.Items.Count := Scheduler.MicroThreadCount;
   ListView1.Items[-1];
   ListView1.Refresh;
   Label2.Caption := DateTimeToStr(NowPrecise) + ' ' +
@@ -257,17 +268,15 @@ procedure TMainForm.Worker(MicroThread: TMicroThread);
 var
   I: Integer;
   Q: Integer;
-const
-  TotalSteps = 100;
 begin
   with MicroThread do begin
     //Memo1.Lines.Add('Worker ' + IntToStr(Id));
-    for I := 0 to TotalSteps - 1 do begin
+    for I := 0 to Iterations - 1 do begin
       Q := 0;
-      while Q < 10000 do Inc(Q);
+      while Q < 100 do Inc(Q);
       //Memo1.Lines.Add(IntToStr(Id) + ': ' + IntToStr(I) + ' ' +
       //  FloatToStr(ExecutionTime));
-      Completion := I / TotalSteps;
+      Completion := I / Iterations;
       //Sleep(1 * Id * OneMillisecond);
       Yield;
     end;

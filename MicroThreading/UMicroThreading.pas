@@ -51,7 +51,9 @@ type
     FScheduler: TMicroThreadScheduler;
     FManager: TMicroThreadManager;
     FId: Integer;
+    procedure CallExecute;
     function GetStackUsed: Integer;
+    procedure SetScheduler(const AValue: TMicroThreadScheduler);
   public
     Name: string;
     Priority: Integer;
@@ -76,7 +78,8 @@ type
     property FreeOnTerminate: Boolean read FFreeOnTerminate
       write FFreeOnTerminate;
     property Terminated: Boolean read FTerminated;
-    property Scheduler: TMicroThreadScheduler read FScheduler;
+    property Scheduler: TMicroThreadScheduler read FScheduler
+      write SetScheduler;
     property Manager: TMicroThreadManager read FManager;
     property StackUsed: Integer read GetStackUsed;
   end;
@@ -111,7 +114,6 @@ type
     FExecuteCount: Integer;
     FExecutedCount: Integer;
     FTerminated: Boolean;
-    FTempPointer: Pointer;
     FCurrentMicroThread: TMicroThread;
     FScheduler: TMicroThreadScheduler;
     function Execute(Count: Integer): Integer;
@@ -176,10 +178,10 @@ const
 
 implementation
 
-var
-  StaticManagers: TObjectList; // TList<TMicroThreadManager>;
-  StaticManager: TMicroThreadManager;
-  StaticMicroThread: TMicroThread;
+//var
+//  StaticManagers: TObjectList; // TList<TMicroThreadManager>;
+//  StaticManager: TMicroThreadManager;
+//  StaticMicroThread: TMicroThread;
 
 function GetMicroThreadId: Integer;
 var
@@ -230,22 +232,19 @@ begin
       (FCurrentMicroThread.FExecutionEndTime - FCurrentMicroThread.FExecutionStartTime);
     if FCurrentMicroThread.FState = tsRunning then
       FCurrentMicroThread.FState := tsWaiting;
-    StaticMicroThread := FCurrentMicroThread;
     asm
       // Store microthread stack
-      mov eax, StaticMicroThread
+      mov ecx, Self
+      mov eax, [ecx].TMicroThreadManager.FCurrentMicroThread
       mov edx, esp
       mov [eax].TMicroThread.FStackPointer, edx
       mov edx, ebp
       mov [eax].TMicroThread.FBasePointer, edx
-    end;
-    StaticManager := FCurrentMicroThread.FManager;
-    asm
+
       // Restore FScheduler stack
-      mov eax, StaticManager  // Self is invalid before BP restore
-      mov edx, [eax].TMicroThreadManager.FStackPointer
+      mov edx, [ecx].TMicroThreadManager.FStackPointer
       mov esp, edx
-      mov edx, [eax].TMicroThreadManager.FBasePointer
+      mov edx, [ecx].TMicroThreadManager.FBasePointer
       mov ebp, edx
     end;
     FCurrentMicroThread.FManager := nil;
@@ -269,10 +268,10 @@ begin
       FCurrentMicroThread.FExecuted := True;
       FCurrentMicroThread.FState := tsRunning;
       FCurrentMicroThread.FExecutionStartTime := CurrentTime;
-      StaticMicroThread := FCurrentMicroThread;
       asm
         // Restore microthread stack
-        mov eax, StaticMicroThread
+        mov ecx, Self
+        mov eax, [ecx].TMicroThreadManager.FCurrentMicroThread
         mov edx, [eax].TMicroThread.FStackPointer
         mov ecx, esp
         mov esp, edx
@@ -280,9 +279,13 @@ begin
         push ecx
         mov edx, [eax].TMicroThread.FBasePointer
         mov ebp, edx
-      end;
-      StaticMicroThread.Execute;
-      asm
+        // We want to call virtual method Execute
+        // but virtual methods can be called only statically
+        // Then static method CallExecute is calling virtual method Execute
+        call TMicroThread.CallExecute
+//      end;
+//      StaticMicroThread.Execute;
+//      asm
         pop edx
         pop ebp
         mov esp, edx
@@ -319,17 +322,13 @@ begin
       // Execute selected thread
       FCurrentMicroThread.FState := tsRunning;
       FCurrentMicroThread.FExecutionStartTime := CurrentTime;
-      FTempPointer := FCurrentMicroThread.FStackPointer;
       asm
         // Restore microthread stack
-        mov eax, Self
-        mov edx, [eax].TMicroThreadManager.FTempPointer
+        mov ecx, Self
+        mov eax, [ecx].TMicroThreadManager.FCurrentMicroThread
+        mov edx, [eax].TMicroThread.FStackPointer
         mov esp, edx
-      end;
-      FTempPointer := FCurrentMicroThread.FBasePointer;
-      asm
-        mov eax, Self
-        mov edx, [eax].TMicroThreadManager.FTempPointer
+        mov edx, [eax].TMicroThread.FBasePointer
         mov ebp, edx
       end;
     end;
@@ -390,9 +389,19 @@ end;
 
 { TMicroThread }
 
+procedure TMicroThread.CallExecute;
+begin
+  Execute;
+end;
+
 function TMicroThread.GetStackUsed: Integer;
 begin
   Result := FStack + FStackSize - FStackPointer;
+end;
+
+procedure TMicroThread.SetScheduler(const AValue: TMicroThreadScheduler);
+begin
+  FScheduler := AValue;
 end;
 
 procedure TMicroThread.Execute;
@@ -434,7 +443,7 @@ begin
   FStackSize := StackSize;
   FStack := GetMem(FStackSize);
   FBasePointer := FStack + FStackSize;
-  FStackPointer := FBasePointer - 20;
+  FStackPointer := FBasePointer - SizeOf(Pointer);
   FExecutionTime := 0;
   FTerminated := False;
   if CreateSuspended then begin
@@ -675,13 +684,13 @@ end;
 
 initialization
 
-StaticManagers := TObjectList.Create;
+//StaticManagers := TObjectList.Create;
 MainScheduler := TMicroThreadScheduler.Create;
 
 finalization
 
 MainScheduler.Free;
-StaticManagers.Free;
+//StaticManagers.Free;
 
 end.
 
