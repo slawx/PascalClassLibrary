@@ -16,9 +16,9 @@ object MainForm: TMainForm
     Height = 519
     Top = 8
     Width = 761
-    ActivePage = TabSheet1
+    ActivePage = TabSheet2
     Anchors = [akTop, akLeft, akRight, akBottom]
-    TabIndex = 0
+    TabIndex = 1
     TabOrder = 0
     object TabSheet1: TTabSheet
       Caption = 'Job control'
@@ -57,8 +57,9 @@ object MainForm: TMainForm
         Width = 74
         MaxValue = 100000
         MinValue = 1
+        TabStop = False
         TabOrder = 2
-        Value = 200
+        Value = 2
       end
       object Memo1: TMemo
         Left = 316
@@ -94,7 +95,7 @@ object MainForm: TMainForm
         MaxValue = 1000000000
         OnChange = SpinEdit3Change
         TabOrder = 5
-        Value = 100000
+        Value = 1000000
       end
     end
     object TabSheet2: TTabSheet
@@ -242,6 +243,15 @@ object MainForm: TMainForm
           Width = 74
           OnChange = SpinEdit2Change
           TabOrder = 1
+        end
+        object CheckBoxUseMainThread: TCheckBox
+          Left = 10
+          Height = 17
+          Top = 64
+          Width = 98
+          Caption = 'Use main thread'
+          OnChange = CheckBoxUseMainThreadChange
+          TabOrder = 2
         end
       end
     end

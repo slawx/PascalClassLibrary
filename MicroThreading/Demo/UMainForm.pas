@@ -20,6 +20,7 @@ type
     ButtonGetMaxThread: TButton;
     ButtonSchedulerStartStop: TButton;
     ButtonShowThreadId: TButton;
+    CheckBoxUseMainThread: TCheckBox;
     GroupBox1: TGroupBox;
     GroupBox2: TGroupBox;
     Label1: TLabel;
@@ -52,6 +53,7 @@ type
     procedure ButtonGetMaxThreadClick(Sender: TObject);
     procedure ButtonShowThreadIdClick(Sender: TObject);
     procedure ButtonClearMicroThreadsClick(Sender: TObject);
+    procedure CheckBoxUseMainThreadChange(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -164,7 +166,7 @@ var
   I: Integer;
 begin
   //Scheduler.FMicroThreads.Clear;
-  for I := 0 to SpinEdit1.Value do
+  for I := 0 to SpinEdit1.Value - 1 do
     Scheduler.AddMethod(Worker);
 end;
 
@@ -198,6 +200,11 @@ begin
   finally
     Scheduler.MicroThreadsLock.Release;
   end;
+end;
+
+procedure TMainForm.CheckBoxUseMainThreadChange(Sender: TObject);
+begin
+  Scheduler.UseMainThread := CheckBoxUseMainThread.Checked;
 end;
 
 procedure TMainForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
