@@ -68,6 +68,7 @@ type
     procedure Start;
     procedure Resume;
     procedure Suspend;
+    procedure Synchronize(AMethod: TThreadMethod);
 
     constructor Create(CreateSuspended: Boolean;
       const StackSize: SizeUInt = DefaultStackSize);
@@ -117,10 +118,12 @@ type
     FTerminated: Boolean;
     FCurrentMicroThread: TMicroThread;
     FScheduler: TMicroThreadScheduler;
+    FThread: TMicroThreadThread;
     function Execute(Count: Integer): Integer;
   public
     Id: Integer;
     procedure Yield;
+    procedure Synchronize(AMethod: TThreadMethod);
     constructor Create;
     destructor Destroy; override;
     property Scheduler: TMicroThreadScheduler read FScheduler;
@@ -331,9 +334,16 @@ begin
   end;
 end;
 
+procedure TMicroThreadManager.Synchronize(AMethod: TThreadMethod);
+begin
+  if Assigned(FThread) then
+    FThread.Synchronize(FThread, AMethod);
+end;
+
 constructor TMicroThreadManager.Create;
 begin
   FCurrentMicroThread := nil;
+  FThread := nil;
 end;
 
 destructor TMicroThreadManager.Destroy;
@@ -488,6 +498,11 @@ begin
   //Yield;
 end;
 
+procedure TMicroThread.Synchronize(AMethod: TThreadMethod);
+begin
+  FManager.Synchronize(AMethod);
+end;
+
 
 { TMicroThreadScheduler }
 
@@ -537,6 +552,7 @@ begin
   FMainThreadStarter.Free;
   FMainThreadManager.Free;
   FThreadPool.Free;
+  FThreadPoolLock.Free;
   FMicroThreads.Free;
   FMicroThreadsLock.Free;
   inherited Destroy;
@@ -547,6 +563,8 @@ begin
   FMainThreadTerminated := False;
   UpdateThreadPoolSize;
   FState := ssRunning;
+  if FUseMainThread then
+    FMainThreadStarter.Enabled := True;
 end;
 
 procedure TMicroThreadScheduler.Stop;
@@ -598,7 +616,8 @@ begin
       while FThreadPool.Count < FThreadPoolSize do begin
         NewThread := TMicroThreadThread.Create(True);
         NewThread.Manager.FScheduler := Self;
-        NewThread.Manager.Id := FThreadPool.Count;
+        NewThread.Manager.Id := FThreadPool.Count + 1;
+        NewThread.Manager.FThread := NewThread;
         NewThread.OnTerminate := PoolThreadTerminated;
         ThreadPool.Add(NewThread);
         NewThread.Resume;

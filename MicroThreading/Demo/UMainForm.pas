@@ -65,6 +65,7 @@ type
     procedure TimerSchedulerStartTimer(Sender: TObject);
   private
     procedure Worker(MicroThread: TMicroThread);
+    procedure WorkerDoWrite;
   public
     Iterations: Integer;
     Scheduler: TMicroThreadScheduler;
@@ -281,6 +282,7 @@ begin
     for I := 0 to Iterations - 1 do begin
       Q := 0;
       while Q < 100 do Inc(Q);
+      Synchronize(WorkerDoWrite);
       //Memo1.Lines.Add(IntToStr(Id) + ': ' + IntToStr(I) + ' ' +
       //  FloatToStr(ExecutionTime));
       Completion := I / Iterations;
@@ -288,6 +290,11 @@ begin
       Yield;
     end;
   end;
+end;
+
+procedure TMainForm.WorkerDoWrite;
+begin
+  Memo1.Lines.Add('.');
 end;
 
 end.

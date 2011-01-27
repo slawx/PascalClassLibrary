@@ -16,7 +16,7 @@
     <Description Value="Micro threading subsystem. "/>
     <License Value="GNU/GPL"/>
     <Version Minor="1"/>
-    <Files Count="3">
+    <Files Count="4">
       <Item1>
         <Filename Value="UMicroThreading.pas"/>
         <UnitName Value="UMicroThreading"/>
@@ -29,6 +29,10 @@
         <Filename Value="UPlatform.pas"/>
         <UnitName Value="UPlatform"/>
       </Item3>
+      <Item4>
+        <Filename Value="ReadMe.txt"/>
+        <Type Value="Binary"/>
+      </Item4>
     </Files>
     <Type Value="RunAndDesignTime"/>
     <RequiredPkgs Count="2">
