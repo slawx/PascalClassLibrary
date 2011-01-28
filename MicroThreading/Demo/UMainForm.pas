@@ -27,6 +27,7 @@ type
     Label10: TLabel;
     Label11: TLabel;
     Label12: TLabel;
+    Label13: TLabel;
     Label2: TLabel;
     Label3: TLabel;
     Label4: TLabel;
@@ -36,6 +37,7 @@ type
     Label8: TLabel;
     Label9: TLabel;
     ListView1: TListView;
+    ListView2: TListView;
     Memo1: TMemo;
     PageControl1: TPageControl;
     SpinEdit1: TSpinEdit;
@@ -57,6 +59,7 @@ type
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure ListView1Data(Sender: TObject; Item: TListItem);
+    procedure ListView2Data(Sender: TObject; Item: TListItem);
     procedure SpinEdit2Change(Sender: TObject);
     procedure SpinEdit3Change(Sender: TObject);
     procedure TimerRedrawTimer(Sender: TObject);
@@ -239,6 +242,20 @@ begin
   end;
 end;
 
+procedure TMainForm.ListView2Data(Sender: TObject; Item: TListItem);
+begin
+  if Item.Index < MainScheduler.ThreadPoolCount then
+  try
+    MainScheduler.ThreadPoolLock.Acquire;
+    with TMicroThreadThread(MainScheduler.ThreadPool[Item.Index]) do begin
+      Item.Caption := IntToStr(ThreadID);
+      Item.SubItems.Add(MicroThreadThreadStateText[State]);
+    end;
+  finally
+    MainScheduler.ThreadPoolLock.Release;
+  end;
+end;
+
 procedure TMainForm.SpinEdit2Change(Sender: TObject);
 begin
   MainScheduler.ThreadPoolSize := SpinEdit2.Value;
@@ -255,6 +272,12 @@ begin
     ListView1.Items.Count := MainScheduler.MicroThreadCount;
   ListView1.Items[-1];
   ListView1.Refresh;
+
+  if ListView2.Items.Count <> MainScheduler.ThreadPoolCount then
+    ListView2.Items.Count := MainScheduler.ThreadPoolCount;
+  ListView2.Items[-1];
+  ListView2.Refresh;
+
   Label2.Caption := DateTimeToStr(NowPrecise) + ' ' +
     FloatToStr(Frac(NowPrecise / OneSecond));
   Label9.Caption := IntToStr(MainScheduler.ThreadPoolCount);

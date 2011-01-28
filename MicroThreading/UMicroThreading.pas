@@ -118,11 +118,13 @@ type
     procedure Execute; override;
   end;
 
+  TMicroThreadThreadState = (ttsReady, ttsRunning, ttsTerminated);
+
   { TMicroThreadThread }
 
   TMicroThreadThread = class(TThread)
     Manager: TMicroThreadManager;
-    ExecuteTerminated: Boolean;
+    State: TMicroThreadThreadState;
     procedure Execute; override;
     constructor Create(CreateSuspended: Boolean;
       const StackSize: SizeUInt = DefaultStackSize);
@@ -139,7 +141,6 @@ type
     FBasePointer: Pointer;
     FExecuteCount: Integer;
     FExecutedCount: Integer;
-    FTerminated: Boolean;
     FCurrentMicroThread: TMicroThread;
     FScheduler: TMicroThreadScheduler;
     FThread: TMicroThreadThread;
@@ -186,7 +187,6 @@ type
     procedure SetUseMainThread(const AValue: Boolean);
     procedure Start;
     procedure Stop;
-    procedure PoolThreadTerminated(Sender: TObject);
     procedure UpdateThreadPoolSize;
     procedure MainThreadStart(Sender: TObject);
   public
@@ -196,6 +196,7 @@ type
     constructor Create;
     destructor Destroy; override;
     property ThreadPool: TObjectList read FThreadPool;
+    property ThreadPoolLock: TCriticalSection read FThreadPoolLock;
     property ThreadPoolSize: Integer read GetThreadPoolSize
       write SetThreadPoolSize;
     property ThreadPoolCount: Integer read GetThreadPoolCount;
@@ -215,6 +216,8 @@ const
     'Running', 'Blocked', 'Suspended');
   MicroThreadBlockStateText: array[TMicroThreadBlockState] of string = ('None',
     'Sleeping', 'WaitFor', 'Terminating', 'Terminated');
+  MicroThreadThreadStateText: array[TMicroThreadThreadState] of string = (
+    'Ready', 'Running', 'Terminated');
 
 function GetCurrentMicroThread: TMicroThread;
 procedure MTSleep(Duration: TDateTime);
@@ -502,7 +505,9 @@ begin
   inherited Execute;
   try
     repeat
-      ExecutedCount := Manager.Execute(100000);
+      State := ttsRunning;
+      ExecutedCount := Manager.Execute(10);
+      State := ttsReady;
       if ExecutedCount = 0 then Sleep(1);
     until Terminated;
   except
@@ -515,17 +520,12 @@ constructor TMicroThreadThread.Create(CreateSuspended: Boolean;
   const StackSize: SizeUInt);
 begin
   inherited;
-  ExecuteTerminated := False;
+  State := ttsReady;
   Manager := TMicroThreadManager.Create;
 end;
 
 destructor TMicroThreadThread.Destroy;
 begin
-  Terminate;
-  repeat
-    Sleep(1);
-  until ExecuteTerminated;
-
   Manager.Free;
   inherited Destroy;
 end;
@@ -757,39 +757,25 @@ var
   I: Integer;
 begin
   FState := ssTerminating;
+  // Wait for all thread managers to finish
   try
     FThreadPoolLock.Acquire;
     for I := 0 to FThreadPool.Count - 1 do begin
       TMicroThreadThread(FThreadPool[I]).Terminate;
     end;
+    for I := 0 to FThreadPool.Count - 1 do begin
+      TMicroThreadThread(FThreadPool[I]).WaitFor;
+    end;
+    FThreadPool.Clear;
   finally
     FThreadPoolLock.Release;
   end;
 
-  // Wait for all thread managers to finish
   repeat
     Application.ProcessMessages;
     Sleep(1);
-  until FMainThreadTerminated and (ThreadPoolCount = 0);
+  until FMainThreadTerminated or (not FUseMainThread);
   FState := ssStopped;
-end;
-
-procedure TMicroThreadScheduler.PoolThreadTerminated(Sender: TObject);
-var
-  ThreadIndex: Integer;
-begin
-  TMicroThreadThread(Sender).ExecuteTerminated := True;
-  try
-    FThreadPoolLock.Acquire;
-    FThreadPool.OwnsObjects := False;
-    ThreadIndex := FThreadPool.IndexOf(Sender);
-    if ThreadIndex = -1 then
-      raise Exception.Create('Trying to free thread not found in thread pool');
-    FThreadPool.Delete(ThreadIndex);
-  finally
-    FThreadPool.OwnsObjects := True;
-    FThreadPoolLock.Release;
-  end;
 end;
 
 procedure TMicroThreadScheduler.UpdateThreadPoolSize;
@@ -805,13 +791,15 @@ begin
         NewThread.Manager.FScheduler := Self;
         NewThread.Manager.FId := FThreadPool.Count + 1;
         NewThread.Manager.FThread := NewThread;
-        NewThread.OnTerminate := PoolThreadTerminated;
-        NewThread.FreeOnTerminate := True;
+        //NewThread.OnTerminate := PoolThreadTerminated;
+        NewThread.FreeOnTerminate := False;
         ThreadPool.Add(NewThread);
         NewThread.Resume;
       end;
     end else begin
       while FThreadPool.Count > FThreadPoolSize do begin
+        TMicroThreadThread(FThreadPool[FThreadPool.Count - 1]).Terminate;
+        TMicroThreadThread(FThreadPool[FThreadPool.Count - 1]).WaitFor;
         FThreadPool.Delete(FThreadPool.Count - 1);
       end;
     end;
@@ -945,9 +933,6 @@ begin
 end;
 
 procedure TMicroThreadScheduler.SetThreadPoolSize(const AValue: Integer);
-var
-  I: Integer;
-  NewThread: TMicroThreadThread;
 begin
   FThreadPoolSize := AValue;
   if FState = ssRunning then

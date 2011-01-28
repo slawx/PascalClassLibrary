@@ -21,13 +21,13 @@ object MainForm: TMainForm
     TabOrder = 0
     object TabSheet2: TTabSheet
       Caption = 'Scheduler state'
-      ClientHeight = 493
-      ClientWidth = 794
+      ClientHeight = 492
+      ClientWidth = 798
       object ListView1: TListView
         Left = 222
-        Height = 460
+        Height = 459
         Top = 24
-        Width = 567
+        Width = 571
         Anchors = [akTop, akLeft, akRight, akBottom]
         Columns = <        
           item
@@ -75,8 +75,8 @@ object MainForm: TMainForm
         Left = 222
         Height = 14
         Top = 7
-        Width = 74
-        Caption = 'Microthread list'
+        Width = 76
+        Caption = 'Microthreads:'
         ParentColor = False
       end
       object GroupBox1: TGroupBox
@@ -85,14 +85,14 @@ object MainForm: TMainForm
         Top = 143
         Width = 205
         Caption = 'State'
-        ClientHeight = 63
+        ClientHeight = 66
         ClientWidth = 201
         TabOrder = 1
         object Label5: TLabel
           Left = 9
           Height = 14
           Top = 4
-          Width = 117
+          Width = 135
           Caption = 'Logical processor count:'
           ParentColor = False
         end
@@ -108,7 +108,7 @@ object MainForm: TMainForm
           Left = 8
           Height = 14
           Top = 20
-          Width = 69
+          Width = 78
           Caption = 'Thread count:'
           ParentColor = False
         end
@@ -116,7 +116,7 @@ object MainForm: TMainForm
           Left = 9
           Height = 14
           Top = 36
-          Width = 95
+          Width = 107
           Caption = 'Micro thread count:'
           ParentColor = False
         end
@@ -143,7 +143,7 @@ object MainForm: TMainForm
         Top = 7
         Width = 206
         Caption = 'Control'
-        ClientHeight = 108
+        ClientHeight = 111
         ClientWidth = 202
         TabOrder = 2
         object ButtonSchedulerStartStop: TButton
@@ -159,7 +159,7 @@ object MainForm: TMainForm
           Left = 8
           Height = 14
           Top = 46
-          Width = 69
+          Width = 78
           Caption = 'Thread count:'
           ParentColor = False
         end
@@ -173,19 +173,46 @@ object MainForm: TMainForm
         end
         object CheckBoxUseMainThread: TCheckBox
           Left = 10
-          Height = 17
+          Height = 20
           Top = 64
-          Width = 98
+          Width = 112
           Caption = 'Use main thread'
           OnChange = CheckBoxUseMainThreadChange
           TabOrder = 2
         end
       end
+      object ListView2: TListView
+        Left = 6
+        Height = 236
+        Top = 247
+        Width = 206
+        Anchors = [akTop, akLeft, akBottom]
+        Columns = <        
+          item
+            Caption = 'Id'
+          end        
+          item
+            Caption = 'State'
+            Width = 135
+          end>
+        OwnerData = True
+        TabOrder = 3
+        ViewStyle = vsReport
+        OnData = ListView2Data
+      end
+      object Label13: TLabel
+        Left = 7
+        Height = 14
+        Top = 233
+        Width = 50
+        Caption = 'Threads:'
+        ParentColor = False
+      end
     end
     object TabSheet1: TTabSheet
       Caption = 'Job control'
-      ClientHeight = 493
-      ClientWidth = 794
+      ClientHeight = 492
+      ClientWidth = 798
       object ButtonAddWorkers: TButton
         Left = 10
         Height = 25
@@ -262,8 +289,8 @@ object MainForm: TMainForm
     end
     object TabSheet3: TTabSheet
       Caption = 'Testing'
-      ClientHeight = 493
-      ClientWidth = 753
+      ClientHeight = 492
+      ClientWidth = 798
       object ButtonShowThreadId: TButton
         Left = 14
         Height = 25
