@@ -15,9 +15,9 @@ object MainForm: TMainForm
     Height = 519
     Top = 8
     Width = 802
-    ActivePage = TabSheet2
+    ActivePage = TabSheet1
     Anchors = [akTop, akLeft, akRight, akBottom]
-    TabIndex = 0
+    TabIndex = 1
     TabOrder = 0
     object TabSheet2: TTabSheet
       Caption = 'Scheduler state'
@@ -136,6 +136,22 @@ object MainForm: TMainForm
           Caption = '    '
           ParentColor = False
         end
+        object Label15: TLabel
+          Left = 9
+          Height = 14
+          Top = 52
+          Width = 83
+          Caption = 'Main thread id:'
+          ParentColor = False
+        end
+        object Label16: TLabel
+          Left = 142
+          Height = 14
+          Top = 52
+          Width = 13
+          Caption = '    '
+          ParentColor = False
+        end
       end
       object GroupBox2: TGroupBox
         Left = 6
@@ -225,7 +241,7 @@ object MainForm: TMainForm
       object ButtonClearMicroThreads: TButton
         Left = 10
         Height = 25
-        Top = 74
+        Top = 223
         Width = 104
         Caption = 'Clear jobs'
         OnClick = ButtonClearMicroThreadsClick
@@ -235,7 +251,7 @@ object MainForm: TMainForm
         Left = 124
         Height = 14
         Top = 14
-        Width = 34
+        Width = 37
         Caption = 'Count:'
         ParentColor = False
       end
@@ -252,7 +268,7 @@ object MainForm: TMainForm
       end
       object Memo1: TMemo
         Left = 316
-        Height = 244
+        Height = 243
         Top = 14
         Width = 294
         Anchors = [akTop, akLeft, akBottom]
@@ -260,9 +276,9 @@ object MainForm: TMainForm
         TabOrder = 3
       end
       object Button1: TButton
-        Left = 12
+        Left = 230
         Height = 25
-        Top = 138
+        Top = 239
         Width = 75
         Caption = 'Clear memo'
         OnClick = Button1Click
@@ -272,7 +288,7 @@ object MainForm: TMainForm
         Left = 123
         Height = 14
         Top = 38
-        Width = 52
+        Width = 57
         Caption = 'Iterations:'
         ParentColor = False
       end
@@ -285,6 +301,87 @@ object MainForm: TMainForm
         OnChange = SpinEdit3Change
         TabOrder = 5
         Value = 10000000
+      end
+      object GroupBox3: TGroupBox
+        Left = 10
+        Height = 137
+        Top = 74
+        Width = 292
+        Caption = 'Do inside jobs'
+        ClientHeight = 122
+        ClientWidth = 288
+        TabOrder = 6
+        object CheckBox1: TCheckBox
+          Left = 4
+          Height = 20
+          Top = 9
+          Width = 76
+          Caption = 'Use sleep'
+          OnChange = CheckBox1Change
+          TabOrder = 0
+        end
+        object SpinEdit4: TSpinEdit
+          Left = 149
+          Height = 21
+          Top = 8
+          Width = 90
+          MaxValue = 100000
+          TabOrder = 1
+          Value = 100
+        end
+        object Label14: TLabel
+          Left = 242
+          Height = 14
+          Top = 15
+          Width = 17
+          Caption = 'ms'
+          ParentColor = False
+        end
+        object CheckBox2: TCheckBox
+          Left = 5
+          Height = 20
+          Top = 32
+          Width = 126
+          Caption = 'Write test to memo'
+          OnChange = CheckBox2Change
+          TabOrder = 2
+        end
+        object CheckBox3: TCheckBox
+          Left = 5
+          Height = 20
+          Top = 56
+          Width = 98
+          Caption = 'Wait for event'
+          OnChange = CheckBox3Change
+          TabOrder = 3
+        end
+        object Button3: TButton
+          Left = 226
+          Height = 25
+          Top = 51
+          Width = 51
+          Caption = 'Signal'
+          OnClick = Button3Click
+          TabOrder = 4
+        end
+        object SpinEdit5: TSpinEdit
+          Left = 130
+          Height = 21
+          Top = 51
+          Width = 70
+          MaxValue = 100000
+          OnChange = CheckBox3Change
+          TabOrder = 5
+          Value = 100
+        end
+        object Label17: TLabel
+          Left = 202
+          Height = 14
+          Top = 56
+          Width = 17
+          Caption = 'ms'
+          ParentColor = False
+        end
       end
     end
     object TabSheet3: TTabSheet

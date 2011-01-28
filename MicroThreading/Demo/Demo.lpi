@@ -38,7 +38,7 @@
         <PackageName Value="LCL"/>
       </Item2>
     </RequiredPackages>
-    <Units Count="65">
+    <Units Count="67">
       <Unit0>
         <Filename Value="Demo.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -46,7 +46,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="34" Y="16"/>
-        <UsageCount Value="86"/>
+        <UsageCount Value="89"/>
       </Unit0>
       <Unit1>
         <Filename Value="UMainForm.pas"/>
@@ -54,11 +54,11 @@
         <ComponentName Value="MainForm"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UMainForm"/>
-        <EditorIndex Value="4"/>
+        <EditorIndex Value="5"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="247"/>
-        <CursorPos X="1" Y="261"/>
-        <UsageCount Value="86"/>
+        <TopLine Value="351"/>
+        <CursorPos X="54" Y="366"/>
+        <UsageCount Value="89"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit1>
@@ -68,9 +68,9 @@
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="175"/>
-        <CursorPos X="1" Y="190"/>
-        <UsageCount Value="45"/>
+        <TopLine Value="319"/>
+        <CursorPos X="9" Y="330"/>
+        <UsageCount Value="46"/>
         <Loaded Value="True"/>
       </Unit2>
       <Unit3>
@@ -143,9 +143,9 @@
         <Filename Value="/usr/share/fpcsrc/2.4.0/rtl/inc/systemh.inc"/>
         <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="896"/>
-        <CursorPos X="10" Y="911"/>
-        <UsageCount Value="10"/>
+        <TopLine Value="469"/>
+        <CursorPos X="3" Y="484"/>
+        <UsageCount Value="12"/>
         <Loaded Value="True"/>
       </Unit11>
       <Unit12>
@@ -193,11 +193,11 @@
       </Unit17>
       <Unit18>
         <Filename Value="/usr/share/fpcsrc/2.4.0/rtl/objpas/classes/classesh.inc"/>
-        <EditorIndex Value="2"/>
+        <EditorIndex Value="3"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="50" Y="9"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="12"/>
         <Loaded Value="True"/>
       </Unit18>
       <Unit19>
@@ -409,11 +409,11 @@
       <Unit48>
         <Filename Value="../UPlatform.pas"/>
         <UnitName Value="UPlatform"/>
-        <EditorIndex Value="3"/>
+        <EditorIndex Value="4"/>
         <WindowIndex Value="0"/>
         <TopLine Value="23"/>
         <CursorPos X="31" Y="38"/>
-        <UsageCount Value="25"/>
+        <UsageCount Value="26"/>
         <Loaded Value="True"/>
       </Unit48>
       <Unit49>
@@ -535,127 +535,145 @@
         <CursorPos X="1" Y="2673"/>
         <UsageCount Value="15"/>
       </Unit64>
+      <Unit65>
+        <Filename Value="/usr/share/fpcsrc/2.4.0/rtl/inc/system.inc"/>
+        <EditorIndex Value="2"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="671"/>
+        <CursorPos X="1" Y="673"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+      </Unit65>
+      <Unit66>
+        <Filename Value="/usr/share/fpcsrc/2.4.0/rtl/inc/objpash.inc"/>
+        <EditorIndex Value="6"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="160"/>
+        <CursorPos X="23" Y="175"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+      </Unit66>
     </Units>
     <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
         <Filename Value="../UMicroThreading.pas"/>
-        <Caret Line="531" Column="1" TopLine="515"/>
+        <Caret Line="615" Column="1" TopLine="599"/>
       </Position1>
       <Position2>
         <Filename Value="../UMicroThreading.pas"/>
-        <Caret Line="532" Column="1" TopLine="515"/>
+        <Caret Line="614" Column="1" TopLine="599"/>
       </Position2>
       <Position3>
         <Filename Value="../UMicroThreading.pas"/>
-        <Caret Line="954" Column="1" TopLine="939"/>
+        <Caret Line="615" Column="1" TopLine="599"/>
       </Position3>
       <Position4>
         <Filename Value="../UMicroThreading.pas"/>
-        <Caret Line="822" Column="1" TopLine="807"/>
+        <Caret Line="614" Column="1" TopLine="599"/>
       </Position4>
       <Position5>
         <Filename Value="../UMicroThreading.pas"/>
-        <Caret Line="824" Column="1" TopLine="807"/>
+        <Caret Line="615" Column="1" TopLine="599"/>
       </Position5>
       <Position6>
         <Filename Value="../UMicroThreading.pas"/>
-        <Caret Line="955" Column="1" TopLine="940"/>
+        <Caret Line="614" Column="1" TopLine="599"/>
       </Position6>
       <Position7>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="262" Column="1" TopLine="247"/>
+        <Filename Value="../UMicroThreading.pas"/>
+        <Caret Line="615" Column="1" TopLine="599"/>
       </Position7>
       <Position8>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="261" Column="1" TopLine="247"/>
+        <Filename Value="../UMicroThreading.pas"/>
+        <Caret Line="614" Column="1" TopLine="599"/>
       </Position8>
       <Position9>
         <Filename Value="../UMicroThreading.pas"/>
-        <Caret Line="816" Column="1" TopLine="801"/>
+        <Caret Line="615" Column="1" TopLine="599"/>
       </Position9>
       <Position10>
         <Filename Value="../UMicroThreading.pas"/>
-        <Caret Line="777" Column="1" TopLine="756"/>
+        <Caret Line="616" Column="1" TopLine="599"/>
       </Position10>
       <Position11>
         <Filename Value="../UMicroThreading.pas"/>
-        <Caret Line="760" Column="1" TopLine="754"/>
+        <Caret Line="618" Column="1" TopLine="599"/>
       </Position11>
       <Position12>
         <Filename Value="../UMicroThreading.pas"/>
-        <Caret Line="762" Column="1" TopLine="754"/>
+        <Caret Line="620" Column="1" TopLine="599"/>
       </Position12>
       <Position13>
         <Filename Value="../UMicroThreading.pas"/>
-        <Caret Line="763" Column="1" TopLine="754"/>
+        <Caret Line="325" Column="3" TopLine="321"/>
       </Position13>
       <Position14>
         <Filename Value="../UMicroThreading.pas"/>
-        <Caret Line="764" Column="1" TopLine="754"/>
+        <Caret Line="321" Column="69" TopLine="319"/>
       </Position14>
       <Position15>
         <Filename Value="../UMicroThreading.pas"/>
-        <Caret Line="768" Column="2" TopLine="754"/>
+        <Caret Line="326" Column="1" TopLine="319"/>
       </Position15>
       <Position16>
         <Filename Value="../UMicroThreading.pas"/>
-        <Caret Line="767" Column="1" TopLine="754"/>
+        <Caret Line="327" Column="1" TopLine="319"/>
       </Position16>
       <Position17>
         <Filename Value="../UMicroThreading.pas"/>
-        <Caret Line="768" Column="1" TopLine="754"/>
+        <Caret Line="411" Column="22" TopLine="403"/>
       </Position17>
       <Position18>
         <Filename Value="../UMicroThreading.pas"/>
-        <Caret Line="769" Column="1" TopLine="754"/>
+        <Caret Line="863" Column="10" TopLine="841"/>
       </Position18>
       <Position19>
         <Filename Value="../UMicroThreading.pas"/>
-        <Caret Line="768" Column="1" TopLine="754"/>
+        <Caret Line="861" Column="1" TopLine="841"/>
       </Position19>
       <Position20>
         <Filename Value="../UMicroThreading.pas"/>
-        <Caret Line="770" Column="22" TopLine="754"/>
+        <Caret Line="862" Column="1" TopLine="841"/>
       </Position20>
       <Position21>
         <Filename Value="../UMicroThreading.pas"/>
-        <Caret Line="760" Column="1" TopLine="754"/>
+        <Caret Line="863" Column="1" TopLine="841"/>
       </Position21>
       <Position22>
         <Filename Value="../UMicroThreading.pas"/>
-        <Caret Line="762" Column="1" TopLine="754"/>
+        <Caret Line="861" Column="1" TopLine="841"/>
       </Position22>
       <Position23>
         <Filename Value="../UMicroThreading.pas"/>
-        <Caret Line="767" Column="1" TopLine="754"/>
+        <Caret Line="843" Column="33" TopLine="841"/>
       </Position23>
       <Position24>
         <Filename Value="../UMicroThreading.pas"/>
-        <Caret Line="768" Column="1" TopLine="754"/>
+        <Caret Line="325" Column="5" TopLine="319"/>
       </Position24>
       <Position25>
         <Filename Value="../UMicroThreading.pas"/>
-        <Caret Line="770" Column="1" TopLine="754"/>
+        <Caret Line="326" Column="1" TopLine="319"/>
       </Position25>
       <Position26>
         <Filename Value="../UMicroThreading.pas"/>
-        <Caret Line="772" Column="1" TopLine="754"/>
+        <Caret Line="327" Column="1" TopLine="319"/>
       </Position26>
       <Position27>
         <Filename Value="../UMicroThreading.pas"/>
-        <Caret Line="776" Column="1" TopLine="754"/>
+        <Caret Line="328" Column="1" TopLine="319"/>
       </Position27>
       <Position28>
         <Filename Value="../UMicroThreading.pas"/>
-        <Caret Line="777" Column="1" TopLine="754"/>
+        <Caret Line="329" Column="1" TopLine="319"/>
       </Position28>
       <Position29>
         <Filename Value="../UMicroThreading.pas"/>
-        <Caret Line="778" Column="1" TopLine="754"/>
+        <Caret Line="328" Column="1" TopLine="319"/>
       </Position29>
       <Position30>
         <Filename Value="../UMicroThreading.pas"/>
-        <Caret Line="782" Column="1" TopLine="782"/>
+        <Caret Line="329" Column="1" TopLine="319"/>
       </Position30>
     </JumpHistory>
   </ProjectOptions>
@@ -695,6 +713,16 @@
     </Other>
   </CompilerOptions>
   <Debugging>
+    <BreakPoints Count="2">
+      <Item1>
+        <Source Value="../UMicroThreading.pas"/>
+        <Line Value="869"/>
+      </Item1>
+      <Item2>
+        <Source Value="../UMicroThreading.pas"/>
+        <Line Value="325"/>
+      </Item2>
+    </BreakPoints>
     <Watches Count="2">
       <Item1>
         <Expression Value="TMicroThread(MainForm.Scheduler.FMicroThreads[0]).FStackPointer"/>

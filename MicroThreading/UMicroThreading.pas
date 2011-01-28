@@ -177,6 +177,7 @@ type
     FState: TMicroThreadSchedulerState;
     FUseMainThread: Boolean;
     FMainThreadStarter: TTimer;
+    FEvents: TObjectList;
     function GetMicroThreadCount: Integer;
     function GetThreadPoolCount: Integer;
     function GetThreadPoolSize: Integer;
@@ -321,9 +322,17 @@ procedure TMicroThreadEvent.SetEvent;
 var
   I: Integer;
 begin
-  for I := 0 to FMicroThreads.Count - 1 do
-    TMicroThread(FMicroThreads[I]).FStatePending := tsWaiting;
-  if not FAutoReset then FSignaled := True;
+  try
+    MainScheduler.FMicroThreadsLock.Acquire;
+    for I := 0 to FMicroThreads.Count - 1 do
+    with TMicroThread(FMicroThreads[I]) do begin
+      if (FState = tsBlocked) and (FBlockState = tbsWaitFor) then
+        FState := tsWaiting;
+    end;
+    if not FAutoReset then FSignaled := True;
+  finally
+    MainScheduler.FMicroThreadsLock.Release;
+  end;
 end;
 
 procedure TMicroThreadEvent.ResetEvent;
@@ -341,13 +350,16 @@ end;
 
 constructor TMicroThreadEvent.Create;
 begin
+  FAutoReset := True;
   FMicroThreads := TObjectList.Create;
   FMicroThreads.OwnsObjects := False;
   FMicroThreadsLock := TCriticalSection.Create;
+  MainScheduler.FEvents.Add(Self);
 end;
 
 destructor TMicroThreadEvent.Destroy;
 begin
+  MainScheduler.FEvents.Delete(MainScheduler.FEvents.IndexOf(Self));
   FMicroThreadsLock.Free;
   FMicroThreads.Free;
   inherited Destroy;
@@ -398,8 +410,6 @@ begin
       mov ebp, ebx
     end;
     FCurrentMicroThread.CheckStack;
-    if FCurrentMicroThread = nil then
-      raise Exception.Create('x');
     FScheduler.ReleaseMicroThread(FCurrentMicroThread);
   end;
 
@@ -587,7 +597,8 @@ procedure TMicroThread.Yield;
 begin
   if not Assigned(FManager) then
     raise Exception.Create('Manager reference lost');
-  FStatePending := tsWaiting;
+  if FStatePending = tsNone then
+    FStatePending := tsWaiting;
   FManager.Yield;
 end;
 
@@ -612,12 +623,12 @@ begin
   try
     Event.FMicroThreadsLock.Acquire;
     Event.FMicroThreads.Add(Self);
+    FBlockTime := NowPrecise + Duration;
+    FBlockState := tbsWaitFor;
+    FStatePending := tsBlocked;
   finally
     Event.FMicroThreadsLock.Release;
   end;
-  FBlockTime := NowPrecise + Duration;
-  FBlockState := tbsWaitFor;
-  FStatePending := tsBlocked;
   Yield;
   try
     Event.FMicroThreadsLock.Acquire;
@@ -641,6 +652,7 @@ begin
     FState := tsSuspended;
   end;
   FFreeOnTerminate := True;
+  MainScheduler.Add(Self);
 end;
 
 procedure TMicroThread.Terminate;
@@ -717,6 +729,7 @@ end;
 
 constructor TMicroThreadScheduler.Create;
 begin
+  FEvents := TObjectList.Create;
   FMainThreadStarter := TTimer.Create(nil);
   FMainThreadStarter.Enabled := False;
   FMainThreadStarter.Interval := 1;
@@ -741,6 +754,7 @@ begin
   FThreadPoolLock.Free;
   FMicroThreads.Free;
   FMicroThreadsLock.Free;
+  FEvents.Free;
   inherited Destroy;
 end;
 
@@ -877,7 +891,7 @@ end;
 procedure TMicroThreadScheduler.ReleaseMicroThread(MicroThread: TMicroThread);
 begin
   if not Assigned(MicroThread) then
-    raise Exception.Create('Can''t realease nil thread.');
+    raise Exception.Create('Can''t release nil thread.');
   try
     FMicroThreadsLock.Acquire;
     if MicroThread.FStatePending <> tsNone then begin
