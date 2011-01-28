@@ -45,7 +45,6 @@ type
     TabSheet2: TTabSheet;
     TabSheet3: TTabSheet;
     TimerRedraw: TTimer;
-    TimerSchedulerStart: TTimer;
     procedure Button1Click(Sender: TObject);
     procedure ButtonSchedulerStartStopClick(Sender: TObject);
     procedure Button2Click(Sender: TObject);
@@ -61,7 +60,6 @@ type
     procedure SpinEdit2Change(Sender: TObject);
     procedure SpinEdit3Change(Sender: TObject);
     procedure TimerRedrawTimer(Sender: TObject);
-    procedure TimerSchedulerStartTimer(Sender: TObject);
   private
     procedure Worker(MicroThread: TMicroThread);
     procedure WorkerDoWrite;
@@ -214,6 +212,9 @@ end;
 procedure TMainForm.FormShow(Sender: TObject);
 begin
   Iterations := SpinEdit3.Value;
+  SpinEdit2.Value := 20;
+  ButtonAddWorkers.Click;
+  ButtonSchedulerStartStop.Click;
 end;
 
 procedure TMainForm.ListView1Data(Sender: TObject; Item: TListItem);
@@ -223,14 +224,15 @@ begin
     if Item.Index < MainScheduler.MicroThreads.Count then
     with TMicroThread(MainScheduler.MicroThreads[Item.Index]) do begin
       Item.Caption := IntToStr(Id);
-      Item.SubItems.Add(Name);
       Item.SubItems.Add('');
       Item.SubItems.Add(IntToStr(Priority));
       Item.SubItems.Add(MicroThreadStateText[State]);
       Item.SubItems.Add(MicroThreadBlockStateText[BlockState]);
       Item.SubItems.Add(FloatToStr(ExecutionTime));
+      Item.SubItems.Add(IntToStr(ExecutionCount));
       Item.SubItems.Add(IntToStr(Trunc(Completion * 100)) + '%');
       Item.SubItems.Add(IntToStr(StackUsed));
+      Item.SubItems.Add(Name);
     end;
   finally
     MainScheduler.MicroThreadsLock.Release;
@@ -259,16 +261,9 @@ begin
   Label10.Caption := IntToStr(MainScheduler.MicroThreadCount);
 end;
 
-procedure TMainForm.TimerSchedulerStartTimer(Sender: TObject);
-begin
-  TimerSchedulerStart.Enabled := False;
-  ButtonAddWorkers.Click;
-  ButtonSchedulerStartStop.Click;
-end;
-
 procedure TMainForm.WorkerSubRoutine;
 begin
-  MTSleep(1 * OneMillisecond);
+  //MTSleep(1 * OneMillisecond);
 end;
 
 procedure TMainForm.Worker(MicroThread: TMicroThread);
@@ -281,20 +276,20 @@ begin
     for I := 0 to Iterations - 1 do begin
       Q := 0;
       while Q < 100 do Inc(Q);
-      Synchronize(WorkerDoWrite);
+      //Synchronize(WorkerDoWrite);
       //Memo1.Lines.Add(IntToStr(Id) + ': ' + IntToStr(I) + ' ' +
       //  FloatToStr(ExecutionTime));
       Completion := I / Iterations;
-      //MTSleep(1 * Id * OneMillisecond);
+      //MTSleep(1000 * OneMillisecond);
       Yield;
-      WorkerSubRoutine;
+      //WorkerSubRoutine;
     end;
   end;
 end;
 
 procedure TMainForm.WorkerDoWrite;
 begin
-  Memo1.Lines.Add('.');
+  //Memo1.Lines.Add('.');
 end;
 
 end.
