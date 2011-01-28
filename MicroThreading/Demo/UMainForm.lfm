@@ -6,7 +6,6 @@ object MainForm: TMainForm
   Caption = 'MicroThreading demo'
   ClientHeight = 533
   ClientWidth = 775
-  OnClose = FormClose
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
@@ -125,6 +124,9 @@ object MainForm: TMainForm
           item
             Caption = 'State'
             Width = 60
+          end        
+          item
+            Caption = 'Block state'
           end        
           item
             Caption = 'Execution time'

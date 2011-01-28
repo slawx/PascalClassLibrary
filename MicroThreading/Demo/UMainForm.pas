@@ -54,7 +54,6 @@ type
     procedure ButtonShowThreadIdClick(Sender: TObject);
     procedure ButtonClearMicroThreadsClick(Sender: TObject);
     procedure CheckBoxUseMainThreadChange(Sender: TObject);
-    procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -207,14 +206,9 @@ begin
   MainScheduler.UseMainThread := CheckBoxUseMainThread.Checked;
 end;
 
-procedure TMainForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
-begin
-  MainScheduler.Active := False;
-end;
-
 procedure TMainForm.FormDestroy(Sender: TObject);
 begin
-  MainScheduler.Free;
+  MainScheduler.Active := False;
 end;
 
 procedure TMainForm.FormShow(Sender: TObject);
@@ -233,6 +227,7 @@ begin
       Item.SubItems.Add('');
       Item.SubItems.Add(IntToStr(Priority));
       Item.SubItems.Add(MicroThreadStateText[State]);
+      Item.SubItems.Add(MicroThreadBlockStateText[BlockState]);
       Item.SubItems.Add(FloatToStr(ExecutionTime));
       Item.SubItems.Add(IntToStr(Trunc(Completion * 100)) + '%');
       Item.SubItems.Add(IntToStr(StackUsed));
