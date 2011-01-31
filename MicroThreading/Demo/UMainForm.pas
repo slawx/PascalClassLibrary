@@ -6,10 +6,10 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  ComCtrls, ExtCtrls, Spin, UMicroThreading, DateUtils, UPlatform;
+  ComCtrls, ExtCtrls, Spin, UMicroThreading, DateUtils, UPlatform,
+  UMicroThreadList;
 
 type
-
   TMainForm = class;
 
   { TWorker }
@@ -27,6 +27,7 @@ type
     Button1: TButton;
     Button2: TButton;
     Button3: TButton;
+    Button4: TButton;
     ButtonAddWorkers: TButton;
     ButtonClearMicroThreads: TButton;
     ButtonGetMaxThread: TButton;
@@ -39,7 +40,6 @@ type
     GroupBox1: TGroupBox;
     GroupBox2: TGroupBox;
     GroupBox3: TGroupBox;
-    Label1: TLabel;
     Label10: TLabel;
     Label11: TLabel;
     Label12: TLabel;
@@ -56,7 +56,6 @@ type
     Label7: TLabel;
     Label8: TLabel;
     Label9: TLabel;
-    ListView1: TListView;
     ListView2: TListView;
     Memo1: TMemo;
     PageControl1: TPageControl;
@@ -71,6 +70,7 @@ type
     TimerRedraw: TTimer;
     procedure Button1Click(Sender: TObject);
     procedure Button3Click(Sender: TObject);
+    procedure Button4Click(Sender: TObject);
     procedure ButtonSchedulerStartStopClick(Sender: TObject);
     procedure Button2Click(Sender: TObject);
     procedure ButtonAddWorkersClick(Sender: TObject);
@@ -84,13 +84,13 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
-    procedure ListView1Data(Sender: TObject; Item: TListItem);
     procedure ListView2Data(Sender: TObject; Item: TListItem);
     procedure SpinEdit2Change(Sender: TObject);
     procedure SpinEdit3Change(Sender: TObject);
     procedure SpinEdit5Change(Sender: TObject);
     procedure TimerRedrawTimer(Sender: TObject);
   private
+    MicroThreadList: TMicroThreadList;
     procedure WorkerSubRoutine;
   public
     DoWriteToMemo: Boolean;
@@ -116,9 +116,10 @@ implementation
 procedure TMainForm.FormCreate(Sender: TObject);
 begin
   DoubleBuffered := True;
-  ListView1.DoubleBuffered := True;
+//  ListView1.DoubleBuffered := True;
   Label6.Caption := IntToStr(GetLogicalProcessorCount);
   Event := TMicroThreadEvent.Create;
+  MicroThreadList := TMicroThreadList.Create(Self);
 end;
 
 procedure TMainForm.ButtonSchedulerStartStopClick(Sender: TObject);
@@ -143,6 +144,11 @@ end;
 procedure TMainForm.Button3Click(Sender: TObject);
 begin
   Event.SetEvent;
+end;
+
+procedure TMainForm.Button4Click(Sender: TObject);
+begin
+  MicroThreadList.Form.Show;
 end;
 
 procedure TMainForm.Button2Click(Sender: TObject);
@@ -267,6 +273,7 @@ end;
 
 procedure TMainForm.FormDestroy(Sender: TObject);
 begin
+  MicroThreadList.Free;
   MainScheduler.Active := False;
   Event.Free;
 end;
@@ -278,28 +285,6 @@ begin
   ButtonAddWorkers.Click;
   ButtonSchedulerStartStop.Click;
   Label16.Caption := IntToStr(MainThreadID);
-end;
-
-procedure TMainForm.ListView1Data(Sender: TObject; Item: TListItem);
-begin
-  try
-    MainScheduler.MicroThreadsLock.Acquire;
-    if Item.Index < MainScheduler.MicroThreads.Count then
-    with TMicroThread(MainScheduler.MicroThreads[Item.Index]) do begin
-      Item.Caption := IntToStr(Id);
-      Item.SubItems.Add('');
-      Item.SubItems.Add(IntToStr(Priority));
-      Item.SubItems.Add(MicroThreadStateText[State]);
-      Item.SubItems.Add(MicroThreadBlockStateText[BlockState]);
-      Item.SubItems.Add(FloatToStr(ExecutionTime));
-      Item.SubItems.Add(IntToStr(ExecutionCount));
-      Item.SubItems.Add(IntToStr(Trunc(Completion * 100)) + '%');
-      Item.SubItems.Add(IntToStr(StackUsed));
-      Item.SubItems.Add(Name);
-    end;
-  finally
-    MainScheduler.MicroThreadsLock.Release;
-  end;
 end;
 
 procedure TMainForm.ListView2Data(Sender: TObject; Item: TListItem);
@@ -333,11 +318,6 @@ end;
 
 procedure TMainForm.TimerRedrawTimer(Sender: TObject);
 begin
-  if ListView1.Items.Count <> MainScheduler.MicroThreadCount then
-    ListView1.Items.Count := MainScheduler.MicroThreadCount;
-  ListView1.Items[-1];
-  ListView1.Refresh;
-
   if ListView2.Items.Count <> MainScheduler.ThreadPoolCount then
     ListView2.Items.Count := MainScheduler.ThreadPoolCount;
   ListView2.Items[-1];

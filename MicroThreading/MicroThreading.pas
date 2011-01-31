@@ -7,12 +7,13 @@ unit MicroThreading;
 interface
 
 uses
-  UMicroThreading, Coroutine, UPlatform, LazarusPackageIntf;
+  UMicroThreading, UPlatform, UMicroThreadList, LazarusPackageIntf;
 
 implementation
 
 procedure Register; 
 begin
+  RegisterUnit('UMicroThreading', @UMicroThreading.Register); 
 end; 
 
 initialization

@@ -1,7 +1,7 @@
 object MainForm: TMainForm
-  Left = 224
+  Left = 237
   Height = 533
-  Top = 98
+  Top = 102
   Width = 816
   Caption = 'MicroThreading demo'
   ClientHeight = 533
@@ -15,84 +15,28 @@ object MainForm: TMainForm
     Height = 519
     Top = 8
     Width = 802
-    ActivePage = TabSheet1
+    ActivePage = TabSheet2
     Anchors = [akTop, akLeft, akRight, akBottom]
-    TabIndex = 1
+    TabIndex = 0
     TabOrder = 0
     object TabSheet2: TTabSheet
       Caption = 'Scheduler state'
-      ClientHeight = 492
-      ClientWidth = 798
-      object ListView1: TListView
-        Left = 222
-        Height = 459
-        Top = 24
-        Width = 571
-        Anchors = [akTop, akLeft, akRight, akBottom]
-        Columns = <        
-          item
-            Caption = 'Id'
-            Width = 40
-          end        
-          item
-            Caption = 'Usage'
-          end        
-          item
-            Caption = 'Priority'
-          end        
-          item
-            Caption = 'State'
-            Width = 60
-          end        
-          item
-            Caption = 'Block state'
-          end        
-          item
-            Caption = 'Execution time'
-            Width = 70
-          end        
-          item
-            Caption = 'Execution count'
-          end        
-          item
-            Caption = 'Completion'
-          end        
-          item
-            Caption = 'Used stack'
-            Width = 178
-          end        
-          item
-            Caption = 'Name'
-          end>
-        OwnerData = True
-        ReadOnly = True
-        RowSelect = True
-        TabOrder = 0
-        ViewStyle = vsReport
-        OnData = ListView1Data
-      end
-      object Label1: TLabel
-        Left = 222
-        Height = 14
-        Top = 7
-        Width = 76
-        Caption = 'Microthreads:'
-        ParentColor = False
-      end
+      ClientHeight = 493
+      ClientWidth = 794
       object GroupBox1: TGroupBox
         Left = 6
         Height = 81
         Top = 143
         Width = 205
         Caption = 'State'
-        ClientHeight = 66
+        ClientHeight = 63
         ClientWidth = 201
-        TabOrder = 1
+        TabOrder = 0
         object Label5: TLabel
           Left = 9
           Height = 14
           Top = 4
-          Width = 135
+          Width = 117
           Caption = 'Logical processor count:'
           ParentColor = False
         end
@@ -108,7 +52,7 @@ object MainForm: TMainForm
           Left = 8
           Height = 14
           Top = 20
-          Width = 78
+          Width = 69
           Caption = 'Thread count:'
           ParentColor = False
         end
@@ -116,7 +60,7 @@ object MainForm: TMainForm
           Left = 9
           Height = 14
           Top = 36
-          Width = 107
+          Width = 95
           Caption = 'Micro thread count:'
           ParentColor = False
         end
@@ -140,7 +84,7 @@ object MainForm: TMainForm
           Left = 9
           Height = 14
           Top = 52
-          Width = 83
+          Width = 73
           Caption = 'Main thread id:'
           ParentColor = False
         end
@@ -159,9 +103,9 @@ object MainForm: TMainForm
         Top = 7
         Width = 206
         Caption = 'Control'
-        ClientHeight = 111
+        ClientHeight = 108
         ClientWidth = 202
-        TabOrder = 2
+        TabOrder = 1
         object ButtonSchedulerStartStop: TButton
           Left = 8
           Height = 25
@@ -175,7 +119,7 @@ object MainForm: TMainForm
           Left = 8
           Height = 14
           Top = 46
-          Width = 78
+          Width = 69
           Caption = 'Thread count:'
           ParentColor = False
         end
@@ -189,9 +133,9 @@ object MainForm: TMainForm
         end
         object CheckBoxUseMainThread: TCheckBox
           Left = 10
-          Height = 20
+          Height = 17
           Top = 64
-          Width = 112
+          Width = 98
           Caption = 'Use main thread'
           OnChange = CheckBoxUseMainThreadChange
           TabOrder = 2
@@ -199,7 +143,7 @@ object MainForm: TMainForm
       end
       object ListView2: TListView
         Left = 6
-        Height = 236
+        Height = 237
         Top = 247
         Width = 206
         Anchors = [akTop, akLeft, akBottom]
@@ -212,7 +156,7 @@ object MainForm: TMainForm
             Width = 135
           end>
         OwnerData = True
-        TabOrder = 3
+        TabOrder = 2
         ViewStyle = vsReport
         OnData = ListView2Data
       end
@@ -220,15 +164,24 @@ object MainForm: TMainForm
         Left = 7
         Height = 14
         Top = 233
-        Width = 50
+        Width = 44
         Caption = 'Threads:'
         ParentColor = False
+      end
+      object Button4: TButton
+        Left = 226
+        Height = 25
+        Top = 17
+        Width = 123
+        Caption = 'Show manager'
+        OnClick = Button4Click
+        TabOrder = 3
       end
     end
     object TabSheet1: TTabSheet
       Caption = 'Job control'
-      ClientHeight = 492
-      ClientWidth = 798
+      ClientHeight = 493
+      ClientWidth = 794
       object ButtonAddWorkers: TButton
         Left = 10
         Height = 25
@@ -251,7 +204,7 @@ object MainForm: TMainForm
         Left = 124
         Height = 14
         Top = 14
-        Width = 37
+        Width = 34
         Caption = 'Count:'
         ParentColor = False
       end
@@ -268,7 +221,7 @@ object MainForm: TMainForm
       end
       object Memo1: TMemo
         Left = 316
-        Height = 243
+        Height = 244
         Top = 14
         Width = 294
         Anchors = [akTop, akLeft, akBottom]
@@ -288,7 +241,7 @@ object MainForm: TMainForm
         Left = 123
         Height = 14
         Top = 38
-        Width = 57
+        Width = 52
         Caption = 'Iterations:'
         ParentColor = False
       end
@@ -308,14 +261,14 @@ object MainForm: TMainForm
         Top = 74
         Width = 292
         Caption = 'Do inside jobs'
-        ClientHeight = 122
+        ClientHeight = 119
         ClientWidth = 288
         TabOrder = 6
         object CheckBox1: TCheckBox
           Left = 4
-          Height = 20
+          Height = 17
           Top = 9
-          Width = 76
+          Width = 66
           Caption = 'Use sleep'
           OnChange = CheckBox1Change
           TabOrder = 0
@@ -333,24 +286,24 @@ object MainForm: TMainForm
           Left = 242
           Height = 14
           Top = 15
-          Width = 17
+          Width = 14
           Caption = 'ms'
           ParentColor = False
         end
         object CheckBox2: TCheckBox
           Left = 5
-          Height = 20
+          Height = 17
           Top = 32
-          Width = 126
+          Width = 112
           Caption = 'Write test to memo'
           OnChange = CheckBox2Change
           TabOrder = 2
         end
         object CheckBox3: TCheckBox
           Left = 5
-          Height = 20
+          Height = 17
           Top = 56
-          Width = 98
+          Width = 90
           Caption = 'Wait for event'
           OnChange = CheckBox3Change
           TabOrder = 3
@@ -378,7 +331,7 @@ object MainForm: TMainForm
           Left = 202
           Height = 14
           Top = 56
-          Width = 17
+          Width = 14
           Caption = 'ms'
           ParentColor = False
         end

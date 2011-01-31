@@ -17,10 +17,11 @@ uses
   {$IFDEF UNIX}{$IFDEF UseCThreads}
   cthreads,
   {$ENDIF}{$ENDIF}
-  Classes, ExtCtrls, SysUtils, Contnrs, SyncObjs, DateUtils, Dialogs, Forms, UPlatform;
+  Classes, ExtCtrls, SysUtils, Contnrs, SyncObjs, DateUtils, Dialogs, Forms,
+  UPlatform, UMicroThreadList;
 
 const
-  DefaultStackSize = $4000;
+  DefaultStackSize = $40000;
 
 type
   TMicroThread = class;
@@ -190,10 +191,12 @@ type
     procedure Stop;
     procedure UpdateThreadPoolSize;
     procedure MainThreadStart(Sender: TObject);
+    procedure MainThreadTick(Data: PtrInt);
   public
     function Add(MicroThread: TMicroThread): Integer;
     function AddMethod(Method: TMicroThreadMethod): Integer;
-    procedure Remove(MicroThread: TMicroThread);
+    function FindCurrentThread: TThread;
+    procedure Remove(MicroThread: TMicroThread; Free: Boolean = True);
     constructor Create;
     destructor Destroy; override;
     property ThreadPool: TObjectList read FThreadPool;
@@ -209,8 +212,18 @@ type
     property UseMainThread: Boolean read FUseMainThread write SetUseMainThread;
   end;
 
+  TMicroThreadList = class(TComponent)
+  private
+  public
+    Form: TMicroThreadListForm;
+    constructor Create(AOwner: TComponent);
+  end;
+
+  TMicroThreadExceptionEvent = procedure(Sender: TObject; E: Exception) of object;
+
 var
   MainScheduler: TMicroThreadScheduler;
+  ExceptionHandler: TMicroThreadExceptionEvent;
 
 const
   MicroThreadStateText: array[TMicroThreadState] of string = ('None', 'Waiting',
@@ -222,8 +235,10 @@ const
 
 function GetCurrentMicroThread: TMicroThread;
 procedure MTSleep(Duration: TDateTime);
+procedure MTSynchronize(Method: TThreadMethod);
 function MTWaitForEvent(Event: TMicroThreadEvent; Duration: TDateTime): TWaitResult;
 procedure Log(Text: string);
+procedure Register;
 
 const
   LogFileName: string = 'Log.txt';
@@ -234,6 +249,11 @@ implementation
 //  StaticManagers: TObjectList; // TList<TMicroThreadManager>;
 //  StaticManager: TMicroThreadManager;
 //  StaticMicroThread: TMicroThread;
+
+procedure Register;
+begin
+  RegisterComponents('MicroThreading', [TMicroThreadList]);
+end;
 
 function GetMicroThreadId: Integer;
 var
@@ -266,16 +286,11 @@ var
 begin
   with MainScheduler do
   try
-    FThreadPoolLock.Acquire;
+    FMicroThreadsLock.Acquire;
     if MainThreadID = ThreadID then Result := MainThreadManager.CurrentMicroThread
-    else begin
-      I := 0;
-      while (I < FThreadPool.Count) and (TMicroThreadThread(FThreadPool[I]).ThreadID <> ThreadID) do Inc(I);
-      if I < FThreadPool.Count then Result := TMicroThreadThread(FThreadPool[I]).Manager.CurrentMicroThread
-        else Result := nil;
-    end;
+      else Result := TMicroThreadThread(MainScheduler.FindCurrentThread).Manager.CurrentMicroThread;
   finally
-    FThreadPoolLock.Release;
+    FMicroThreadsLock.Release;
   end;
 end;
 
@@ -288,12 +303,24 @@ begin
     else Sleep(Trunc(Duration / OneMillisecond));
 end;
 
+procedure MTSynchronize(Method: TThreadMethod);
+var
+  Thread: TThread;
+begin
+  if GetCurrentThreadId <> MainThreadID then begin
+    Thread := MainScheduler.FindCurrentThread;
+    if Assigned(Thread) then TThread.Synchronize(Thread, Method)
+      else raise Exception.Create('Can''t determine thread for id ' + IntToStr(GetCurrentThreadId));
+  end else Method;
+end;
+
 function MTWaitForEvent(Event: TMicroThreadEvent; Duration: TDateTime): TWaitResult;
 var
   MT: TMicroThread;
 begin
   MT := GetCurrentMicroThread;
-  if Assigned(MT) then Result := MT.WaitForEvent(Event, Duration);
+  if Assigned(MT) then Result := MT.WaitForEvent(Event, Duration)
+    else raise Exception.Create('Not in thread');
 //    else Result := Event.WaitFor(Trunc(Duration / OneMillisecond));
 end;
 
@@ -315,6 +342,16 @@ begin
     LogLock.Release;
   end;
 end;
+
+{ TMicroThreadList }
+
+constructor TMicroThreadList.Create(AOwner: TComponent);
+begin
+  inherited;
+  Form := TMicroThreadListForm.Create(Self);
+end;
+
+
 
 { TMicroThreadMethod }
 
@@ -359,7 +396,12 @@ end;
 
 destructor TMicroThreadEvent.Destroy;
 begin
-  MainScheduler.FEvents.Delete(MainScheduler.FEvents.IndexOf(Self));
+  try
+    MainScheduler.FEvents.OwnsObjects := False;
+    MainScheduler.FEvents.Delete(MainScheduler.FEvents.IndexOf(Self));
+  finally
+    MainScheduler.FEvents.OwnsObjects := True;
+  end;
   FMicroThreadsLock.Free;
   FMicroThreads.Free;
   inherited Destroy;
@@ -440,7 +482,7 @@ begin
           // We want to call virtual method Execute
           // but virtual methods can be called only statically
           // Then static method CallExecute is calling virtual method Execute
-          call TMicroThread.CallExecute
+            call TMicroThread.CallExecute
 
           // Restore manager stack
           // ecx register is set by CallExecute to running micro thread
@@ -521,8 +563,8 @@ begin
       if ExecutedCount = 0 then Sleep(1);
     until Terminated;
   except
-    on E: Exception do ;
-      //ExceptionHandler(E);
+    on E: Exception do
+      if Assigned(ExceptionHandler) then ExceptionHandler(Self, E);
   end;
 end;
 
@@ -548,12 +590,16 @@ begin
   Method(Self);
 end;
 
-
 { TMicroThread }
 
 procedure TMicroThread.CallExecute;
 begin
-  Execute;
+  try
+    Execute;
+  except
+    on E: Exception do
+      ExceptionHandler(Self, E);
+  end;
   asm
     mov ecx, Self
   end;
@@ -630,6 +676,9 @@ begin
     Event.FMicroThreadsLock.Release;
   end;
   Yield;
+  if FBlockTime < NowPrecise then
+    Result := wrTimeout else Result := wrSignaled;
+
   try
     Event.FMicroThreadsLock.Acquire;
     Event.FMicroThreads.Remove(Self);
@@ -668,6 +717,7 @@ end;
 
 destructor TMicroThread.Destroy;
 begin
+  MainScheduler.Remove(Self, False);
   //Terminate;
   //WaitFor;
   FreeMem(FStack);
@@ -717,11 +767,29 @@ begin
   Result := Add(NewMicroThread);
 end;
 
-procedure TMicroThreadScheduler.Remove(MicroThread: TMicroThread);
+function TMicroThreadScheduler.FindCurrentThread: TThread;
+var
+  I: Integer;
+begin
+  try
+    FThreadPoolLock.Acquire;
+    I := 0;
+    while (I < FThreadPool.Count) and (TMicroThreadThread(FThreadPool[I]).ThreadID <> ThreadID) do Inc(I);
+    if I < FThreadPool.Count then Result := TMicroThreadThread(FThreadPool[I])
+      else Result := nil;
+  finally
+    FThreadPoolLock.Release;
+  end;
+end;
+
+procedure TMicroThreadScheduler.Remove(MicroThread: TMicroThread;
+  Free: Boolean = True);
 begin
   try
     FMicroThreadsLock.Acquire;
+    if not Free then FMicroThreads.OwnsObjects := False;
     FMicroThreads.Remove(MicroThread);
+    FMicroThreads.OwnsObjects := True;
   finally
     FMicroThreadsLock.Release;
   end;
@@ -823,17 +891,22 @@ begin
 end;
 
 procedure TMicroThreadScheduler.MainThreadStart(Sender: TObject);
-var
-  Executed: Integer;
 begin
   FMainThreadStarter.Enabled := False;
   FMainThreadTerminated := False;
-  repeat
-    Executed := FMainThreadManager.Execute(1);
-    Application.ProcessMessages;
-    if Executed = 0 then Sleep(1);
-  until (FState <> ssRunning) or (not FUseMainThread);
-  FMainThreadTerminated := True;
+  Application.QueueAsyncCall(MainThreadTick, 0);
+end;
+
+procedure TMicroThreadScheduler.MainThreadTick(Data: PtrInt);
+var
+  Executed: Integer;
+begin
+  Executed := FMainThreadManager.Execute(1);
+  if Executed = 0 then Sleep(1);
+  // If not terminated then queue next tick else terminate
+  if (FState = ssRunning) and FUseMainThread then
+    Application.QueueAsyncCall(MainThreadTick, 0)
+    else FMainThreadTerminated := True;
 end;
 
 procedure TMicroThreadScheduler.GetNextMicroThread(Manager: TMicroThreadManager);

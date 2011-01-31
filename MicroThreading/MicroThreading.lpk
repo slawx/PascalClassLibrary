@@ -19,19 +19,20 @@
     <Files Count="4">
       <Item1>
         <Filename Value="UMicroThreading.pas"/>
+        <HasRegisterProc Value="True"/>
         <UnitName Value="UMicroThreading"/>
       </Item1>
       <Item2>
-        <Filename Value="Other/Coroutine.pas"/>
-        <UnitName Value="Coroutine"/>
-      </Item2>
-      <Item3>
         <Filename Value="UPlatform.pas"/>
         <UnitName Value="UPlatform"/>
-      </Item3>
-      <Item4>
+      </Item2>
+      <Item3>
         <Filename Value="ReadMe.txt"/>
         <Type Value="Binary"/>
+      </Item3>
+      <Item4>
+        <Filename Value="UMicroThreadList.pas"/>
+        <UnitName Value="UMicroThreadList"/>
       </Item4>
     </Files>
     <Type Value="RunAndDesignTime"/>

@@ -1,0 +1,68 @@
+object MicroThreadListForm: TMicroThreadListForm
+  Left = 267
+  Height = 423
+  Top = 118
+  Width = 569
+  Caption = 'Microthread list'
+  ClientHeight = 423
+  ClientWidth = 569
+  OnHide = FormHide
+  OnShow = FormShow
+  LCLVersion = '0.9.31'
+  object ListView1: TListView
+    Left = 8
+    Height = 410
+    Top = 8
+    Width = 557
+    Anchors = [akTop, akLeft, akRight, akBottom]
+    Columns = <    
+      item
+        Caption = 'Id'
+        Width = 40
+      end    
+      item
+        Caption = 'Usage'
+      end    
+      item
+        Caption = 'Priority'
+        Width = 40
+      end    
+      item
+        Caption = 'State'
+        Width = 60
+      end    
+      item
+        Caption = 'Block state'
+      end    
+      item
+        Caption = 'Execution time'
+        Width = 70
+      end    
+      item
+        Caption = 'Tick count'
+      end    
+      item
+        Caption = 'Completion'
+      end    
+      item
+        Caption = 'Used stack'
+      end    
+      item
+        Caption = 'Name'
+        Width = 70
+      end>
+    OwnerData = True
+    ReadOnly = True
+    RowSelect = True
+    TabOrder = 0
+    ViewStyle = vsReport
+    OnData = ListView1Data
+  end
+  object TimerRedraw: TTimer
+    Enabled = False
+    Interval = 50
+    OnTimer = TimerRedrawTimer
+    left = 192
+    top = 85
+  end
+end
