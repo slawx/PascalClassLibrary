@@ -16,7 +16,7 @@
     <Description Value="Micro threading subsystem. "/>
     <License Value="GNU/GPL"/>
     <Version Minor="1"/>
-    <Files Count="4">
+    <Files Count="5">
       <Item1>
         <Filename Value="UMicroThreading.pas"/>
         <HasRegisterProc Value="True"/>
@@ -34,6 +34,10 @@
         <Filename Value="UMicroThreadList.pas"/>
         <UnitName Value="UMicroThreadList"/>
       </Item4>
+      <Item5>
+        <Filename Value="UThreadEx.pas"/>
+        <UnitName Value="UThreadEx"/>
+      </Item5>
     </Files>
     <Type Value="RunAndDesignTime"/>
     <RequiredPkgs Count="2">

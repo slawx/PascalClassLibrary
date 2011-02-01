@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
   ComCtrls, ExtCtrls, Spin, UMicroThreading, DateUtils, UPlatform,
-  UMicroThreadList;
+  UMicroThreadList, UThreadEx;
 
 type
   TMainForm = class;
@@ -28,6 +28,7 @@ type
     Button2: TButton;
     Button3: TButton;
     Button4: TButton;
+    Button5: TButton;
     ButtonAddWorkers: TButton;
     ButtonClearMicroThreads: TButton;
     ButtonGetMaxThread: TButton;
@@ -71,6 +72,7 @@ type
     procedure Button1Click(Sender: TObject);
     procedure Button3Click(Sender: TObject);
     procedure Button4Click(Sender: TObject);
+    procedure Button5Click(Sender: TObject);
     procedure ButtonSchedulerStartStopClick(Sender: TObject);
     procedure Button2Click(Sender: TObject);
     procedure ButtonAddWorkersClick(Sender: TObject);
@@ -91,10 +93,15 @@ type
     procedure TimerRedrawTimer(Sender: TObject);
   private
     MicroThreadList: TMicroThreadList;
+    LastException: Exception;
+    LastExceptionSender: TObject;
     procedure WorkerSubRoutine;
+    procedure ShowException(Sender: TObject; E: Exception);
+    procedure DoShowException;
   public
     DoWriteToMemo: Boolean;
     DoSleep: Boolean;
+    RaiseException: Boolean;
     SleepDuration: Integer;
     DoWaitForEvent: Boolean;
     Event: TMicroThreadEvent;
@@ -120,6 +127,7 @@ begin
   Label6.Caption := IntToStr(GetLogicalProcessorCount);
   Event := TMicroThreadEvent.Create;
   MicroThreadList := TMicroThreadList.Create(Self);
+  UMicroThreading.ExceptionHandler := ShowException;
 end;
 
 procedure TMainForm.ButtonSchedulerStartStopClick(Sender: TObject);
@@ -149,6 +157,11 @@ end;
 procedure TMainForm.Button4Click(Sender: TObject);
 begin
   MicroThreadList.Form.Show;
+end;
+
+procedure TMainForm.Button5Click(Sender: TObject);
+begin
+  RaiseException := True;
 end;
 
 procedure TMainForm.Button2Click(Sender: TObject);
@@ -334,6 +347,21 @@ begin
   //MTSleep(1 * OneMillisecond);
 end;
 
+procedure TMainForm.ShowException(Sender: TObject; E: Exception);
+begin
+  LastException := E;
+  LastExceptionSender := Sender;
+  if MainThreadID <> ThreadID then
+    TThread.Synchronize(TThreadEx.CurrentThread, DoShowException)
+    else DoShowException;
+end;
+
+procedure TMainForm.DoShowException;
+begin
+  ShowMessage('Exception "' + LastException.Message + '" in class "' +
+    LastExceptionSender.ClassName + '"')
+end;
+
 procedure TWorker.Execute;
 var
   I: Integer;
@@ -345,6 +373,10 @@ begin
     if MainForm.DoWriteToMemo then Synchronize(DoWriteToMemo);
     if MainForm.DoWaitForEvent then MainForm.Event.WaitFor(MainForm.WaitForEventDuration * OneMillisecond);
     if MainForm.DoSleep then MTSleep(MainForm.SleepDuration * OneMillisecond);
+    if MainForm.RaiseException then begin
+      MainForm.RaiseException := False;
+      raise Exception.Create('Exception from microthread');
+    end;
     //WorkerSubRoutine;
     Completion := I / MainForm.Iterations;
     Yield;

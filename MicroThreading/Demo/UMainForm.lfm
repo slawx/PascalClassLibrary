@@ -1,7 +1,7 @@
 object MainForm: TMainForm
-  Left = 237
+  Left = 282
   Height = 533
-  Top = 102
+  Top = 94
   Width = 816
   Caption = 'MicroThreading demo'
   ClientHeight = 533
@@ -15,9 +15,9 @@ object MainForm: TMainForm
     Height = 519
     Top = 8
     Width = 802
-    ActivePage = TabSheet2
+    ActivePage = TabSheet1
     Anchors = [akTop, akLeft, akRight, akBottom]
-    TabIndex = 0
+    TabIndex = 1
     TabOrder = 0
     object TabSheet2: TTabSheet
       Caption = 'Scheduler state'
@@ -334,6 +334,15 @@ object MainForm: TMainForm
           Width = 14
           Caption = 'ms'
           ParentColor = False
+        end
+        object Button5: TButton
+          Left = 8
+          Height = 25
+          Top = 80
+          Width = 115
+          Caption = 'Raise exception'
+          OnClick = Button5Click
+          TabOrder = 6
         end
       end
     end

@@ -18,10 +18,15 @@ uses
   cthreads,
   {$ENDIF}{$ENDIF}
   Classes, ExtCtrls, SysUtils, Contnrs, SyncObjs, DateUtils, Dialogs, Forms,
-  UPlatform, UMicroThreadList;
+  UPlatform, UMicroThreadList, UThreadEx;
 
 const
-  DefaultStackSize = $40000;
+  DefaultStackSize = $4000;
+
+resourcestring
+  SStackOverflow = 'Microthread %d stack error. Pointer %s , range < %s ; %s >';
+  SNilThreadReference = 'Can''t release nil thread.';
+  SManagerMicroThreadRunning = 'Manager already have running microthread';
 
 type
   TMicroThread = class;
@@ -123,7 +128,7 @@ type
 
   { TMicroThreadThread }
 
-  TMicroThreadThread = class(TThread)
+  TMicroThreadThread = class(TThreadEx)
     Manager: TMicroThreadManager;
     State: TMicroThreadThreadState;
     procedure Execute; override;
@@ -170,7 +175,6 @@ type
     FThreadPoolSize: Integer;
     FRoundRobinIndex: Integer;
     FLastId: Integer;
-    FFrequency: Int64;
     FMainThreadTerminated: Boolean;
     FMicroThreads: TObjectList; // TList<TMicroThread>
     FMainThreadManager: TMicroThreadManager;
@@ -195,7 +199,6 @@ type
   public
     function Add(MicroThread: TMicroThread): Integer;
     function AddMethod(Method: TMicroThreadMethod): Integer;
-    function FindCurrentThread: TThread;
     procedure Remove(MicroThread: TMicroThread; Free: Boolean = True);
     constructor Create;
     destructor Destroy; override;
@@ -216,7 +219,7 @@ type
   private
   public
     Form: TMicroThreadListForm;
-    constructor Create(AOwner: TComponent);
+    constructor Create(AOwner: TComponent); override;
   end;
 
   TMicroThreadExceptionEvent = procedure(Sender: TObject; E: Exception) of object;
@@ -257,38 +260,26 @@ end;
 
 function GetMicroThreadId: Integer;
 var
-  I: Integer;
-  CurrentStack: Pointer;
+  MT: TMicroThread;
 begin
-  asm
-    mov CurrentStack, sp
-  end;
-  with MainScheduler do begin
-    try
-      FMicroThreadsLock.Acquire;
-      I := 0;
-      while (I < FMicroThreads.Count) and
-        not ((CurrentStack >= TMicroThread(FMicroThreads[I]).FStack) and
-        (CurrentStack <= (TMicroThread(FMicroThreads[I]).FStack +
-        TMicroThread(FMicroThreads[I]).FStackSize))) do Inc(I);
-      if I < FMicroThreads.Count then begin
-        Result := TMicroThread(FMicroThreads[I]).FId;
-      end else Result := -1;
-    finally
-      FMicroThreadsLock.Release;
-    end;
-  end;
+  MT := GetCurrentMicroThread;
+  if Assigned(MT) then Result := MT.Id else Result := -1;
 end;
 
 function GetCurrentMicroThread: TMicroThread;
 var
-  I: Integer;
+  Thread: TThread;
 begin
   with MainScheduler do
   try
     FMicroThreadsLock.Acquire;
     if MainThreadID = ThreadID then Result := MainThreadManager.CurrentMicroThread
-      else Result := TMicroThreadThread(MainScheduler.FindCurrentThread).Manager.CurrentMicroThread;
+      else begin
+        Thread := TThreadEx.CurrentThread;
+        if Assigned(Thread) then
+          Result := TMicroThreadThread(Thread).Manager.CurrentMicroThread
+          else Result := nil;
+      end;
   finally
     FMicroThreadsLock.Release;
   end;
@@ -308,7 +299,7 @@ var
   Thread: TThread;
 begin
   if GetCurrentThreadId <> MainThreadID then begin
-    Thread := MainScheduler.FindCurrentThread;
+    Thread := TThreadEx.CurrentThread;
     if Assigned(Thread) then TThread.Synchronize(Thread, Method)
       else raise Exception.Create('Can''t determine thread for id ' + IntToStr(GetCurrentThreadId));
   end else Method;
@@ -482,7 +473,7 @@ begin
           // We want to call virtual method Execute
           // but virtual methods can be called only statically
           // Then static method CallExecute is calling virtual method Execute
-            call TMicroThread.CallExecute
+          call TMicroThread.CallExecute
 
           // Restore manager stack
           // ecx register is set by CallExecute to running micro thread
@@ -554,7 +545,6 @@ procedure TMicroThreadThread.Execute;
 var
   ExecutedCount: Integer;
 begin
-  inherited Execute;
   try
     repeat
       State := ttsRunning;
@@ -598,7 +588,7 @@ begin
     Execute;
   except
     on E: Exception do
-      ExceptionHandler(Self, E);
+      if Assigned(ExceptionHandler) then ExceptionHandler(Self, E);
   end;
   asm
     mov ecx, Self
@@ -631,7 +621,9 @@ end;
 procedure TMicroThread.CheckStack;
 begin
   if not ((FStackPointer > FStack) and (FStackPointer < (FStack + FStackSize)))
-    then raise EStackOverflow.Create(Format('Microthread %d stack error', [FId]));
+    then raise EStackOverflow.Create(Format(SStackOverflow,
+      [FId, IntToHex(Integer(FStackPointer), 8), IntToHex(Integer(FStack), 8),
+      IntToHex(Integer(FStack + FStackSize), 8)]));
 end;
 
 procedure TMicroThread.Execute;
@@ -765,21 +757,6 @@ begin
   NewMicroThread.Method := Method;
   NewMicroThread.FScheduler := Self;
   Result := Add(NewMicroThread);
-end;
-
-function TMicroThreadScheduler.FindCurrentThread: TThread;
-var
-  I: Integer;
-begin
-  try
-    FThreadPoolLock.Acquire;
-    I := 0;
-    while (I < FThreadPool.Count) and (TMicroThreadThread(FThreadPool[I]).ThreadID <> ThreadID) do Inc(I);
-    if I < FThreadPool.Count then Result := TMicroThreadThread(FThreadPool[I])
-      else Result := nil;
-  finally
-    FThreadPoolLock.Release;
-  end;
 end;
 
 procedure TMicroThreadScheduler.Remove(MicroThread: TMicroThread;
@@ -950,7 +927,7 @@ begin
     end;
     if I < FMicroThreads.Count then begin
       if Assigned(Manager.FCurrentMicroThread) then
-        raise Exception.Create('Manager have already have running microthread');
+        raise Exception.Create(SManagerMicroThreadRunning);
       Selected := TMicroThread(FMicroThreads[FRoundRobinIndex]);
       Selected.FState := tsRunning;
       Inc(Selected.FExecutionCount);
@@ -964,7 +941,7 @@ end;
 procedure TMicroThreadScheduler.ReleaseMicroThread(MicroThread: TMicroThread);
 begin
   if not Assigned(MicroThread) then
-    raise Exception.Create('Can''t release nil thread.');
+    raise Exception.Create(SNilThreadReference);
   try
     FMicroThreadsLock.Acquire;
     if MicroThread.FStatePending <> tsNone then begin
