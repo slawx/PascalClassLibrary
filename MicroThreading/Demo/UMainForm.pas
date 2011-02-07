@@ -368,6 +368,7 @@ var
   Q: Integer;
 begin
   for I := 0 to MainForm.Iterations - 1 do begin
+    try
     Q := 0;
     while Q < 100 do Inc(Q);
     if MainForm.DoWriteToMemo then Synchronize(DoWriteToMemo);
@@ -380,6 +381,11 @@ begin
     //WorkerSubRoutine;
     Completion := I / MainForm.Iterations;
     Yield;
+
+    except
+      Q := 0;
+      raise  Exception.Create('Exception from microthread');
+    end;
   end;
 end;
 

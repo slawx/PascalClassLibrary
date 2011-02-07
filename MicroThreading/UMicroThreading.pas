@@ -27,6 +27,10 @@ resourcestring
   SStackOverflow = 'Microthread %d stack error. Pointer %s , range < %s ; %s >';
   SNilThreadReference = 'Can''t release nil thread.';
   SManagerMicroThreadRunning = 'Manager already have running microthread';
+  SManagerReferenceLost = 'Reference to manager lost';
+  SCantDetermineThreadID = 'Can''t determine thread for id %d';
+  SNotInThread = 'Not in thread';
+
 
 type
   TMicroThread = class;
@@ -68,6 +72,8 @@ type
     FStackPointer: Pointer;
     FStackSize: Integer;
     FBasePointer: Pointer;
+    FExceptObjectStack: PExceptObject;
+    FExceptAddrStack: PExceptAddr;
     FExecuted: Boolean; // At first go through Execute method, then switch context
     FBlockState: TMicroThreadBlockState;
     FBlockTime: TDateTime;
@@ -145,6 +151,8 @@ type
     FStackSize: Pointer;
     FStackPointer: Pointer;
     FBasePointer: Pointer;
+    FExceptObjectStack: PExceptObject;
+    FExceptAddrStack: PExceptAddr;
     FExecuteCount: Integer;
     FExecutedCount: Integer;
     FCurrentMicroThread: TMicroThread;
@@ -301,7 +309,7 @@ begin
   if GetCurrentThreadId <> MainThreadID then begin
     Thread := TThreadEx.CurrentThread;
     if Assigned(Thread) then TThread.Synchronize(Thread, Method)
-      else raise Exception.Create('Can''t determine thread for id ' + IntToStr(GetCurrentThreadId));
+      else raise Exception.Create(Format(SCantDetermineThreadID, [GetCurrentThreadId]));
   end else Method;
 end;
 
@@ -311,7 +319,7 @@ var
 begin
   MT := GetCurrentMicroThread;
   if Assigned(MT) then Result := MT.WaitForEvent(Event, Duration)
-    else raise Exception.Create('Not in thread');
+    else raise Exception.Create(SNotInThread);
 //    else Result := Event.WaitFor(Trunc(Duration / OneMillisecond));
 end;
 
@@ -427,6 +435,9 @@ begin
     FCurrentMicroThread.FExecutionEndTime := NowPrecise;
     FCurrentMicroThread.FExecutionTime := FCurrentMicroThread.FExecutionTime +
       (FCurrentMicroThread.FExecutionEndTime - FCurrentMicroThread.FExecutionStartTime);
+
+    FCurrentMicroThread.FExceptObjectStack := GetExceptionObjectStack;
+    FCurrentMicroThread.FExceptAddrStack := GetExceptionAddrStack;
     asm
       // Store microthread stack
       mov ecx, Self
@@ -442,6 +453,8 @@ begin
       mov esp, edx
       mov ebp, ebx
     end;
+    SetExceptionObjectStack(FExceptObjectStack);
+    SetExceptionAddrStack(FExceptAddrStack);
     FCurrentMicroThread.CheckStack;
     FScheduler.ReleaseMicroThread(FCurrentMicroThread);
   end;
@@ -451,6 +464,8 @@ begin
     if Assigned(FCurrentMicroThread) then begin
       Inc(FExecutedCount);
       FCurrentMicroThread.FExecutionStartTime := NowPrecise;
+      FExceptObjectStack := GetExceptionObjectStack;
+      FExceptAddrStack := GetExceptionAddrStack;
       asm
         // Store manager stack
         mov eax, Self
@@ -462,6 +477,8 @@ begin
       if not FCurrentMicroThread.FExecuted then begin
         // First time micro thread execution
         FCurrentMicroThread.FExecuted := True;
+        SetExceptionObjectStack(FCurrentMicroThread.FExceptObjectStack);
+        SetExceptionAddrStack(FCurrentMicroThread.FExceptAddrStack);
         asm
           // Restore microthread stack
           mov ecx, Self
@@ -483,10 +500,12 @@ begin
           mov esp, edx
           mov ebp, ebx
         end;
+        SetExceptionObjectStack(FExceptObjectStack);
+        SetExceptionAddrStack(FExceptAddrStack);
         FCurrentMicroThread.CheckStack;
         FCurrentMicroThread.FExecutionEndTime := NowPrecise;
         FCurrentMicroThread.FExecutionTime := FCurrentMicroThread.FExecutionTime +
-         (FCurrentMicroThread.FExecutionEndTime - FCurrentMicroThread.FExecutionStartTime);
+        (FCurrentMicroThread.FExecutionEndTime - FCurrentMicroThread.FExecutionStartTime);
         FCurrentMicroThread.FStatePending := tsBlocked;
         FCurrentMicroThread.FBlockState := tbsTerminated;
         if FCurrentMicroThread.FFreeOnTerminate then begin
@@ -495,6 +514,7 @@ begin
           try
             FMicroThreadsLock.Acquire;
             FMicroThreads.Delete(FMicroThreads.IndexOf(FCurrentMicroThread));
+            FCurrentMicroThread.Manager := nil;
           finally
             FMicroThreadsLock.Release;
           end;
@@ -508,6 +528,8 @@ begin
       begin
         // Regular selected microthread execution
         FCurrentMicroThread.CheckStack;
+        SetExceptionObjectStack(FCurrentMicroThread.FExceptObjectStack);
+        SetExceptionAddrStack(FCurrentMicroThread.FExceptAddrStack);
         asm
           // Restore microthread stack
           mov ecx, Self
@@ -634,7 +656,7 @@ end;
 procedure TMicroThread.Yield;
 begin
   if not Assigned(FManager) then
-    raise Exception.Create('Manager reference lost');
+    raise Exception.Create(SManagerReferenceLost);
   if FStatePending = tsNone then
     FStatePending := tsWaiting;
   FManager.Yield;
@@ -878,12 +900,17 @@ procedure TMicroThreadScheduler.MainThreadTick(Data: PtrInt);
 var
   Executed: Integer;
 begin
-  Executed := FMainThreadManager.Execute(1);
-  if Executed = 0 then Sleep(1);
-  // If not terminated then queue next tick else terminate
-  if (FState = ssRunning) and FUseMainThread then
-    Application.QueueAsyncCall(MainThreadTick, 0)
-    else FMainThreadTerminated := True;
+//  try
+    Executed := FMainThreadManager.Execute(1);
+    if Executed = 0 then Sleep(1);
+    // If not terminated then queue next tick else terminate
+    if (FState = ssRunning) and FUseMainThread then
+      Application.QueueAsyncCall(MainThreadTick, 0)
+      else FMainThreadTerminated := True;
+//  except
+//    FMainThreadTerminated := True;
+//    raise;
+//  end;
 end;
 
 procedure TMicroThreadScheduler.GetNextMicroThread(Manager: TMicroThreadManager);
