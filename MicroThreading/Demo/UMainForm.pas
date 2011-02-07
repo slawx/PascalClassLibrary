@@ -19,6 +19,9 @@ type
   private
     MainForm: TMainForm;
     procedure DoWriteToMemo;
+    constructor Create(CreateSuspended: Boolean;
+      const StackSize: SizeUInt = DefaultStackSize);
+    destructor Destroy; override;
   end;
 
   { TMainForm }
@@ -37,6 +40,7 @@ type
     CheckBox1: TCheckBox;
     CheckBox2: TCheckBox;
     CheckBox3: TCheckBox;
+    CheckBox4: TCheckBox;
     CheckBoxUseMainThread: TCheckBox;
     GroupBox1: TGroupBox;
     GroupBox2: TGroupBox;
@@ -44,11 +48,11 @@ type
     Label10: TLabel;
     Label11: TLabel;
     Label12: TLabel;
-    Label13: TLabel;
     Label14: TLabel;
     Label15: TLabel;
     Label16: TLabel;
     Label17: TLabel;
+    Label18: TLabel;
     Label2: TLabel;
     Label3: TLabel;
     Label4: TLabel;
@@ -57,7 +61,6 @@ type
     Label7: TLabel;
     Label8: TLabel;
     Label9: TLabel;
-    ListView2: TListView;
     Memo1: TMemo;
     PageControl1: TPageControl;
     SpinEdit1: TSpinEdit;
@@ -65,6 +68,7 @@ type
     SpinEdit3: TSpinEdit;
     SpinEdit4: TSpinEdit;
     SpinEdit5: TSpinEdit;
+    SpinEdit6: TSpinEdit;
     TabSheet1: TTabSheet;
     TabSheet2: TTabSheet;
     TabSheet3: TTabSheet;
@@ -82,6 +86,7 @@ type
     procedure CheckBox1Change(Sender: TObject);
     procedure CheckBox2Change(Sender: TObject);
     procedure CheckBox3Change(Sender: TObject);
+    procedure CheckBox4Change(Sender: TObject);
     procedure CheckBoxUseMainThreadChange(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -90,9 +95,11 @@ type
     procedure SpinEdit2Change(Sender: TObject);
     procedure SpinEdit3Change(Sender: TObject);
     procedure SpinEdit5Change(Sender: TObject);
+    procedure SpinEdit6Change(Sender: TObject);
     procedure TimerRedrawTimer(Sender: TObject);
   private
     MicroThreadList: TMicroThreadList;
+    Lock: TMicroThreadCriticalSection;
     LastException: Exception;
     LastExceptionSender: TObject;
     procedure WorkerSubRoutine;
@@ -101,8 +108,10 @@ type
   public
     DoWriteToMemo: Boolean;
     DoSleep: Boolean;
+    DoCriticalSection: Boolean;
     RaiseException: Boolean;
     SleepDuration: Integer;
+    CriticalSectionSleepDuration: Integer;
     DoWaitForEvent: Boolean;
     Event: TMicroThreadEvent;
     WaitForEventDuration: Integer;
@@ -128,6 +137,7 @@ begin
   Event := TMicroThreadEvent.Create;
   MicroThreadList := TMicroThreadList.Create(Self);
   UMicroThreading.ExceptionHandler := ShowException;
+  Lock := TMicroThreadCriticalSection.Create;
 end;
 
 procedure TMainForm.ButtonSchedulerStartStopClick(Sender: TObject);
@@ -279,6 +289,12 @@ begin
   WaitForEventDuration := SpinEdit5.Value;
 end;
 
+procedure TMainForm.CheckBox4Change(Sender: TObject);
+begin
+  CriticalSectionSleepDuration := SpinEdit4.Value;
+  DoCriticalSection := CheckBox4.Checked;
+end;
+
 procedure TMainForm.CheckBoxUseMainThreadChange(Sender: TObject);
 begin
   MainScheduler.UseMainThread := CheckBoxUseMainThread.Checked;
@@ -289,6 +305,7 @@ begin
   MicroThreadList.Free;
   MainScheduler.Active := False;
   Event.Free;
+  Lock.Free;
 end;
 
 procedure TMainForm.FormShow(Sender: TObject);
@@ -302,16 +319,6 @@ end;
 
 procedure TMainForm.ListView2Data(Sender: TObject; Item: TListItem);
 begin
-  if Item.Index < MainScheduler.ThreadPoolCount then
-  try
-    MainScheduler.ThreadPoolLock.Acquire;
-    with TMicroThreadThread(MainScheduler.ThreadPool[Item.Index]) do begin
-      Item.Caption := IntToStr(ThreadID);
-      Item.SubItems.Add(MicroThreadThreadStateText[State]);
-    end;
-  finally
-    MainScheduler.ThreadPoolLock.Release;
-  end;
 end;
 
 procedure TMainForm.SpinEdit2Change(Sender: TObject);
@@ -329,13 +336,12 @@ begin
 
 end;
 
+procedure TMainForm.SpinEdit6Change(Sender: TObject);
+begin
+end;
+
 procedure TMainForm.TimerRedrawTimer(Sender: TObject);
 begin
-  if ListView2.Items.Count <> MainScheduler.ThreadPoolCount then
-    ListView2.Items.Count := MainScheduler.ThreadPoolCount;
-  ListView2.Items[-1];
-  ListView2.Refresh;
-
   Label2.Caption := DateTimeToStr(NowPrecise) + ' ' +
     FloatToStr(Frac(NowPrecise / OneSecond));
   Label9.Caption := IntToStr(MainScheduler.ThreadPoolCount);
@@ -368,9 +374,8 @@ var
   Q: Integer;
 begin
   for I := 0 to MainForm.Iterations - 1 do begin
-    try
     Q := 0;
-    while Q < 100 do Inc(Q);
+    while Q < 100000 do Inc(Q);
     if MainForm.DoWriteToMemo then Synchronize(DoWriteToMemo);
     if MainForm.DoWaitForEvent then MainForm.Event.WaitFor(MainForm.WaitForEventDuration * OneMillisecond);
     if MainForm.DoSleep then MTSleep(MainForm.SleepDuration * OneMillisecond);
@@ -378,20 +383,33 @@ begin
       MainForm.RaiseException := False;
       raise Exception.Create('Exception from microthread');
     end;
+    if MainForm.DoCriticalSection then begin
+      try
+        MainForm.Lock.Acquire;
+        MTSleep(MainForm.CriticalSectionSleepDuration * OneMillisecond);
+      finally
+        MainForm.Lock.Release;
+      end;
+    end;
     //WorkerSubRoutine;
     Completion := I / MainForm.Iterations;
     Yield;
-
-    except
-      Q := 0;
-      raise  Exception.Create('Exception from microthread');
-    end;
   end;
 end;
 
 procedure TWorker.DoWriteToMemo;
 begin
   MainForm.Memo1.Lines.Add(IntToStr(Id) + ': ' + IntToStr(Trunc(Completion * 100)) + ' %');
+end;
+
+constructor TWorker.Create(CreateSuspended: Boolean; const StackSize: SizeUInt);
+begin
+  inherited;
+end;
+
+destructor TWorker.Destroy;
+begin
+  inherited Destroy;
 end;
 
 end.

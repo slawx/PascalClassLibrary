@@ -15,9 +15,9 @@ object MainForm: TMainForm
     Height = 519
     Top = 8
     Width = 802
-    ActivePage = TabSheet1
+    ActivePage = TabSheet2
     Anchors = [akTop, akLeft, akRight, akBottom]
-    TabIndex = 1
+    TabIndex = 0
     TabOrder = 0
     object TabSheet2: TTabSheet
       Caption = 'Scheduler state'
@@ -25,11 +25,11 @@ object MainForm: TMainForm
       ClientWidth = 794
       object GroupBox1: TGroupBox
         Left = 6
-        Height = 81
+        Height = 123
         Top = 143
         Width = 205
         Caption = 'State'
-        ClientHeight = 63
+        ClientHeight = 105
         ClientWidth = 201
         TabOrder = 0
         object Label5: TLabel
@@ -141,33 +141,6 @@ object MainForm: TMainForm
           TabOrder = 2
         end
       end
-      object ListView2: TListView
-        Left = 6
-        Height = 237
-        Top = 247
-        Width = 206
-        Anchors = [akTop, akLeft, akBottom]
-        Columns = <        
-          item
-            Caption = 'Id'
-          end        
-          item
-            Caption = 'State'
-            Width = 135
-          end>
-        OwnerData = True
-        TabOrder = 2
-        ViewStyle = vsReport
-        OnData = ListView2Data
-      end
-      object Label13: TLabel
-        Left = 7
-        Height = 14
-        Top = 233
-        Width = 44
-        Caption = 'Threads:'
-        ParentColor = False
-      end
       object Button4: TButton
         Left = 226
         Height = 25
@@ -175,7 +148,7 @@ object MainForm: TMainForm
         Width = 123
         Caption = 'Show manager'
         OnClick = Button4Click
-        TabOrder = 3
+        TabOrder = 2
       end
     end
     object TabSheet1: TTabSheet
@@ -194,7 +167,7 @@ object MainForm: TMainForm
       object ButtonClearMicroThreads: TButton
         Left = 10
         Height = 25
-        Top = 223
+        Top = 266
         Width = 104
         Caption = 'Clear jobs'
         OnClick = ButtonClearMicroThreadsClick
@@ -229,9 +202,9 @@ object MainForm: TMainForm
         TabOrder = 3
       end
       object Button1: TButton
-        Left = 230
+        Left = 316
         Height = 25
-        Top = 239
+        Top = 266
         Width = 75
         Caption = 'Clear memo'
         OnClick = Button1Click
@@ -257,11 +230,11 @@ object MainForm: TMainForm
       end
       object GroupBox3: TGroupBox
         Left = 10
-        Height = 137
+        Height = 185
         Top = 74
         Width = 292
         Caption = 'Do inside jobs'
-        ClientHeight = 119
+        ClientHeight = 167
         ClientWidth = 288
         TabOrder = 6
         object CheckBox1: TCheckBox
@@ -279,6 +252,7 @@ object MainForm: TMainForm
           Top = 8
           Width = 90
           MaxValue = 100000
+          OnChange = CheckBox1Change
           TabOrder = 1
           Value = 100
         end
@@ -343,6 +317,33 @@ object MainForm: TMainForm
           Caption = 'Raise exception'
           OnClick = Button5Click
           TabOrder = 6
+        end
+        object CheckBox4: TCheckBox
+          Left = 6
+          Height = 17
+          Top = 110
+          Width = 123
+          Caption = 'Wait in critical section'
+          OnChange = CheckBox4Change
+          TabOrder = 7
+        end
+        object SpinEdit6: TSpinEdit
+          Left = 186
+          Height = 21
+          Top = 104
+          Width = 70
+          MaxValue = 100000
+          OnChange = CheckBox4Change
+          TabOrder = 8
+          Value = 100
+        end
+        object Label18: TLabel
+          Left = 264
+          Height = 14
+          Top = 110
+          Width = 14
+          Caption = 'ms'
+          ParentColor = False
         end
       end
     end

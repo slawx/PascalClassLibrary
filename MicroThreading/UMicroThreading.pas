@@ -1,9 +1,11 @@
-(* Not implemented yet
+// Date: 2010-02-07
+
+(*
+Not implemented yet
 - Stack limit checking
 - measurement of cpu usage by micro threads
-- microthread critical sections (no low level cpu blocking)
-- wait for single and multiple objects
-- micro thread priorty
+- wait for multiple objects
+- micro thread priority
 *)
 
 unit UMicroThreading;
@@ -30,6 +32,7 @@ resourcestring
   SManagerReferenceLost = 'Reference to manager lost';
   SCantDetermineThreadID = 'Can''t determine thread for id %d';
   SNotInThread = 'Not in thread';
+  SReleaseNotAcquiredLock = 'Release not acquired lock';
 
 
 type
@@ -40,6 +43,17 @@ type
   TMicroThreadState = (tsNone, tsWaiting, tsRunning, tsBlocked, tsSuspended);
   TMicroThreadBlockState = (tbsNone, tbsSleeping, tbsWaitFor, tbsTerminating,
     tbsTerminated);
+
+  { TMicroThreadCriticalSection }
+
+  TMicroThreadCriticalSection = class
+    Lock: TCriticalSection;
+    Counter: Integer;
+    procedure Acquire;
+    procedure Release;
+    constructor Create;
+    destructor Destroy; override;
+  end;
 
   { TMicroThreadEvent }
 
@@ -52,7 +66,7 @@ type
   public
     procedure SetEvent;
     procedure ResetEvent;
-    procedure WaitFor(Duration: TDateTime);
+    function WaitFor(Duration: TDateTime): TWaitResult;
     constructor Create;
     destructor Destroy; override;
     property Signaled: Boolean read FSignaled;
@@ -69,9 +83,9 @@ type
     FExecutionTime: TDateTime;
     FExecutionCount: Integer;
     FStack: Pointer;
-    FStackPointer: Pointer;
+    FStackPointer: Pointer; // Register SP
     FStackSize: Integer;
-    FBasePointer: Pointer;
+    FBasePointer: Pointer; // Register BP
     FExceptObjectStack: PExceptObject;
     FExceptAddrStack: PExceptAddr;
     FExecuted: Boolean; // At first go through Execute method, then switch context
@@ -159,6 +173,8 @@ type
     FScheduler: TMicroThreadScheduler;
     FThread: TMicroThreadThread;
     FId: Integer;
+    FLoopDuration: TDateTime;
+    FLoopStart: TDateTime;
     procedure SetCurrentMicroThread(const AValue: TMicroThread);
     function Execute(Count: Integer): Integer;
     property CurrentMicroThread: TMicroThread read FCurrentMicroThread
@@ -169,6 +185,8 @@ type
     constructor Create;
     destructor Destroy; override;
     property Scheduler: TMicroThreadScheduler read FScheduler;
+    property LoopDuration: TDateTime read FLoopDuration;
+    function GetCurrentMicroThreadId: Integer;
   end;
 
   TMicroThreadSchedulerState = (ssStopped, ssRunning, ssTerminating);
@@ -205,6 +223,7 @@ type
     procedure MainThreadStart(Sender: TObject);
     procedure MainThreadTick(Data: PtrInt);
   public
+    BurstCount: Integer;
     function Add(MicroThread: TMicroThread): Integer;
     function AddMethod(Method: TMicroThreadMethod): Integer;
     procedure Remove(MicroThread: TMicroThread; Free: Boolean = True);
@@ -342,6 +361,49 @@ begin
   end;
 end;
 
+{ TMicroThreadCriticalSection }
+
+procedure TMicroThreadCriticalSection.Acquire;
+begin
+  try
+    Lock.Acquire;
+    while Counter > 0 do begin
+      try
+        Lock.Release;
+        MTSleep(1 * OneMillisecond);
+      finally
+        Lock.Acquire;
+      end;
+    end;
+    Inc(Counter);
+  finally
+    Lock.Release;
+  end;
+end;
+
+procedure TMicroThreadCriticalSection.Release;
+begin
+  try
+    Lock.Acquire;
+    if Counter > 0 then Dec(Counter)
+      else raise Exception.Create(SReleaseNotAcquiredLock);
+  finally
+    Lock.Release;
+  end;
+end;
+
+constructor TMicroThreadCriticalSection.Create;
+begin
+  Lock := TCriticalSection.Create;
+end;
+
+destructor TMicroThreadCriticalSection.Destroy;
+begin
+  Acquire;
+  Lock.Free;
+  inherited Destroy;
+end;
+
 { TMicroThreadList }
 
 constructor TMicroThreadList.Create(AOwner: TComponent);
@@ -362,8 +424,10 @@ begin
     MainScheduler.FMicroThreadsLock.Acquire;
     for I := 0 to FMicroThreads.Count - 1 do
     with TMicroThread(FMicroThreads[I]) do begin
-      if (FState = tsBlocked) and (FBlockState = tbsWaitFor) then
+      if (FState = tsBlocked) and (FBlockState = tbsWaitFor) then begin
         FState := tsWaiting;
+        FBlockTime := 0; // Set signaled state using block time variable
+      end;
     end;
     if not FAutoReset then FSignaled := True;
   finally
@@ -376,12 +440,13 @@ begin
   FSignaled := False;
 end;
 
-procedure TMicroThreadEvent.WaitFor(Duration: TDateTime);
+function TMicroThreadEvent.WaitFor(Duration: TDateTime): TWaitResult;
 var
   MT: TMicroThread;
 begin
   MT := GetCurrentMicroThread;
-  if Assigned(MT) then MT.WaitForEvent(Self, Duration);
+  if Assigned(MT) then Result := MT.WaitForEvent(Self, Duration)
+    else Result := wrSignaled;
 end;
 
 constructor TMicroThreadEvent.Create;
@@ -421,12 +486,14 @@ end;
 
 function TMicroThreadManager.Execute(Count: Integer): Integer;
 begin
+  FLoopStart := NowPrecise;
   FStack := StackBottom;
   FStackSize := StackBottom + StackLength;
   FExecuteCount := Count;
   FExecutedCount := 0;
   Yield;
   Result := FExecutedCount;
+  FLoopDuration := NowPrecise - FLoopStart;
 end;
 
 procedure TMicroThreadManager.Yield;
@@ -488,7 +555,7 @@ begin
           mov esp, edx
           mov ebp, ebx
           // We want to call virtual method Execute
-          // but virtual methods can be called only statically
+          // but methods can be called only statically from assembler
           // Then static method CallExecute is calling virtual method Execute
           call TMicroThread.CallExecute
 
@@ -514,7 +581,7 @@ begin
           try
             FMicroThreadsLock.Acquire;
             FMicroThreads.Delete(FMicroThreads.IndexOf(FCurrentMicroThread));
-            FCurrentMicroThread.Manager := nil;
+            FCurrentMicroThread := nil;
           finally
             FMicroThreadsLock.Release;
           end;
@@ -561,6 +628,18 @@ begin
   inherited Destroy;
 end;
 
+function TMicroThreadManager.GetCurrentMicroThreadId: Integer;
+begin
+  try
+    FScheduler.FMicroThreadsLock.Acquire;
+    if Assigned(FCurrentMicroThread) then
+      Result := FCurrentMicroThread.Id
+      else Result := 0;
+  finally
+    FScheduler.FMicroThreadsLock.Release;
+  end;
+end;
+
 { TMicroThreadThread }
 
 procedure TMicroThreadThread.Execute;
@@ -570,7 +649,7 @@ begin
   try
     repeat
       State := ttsRunning;
-      ExecutedCount := Manager.Execute(10);
+      ExecutedCount := Manager.Execute(MainScheduler.BurstCount);
       State := ttsReady;
       if ExecutedCount = 0 then Sleep(1);
     until Terminated;
@@ -690,8 +769,8 @@ begin
     Event.FMicroThreadsLock.Release;
   end;
   Yield;
-  if FBlockTime < NowPrecise then
-    Result := wrTimeout else Result := wrSignaled;
+  if (FBlockTime <> 0) and (FBlockTime < NowPrecise) then Result := wrTimeout
+    else Result := wrSignaled;
 
   try
     Event.FMicroThreadsLock.Acquire;
@@ -810,6 +889,7 @@ begin
   FMainThreadManager := TMicroThreadManager.Create;
   FMainThreadManager.FScheduler := Self;
   UseMainThread := False;
+  BurstCount := 100;
 end;
 
 destructor TMicroThreadScheduler.Destroy;
@@ -899,10 +979,17 @@ end;
 procedure TMicroThreadScheduler.MainThreadTick(Data: PtrInt);
 var
   Executed: Integer;
+  StartTime: TDateTime;
+  Duration: TDateTime;
 begin
 //  try
-    Executed := FMainThreadManager.Execute(1);
-    if Executed = 0 then Sleep(1);
+    Duration := 100 * OneMillisecond;
+    StartTime := NowPrecise;
+    Executed := -1;
+    while (Executed <> 0) and ((NowPrecise - StartTime) < Duration) do begin
+      Executed := FMainThreadManager.Execute(BurstCount);
+    end;
+    //if Executed = 0 then Sleep(1);
     // If not terminated then queue next tick else terminate
     if (FState = ssRunning) and FUseMainThread then
       Application.QueueAsyncCall(MainThreadTick, 0)
