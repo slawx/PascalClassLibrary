@@ -5,32 +5,38 @@ unit UPacketBurst;
 interface
 
 uses
-  Classes, UCommPin, SyncObjs, UStreamHelper, UCommon, SysUtils;
+  Classes, UCommPin, SyncObjs, UStreamHelper, UCommon, SysUtils,
+  UMicroThreading, DateUtils;
 
 type
   TPacketBurst = class;
 
-  TPacketBurstSendThread = class(TThread)
+  TPacketBurstSendThread = class(TMicroThread)
     PacketBurst: TPacketBurst;
     procedure Execute; override;
   end;
 
+  { TPacketBurst }
+
   TPacketBurst = class
   private
-    SendThreadEvent: TEvent;
+    FActive: Boolean;
+    SendThreadEvent: TMicroThreadEvent;
     SendThread: TPacketBurstSendThread;
     SendStreamLock: TCriticalSection;
     SendStream: TStreamHelper;
     ReceiveStream: TStreamHelper;
     procedure PacketSingleReceive(Sender: TCommPin; Stream: TStream);
     procedure PacketBurstReceive(Sender: TCommPin; Stream: TStream);
+    procedure SetActive(const AValue: Boolean);
   public
-    SendPeriod: Integer; // ms
+    SendPeriod: TDateTime;
     SendBurstSize: Integer;
     PacketSinglePin: TCommPin;
     PacketBurstPin: TCommPin;
     destructor Destroy; override;
     constructor Create;
+    property Active: Boolean read FActive write SetActive;
   end;
 
 implementation
@@ -43,14 +49,14 @@ begin
   PacketSinglePin.OnReceive := PacketSingleReceive;
   PacketBurstPin := TCommPin.Create;
   PacketBurstPin.OnReceive := PacketBurstReceive;
-  SendThread := TPacketBurstSendThread.Create(True);
-  SendThread.PacketBurst := Self;
-  SendThread.Start;
+  SendThread := TMicroThreadEvent.Create;
+  SendPeriod := OneMillisecond;
 end;
 
 destructor TPacketBurst.Destroy;
 begin
-  SendThread.Free;
+  Active := False;
+  SendThreadEvent.Free;
   PacketSinglePin.Free;
   PacketBurstPin.Free;
   inherited;
@@ -78,6 +84,21 @@ begin
   end;
 end;
 
+procedure TPacketBurst.SetActive(const AValue: Boolean);
+begin
+  if FActive = AValue then Exit;
+  FActive := AValue;
+  if AValue then begin
+    SendThread := TPacketBurstSendThread.Create(True);
+    SendThread.FreeOnTerminate := False;
+    SendThread.PacketBurst := Self;
+    SendThread.Name := 'PacketBurst';
+    SendThread.Start;
+  end else begin
+    FreeAndNil(SendThread);
+  end;
+end;
+
 procedure TPacketBurst.PacketSingleReceive(Sender: TCommPin; Stream: TStream);
 var
   SignalEvent: Boolean;
@@ -100,8 +121,6 @@ procedure TPacketBurstSendThread.Execute;
 var
   Stream: TStreamHelper;
 begin
-  inherited;
-  try
   try
     Stream := TStreamHelper.Create;
     with PacketBurst do
@@ -125,10 +144,6 @@ begin
     until Terminated;
   finally
     Stream.Free;
-  end;
-  except
-    on E: Exception do
-      if Assigned(ExceptionHandler) then ExceptionHandler(Self, E);
   end;
 end;
 

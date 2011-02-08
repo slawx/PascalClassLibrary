@@ -5,7 +5,8 @@ unit UCommThread;
 interface
 
 uses
-  Classes, SysUtils, blcksock, UCommPin, SyncObjs, UStreamHelper, UCommon;
+  Classes, SysUtils, blcksock, UCommPin, SyncObjs, UStreamHelper, UCommon,
+  UMicroThreading, DateUtils;
 
 type
   TCommThread = class;
@@ -14,7 +15,7 @@ type
 
   { TCommThreadReceiveThread }
 
-  TCommThreadReceiveThread = class(TThread)
+  TCommThreadReceiveThread = class(TMicroThread)
   public
     Parent: TCommThread;
     Stream: TMemoryStream;
@@ -32,8 +33,8 @@ type
     FOnReceiveData: TReceiveDataEvent;
     FReceiveThread: TCommThreadReceiveThread;
     FInputBuffer: TMemoryStream;
-    FInputBufferLock: TCriticalSection;
-    FDataAvailable: TEvent;
+    FInputBufferLock: TMicroThreadCriticalSection;
+    FDataAvailable: TMicroThreadEvent;
     procedure ReceiveData(Sender: TCommPin; Stream: TStream);
     procedure ExtReceiveData(Sender: TCommPin; Stream: TStream);
     procedure SetActive(const AValue: Boolean);
@@ -90,12 +91,12 @@ constructor TCommThread.Create;
 begin
   inherited Create;
   FInputBuffer := TMemoryStream.Create;
-  FInputBufferLock := TCriticalSection.Create;
+  FInputBufferLock := TMicroThreadCriticalSection.Create;
   Ext := TCommPin.Create;
   Ext.OnReceive := ExtReceiveData;
   Pin := TCommPin.Create;
   Pin.OnReceive := ReceiveData;
-  FDataAvailable := TEvent.Create(nil, False, False, '');
+  FDataAvailable := TMicroThreadEvent.Create;
 end;
 
 destructor TCommThread.Destroy;
@@ -118,8 +119,7 @@ begin
   try
     StreamHelper := TStreamHelper.Create(Stream);
   with Parent do repeat
-    try
-      if FDataAvailable.WaitFor(1) = wrSignaled then try
+      if FDataAvailable.WaitFor(1 * OneMillisecond) = wrSignaled then try
         FInputBufferLock.Acquire;
         Stream.Size := 0;
         StreamHelper.WriteStream(FInputBuffer, FInputBuffer.Size);
@@ -128,10 +128,7 @@ begin
       finally
         FInputBufferLock.Release;
       end;
-    except
-      on E: Exception do
-        if Assigned(ExceptionHandler) then ExceptionHandler(Self, E);
-    end;
+      Yield;
   until Terminated;
 
   finally

@@ -5,7 +5,8 @@ unit UCommSocket;
 interface
 
 uses
-  Classes, SysUtils, blcksock, UCommPin, UCommon;
+  Classes, SysUtils, blcksock, UCommPin, UCommon, UMicroThreading,
+  DateUtils;
 
 type
   TCommSocket = class;
@@ -14,7 +15,7 @@ type
 
   { TCommSocketReceiveThread }
 
-  TCommSocketReceiveThread = class(TThread)
+  TCommSocketReceiveThread = class(TMicroThread)
   public
     Parent: TCommSocket;
     Stream: TMemoryStream;
@@ -92,11 +93,11 @@ var
 begin
   InBufferUsed := 0;
   with Parent do repeat
-    try
-      if InBufferUsed = 0 then Sleep(1);
+      if InBufferUsed = 0 then MTSleep(1 * OneMillisecond)
+        else Yield;
       if Assigned(Socket) then
       with Socket do
-      if CanRead(100) then begin
+      if CanRead(0) then begin
         InBufferUsed := WaitingData;
         if InBufferUsed > 0 then begin
           SetLength(Buffer, InBufferUsed);
@@ -108,10 +109,6 @@ begin
           Pin.Send(Stream);
         end else InBufferUsed := 0;
       end else InBufferUsed := 0;
-    except
-      on E: Exception do
-        if Assigned(ExceptionHandler) then ExceptionHandler(Self, E);
-    end;
   until Terminated;
 end;
 

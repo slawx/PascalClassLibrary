@@ -5,7 +5,8 @@ unit USerialPort;
 interface
 
 uses
-  Classes, SysUtils, SynaSer, StdCtrls, Dialogs, UCommon;
+  Classes, SysUtils, SynaSer, StdCtrls, Dialogs, UCommon, UMicroThreading,
+  DateUtils;
 
 type
   TBaudRate = (br110, br300, br600, br1200, br2400, br4800,
@@ -21,7 +22,7 @@ type
 
   { TSerialPortReceiveThread }
 
-  TSerialPortReceiveThread = class(TThread)
+  TSerialPortReceiveThread = class(TMicroThread)
   public
     Parent: TSerialPort;
     procedure Execute; override;
@@ -153,6 +154,7 @@ begin
   FReceiveThread := TSerialPortReceiveThread.Create(True);
   FReceiveThread.FreeOnTerminate := False;
   FReceiveThread.Parent := Self;
+  FReceiveThread.Name := 'SerialPort';
   FReceiveThread.Start;
 end;
 
@@ -289,8 +291,8 @@ var
 begin
   InBufferUsed := 0;
   with Parent do repeat
-    try
-      if InBufferUsed = 0 then Sleep(1);
+      if InBufferUsed = 0 then MTSleep(1 * OneMillisecond)
+        else Yield;
       if Active then begin
         InBufferUsed := WaitingData;
         if InBufferUsed > 0 then begin
@@ -304,10 +306,6 @@ begin
             Parent.FOnReceiveData(Parent.FReceiveBuffer);
         end else InBufferUsed := 0;
       end else InBufferUsed := 0;
-    except
-      on E: Exception do
-        if Assigned(ExceptionHandler) then ExceptionHandler(Self, E);
-    end;
   until Terminated;
 end;
 
