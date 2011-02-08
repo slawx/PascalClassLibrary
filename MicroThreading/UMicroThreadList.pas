@@ -6,21 +6,30 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, ComCtrls,
-  ExtCtrls, StdCtrls, DateUtils;
+  ExtCtrls, StdCtrls, DateUtils, UPlatform;
 
 type
 
   { TMicroThreadListForm }
 
   TMicroThreadListForm = class(TForm)
+  published
+    Label10: TLabel;
+    Label5: TLabel;
+    Label6: TLabel;
+    Label7: TLabel;
+    Label8: TLabel;
+    Label9: TLabel;
+    TimerRedraw: TTimer;
     Label1: TLabel;
     Label2: TLabel;
     ListView1: TListView;
     ListView2: TListView;
-    Panel1: TPanel;
-    Panel2: TPanel;
-    Splitter1: TSplitter;
-    TimerRedraw: TTimer;
+    PageControl1: TPageControl;
+    TabSheet1: TTabSheet;
+    TabSheet2: TTabSheet;
+    TabSheet3: TTabSheet;
+    procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormHide(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure ListView1Data(Sender: TObject; Item: TListItem);
@@ -56,6 +65,11 @@ begin
     ListView2.Items.Count := ThreadCount;
   ListView2.Items[-1];
   ListView2.Refresh;
+
+  Label6.Caption := IntToStr(GetLogicalProcessorCount);
+  Label9.Caption := IntToStr(MainScheduler.ThreadPoolCount);
+  Label10.Caption := IntToStr(MainScheduler.MicroThreadCount);
+  Label2.Caption := FloatToStr(MainScheduler.MainThreadOutsideDuration / OneMillisecond) + ' ms';
 end;
 
 procedure TMicroThreadListForm.ListView1Data(Sender: TObject; Item: TListItem
@@ -115,6 +129,12 @@ begin
 end;
 
 procedure TMicroThreadListForm.FormHide(Sender: TObject);
+begin
+  TimerRedraw.Enabled := False;
+end;
+
+procedure TMicroThreadListForm.FormClose(Sender: TObject;
+  var CloseAction: TCloseAction);
 begin
   TimerRedraw.Enabled := False;
 end;

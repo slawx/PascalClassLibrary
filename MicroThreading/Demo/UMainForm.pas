@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  ComCtrls, ExtCtrls, Spin, UMicroThreading, DateUtils, UPlatform,
+  ComCtrls, ExtCtrls, Spin, Menus, UMicroThreading, DateUtils, UPlatform,
   UMicroThreadList, UThreadEx;
 
 type
@@ -45,7 +45,6 @@ type
     GroupBox1: TGroupBox;
     GroupBox2: TGroupBox;
     GroupBox3: TGroupBox;
-    Label10: TLabel;
     Label11: TLabel;
     Label12: TLabel;
     Label14: TLabel;
@@ -56,12 +55,12 @@ type
     Label2: TLabel;
     Label3: TLabel;
     Label4: TLabel;
-    Label5: TLabel;
-    Label6: TLabel;
-    Label7: TLabel;
-    Label8: TLabel;
-    Label9: TLabel;
+    MainMenu1: TMainMenu;
     Memo1: TMemo;
+    MenuItem1: TMenuItem;
+    MenuItem2: TMenuItem;
+    MenuItem3: TMenuItem;
+    MenuItem4: TMenuItem;
     PageControl1: TPageControl;
     SpinEdit1: TSpinEdit;
     SpinEdit2: TSpinEdit;
@@ -133,7 +132,6 @@ procedure TMainForm.FormCreate(Sender: TObject);
 begin
   DoubleBuffered := True;
 //  ListView1.DoubleBuffered := True;
-  Label6.Caption := IntToStr(GetLogicalProcessorCount);
   Event := TMicroThreadEvent.Create;
   MicroThreadList := TMicroThreadList.Create(Self);
   UMicroThreading.ExceptionHandler := ShowException;
@@ -344,8 +342,6 @@ procedure TMainForm.TimerRedrawTimer(Sender: TObject);
 begin
   Label2.Caption := DateTimeToStr(NowPrecise) + ' ' +
     FloatToStr(Frac(NowPrecise / OneSecond));
-  Label9.Caption := IntToStr(MainScheduler.ThreadPoolCount);
-  Label10.Caption := IntToStr(MainScheduler.MicroThreadCount);
 end;
 
 procedure TMainForm.WorkerSubRoutine;

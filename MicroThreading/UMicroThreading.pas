@@ -23,7 +23,7 @@ uses
   UPlatform, UMicroThreadList, UThreadEx;
 
 const
-  DefaultStackSize = $4000;
+  DefaultStackSize = $8000;
 
 resourcestring
   SStackOverflow = 'Microthread %d stack error. Pointer %s , range < %s ; %s >';
@@ -209,6 +209,8 @@ type
     FUseMainThread: Boolean;
     FMainThreadStarter: TTimer;
     FEvents: TObjectList;
+    FMainThreadOutsideStart: TDateTime;
+    FMainThreadOutsideDuration: TDateTime;
     function GetMicroThreadCount: Integer;
     function GetThreadPoolCount: Integer;
     function GetThreadPoolSize: Integer;
@@ -240,6 +242,7 @@ type
     property MainThreadManager: TMicroThreadManager read FMainThreadManager;
     property Active: Boolean read FActive write SetActive;
     property UseMainThread: Boolean read FUseMainThread write SetUseMainThread;
+    property MainThreadOutsideDuration: TDateTime read FMainThreadOutsideDuration;
   end;
 
   TMicroThreadList = class(TComponent)
@@ -338,8 +341,14 @@ var
 begin
   MT := GetCurrentMicroThread;
   if Assigned(MT) then Result := MT.WaitForEvent(Event, Duration)
-    else raise Exception.Create(SNotInThread);
+    else begin
+      while not Event.Signaled do begin
+        Sleep(1);
+        Application.ProcessMessages;
+      end;
+      //raise Exception.Create(SNotInThread);
 //    else Result := Event.WaitFor(Trunc(Duration / OneMillisecond));
+    end;
 end;
 
 var
@@ -486,14 +495,14 @@ end;
 
 function TMicroThreadManager.Execute(Count: Integer): Integer;
 begin
-  FLoopStart := NowPrecise;
+  //FLoopStart := NowPrecise;
   FStack := StackBottom;
   FStackSize := StackBottom + StackLength;
   FExecuteCount := Count;
   FExecutedCount := 0;
   Yield;
   Result := FExecutedCount;
-  FLoopDuration := NowPrecise - FLoopStart;
+  //FLoopDuration := NowPrecise - FLoopStart;
 end;
 
 procedure TMicroThreadManager.Yield;
@@ -614,7 +623,8 @@ end;
 procedure TMicroThreadManager.Synchronize(AMethod: TThreadMethod);
 begin
   if Assigned(FThread) then
-    FThread.Synchronize(FThread, AMethod);
+    FThread.Synchronize(FThread, AMethod)
+    else AMethod;
 end;
 
 constructor TMicroThreadManager.Create;
@@ -743,9 +753,17 @@ end;
 
 procedure TMicroThread.WaitFor;
 begin
-  if GetMicroThreadId <> -1 then
-  while not ((FState = tsBlocked) and (FBlockState = tbsTerminated)) do begin
-    MTSleep(1);
+  if GetMicroThreadId <> -1 then begin
+    // Called from another microthread
+    while not ((FState = tsBlocked) and (FBlockState = tbsTerminated)) do begin
+      MTSleep(1);
+    end;
+  end else begin
+    // Called directly from main thread
+    while not ((FState = tsBlocked) and (FBlockState = tbsTerminated)) do begin
+      Sleep(1);
+      Application.ProcessMessages;
+    end;
   end;
 end;
 
@@ -761,6 +779,10 @@ function TMicroThread.WaitForEvent(Event: TMicroThreadEvent; Duration: TDateTime
 begin
   try
     Event.FMicroThreadsLock.Acquire;
+    if Event.Signaled then begin
+      Result := wrSignaled;
+      Exit;
+    end;
     Event.FMicroThreads.Add(Self);
     FBlockTime := NowPrecise + Duration;
     FBlockState := tbsWaitFor;
@@ -889,7 +911,7 @@ begin
   FMainThreadManager := TMicroThreadManager.Create;
   FMainThreadManager.FScheduler := Self;
   UseMainThread := False;
-  BurstCount := 100;
+  BurstCount := 50;
 end;
 
 destructor TMicroThreadScheduler.Destroy;
@@ -983,10 +1005,12 @@ var
   Duration: TDateTime;
 begin
 //  try
-    Duration := 100 * OneMillisecond;
-    StartTime := NowPrecise;
+    FMainThreadOutsideDuration := NowPrecise - FMainThreadOutsideStart;
+    BurstCount := 1;
+    Duration := 50 * OneMillisecond;
+    StartTime := Now;
     Executed := -1;
-    while (Executed <> 0) and ((NowPrecise - StartTime) < Duration) do begin
+    while (Executed <> 0) and ((Now - StartTime) < Duration) do begin
       Executed := FMainThreadManager.Execute(BurstCount);
     end;
     //if Executed = 0 then Sleep(1);
@@ -998,6 +1022,7 @@ begin
 //    FMainThreadTerminated := True;
 //    raise;
 //  end;
+  FMainThreadOutsideStart := NowPrecise;
 end;
 
 procedure TMicroThreadScheduler.GetNextMicroThread(Manager: TMicroThreadManager);

@@ -1,142 +1,185 @@
 object MicroThreadListForm: TMicroThreadListForm
-  Left = 367
+  Left = 476
   Height = 423
-  Top = 118
+  Top = 111
   Width = 569
   Caption = 'Microthread list'
   ClientHeight = 423
   ClientWidth = 569
+  OnClose = FormClose
   OnHide = FormHide
   OnShow = FormShow
   LCLVersion = '0.9.31'
-  object Panel1: TPanel
-    Left = 0
-    Height = 248
-    Top = 0
-    Width = 569
-    Align = alTop
-    BevelOuter = bvNone
-    ClientHeight = 248
-    ClientWidth = 569
+  object PageControl1: TPageControl
+    Left = 8
+    Height = 409
+    Top = 7
+    Width = 553
+    ActivePage = TabSheet1
+    Anchors = [akTop, akLeft, akRight, akBottom]
+    TabIndex = 0
     TabOrder = 0
-    object Label1: TLabel
-      Left = 8
-      Height = 14
-      Top = 8
-      Width = 67
-      Caption = 'Microthreads:'
-      ParentColor = False
+    object TabSheet1: TTabSheet
+      Caption = 'State'
+      ClientHeight = 383
+      ClientWidth = 545
+      object Label5: TLabel
+        Left = 9
+        Height = 14
+        Top = 11
+        Width = 117
+        Caption = 'Logical processor count:'
+        ParentColor = False
+      end
+      object Label7: TLabel
+        Left = 8
+        Height = 14
+        Top = 27
+        Width = 69
+        Caption = 'Thread count:'
+        ParentColor = False
+      end
+      object Label8: TLabel
+        Left = 9
+        Height = 14
+        Top = 43
+        Width = 95
+        Caption = 'Micro thread count:'
+        ParentColor = False
+      end
+      object Label10: TLabel
+        Left = 151
+        Height = 14
+        Top = 43
+        Width = 13
+        Caption = '    '
+        ParentColor = False
+      end
+      object Label9: TLabel
+        Left = 150
+        Height = 14
+        Top = 27
+        Width = 13
+        Caption = '    '
+        ParentColor = False
+      end
+      object Label6: TLabel
+        Left = 150
+        Height = 14
+        Top = 11
+        Width = 13
+        Caption = '    '
+        ParentColor = False
+      end
+      object Label1: TLabel
+        Left = 8
+        Height = 14
+        Top = 63
+        Width = 128
+        Caption = 'Main thread loop duration:'
+        ParentColor = False
+      end
+      object Label2: TLabel
+        Left = 148
+        Height = 14
+        Top = 64
+        Width = 13
+        Caption = '    '
+        ParentColor = False
+      end
     end
-    object ListView1: TListView
-      Left = 8
-      Height = 218
-      Top = 24
-      Width = 557
-      Anchors = [akTop, akLeft, akRight, akBottom]
-      Columns = <      
-        item
-          Caption = 'Id'
-          Width = 40
-        end      
-        item
-          Caption = 'Usage'
-        end      
-        item
-          Caption = 'Priority'
-          Width = 40
-        end      
-        item
-          Caption = 'State'
-          Width = 60
-        end      
-        item
-          Caption = 'Block state'
-        end      
-        item
-          Caption = 'Execution time'
-          Width = 70
-        end      
-        item
-          Caption = 'Tick count'
-        end      
-        item
-          Caption = 'Completion'
-        end      
-        item
-          Caption = 'Used stack'
-        end      
-        item
-          Caption = 'Name'
-          Width = 70
-        end>
-      OwnerData = True
-      ReadOnly = True
-      RowSelect = True
-      TabOrder = 0
-      ViewStyle = vsReport
-      OnData = ListView1Data
+    object TabSheet2: TTabSheet
+      Caption = 'Threads'
+      ClientHeight = 383
+      ClientWidth = 545
+      object ListView2: TListView
+        Left = 4
+        Height = 376
+        Top = 3
+        Width = 536
+        Anchors = [akTop, akLeft, akRight, akBottom]
+        Columns = <        
+          item
+            Caption = 'Id'
+          end        
+          item
+            Caption = 'State'
+            Width = 100
+          end        
+          item
+            Caption = 'Microthread Id'
+            Width = 70
+          end        
+          item
+            Caption = 'Loop duration'
+            Width = 70
+          end>
+        OwnerData = True
+        ReadOnly = True
+        RowSelect = True
+        TabOrder = 0
+        ViewStyle = vsReport
+        OnData = ListView2Data
+      end
     end
-  end
-  object Panel2: TPanel
-    Left = 0
-    Height = 170
-    Top = 253
-    Width = 569
-    Align = alClient
-    BevelOuter = bvNone
-    ClientHeight = 170
-    ClientWidth = 569
-    TabOrder = 1
-    object ListView2: TListView
-      Left = 8
-      Height = 142
-      Top = 19
-      Width = 557
-      Anchors = [akTop, akLeft, akRight, akBottom]
-      Columns = <      
-        item
-          Caption = 'Id'
-        end      
-        item
-          Caption = 'State'
-          Width = 100
-        end      
-        item
-          Caption = 'Microthread Id'
-          Width = 70
-        end      
-        item
-          Caption = 'Loop duration'
-          Width = 70
-        end>
-      OwnerData = True
-      ReadOnly = True
-      RowSelect = True
-      TabOrder = 0
-      ViewStyle = vsReport
-      OnData = ListView2Data
+    object TabSheet3: TTabSheet
+      Caption = 'Microthreads'
+      ClientHeight = 383
+      ClientWidth = 545
+      object ListView1: TListView
+        Left = 4
+        Height = 376
+        Top = 3
+        Width = 537
+        Anchors = [akTop, akLeft, akRight, akBottom]
+        Columns = <        
+          item
+            Caption = 'Id'
+            Width = 40
+          end        
+          item
+            Caption = 'Usage'
+          end        
+          item
+            Caption = 'Priority'
+            Width = 40
+          end        
+          item
+            Caption = 'State'
+            Width = 60
+          end        
+          item
+            Caption = 'Block state'
+          end        
+          item
+            Caption = 'Execution time'
+            Width = 70
+          end        
+          item
+            Caption = 'Tick count'
+          end        
+          item
+            Caption = 'Completion'
+          end        
+          item
+            Caption = 'Used stack'
+          end        
+          item
+            Caption = 'Name'
+            Width = 70
+          end>
+        OwnerData = True
+        ReadOnly = True
+        RowSelect = True
+        TabOrder = 0
+        ViewStyle = vsReport
+        OnData = ListView1Data
+      end
     end
-    object Label2: TLabel
-      Left = 8
-      Height = 14
-      Top = 3
-      Width = 44
-      Caption = 'Threads:'
-      ParentColor = False
-    end
-  end
-  object Splitter1: TSplitter
-    Cursor = crVSplit
-    Left = 0
-    Height = 5
-    Top = 248
-    Width = 569
-    Align = alTop
-    ResizeAnchor = akTop
   end
   object TimerRedraw: TTimer
     Enabled = False
-    Interval = 50
+    Interval = 200
     OnTimer = TimerRedrawTimer
     left = 192
     top = 85

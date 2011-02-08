@@ -27,8 +27,9 @@ var
   {$IFDEF Linux}T: TimeVal;{$ENDIF}
   {$IFDEF Windows}TimerValue: Int64;{$ENDIF}
 begin
-  try
-    NowPreciseLock.Acquire;
+//  Result := Now;
+  //try
+    //NowPreciseLock.Acquire;
     {$IFDEF Windows}
     QueryPerformanceCounter(TimerValue);
     //Result := Int64(TimeStampToMSecs(DateTimeToTimeStamp(Now)) * 1000) // an alternative Win32 timebase
@@ -41,10 +42,11 @@ begin
     Result := t.tv_sec + t.tv_usec / 1000000;
     {$ENDIF}
 
-    Result := (Trunc(Now / OneSecond) + Frac(Result)) * OneSecond;
-  finally
-    NowPreciseLock.Release;
-  end;
+    Result := Result * OneSecond;
+    //Result := (Trunc(Now / OneSecond) + Frac(Result)) * OneSecond;
+  //finally
+    //NowPreciseLock.Release;
+  //end;
 end;
 
 function GetLogicalProcessorCount: Integer;
