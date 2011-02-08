@@ -26,7 +26,6 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure ExceptionHandler(Sender: TObject; E: Exception);
-    procedure ThreadExceptionHandler(Thread: TThread; E: Exception);
     procedure CreateTextReport(Output: TStringList);
     procedure LogToFile(Report: TStringList);
     procedure LogStackTraceToFile(StackTrace: TStackTrace);
@@ -136,7 +135,7 @@ end;
 procedure TExceptionLogger.ShowReportForm;
 begin
   ExceptionForm.LoadStackTraceToListView(StackTrace);
-  ExceptionForm.ShowModal;
+  if not ExceptionForm.Visible then ExceptionForm.ShowModal;
 end;
 
 procedure TExceptionLogger.ExceptionHandler(Sender: TObject; E: Exception);
@@ -144,16 +143,8 @@ begin
   BackTraceStrFunc := @StabBackTraceStr;
   StackTrace.GetExceptionBackTrace;
   LastException := E;
-  MakeReport;
-end;
-
-procedure TExceptionLogger.ThreadExceptionHandler(Thread: TThread; E: Exception
-  );
-begin
-  BackTraceStrFunc := @StabBackTraceStr;
-  StackTrace.GetExceptionBackTrace;
-  LastException := E;
-  TThread.Synchronize(Thread, MakeReport);
+  if Sender is TThread then TThread.Synchronize(TThread(Sender), MakeReport)
+    else MakeReport;
 end;
 
 procedure TExceptionLogger.MakeReport;
@@ -214,4 +205,4 @@ begin
 end;
 
 end.
-
+
