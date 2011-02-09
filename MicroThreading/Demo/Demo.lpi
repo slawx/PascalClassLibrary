@@ -58,11 +58,10 @@
         <ComponentName Value="MainForm"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UMainForm"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="9"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="332"/>
-        <CursorPos X="23" Y="342"/>
+        <TopLine Value="393"/>
+        <CursorPos X="29" Y="406"/>
         <UsageCount Value="270"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -70,10 +69,11 @@
       <Unit2>
         <Filename Value="../UMicroThreading.pas"/>
         <UnitName Value="UMicroThreading"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="986"/>
-        <CursorPos X="19" Y="1000"/>
+        <TopLine Value="914"/>
+        <CursorPos X="11" Y="928"/>
         <UsageCount Value="136"/>
         <Loaded Value="True"/>
       </Unit2>
@@ -129,7 +129,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="25"/>
         <CursorPos X="41" Y="39"/>
-        <UsageCount Value="37"/>
+        <UsageCount Value="38"/>
         <Loaded Value="True"/>
       </Unit9>
       <Unit10>
@@ -141,7 +141,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="53"/>
         <CursorPos X="61" Y="61"/>
-        <UsageCount Value="23"/>
+        <UsageCount Value="24"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit10>
@@ -244,7 +244,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="35"/>
         <CursorPos X="18" Y="45"/>
-        <UsageCount Value="12"/>
+        <UsageCount Value="13"/>
         <Loaded Value="True"/>
       </Unit24>
       <Unit25>
@@ -253,7 +253,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="548"/>
         <CursorPos X="1" Y="561"/>
-        <UsageCount Value="11"/>
+        <UsageCount Value="12"/>
         <Loaded Value="True"/>
       </Unit25>
       <Unit26>
@@ -262,7 +262,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="798"/>
         <CursorPos X="1" Y="821"/>
-        <UsageCount Value="11"/>
+        <UsageCount Value="12"/>
         <Loaded Value="True"/>
       </Unit26>
       <Unit27>
@@ -271,7 +271,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="65"/>
         <CursorPos X="29" Y="75"/>
-        <UsageCount Value="11"/>
+        <UsageCount Value="12"/>
         <Loaded Value="True"/>
       </Unit27>
       <Unit28>
@@ -281,7 +281,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1398"/>
         <CursorPos X="15" Y="1309"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="11"/>
         <Loaded Value="True"/>
       </Unit28>
       <Unit29>
@@ -290,130 +290,130 @@
         <WindowIndex Value="0"/>
         <TopLine Value="2161"/>
         <CursorPos X="33" Y="2161"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="11"/>
         <Loaded Value="True"/>
       </Unit29>
     </Units>
     <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="374" Column="21" TopLine="368"/>
+        <Filename Value="../UMicroThreading.pas"/>
+        <Caret Line="939" Column="1" TopLine="932"/>
       </Position1>
       <Position2>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="373" Column="21" TopLine="367"/>
+        <Filename Value="../UMicroThreading.pas"/>
+        <Caret Line="940" Column="1" TopLine="932"/>
       </Position2>
       <Position3>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="372" Column="21" TopLine="366"/>
+        <Filename Value="../UMicroThreading.pas"/>
+        <Caret Line="941" Column="1" TopLine="932"/>
       </Position3>
       <Position4>
-        <Filename Value="../UMicroThreadList.pas"/>
-        <Caret Line="94" Column="84" TopLine="83"/>
+        <Filename Value="../UMicroThreading.pas"/>
+        <Caret Line="942" Column="1" TopLine="932"/>
       </Position4>
       <Position5>
-        <Filename Value="../UMicroThreadList.pas"/>
-        <Caret Line="17" Column="7" TopLine="4"/>
+        <Filename Value="../UMicroThreading.pas"/>
+        <Caret Line="944" Column="1" TopLine="932"/>
       </Position5>
       <Position6>
-        <Filename Value="../UMicroThreadList.pas"/>
-        <Caret Line="15" Column="38" TopLine="7"/>
+        <Filename Value="../UMicroThreading.pas"/>
+        <Caret Line="946" Column="1" TopLine="932"/>
       </Position6>
       <Position7>
-        <Filename Value="../UMicroThreadList.pas"/>
-        <Caret Line="17" Column="12" TopLine="4"/>
+        <Filename Value="../UMicroThreading.pas"/>
+        <Caret Line="937" Column="1" TopLine="932"/>
       </Position7>
       <Position8>
-        <Filename Value="../UMicroThreadList.pas"/>
-        <Caret Line="18" Column="12" TopLine="4"/>
+        <Filename Value="../UMicroThreading.pas"/>
+        <Caret Line="938" Column="1" TopLine="932"/>
       </Position8>
       <Position9>
-        <Filename Value="../UMicroThreadList.pas"/>
-        <Caret Line="19" Column="12" TopLine="4"/>
+        <Filename Value="../UMicroThreading.pas"/>
+        <Caret Line="846" Column="1" TopLine="833"/>
       </Position9>
       <Position10>
-        <Filename Value="../UMicroThreadList.pas"/>
-        <Caret Line="20" Column="12" TopLine="4"/>
+        <Filename Value="../UMicroThreading.pas"/>
+        <Caret Line="859" Column="1" TopLine="837"/>
       </Position10>
       <Position11>
-        <Filename Value="../UMicroThreadList.pas"/>
-        <Caret Line="21" Column="12" TopLine="4"/>
+        <Filename Value="../UMicroThreading.pas"/>
+        <Caret Line="847" Column="1" TopLine="837"/>
       </Position11>
       <Position12>
-        <Filename Value="../UMicroThreadList.pas"/>
-        <Caret Line="22" Column="12" TopLine="4"/>
+        <Filename Value="../UMicroThreading.pas"/>
+        <Caret Line="848" Column="1" TopLine="837"/>
       </Position12>
       <Position13>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="372" Column="21" TopLine="26"/>
+        <Filename Value="../UMicroThreading.pas"/>
+        <Caret Line="849" Column="1" TopLine="837"/>
       </Position13>
       <Position14>
-        <Filename Value="../UMicroThreadList.pas"/>
-        <Caret Line="23" Column="12" TopLine="13"/>
+        <Filename Value="../UMicroThreading.pas"/>
+        <Caret Line="850" Column="1" TopLine="837"/>
       </Position14>
       <Position15>
-        <Filename Value="../UMicroThreadList.pas"/>
-        <Caret Line="68" Column="3" TopLine="53"/>
+        <Filename Value="../UMicroThreading.pas"/>
+        <Caret Line="851" Column="1" TopLine="837"/>
       </Position15>
       <Position16>
-        <Filename Value="../UMicroThreadList.pas"/>
-        <Caret Line="69" Column="1" TopLine="53"/>
+        <Filename Value="../UMicroThreading.pas"/>
+        <Caret Line="852" Column="1" TopLine="837"/>
       </Position16>
       <Position17>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="85" Column="15" TopLine="69"/>
+        <Filename Value="../UMicroThreading.pas"/>
+        <Caret Line="853" Column="1" TopLine="837"/>
       </Position17>
       <Position18>
-        <Filename Value="../UMicroThreadList.pas"/>
-        <Caret Line="9" Column="43" TopLine="1"/>
+        <Filename Value="../UMicroThreading.pas"/>
+        <Caret Line="854" Column="1" TopLine="837"/>
       </Position18>
       <Position19>
-        <Filename Value="../UMicroThreadList.pas"/>
-        <Caret Line="72" Column="1" TopLine="53"/>
+        <Filename Value="../UMicroThreading.pas"/>
+        <Caret Line="857" Column="1" TopLine="837"/>
       </Position19>
       <Position20>
         <Filename Value="../UMicroThreading.pas"/>
-        <Caret Line="1006" Column="18" TopLine="991"/>
+        <Caret Line="858" Column="1" TopLine="837"/>
       </Position20>
       <Position21>
         <Filename Value="../UMicroThreading.pas"/>
-        <Caret Line="1010" Column="26" TopLine="991"/>
+        <Caret Line="859" Column="1" TopLine="837"/>
       </Position21>
       <Position22>
         <Filename Value="../UMicroThreading.pas"/>
-        <Caret Line="1009" Column="22" TopLine="991"/>
+        <Caret Line="939" Column="1" TopLine="926"/>
       </Position22>
       <Position23>
         <Filename Value="../UMicroThreading.pas"/>
-        <Caret Line="1004" Column="43" TopLine="991"/>
+        <Caret Line="940" Column="1" TopLine="926"/>
       </Position23>
       <Position24>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="337" Column="23" TopLine="327"/>
+        <Filename Value="../UMicroThreading.pas"/>
+        <Caret Line="941" Column="1" TopLine="926"/>
       </Position24>
       <Position25>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="338" Column="23" TopLine="328"/>
+        <Filename Value="../UMicroThreading.pas"/>
+        <Caret Line="942" Column="1" TopLine="926"/>
       </Position25>
       <Position26>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="339" Column="23" TopLine="329"/>
+        <Filename Value="../UMicroThreading.pas"/>
+        <Caret Line="938" Column="45" TopLine="926"/>
       </Position26>
       <Position27>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="338" Column="23" TopLine="328"/>
+        <Filename Value="../UMicroThreading.pas"/>
+        <Caret Line="940" Column="1" TopLine="914"/>
       </Position27>
       <Position28>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="339" Column="23" TopLine="329"/>
+        <Filename Value="../UMicroThreading.pas"/>
+        <Caret Line="901" Column="32" TopLine="888"/>
       </Position28>
       <Position29>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="340" Column="23" TopLine="330"/>
+        <Filename Value="../UMicroThreading.pas"/>
+        <Caret Line="236" Column="43" TopLine="236"/>
       </Position29>
       <Position30>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="341" Column="23" TopLine="331"/>
+        <Filename Value="../UMicroThreading.pas"/>
+        <Caret Line="926" Column="22" TopLine="913"/>
       </Position30>
     </JumpHistory>
   </ProjectOptions>
@@ -454,20 +454,6 @@
     </Other>
   </CompilerOptions>
   <Debugging>
-    <BreakPoints Count="3">
-      <Item1>
-        <Source Value="../UMicroThreading.pas"/>
-        <Line Value="280"/>
-      </Item1>
-      <Item2>
-        <Source Value="../../../../Programy/Lazarus/0.9.31_2.4.3/fpc/2.4.3/source/rtl/win/sysutils.pp"/>
-        <Line Value="1036"/>
-      </Item2>
-      <Item3>
-        <Source Value="../UMicroThreading.pas"/>
-        <Line Value="321"/>
-      </Item3>
-    </BreakPoints>
     <Watches Count="2">
       <Item1>
         <Expression Value="TMicroThread(MainForm.Scheduler.FMicroThreads[0]).FStackPointer"/>

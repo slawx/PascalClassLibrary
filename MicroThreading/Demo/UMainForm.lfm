@@ -16,9 +16,9 @@ object MainForm: TMainForm
     Height = 500
     Top = 8
     Width = 802
-    ActivePage = TabSheet2
+    ActivePage = TabSheet1
     Anchors = [akTop, akLeft, akRight, akBottom]
-    TabIndex = 0
+    TabIndex = 1
     TabOrder = 0
     object TabSheet2: TTabSheet
       Caption = 'Scheduler state'
@@ -106,13 +106,13 @@ object MainForm: TMainForm
     end
     object TabSheet1: TTabSheet
       Caption = 'Job control'
-      ClientHeight = 493
+      ClientHeight = 474
       ClientWidth = 794
       object ButtonAddWorkers: TButton
         Left = 10
         Height = 25
         Top = 7
-        Width = 104
+        Width = 120
         Caption = 'Add workers'
         OnClick = ButtonAddWorkersClick
         TabOrder = 0
@@ -127,7 +127,7 @@ object MainForm: TMainForm
         TabOrder = 1
       end
       object Label4: TLabel
-        Left = 124
+        Left = 140
         Height = 14
         Top = 14
         Width = 34
@@ -147,7 +147,7 @@ object MainForm: TMainForm
       end
       object Memo1: TMemo
         Left = 316
-        Height = 244
+        Height = 225
         Top = 14
         Width = 294
         Anchors = [akTop, akLeft, akBottom]
@@ -164,7 +164,7 @@ object MainForm: TMainForm
         TabOrder = 4
       end
       object Label12: TLabel
-        Left = 123
+        Left = 140
         Height = 14
         Top = 38
         Width = 52
@@ -298,6 +298,15 @@ object MainForm: TMainForm
           Caption = 'ms'
           ParentColor = False
         end
+      end
+      object Button6: TButton
+        Left = 9
+        Height = 25
+        Top = 38
+        Width = 121
+        Caption = 'Add method workers'
+        OnClick = Button6Click
+        TabOrder = 7
       end
     end
     object TabSheet3: TTabSheet

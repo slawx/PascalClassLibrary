@@ -32,6 +32,7 @@ type
     Button3: TButton;
     Button4: TButton;
     Button5: TButton;
+    Button6: TButton;
     ButtonAddWorkers: TButton;
     ButtonClearMicroThreads: TButton;
     ButtonGetMaxThread: TButton;
@@ -76,6 +77,7 @@ type
     procedure Button3Click(Sender: TObject);
     procedure Button4Click(Sender: TObject);
     procedure Button5Click(Sender: TObject);
+    procedure Button6Click(Sender: TObject);
     procedure ButtonSchedulerStartStopClick(Sender: TObject);
     procedure Button2Click(Sender: TObject);
     procedure ButtonAddWorkersClick(Sender: TObject);
@@ -104,6 +106,7 @@ type
     procedure WorkerSubRoutine;
     procedure ShowException(Sender: TObject; E: Exception);
     procedure DoShowException;
+    procedure MethodWorker;
   public
     DoWriteToMemo: Boolean;
     DoSleep: Boolean;
@@ -170,6 +173,16 @@ end;
 procedure TMainForm.Button5Click(Sender: TObject);
 begin
   RaiseException := True;
+end;
+
+procedure TMainForm.Button6Click(Sender: TObject);
+var
+  I: Integer;
+begin
+  //Scheduler.FMicroThreads.Clear;
+  for I := 0 to SpinEdit1.Value - 1 do begin
+    MainScheduler.AddMethod(MethodWorker, False);
+  end;
 end;
 
 procedure TMainForm.Button2Click(Sender: TObject);
@@ -362,6 +375,36 @@ procedure TMainForm.DoShowException;
 begin
   ShowMessage('Exception "' + LastException.Message + '" in class "' +
     LastExceptionSender.ClassName + '"')
+end;
+
+procedure TMainForm.MethodWorker;
+var
+  I: Integer;
+  Q: Integer;
+begin
+  for I := 0 to MainForm.Iterations - 1 do begin
+    Q := 0;
+    while Q < 100000 do Inc(Q);
+    if MainForm.DoWriteToMemo then
+      MainForm.Memo1.Lines.Add(IntToStr(GetCurrentMicroThread.Id) + ': ' + IntToStr(Trunc(GetCurrentMicroThread.Completion * 100)) + ' %');
+    if MainForm.DoWaitForEvent then MainForm.Event.WaitFor(MainForm.WaitForEventDuration * OneMillisecond);
+    if MainForm.DoSleep then MTSleep(MainForm.SleepDuration * OneMillisecond);
+    if MainForm.RaiseException then begin
+      MainForm.RaiseException := False;
+      raise Exception.Create('Exception from microthread');
+    end;
+    if MainForm.DoCriticalSection then begin
+      try
+        MainForm.Lock.Acquire;
+        MTSleep(MainForm.CriticalSectionSleepDuration * OneMillisecond);
+      finally
+        MainForm.Lock.Release;
+      end;
+    end;
+    //WorkerSubRoutine;
+    GetCurrentMicroThread.Completion := I / MainForm.Iterations;
+    GetCurrentMicroThread.Yield;
+  end;
 end;
 
 procedure TWorker.Execute;
