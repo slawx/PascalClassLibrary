@@ -139,6 +139,8 @@ begin
 end;
 
 procedure TExceptionLogger.ExceptionHandler(Sender: TObject; E: Exception);
+var
+  Thread: TThread;
 begin
   BackTraceStrFunc := @StabBackTraceStr;
   StackTrace.GetExceptionBackTrace;

@@ -80,10 +80,10 @@ begin
       with NewItem do begin
         Caption := IntToStr(Index);
         SubItems.Add(IntToHex(Address, 8));
+        SubItems.Add(IntToStr(LineNumber));
         SubItems.Add(FunctionClassName);
         SubItems.Add(FunctionName);
         SubItems.Add(Source);
-        SubItems.Add(IntToStr(LineNumber));
       end;
     end;
     EndUpdate;

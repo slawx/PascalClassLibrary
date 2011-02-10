@@ -23,7 +23,8 @@ type
   TStackTrace = class(TObjectList)
     MaxDepth: Integer;
     procedure GetExceptionBackTrace;
-    procedure GetCallStack;
+    procedure GetCallStack(BP: Pointer);
+    procedure GetCurrentCallStack;
     constructor Create;
   end;
 
@@ -53,43 +54,29 @@ begin
   BackTraceStrFunc := Store;
 end;
 
-procedure TStackTrace.GetCallStack;
+procedure TStackTrace.GetCallStack(BP: Pointer);
 var
   I: Longint;
   prevbp: Pointer;
-  CallerFrame,
-  CallerAddress,
-  bp: Pointer;
+  CallerFrame: Pointer;
+  CallerAddress: Pointer;
   StackFrameInfo: TStackFrameInfo;
 begin
   Clear;
-  //routine adapted from fpc source
-
-  bp := get_frame;
-  //This trick skip SendCallstack item
-  // bp := get_caller_frame(get_frame);
   try
-    prevbp := bp - 1;
     I := 0;
-    //is_dev:=do_isdevice(textrec(f).Handle);
-    while bp > prevbp do begin
-       CallerAddress := get_caller_addr(bp);
-       CallerFrame := get_caller_frame(bp);
-       if (CallerAddress = nil) then
-         Break;
-       StackFrameInfo := TStackFrameInfo.Create;
-       StackFrameInfo.GetFrameInfo(CallerAddress);
-       StackFrameInfo.Index := I + 1;
-       Add(StackFrameInfo);
-       Inc(I);
-       if (I >= MaxDepth) or (CallerFrame = nil) then
-         Break;
-       prevbp := bp;
-       bp := CallerFrame;
-     end;
-   except
-     { prevent endless dump if an exception occured }
-   end;
+    while (BP <> nil) and (I < MaxDepth) do begin
+      CallerAddress := TStackFrameInfo(get_caller_addr(BP));
+      StackFrameInfo := TStackFrameInfo.Create;
+      StackFrameInfo.GetFrameInfo(CallerAddress);
+      StackFrameInfo.Index := I + 1;
+      Add(StackFrameInfo);
+      Inc(I);
+      BP := TStackFrameInfo(get_caller_frame(BP));
+    end;
+  except
+    { prevent endless dump if an exception occured }
+  end;
 end;
 
 constructor TStackTrace.Create;
@@ -121,7 +108,10 @@ begin
   end;
 end;
 
-
+procedure TStackTrace.GetCurrentCallStack;
+begin
+  GetCallStack(get_frame);
+end;
 
 end.
 

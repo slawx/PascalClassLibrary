@@ -9,7 +9,7 @@ object ExceptionForm: TExceptionForm
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
-  LCLVersion = '0.9.29'
+  LCLVersion = '0.9.31'
   object ButtonClose: TButton
     Left = 611
     Height = 25
@@ -35,9 +35,9 @@ object ExceptionForm: TExceptionForm
     Height = 277
     Top = 3
     Width = 678
-    ActivePage = TabSheet1
+    ActivePage = TabSheet2
     Anchors = [akTop, akLeft, akRight, akBottom]
-    TabIndex = 0
+    TabIndex = 1
     TabOrder = 2
     object TabSheet1: TTabSheet
       Caption = 'General'
@@ -75,6 +75,10 @@ object ExceptionForm: TExceptionForm
             Width = 75
           end        
           item
+            Caption = 'Line'
+            Width = 71
+          end        
+          item
             Caption = 'Class'
             Width = 150
           end        
@@ -85,12 +89,7 @@ object ExceptionForm: TExceptionForm
           item
             Caption = 'Unit'
             Width = 150
-          end        
-          item
-            Caption = 'Line'
-            Width = 71
           end>
-        ItemIndex = -1
         ReadOnly = True
         RowSelect = True
         TabOrder = 0
