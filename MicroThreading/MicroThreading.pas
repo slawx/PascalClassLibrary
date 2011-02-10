@@ -7,7 +7,8 @@ unit MicroThreading;
 interface
 
 uses
-  UMicroThreading, UPlatform, UMicroThreadList, UThreadEx, LazarusPackageIntf;
+  UMicroThreading, UPlatform, UMicroThreadList, UThreadEx, 
+  UMicroThreadCallStack, LazarusPackageIntf;
 
 implementation
 

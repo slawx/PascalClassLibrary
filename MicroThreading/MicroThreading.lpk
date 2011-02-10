@@ -15,8 +15,8 @@
     </CompilerOptions>
     <Description Value="Micro threading subsystem. "/>
     <License Value="GNU/GPL"/>
-    <Version Minor="1"/>
-    <Files Count="5">
+    <Version Minor="2"/>
+    <Files Count="6">
       <Item1>
         <Filename Value="UMicroThreading.pas"/>
         <HasRegisterProc Value="True"/>
@@ -38,11 +38,15 @@
         <Filename Value="UThreadEx.pas"/>
         <UnitName Value="UThreadEx"/>
       </Item5>
+      <Item6>
+        <Filename Value="UMicroThreadCallStack.pas"/>
+        <UnitName Value="UMicroThreadCallStack"/>
+      </Item6>
     </Files>
     <Type Value="RunAndDesignTime"/>
     <RequiredPkgs Count="4">
       <Item1>
-        <PackageName Value="LCLBase"/>
+        <PackageName Value="ExceptionLogger"/>
       </Item1>
       <Item2>
         <PackageName Value="LCLBase"/>

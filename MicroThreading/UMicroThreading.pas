@@ -140,6 +140,7 @@ type
       write SetScheduler;
     property Manager: TMicroThreadManager read FManager write SetManager;
     property StackUsed: Integer read GetStackUsed;
+    property BasePointer: Pointer read FBasePointer;
   end;
 
   TMicroThreadMethod = procedure(MicroThread: TMicroThread) of object;
@@ -390,7 +391,7 @@ begin
     Lock.Acquire;
     Dec(FCounter);
     if FMicroThreads.Count > 0 then begin
-      // Release one waiting micro thread and lower counter
+      // Release one waiting micro thread
       TMicroThread(FMicroThreads[0]).FState := tsWaiting;
       FMicroThreads.Delete(0);
     end;
@@ -434,8 +435,6 @@ begin
   inherited;
   Form := TMicroThreadListForm.Create(Self);
 end;
-
-
 
 { TMicroThreadMethod }
 
@@ -796,6 +795,7 @@ procedure TMicroThread.WaitForCriticalSection(
   CriticalSection: TMicroThreadCriticalSection);
 begin
   try
+    FScheduler.FMicroThreadsLock.Acquire;
     CriticalSection.Lock.Acquire;
     Inc(CriticalSection.FCounter);
     if CriticalSection.FCounter > 1 then begin
@@ -804,13 +804,16 @@ begin
       FStatePending := tsBlocked;
       try
         CriticalSection.Lock.Release;
+        FScheduler.FMicroThreadsLock.Release;
         Yield;
       finally
+        FScheduler.FMicroThreadsLock.Acquire;
         CriticalSection.Lock.Acquire;
       end;
     end;
   finally
     CriticalSection.Lock.Release;
+    FScheduler.FMicroThreadsLock.Release;
   end;
 end;
 
@@ -844,10 +847,13 @@ end;
 constructor TMicroThread.Create(CreateSuspended: Boolean;
   const StackSize: SizeUInt = DefaultStackSize);
 begin
+  // Setup stack
   FStackSize := StackSize;
   FStack := GetMem(FStackSize);
-  FBasePointer := FStack + FStackSize;
+  FBasePointer := FStack + FStackSize - SizeOf(Pointer);
   FStackPointer := FBasePointer - SizeOf(Pointer);
+  FillChar(FStackPointer^, 2 * SizeOf(Pointer), 0);
+
   FExecutionTime := 0;
   FState := tsWaiting;
   FStatePending := tsNone;
@@ -885,9 +891,12 @@ begin
 end;
 
 procedure TMicroThread.Suspend;
+var
+  MT: TMicroThread;
 begin
   FStatePending := tsSuspended;
-  //Yield;
+  MT := GetCurrentMicroThread;
+  if Assigned(MT) then Yield;
 end;
 
 procedure TMicroThread.Synchronize(AMethod: TThreadMethod);
@@ -917,24 +926,30 @@ var
   CurrentMT: TMicroThread;
 begin
   try
-    NewMicroThread := TMicroThreadSimple.Create(False);
+    NewMicroThread := TMicroThreadSimple.Create(True);
     NewMicroThread.Method := Method;
     NewMicroThread.FScheduler := Self;
     NewMicroThread.FreeOnTerminate := not WaitForFinish;
+    NewMicroThread.Start;
     if WaitForFinish then begin
       CurrentMT := GetCurrentMicroThread;
-      while not ((NewMicroThread.FState = tsBlocked) and
-      (NewMicroThread.FBlockState = tbsTerminated)) do begin
-        try
-          FMicroThreadsLock.Release;
-          if Assigned(CurrentMT) then CurrentMT.MTSleep(1 * OneMillisecond)
-          else begin
-            Sleep(1);
-            Application.ProcessMessages;
+      try
+        FMicroThreadsLock.Acquire;
+        while not ((NewMicroThread.FState = tsBlocked) and
+        (NewMicroThread.FBlockState = tbsTerminated)) do begin
+          try
+            FMicroThreadsLock.Release;
+            if Assigned(CurrentMT) then CurrentMT.MTSleep(1 * OneMillisecond)
+            else begin
+              Sleep(1);
+              Application.ProcessMessages;
+            end;
+          finally
+            FMicroThreadsLock.Acquire;
           end;
-        finally
-          FMicroThreadsLock.Acquire;
         end;
+      finally
+        FMicroThreadsLock.Release;
       end;
     end;
   finally

@@ -42,7 +42,7 @@
         <PackageName Value="LCL"/>
       </Item3>
     </RequiredPackages>
-    <Units Count="30">
+    <Units Count="34">
       <Unit0>
         <Filename Value="Demo.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -58,7 +58,7 @@
         <ComponentName Value="MainForm"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UMainForm"/>
-        <EditorIndex Value="9"/>
+        <EditorIndex Value="13"/>
         <WindowIndex Value="0"/>
         <TopLine Value="393"/>
         <CursorPos X="29" Y="406"/>
@@ -72,8 +72,8 @@
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="914"/>
-        <CursorPos X="11" Y="928"/>
+        <TopLine Value="885"/>
+        <CursorPos X="1" Y="897"/>
         <UsageCount Value="136"/>
         <Loaded Value="True"/>
       </Unit2>
@@ -83,7 +83,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="27" Y="9"/>
-        <UsageCount Value="19"/>
+        <UsageCount Value="18"/>
       </Unit3>
       <Unit4>
         <Filename Value="../../ExceptionLogger/UStackTrace.pas"/>
@@ -91,7 +91,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="12" Y="8"/>
-        <UsageCount Value="26"/>
+        <UsageCount Value="25"/>
       </Unit4>
       <Unit5>
         <Filename Value="../../../../Programy/Lazarus/0.9.31_2.4.3/fpc/2.4.3/source/rtl/win/sysutils.pp"/>
@@ -99,28 +99,28 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1034"/>
         <CursorPos X="14" Y="1037"/>
-        <UsageCount Value="21"/>
+        <UsageCount Value="20"/>
       </Unit5>
       <Unit6>
         <Filename Value="../../../../Programy/Lazarus/0.9.31_2.4.3/fpc/2.4.3/source/rtl/objpas/classes/classesh.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1638"/>
         <CursorPos X="28" Y="1645"/>
-        <UsageCount Value="2"/>
+        <UsageCount Value="1"/>
       </Unit6>
       <Unit7>
         <Filename Value="../../../../Programy/Lazarus/0.9.31_2.4.3/fpc/2.4.3/source/rtl/win/wininc/func.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="147"/>
         <CursorPos X="1" Y="158"/>
-        <UsageCount Value="22"/>
+        <UsageCount Value="21"/>
       </Unit7>
       <Unit8>
         <Filename Value="../../../../Programy/Lazarus/0.9.31_2.4.3/fpc/2.4.3/source/rtl/objpas/sysutils/osutilsh.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="14"/>
         <CursorPos X="11" Y="27"/>
-        <UsageCount Value="23"/>
+        <UsageCount Value="22"/>
       </Unit8>
       <Unit9>
         <Filename Value="../UPlatform.pas"/>
@@ -129,7 +129,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="25"/>
         <CursorPos X="41" Y="39"/>
-        <UsageCount Value="38"/>
+        <UsageCount Value="42"/>
         <Loaded Value="True"/>
       </Unit9>
       <Unit10>
@@ -139,9 +139,9 @@
         <UnitName Value="UMicroThreadList"/>
         <EditorIndex Value="7"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="53"/>
-        <CursorPos X="61" Y="61"/>
-        <UsageCount Value="24"/>
+        <TopLine Value="121"/>
+        <CursorPos X="10" Y="138"/>
+        <UsageCount Value="28"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit10>
@@ -150,28 +150,28 @@
         <WindowIndex Value="0"/>
         <TopLine Value="191"/>
         <CursorPos X="13" Y="204"/>
-        <UsageCount Value="21"/>
+        <UsageCount Value="20"/>
       </Unit11>
       <Unit12>
         <Filename Value="../../../../Programy/Lazarus/0.9.31_2.5.1/lcl/interfaces/win32/win32object.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="600"/>
         <CursorPos X="1" Y="613"/>
-        <UsageCount Value="20"/>
+        <UsageCount Value="19"/>
       </Unit12>
       <Unit13>
         <Filename Value="../../../../Programy/Lazarus/0.9.31_2.5.1/fpc/2.5.1/source/rtl/objpas/classes/classesh.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1483"/>
         <CursorPos X="51" Y="1490"/>
-        <UsageCount Value="20"/>
+        <UsageCount Value="19"/>
       </Unit13>
       <Unit14>
         <Filename Value="../../../../Programy/Lazarus/0.9.31_2.5.1/fpc/2.5.1/source/rtl/win/tthread.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="30"/>
         <CursorPos X="3" Y="15"/>
-        <UsageCount Value="20"/>
+        <UsageCount Value="19"/>
       </Unit14>
       <Unit15>
         <Filename Value="../UThreadEx.pas"/>
@@ -179,72 +179,72 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="20" Y="1"/>
-        <UsageCount Value="30"/>
+        <UsageCount Value="29"/>
       </Unit15>
       <Unit16>
         <Filename Value="../../../../Programy/Lazarus/0.9.31_2.5.1/fpc/2.5.1/source/rtl/inc/systemh.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="469"/>
         <CursorPos X="18" Y="484"/>
-        <UsageCount Value="20"/>
+        <UsageCount Value="19"/>
       </Unit16>
       <Unit17>
         <Filename Value="../../../../Programy/Lazarus/0.9.31_2.5.1/fpc/2.5.1/source/rtl/inc/system.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="920"/>
         <CursorPos X="17" Y="942"/>
-        <UsageCount Value="20"/>
+        <UsageCount Value="19"/>
       </Unit17>
       <Unit18>
         <Filename Value="../../../../Programy/Lazarus/0.9.31_2.5.1/fpc/2.5.1/source/rtl/objpas/sysutils/osutilsh.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="14"/>
         <CursorPos X="11" Y="27"/>
-        <UsageCount Value="20"/>
+        <UsageCount Value="19"/>
       </Unit18>
       <Unit19>
         <Filename Value="../../../../Programy/Lazarus/0.9.31_2.5.1/fpc/2.5.1/source/rtl/inc/threadh.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="57"/>
         <CursorPos X="5" Y="70"/>
-        <UsageCount Value="20"/>
+        <UsageCount Value="19"/>
       </Unit19>
       <Unit20>
         <Filename Value="../../../../Programy/Lazarus/0.9.31_2.5.1/fpc/2.5.1/source/rtl/inc/thread.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="169"/>
         <CursorPos X="33" Y="184"/>
-        <UsageCount Value="20"/>
+        <UsageCount Value="19"/>
       </Unit20>
       <Unit21>
         <Filename Value="../../../../Programy/Lazarus/0.9.31_2.5.1/fpc/2.5.1/source/rtl/objpas/sysutils/sysutils.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="429"/>
         <CursorPos X="19" Y="435"/>
-        <UsageCount Value="19"/>
+        <UsageCount Value="18"/>
       </Unit21>
       <Unit22>
         <Filename Value="../../../../Programy/Lazarus/0.9.31_2.5.1/fpc/2.5.1/source/rtl/inc/objpash.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="329"/>
         <CursorPos X="14" Y="342"/>
-        <UsageCount Value="19"/>
+        <UsageCount Value="18"/>
       </Unit22>
       <Unit23>
         <Filename Value="../../../../Programy/Lazarus/0.9.31_2.5.1/fpc/2.5.1/source/rtl/inc/except.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="29"/>
         <CursorPos X="23" Y="42"/>
-        <UsageCount Value="16"/>
+        <UsageCount Value="15"/>
       </Unit23>
       <Unit24>
         <Filename Value="../../../../Projekty2/FreePascalManager/trunk/Instance/1/FPC/packages/fcl-base/src/syncobjs.pp"/>
         <UnitName Value="syncobjs"/>
-        <EditorIndex Value="8"/>
+        <EditorIndex Value="12"/>
         <WindowIndex Value="0"/>
         <TopLine Value="35"/>
         <CursorPos X="18" Y="45"/>
-        <UsageCount Value="13"/>
+        <UsageCount Value="17"/>
         <Loaded Value="True"/>
       </Unit24>
       <Unit25>
@@ -253,7 +253,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="548"/>
         <CursorPos X="1" Y="561"/>
-        <UsageCount Value="12"/>
+        <UsageCount Value="16"/>
         <Loaded Value="True"/>
       </Unit25>
       <Unit26>
@@ -262,7 +262,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="798"/>
         <CursorPos X="1" Y="821"/>
-        <UsageCount Value="12"/>
+        <UsageCount Value="16"/>
         <Loaded Value="True"/>
       </Unit26>
       <Unit27>
@@ -271,7 +271,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="65"/>
         <CursorPos X="29" Y="75"/>
-        <UsageCount Value="12"/>
+        <UsageCount Value="16"/>
         <Loaded Value="True"/>
       </Unit27>
       <Unit28>
@@ -281,7 +281,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1398"/>
         <CursorPos X="15" Y="1309"/>
-        <UsageCount Value="11"/>
+        <UsageCount Value="15"/>
         <Loaded Value="True"/>
       </Unit28>
       <Unit29>
@@ -290,130 +290,171 @@
         <WindowIndex Value="0"/>
         <TopLine Value="2161"/>
         <CursorPos X="33" Y="2161"/>
-        <UsageCount Value="11"/>
+        <UsageCount Value="15"/>
         <Loaded Value="True"/>
       </Unit29>
+      <Unit30>
+        <Filename Value="../UMicroThreadCallStack.pas"/>
+        <ComponentName Value="CallStackForm"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="UMicroThreadCallStack"/>
+        <EditorIndex Value="8"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="44"/>
+        <CursorPos X="22" Y="66"/>
+        <UsageCount Value="14"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit30>
+      <Unit31>
+        <Filename Value="../UStackTrace.pas"/>
+        <UnitName Value="UStackTrace"/>
+        <EditorIndex Value="9"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="17"/>
+        <CursorPos X="26" Y="122"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+      </Unit31>
+      <Unit32>
+        <Filename Value="../../../../Projekty2/FreePascalManager/trunk/Instance/1/FPC/rtl/inc/systemh.inc"/>
+        <EditorIndex Value="10"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="974"/>
+        <CursorPos X="10" Y="987"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+      </Unit32>
+      <Unit33>
+        <Filename Value="../../../../Projekty2/FreePascalManager/trunk/Instance/1/FPC/rtl/i386/i386.inc"/>
+        <EditorIndex Value="11"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1135"/>
+        <CursorPos X="10" Y="1139"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+      </Unit33>
     </Units>
     <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
-        <Filename Value="../UMicroThreading.pas"/>
-        <Caret Line="939" Column="1" TopLine="932"/>
+        <Filename Value="../UStackTrace.pas"/>
+        <Caret Line="76" Column="60" TopLine="63"/>
       </Position1>
       <Position2>
-        <Filename Value="../UMicroThreading.pas"/>
-        <Caret Line="940" Column="1" TopLine="932"/>
+        <Filename Value="../UStackTrace.pas"/>
+        <Caret Line="74" Column="17" TopLine="63"/>
       </Position2>
       <Position3>
-        <Filename Value="../UMicroThreading.pas"/>
-        <Caret Line="941" Column="1" TopLine="932"/>
+        <Filename Value="../UStackTrace.pas"/>
+        <Caret Line="63" Column="27" TopLine="49"/>
       </Position3>
       <Position4>
-        <Filename Value="../UMicroThreading.pas"/>
-        <Caret Line="942" Column="1" TopLine="932"/>
+        <Filename Value="../UStackTrace.pas"/>
+        <Caret Line="79" Column="32" TopLine="64"/>
       </Position4>
       <Position5>
-        <Filename Value="../UMicroThreading.pas"/>
-        <Caret Line="944" Column="1" TopLine="932"/>
+        <Filename Value="../UStackTrace.pas"/>
+        <Caret Line="76" Column="66" TopLine="61"/>
       </Position5>
       <Position6>
-        <Filename Value="../UMicroThreading.pas"/>
-        <Caret Line="946" Column="1" TopLine="932"/>
+        <Filename Value="../UStackTrace.pas"/>
+        <Caret Line="74" Column="1" TopLine="61"/>
       </Position6>
       <Position7>
-        <Filename Value="../UMicroThreading.pas"/>
-        <Caret Line="937" Column="1" TopLine="932"/>
+        <Filename Value="../UStackTrace.pas"/>
+        <Caret Line="75" Column="1" TopLine="61"/>
       </Position7>
       <Position8>
-        <Filename Value="../UMicroThreading.pas"/>
-        <Caret Line="938" Column="1" TopLine="932"/>
+        <Filename Value="../UStackTrace.pas"/>
+        <Caret Line="76" Column="1" TopLine="61"/>
       </Position8>
       <Position9>
-        <Filename Value="../UMicroThreading.pas"/>
-        <Caret Line="846" Column="1" TopLine="833"/>
+        <Filename Value="../UStackTrace.pas"/>
+        <Caret Line="74" Column="1" TopLine="61"/>
       </Position9>
       <Position10>
-        <Filename Value="../UMicroThreading.pas"/>
-        <Caret Line="859" Column="1" TopLine="837"/>
+        <Filename Value="../UStackTrace.pas"/>
+        <Caret Line="75" Column="1" TopLine="61"/>
       </Position10>
       <Position11>
         <Filename Value="../UMicroThreading.pas"/>
-        <Caret Line="847" Column="1" TopLine="837"/>
+        <Caret Line="854" Column="3" TopLine="847"/>
       </Position11>
       <Position12>
         <Filename Value="../UMicroThreading.pas"/>
-        <Caret Line="848" Column="1" TopLine="837"/>
+        <Caret Line="853" Column="41" TopLine="847"/>
       </Position12>
       <Position13>
         <Filename Value="../UMicroThreading.pas"/>
-        <Caret Line="849" Column="1" TopLine="837"/>
+        <Caret Line="854" Column="1" TopLine="847"/>
       </Position13>
       <Position14>
         <Filename Value="../UMicroThreading.pas"/>
-        <Caret Line="850" Column="1" TopLine="837"/>
+        <Caret Line="855" Column="1" TopLine="847"/>
       </Position14>
       <Position15>
-        <Filename Value="../UMicroThreading.pas"/>
-        <Caret Line="851" Column="1" TopLine="837"/>
+        <Filename Value="../UStackTrace.pas"/>
+        <Caret Line="74" Column="1" TopLine="61"/>
       </Position15>
       <Position16>
-        <Filename Value="../UMicroThreading.pas"/>
-        <Caret Line="852" Column="1" TopLine="837"/>
+        <Filename Value="../UStackTrace.pas"/>
+        <Caret Line="75" Column="1" TopLine="61"/>
       </Position16>
       <Position17>
-        <Filename Value="../UMicroThreading.pas"/>
-        <Caret Line="853" Column="1" TopLine="837"/>
+        <Filename Value="../UStackTrace.pas"/>
+        <Caret Line="76" Column="1" TopLine="61"/>
       </Position17>
       <Position18>
-        <Filename Value="../UMicroThreading.pas"/>
-        <Caret Line="854" Column="1" TopLine="837"/>
+        <Filename Value="../UStackTrace.pas"/>
+        <Caret Line="74" Column="1" TopLine="61"/>
       </Position18>
       <Position19>
-        <Filename Value="../UMicroThreading.pas"/>
-        <Caret Line="857" Column="1" TopLine="837"/>
+        <Filename Value="../UStackTrace.pas"/>
+        <Caret Line="75" Column="50" TopLine="61"/>
       </Position19>
       <Position20>
-        <Filename Value="../UMicroThreading.pas"/>
-        <Caret Line="858" Column="1" TopLine="837"/>
+        <Filename Value="../UStackTrace.pas"/>
+        <Caret Line="74" Column="45" TopLine="61"/>
       </Position20>
       <Position21>
-        <Filename Value="../UMicroThreading.pas"/>
-        <Caret Line="859" Column="1" TopLine="837"/>
+        <Filename Value="../UStackTrace.pas"/>
+        <Caret Line="73" Column="29" TopLine="61"/>
       </Position21>
       <Position22>
-        <Filename Value="../UMicroThreading.pas"/>
-        <Caret Line="939" Column="1" TopLine="926"/>
+        <Filename Value="../UStackTrace.pas"/>
+        <Caret Line="76" Column="1" TopLine="61"/>
       </Position22>
       <Position23>
-        <Filename Value="../UMicroThreading.pas"/>
-        <Caret Line="940" Column="1" TopLine="926"/>
+        <Filename Value="../UStackTrace.pas"/>
+        <Caret Line="91" Column="1" TopLine="78"/>
       </Position23>
       <Position24>
-        <Filename Value="../UMicroThreading.pas"/>
-        <Caret Line="941" Column="1" TopLine="926"/>
+        <Filename Value="../UMicroThreadCallStack.pas"/>
+        <Caret Line="67" Column="38" TopLine="46"/>
       </Position24>
       <Position25>
-        <Filename Value="../UMicroThreading.pas"/>
-        <Caret Line="942" Column="1" TopLine="926"/>
+        <Filename Value="../UStackTrace.pas"/>
+        <Caret Line="76" Column="1" TopLine="63"/>
       </Position25>
       <Position26>
-        <Filename Value="../UMicroThreading.pas"/>
-        <Caret Line="938" Column="45" TopLine="926"/>
+        <Filename Value="../UStackTrace.pas"/>
+        <Caret Line="78" Column="1" TopLine="63"/>
       </Position26>
       <Position27>
-        <Filename Value="../UMicroThreading.pas"/>
-        <Caret Line="940" Column="1" TopLine="914"/>
+        <Filename Value="../UMicroThreadCallStack.pas"/>
+        <Caret Line="66" Column="19" TopLine="47"/>
       </Position27>
       <Position28>
-        <Filename Value="../UMicroThreading.pas"/>
-        <Caret Line="901" Column="32" TopLine="888"/>
+        <Filename Value="../UMicroThreadCallStack.pas"/>
+        <Caret Line="67" Column="14" TopLine="47"/>
       </Position28>
       <Position29>
-        <Filename Value="../UMicroThreading.pas"/>
-        <Caret Line="236" Column="43" TopLine="236"/>
+        <Filename Value="../UMicroThreadCallStack.pas"/>
+        <Caret Line="66" Column="22" TopLine="44"/>
       </Position29>
       <Position30>
-        <Filename Value="../UMicroThreading.pas"/>
-        <Caret Line="926" Column="22" TopLine="913"/>
+        <Filename Value="../UMicroThreadList.pas"/>
+        <Caret Line="138" Column="10" TopLine="121"/>
       </Position30>
     </JumpHistory>
   </ProjectOptions>

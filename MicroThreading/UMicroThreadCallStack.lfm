@@ -1,0 +1,45 @@
+object CallStackForm: TCallStackForm
+  Left = 257
+  Height = 438
+  Top = 107
+  Width = 611
+  Caption = 'Call stack'
+  ClientHeight = 438
+  ClientWidth = 611
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  LCLVersion = '0.9.31'
+  object ListView1: TListView
+    Left = 8
+    Height = 424
+    Top = 8
+    Width = 595
+    Anchors = [akTop, akLeft, akRight, akBottom]
+    Columns = <    
+      item
+        Caption = 'Sequence'
+      end    
+      item
+        Caption = 'Address'
+        Width = 70
+      end    
+      item
+        Caption = 'Line'
+      end    
+      item
+        Caption = 'Class'
+        Width = 100
+      end    
+      item
+        Caption = 'Procedure/Method'
+        Width = 120
+      end    
+      item
+        Caption = 'Source file'
+        Width = 200
+      end>
+    ReadOnly = True
+    TabOrder = 0
+    ViewStyle = vsReport
+  end
+end

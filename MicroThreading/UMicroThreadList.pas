@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, ComCtrls,
-  ExtCtrls, StdCtrls, DateUtils, UPlatform;
+  ExtCtrls, StdCtrls, Menus, DateUtils, UPlatform, UMicroThreadCallStack;
 
 type
 
@@ -20,6 +20,8 @@ type
     Label7: TLabel;
     Label8: TLabel;
     Label9: TLabel;
+    MenuItemCallStack: TMenuItem;
+    PopupMenu1: TPopupMenu;
     TimerRedraw: TTimer;
     Label1: TLabel;
     Label2: TLabel;
@@ -30,13 +32,16 @@ type
     TabSheet2: TTabSheet;
     TabSheet3: TTabSheet;
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
+    procedure FormCreate(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
     procedure FormHide(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure ListView1Data(Sender: TObject; Item: TListItem);
     procedure ListView2Data(Sender: TObject; Item: TListItem);
+    procedure MenuItemCallStackClick(Sender: TObject);
     procedure TimerRedrawTimer(Sender: TObject);
   private
-    { private declarations }
+    CallStackForm: TCallStackForm;
   public
     { public declarations }
   end;
@@ -80,6 +85,7 @@ begin
     if Item.Index < MainScheduler.MicroThreads.Count then
     with TMicroThread(MainScheduler.MicroThreads[Item.Index]) do begin
       Item.Caption := IntToStr(Id);
+      Item.Data := TMicroThread(MainScheduler.MicroThreads[Item.Index]);
       Item.SubItems.Add('');
       Item.SubItems.Add(IntToStr(Priority));
       Item.SubItems.Add(MicroThreadStateText[State]);
@@ -123,6 +129,16 @@ begin
   end;
 end;
 
+procedure TMicroThreadListForm.MenuItemCallStackClick(Sender: TObject);
+begin
+  if Assigned(ListView1.Selected) then
+  with TMicroThread(ListView1.Selected.Data) do begin
+    //Suspend;
+    CallStackForm.Show(BasePointer);
+    //Resume;
+  end;
+end;
+
 procedure TMicroThreadListForm.FormShow(Sender: TObject);
 begin
   TimerRedraw.Enabled := True;
@@ -137,6 +153,16 @@ procedure TMicroThreadListForm.FormClose(Sender: TObject;
   var CloseAction: TCloseAction);
 begin
   TimerRedraw.Enabled := False;
+end;
+
+procedure TMicroThreadListForm.FormCreate(Sender: TObject);
+begin
+  CallStackForm := TCallStackForm.Create(nil);
+end;
+
+procedure TMicroThreadListForm.FormDestroy(Sender: TObject);
+begin
+  CallStackForm.Free;
 end;
 
 

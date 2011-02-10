@@ -1,11 +1,11 @@
 object MainForm: TMainForm
-  Left = 282
+  Left = 0
   Height = 533
-  Top = 94
-  Width = 816
+  Top = 13
+  Width = 792
   Caption = 'MicroThreading demo'
   ClientHeight = 514
-  ClientWidth = 816
+  ClientWidth = 792
   Menu = MainMenu1
   OnCreate = FormCreate
   OnDestroy = FormDestroy
@@ -15,7 +15,7 @@ object MainForm: TMainForm
     Left = 8
     Height = 500
     Top = 8
-    Width = 802
+    Width = 778
     ActivePage = TabSheet1
     Anchors = [akTop, akLeft, akRight, akBottom]
     TabIndex = 1
@@ -107,7 +107,7 @@ object MainForm: TMainForm
     object TabSheet1: TTabSheet
       Caption = 'Job control'
       ClientHeight = 474
-      ClientWidth = 794
+      ClientWidth = 770
       object ButtonAddWorkers: TButton
         Left = 10
         Height = 25
