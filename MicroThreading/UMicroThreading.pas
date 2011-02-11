@@ -34,6 +34,7 @@ resourcestring
   SNotInMicroThread = 'Not in microthread';
   SReleaseNotAcquiredLock = 'Release on not acquired lock';
   SMethodNotAssigned = 'Method for microthread not assigned';
+  SCriticalSectionDecrement = 'Critical section counter decremented to negative number';
 
 
 type
@@ -116,8 +117,6 @@ type
 
     procedure Yield;
     procedure MTSleep(Duration: TDateTime); // No conflicting name to global Sleep procedure
-    procedure WaitForCriticalSection(CriticalSection: TMicroThreadCriticalSection);
-    function WaitForEvent(Event: TMicroThreadEvent; Duration: TDateTime): TWaitResult;
     procedure WaitFor;
     procedure Terminate;
     procedure Start;
@@ -235,7 +234,7 @@ type
   public
     BurstCount: Integer;
     function Add(MicroThread: TMicroThread): Integer;
-    function AddMethod(Method: TProcedureOfObject; WaitForFinish: Boolean = False): Integer;
+    function AddMethod(Method: TProcedureOfObject; WaitForFinish: Boolean = True): Integer;
     procedure Remove(MicroThread: TMicroThread; Free: Boolean = True);
     constructor Create;
     destructor Destroy; override;
@@ -277,7 +276,6 @@ const
 function GetCurrentMicroThread: TMicroThread;
 procedure MTSleep(Duration: TDateTime);
 procedure MTSynchronize(Method: TThreadMethod);
-function MTWaitForEvent(Event: TMicroThreadEvent; Duration: TDateTime): TWaitResult;
 procedure Log(Text: string);
 procedure Register;
 
@@ -344,15 +342,6 @@ begin
   end else Method;
 end;
 
-function MTWaitForEvent(Event: TMicroThreadEvent; Duration: TDateTime): TWaitResult;
-var
-  MT: TMicroThread;
-begin
-  MT := GetCurrentMicroThread;
-  if Assigned(MT) then Result := MT.WaitForEvent(Event, Duration)
-    else raise EMicroThreadError.Create(SNotInMicroThread);
-end;
-
 var
   LogLock: TCriticalSection;
 
@@ -380,8 +369,29 @@ var
   Event: TMicroThreadEvent;
 begin
   MT := GetCurrentMicroThread;
-  if Assigned(MT) then MT.WaitForCriticalSection(Self)
-    else raise EMicroThreadError.Create(SNotInMicroThread);
+  if Assigned(MT) then
+  try
+    MainScheduler.FMicroThreadsLock.Acquire;
+    Lock.Acquire;
+    Inc(FCounter);
+    if FCounter > 1 then begin
+      FMicroThreads.Add(MT);
+      MT.FBlockState := tbsCriticalSection;
+      MT.FStatePending := tsBlocked;
+      try
+        Lock.Release;
+        MainScheduler.FMicroThreadsLock.Release;
+        MT.Yield;
+      finally
+        MainScheduler.FMicroThreadsLock.Acquire;
+        Lock.Acquire;
+      end;
+    end;
+  finally
+    Lock.Release;
+    MainScheduler.FMicroThreadsLock.Release;
+  end else
+    raise EMicroThreadError.Create(SNotInMicroThread);
 end;
 
 procedure TMicroThreadCriticalSection.Release;
@@ -393,8 +403,11 @@ begin
     if FMicroThreads.Count > 0 then begin
       // Release one waiting micro thread
       TMicroThread(FMicroThreads[0]).FState := tsWaiting;
+      TMicroThread(FMicroThreads[0]).FStatePending := tsNone;
       FMicroThreads.Delete(0);
     end;
+    if FCounter < 0 then
+      raise EMicroThreadError.Create(SCriticalSectionDecrement);
   finally
     Lock.Release;
     MainScheduler.FMicroThreadsLock.Release;
@@ -467,8 +480,32 @@ var
   MT: TMicroThread;
 begin
   MT := GetCurrentMicroThread;
-  if Assigned(MT) then Result := MT.WaitForEvent(Self, Duration)
-    else raise EMicroThreadError.Create(SNotInMicroThread);
+  if Assigned(MT) then begin
+    try
+      FMicroThreadsLock.Acquire;
+      if Signaled then begin
+        Result := wrSignaled;
+        Exit;
+      end;
+      FMicroThreads.Add(Self);
+      MT.FBlockTime := NowPrecise + Duration;
+      MT.FBlockState := tbsWaitFor;
+      MT.FStatePending := tsBlocked;
+    finally
+      FMicroThreadsLock.Release;
+    end;
+    MT.Yield;
+    if (MT.FBlockTime <> 0) and (MT.FBlockTime < NowPrecise) then
+      Result := wrTimeout else Result := wrSignaled;
+
+    try
+      FMicroThreadsLock.Acquire;
+      FMicroThreads.Remove(Self);
+    finally
+      FMicroThreadsLock.Release;
+    end
+  end else
+    raise EMicroThreadError.Create(SNotInMicroThread);
 end;
 
 constructor TMicroThreadEvent.Create;
@@ -772,7 +809,7 @@ begin
   if GetMicroThreadId <> -1 then begin
     // Called from another microthread
     while not ((FState = tsBlocked) and (FBlockState = tbsTerminated)) do begin
-      MTSleep(1);
+      MTSleep(1 * OneMillisecond);
     end;
   end else begin
     // Called directly from main thread
@@ -791,67 +828,14 @@ begin
   Yield;
 end;
 
-procedure TMicroThread.WaitForCriticalSection(
-  CriticalSection: TMicroThreadCriticalSection);
-begin
-  try
-    FScheduler.FMicroThreadsLock.Acquire;
-    CriticalSection.Lock.Acquire;
-    Inc(CriticalSection.FCounter);
-    if CriticalSection.FCounter > 1 then begin
-      CriticalSection.FMicroThreads.Add(Self);
-      FBlockState := tbsCriticalSection;
-      FStatePending := tsBlocked;
-      try
-        CriticalSection.Lock.Release;
-        FScheduler.FMicroThreadsLock.Release;
-        Yield;
-      finally
-        FScheduler.FMicroThreadsLock.Acquire;
-        CriticalSection.Lock.Acquire;
-      end;
-    end;
-  finally
-    CriticalSection.Lock.Release;
-    FScheduler.FMicroThreadsLock.Release;
-  end;
-end;
-
-function TMicroThread.WaitForEvent(Event: TMicroThreadEvent; Duration: TDateTime): TWaitResult;
-begin
-  try
-    Event.FMicroThreadsLock.Acquire;
-    if Event.Signaled then begin
-      Result := wrSignaled;
-      Exit;
-    end;
-    Event.FMicroThreads.Add(Self);
-    FBlockTime := NowPrecise + Duration;
-    FBlockState := tbsWaitFor;
-    FStatePending := tsBlocked;
-  finally
-    Event.FMicroThreadsLock.Release;
-  end;
-  Yield;
-  if (FBlockTime <> 0) and (FBlockTime < NowPrecise) then Result := wrTimeout
-    else Result := wrSignaled;
-
-  try
-    Event.FMicroThreadsLock.Acquire;
-    Event.FMicroThreads.Remove(Self);
-  finally
-    Event.FMicroThreadsLock.Release;
-  end;
-end;
-
 constructor TMicroThread.Create(CreateSuspended: Boolean;
   const StackSize: SizeUInt = DefaultStackSize);
 begin
   // Setup stack
   FStackSize := StackSize;
   FStack := GetMem(FStackSize);
-  FBasePointer := FStack + FStackSize - SizeOf(Pointer);
-  FStackPointer := FBasePointer - SizeOf(Pointer);
+  FBasePointer := 0; // FStack + FStackSize - SizeOf(Pointer);
+  FStackPointer := FStack + FStackSize - 2 * SizeOf(Pointer);
   FillChar(FStackPointer^, 2 * SizeOf(Pointer), 0);
 
   FExecutionTime := 0;

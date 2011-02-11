@@ -58,10 +58,10 @@
         <ComponentName Value="MainForm"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UMainForm"/>
-        <EditorIndex Value="13"/>
+        <EditorIndex Value="12"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="393"/>
-        <CursorPos X="29" Y="406"/>
+        <TopLine Value="407"/>
+        <CursorPos X="54" Y="428"/>
         <UsageCount Value="270"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -72,8 +72,8 @@
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="885"/>
-        <CursorPos X="1" Y="897"/>
+        <TopLine Value="449"/>
+        <CursorPos X="1" Y="462"/>
         <UsageCount Value="136"/>
         <Loaded Value="True"/>
       </Unit2>
@@ -240,7 +240,7 @@
       <Unit24>
         <Filename Value="../../../../Projekty2/FreePascalManager/trunk/Instance/1/FPC/packages/fcl-base/src/syncobjs.pp"/>
         <UnitName Value="syncobjs"/>
-        <EditorIndex Value="12"/>
+        <EditorIndex Value="11"/>
         <WindowIndex Value="0"/>
         <TopLine Value="35"/>
         <CursorPos X="18" Y="45"/>
@@ -309,16 +309,14 @@
       <Unit31>
         <Filename Value="../UStackTrace.pas"/>
         <UnitName Value="UStackTrace"/>
-        <EditorIndex Value="9"/>
         <WindowIndex Value="0"/>
         <TopLine Value="17"/>
         <CursorPos X="26" Y="122"/>
         <UsageCount Value="11"/>
-        <Loaded Value="True"/>
       </Unit31>
       <Unit32>
         <Filename Value="../../../../Projekty2/FreePascalManager/trunk/Instance/1/FPC/rtl/inc/systemh.inc"/>
-        <EditorIndex Value="10"/>
+        <EditorIndex Value="9"/>
         <WindowIndex Value="0"/>
         <TopLine Value="974"/>
         <CursorPos X="10" Y="987"/>
@@ -327,7 +325,7 @@
       </Unit32>
       <Unit33>
         <Filename Value="../../../../Projekty2/FreePascalManager/trunk/Instance/1/FPC/rtl/i386/i386.inc"/>
-        <EditorIndex Value="11"/>
+        <EditorIndex Value="10"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1135"/>
         <CursorPos X="10" Y="1139"/>
@@ -335,127 +333,63 @@
         <Loaded Value="True"/>
       </Unit33>
     </Units>
-    <JumpHistory Count="30" HistoryIndex="29">
+    <JumpHistory Count="14" HistoryIndex="13">
       <Position1>
-        <Filename Value="../UStackTrace.pas"/>
-        <Caret Line="76" Column="60" TopLine="63"/>
-      </Position1>
-      <Position2>
-        <Filename Value="../UStackTrace.pas"/>
-        <Caret Line="74" Column="17" TopLine="63"/>
-      </Position2>
-      <Position3>
-        <Filename Value="../UStackTrace.pas"/>
-        <Caret Line="63" Column="27" TopLine="49"/>
-      </Position3>
-      <Position4>
-        <Filename Value="../UStackTrace.pas"/>
-        <Caret Line="79" Column="32" TopLine="64"/>
-      </Position4>
-      <Position5>
-        <Filename Value="../UStackTrace.pas"/>
-        <Caret Line="76" Column="66" TopLine="61"/>
-      </Position5>
-      <Position6>
-        <Filename Value="../UStackTrace.pas"/>
-        <Caret Line="74" Column="1" TopLine="61"/>
-      </Position6>
-      <Position7>
-        <Filename Value="../UStackTrace.pas"/>
-        <Caret Line="75" Column="1" TopLine="61"/>
-      </Position7>
-      <Position8>
-        <Filename Value="../UStackTrace.pas"/>
-        <Caret Line="76" Column="1" TopLine="61"/>
-      </Position8>
-      <Position9>
-        <Filename Value="../UStackTrace.pas"/>
-        <Caret Line="74" Column="1" TopLine="61"/>
-      </Position9>
-      <Position10>
-        <Filename Value="../UStackTrace.pas"/>
-        <Caret Line="75" Column="1" TopLine="61"/>
-      </Position10>
-      <Position11>
         <Filename Value="../UMicroThreading.pas"/>
         <Caret Line="854" Column="3" TopLine="847"/>
-      </Position11>
-      <Position12>
+      </Position1>
+      <Position2>
         <Filename Value="../UMicroThreading.pas"/>
         <Caret Line="853" Column="41" TopLine="847"/>
-      </Position12>
-      <Position13>
+      </Position2>
+      <Position3>
         <Filename Value="../UMicroThreading.pas"/>
         <Caret Line="854" Column="1" TopLine="847"/>
-      </Position13>
-      <Position14>
+      </Position3>
+      <Position4>
         <Filename Value="../UMicroThreading.pas"/>
         <Caret Line="855" Column="1" TopLine="847"/>
-      </Position14>
-      <Position15>
-        <Filename Value="../UStackTrace.pas"/>
-        <Caret Line="74" Column="1" TopLine="61"/>
-      </Position15>
-      <Position16>
-        <Filename Value="../UStackTrace.pas"/>
-        <Caret Line="75" Column="1" TopLine="61"/>
-      </Position16>
-      <Position17>
-        <Filename Value="../UStackTrace.pas"/>
-        <Caret Line="76" Column="1" TopLine="61"/>
-      </Position17>
-      <Position18>
-        <Filename Value="../UStackTrace.pas"/>
-        <Caret Line="74" Column="1" TopLine="61"/>
-      </Position18>
-      <Position19>
-        <Filename Value="../UStackTrace.pas"/>
-        <Caret Line="75" Column="50" TopLine="61"/>
-      </Position19>
-      <Position20>
-        <Filename Value="../UStackTrace.pas"/>
-        <Caret Line="74" Column="45" TopLine="61"/>
-      </Position20>
-      <Position21>
-        <Filename Value="../UStackTrace.pas"/>
-        <Caret Line="73" Column="29" TopLine="61"/>
-      </Position21>
-      <Position22>
-        <Filename Value="../UStackTrace.pas"/>
-        <Caret Line="76" Column="1" TopLine="61"/>
-      </Position22>
-      <Position23>
-        <Filename Value="../UStackTrace.pas"/>
-        <Caret Line="91" Column="1" TopLine="78"/>
-      </Position23>
-      <Position24>
+      </Position4>
+      <Position5>
         <Filename Value="../UMicroThreadCallStack.pas"/>
         <Caret Line="67" Column="38" TopLine="46"/>
-      </Position24>
-      <Position25>
-        <Filename Value="../UStackTrace.pas"/>
-        <Caret Line="76" Column="1" TopLine="63"/>
-      </Position25>
-      <Position26>
-        <Filename Value="../UStackTrace.pas"/>
-        <Caret Line="78" Column="1" TopLine="63"/>
-      </Position26>
-      <Position27>
+      </Position5>
+      <Position6>
         <Filename Value="../UMicroThreadCallStack.pas"/>
         <Caret Line="66" Column="19" TopLine="47"/>
-      </Position27>
-      <Position28>
+      </Position6>
+      <Position7>
         <Filename Value="../UMicroThreadCallStack.pas"/>
         <Caret Line="67" Column="14" TopLine="47"/>
-      </Position28>
-      <Position29>
+      </Position7>
+      <Position8>
         <Filename Value="../UMicroThreadCallStack.pas"/>
         <Caret Line="66" Column="22" TopLine="44"/>
-      </Position29>
-      <Position30>
+      </Position8>
+      <Position9>
         <Filename Value="../UMicroThreadList.pas"/>
         <Caret Line="138" Column="10" TopLine="121"/>
-      </Position30>
+      </Position9>
+      <Position10>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="428" Column="43" TopLine="411"/>
+      </Position10>
+      <Position11>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="116" Column="33" TopLine="103"/>
+      </Position11>
+      <Position12>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="305" Column="44" TopLine="284"/>
+      </Position12>
+      <Position13>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="399" Column="54" TopLine="378"/>
+      </Position13>
+      <Position14>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="428" Column="54" TopLine="407"/>
+      </Position14>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>

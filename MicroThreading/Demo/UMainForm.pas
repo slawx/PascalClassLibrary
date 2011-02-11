@@ -302,7 +302,7 @@ end;
 
 procedure TMainForm.CheckBox4Change(Sender: TObject);
 begin
-  CriticalSectionSleepDuration := SpinEdit4.Value;
+  CriticalSectionSleepDuration := SpinEdit6.Value;
   DoCriticalSection := CheckBox4.Checked;
 end;
 
