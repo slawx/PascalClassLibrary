@@ -49,7 +49,7 @@ begin
   PacketSinglePin.OnReceive := PacketSingleReceive;
   PacketBurstPin := TCommPin.Create;
   PacketBurstPin.OnReceive := PacketBurstReceive;
-  SendThread := TMicroThreadEvent.Create;
+  SendThreadEvent := TMicroThreadEvent.Create;
   SendPeriod := OneMillisecond;
 end;
 

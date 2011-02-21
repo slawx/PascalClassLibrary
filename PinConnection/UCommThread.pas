@@ -79,6 +79,7 @@ begin
     FReceiveThread := TCommThreadReceiveThread.Create(True);
     FReceiveThread.FreeOnTerminate := False;
     FReceiveThread.Parent := Self;
+    FReceiveThread.Name := 'CommThread';
     FReceiveThread.Start;
   end else begin
     FReceiveThread.Terminate;

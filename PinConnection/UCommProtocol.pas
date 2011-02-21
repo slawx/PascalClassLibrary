@@ -45,6 +45,9 @@ type
   { TDeviceProtocolSessionList }
 
   TDeviceProtocolSessionList = class(TListObject)
+  private
+    function GetSequenceNumber: Integer;
+  public
     SequenceNumber: integer;
     Parent: TCommProtocol;
     Lock: TMicroThreadCriticalSection;
@@ -53,7 +56,6 @@ type
     procedure Remove(Session: TDeviceProtocolSession);
     constructor Create;
     destructor Destroy; override;
-    function GetSequenceNumber: Integer;
   end;
 
   TAfterRequest = procedure(Command: TListInteger; Parameters: TVarBlockIndexed;
@@ -123,10 +125,11 @@ var
   Request: TVarBlockIndexed;
   TempStream: TMemoryStream;
 begin
-  TempStream := TMemoryStream.Create;
-  Request := TVarBlockIndexed.Create;
-  Request.Enclose := False;
-  with Request do try
+  try
+    TempStream := TMemoryStream.Create;
+    Request := TVarBlockIndexed.Create;
+    Request.Enclose := False;
+    with Request do
     try
       ReadFromStream(Stream);
       if TestIndex(0) then
@@ -173,7 +176,7 @@ begin
     end;
   finally
     TempStream.Free;
-    Free;
+    Request.Free;
   end;
 end;
 
@@ -276,8 +279,7 @@ begin
     Session.ResponseParameters := ResponseParameters;
     with Session do begin
       try
-        Session.Lock.Acquire;
-        Session.SequenceNumber := Sessions.GetSequenceNumber;
+        Lock.Acquire;
         CommandIndex.Clear;
         CommandIndex.AddArray(Command);
         with NewRequest do begin
@@ -308,7 +310,7 @@ begin
         finally
           Sessions.Lock.Release;
         end;
-        while MTWaitForEvent(ReceiveEvent, 10 * OneMillisecond) = wrTimeout do begin
+        while ReceiveEvent.WaitFor(10 * OneMillisecond) = wrTimeout do begin
           if Timeouted then
             raise ECommTimeout.Create(SResponseTimeout);
         end;
@@ -388,6 +390,7 @@ begin
   // Block if no free session available
   try
     Lock.Acquire;
+    Session.SequenceNumber := GetSequenceNumber;
     while Count >= Parent.MaxSessionCount do
     begin
       try
@@ -438,10 +441,10 @@ begin
   // Free session list before freeing Lock
   // instead of freeing in inherited Destroy in TListObject
   try
-    Lock.Acquire;
+//    Lock.Acquire;
     Clear;
   finally
-    Lock.Release;
+//    Lock.Release;
   end;
 
   Lock.Free;
@@ -450,15 +453,10 @@ end;
 
 function TDeviceProtocolSessionList.GetSequenceNumber: Integer;
 begin
-  try
-    Lock.Acquire;
-    Inc(SequenceNumber);
-    if SequenceNumber > Parent.MaxSequenceNumber then
-      SequenceNumber := 0;
-    Result := SequenceNumber;
-  finally
-    Lock.Release;
-  end;
+  Inc(SequenceNumber);
+  if SequenceNumber > Parent.MaxSequenceNumber then
+    SequenceNumber := 0;
+  Result := SequenceNumber;
 end;
 
 { TRetransmitCheckThread }

@@ -58,7 +58,8 @@ begin
     finally
       Lock.Release;
     end;
-    MTSleep(1 * OneMillisecond);
+    if Stream.Position <> Stream.Size then
+      MTSleep(1 * OneMillisecond);
   until Stream.Position = Stream.Size;
 end;
 
