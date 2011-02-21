@@ -52,14 +52,16 @@ type
 
   TMicroThreadCriticalSection = class
   private
+    FId: Integer;
     FMicroThreads: TObjectList;
-    Lock: TCriticalSection;
+    //Lock: TCriticalSection;
     FCounter: Integer;
   public
     procedure Acquire;
     procedure Release;
     constructor Create;
     destructor Destroy; override;
+    property Id: Integer read FId;
   end;
 
   { TMicroThreadEvent }
@@ -207,7 +209,8 @@ type
     FThreadPoolLock: TCriticalSection;
     FThreadPoolSize: Integer;
     FRoundRobinIndex: Integer;
-    FLastId: Integer;
+    FMicroThreadLastId: Integer;
+    FCriticalSectionLastId: Integer;
     FMainThreadTerminated: Boolean;
     FMicroThreads: TObjectList; // TList<TMicroThread>
     FMainThreadManager: TMicroThreadManager;
@@ -231,10 +234,12 @@ type
     procedure UpdateThreadPoolSize;
     procedure MainThreadStart(Sender: TObject);
     procedure MainThreadTick(Data: PtrInt);
+    function GetCriticalSectionId: Integer;
   public
     BurstCount: Integer;
     function Add(MicroThread: TMicroThread): Integer;
-    function AddMethod(Method: TProcedureOfObject; WaitForFinish: Boolean = True): Integer;
+    function AddMethod(Method: TProcedureOfObject;
+      WaitForFinish: Boolean = True; ThreadName: string = ''): Integer;
     procedure Remove(MicroThread: TMicroThread; Free: Boolean = True);
     constructor Create;
     destructor Destroy; override;
@@ -281,6 +286,7 @@ procedure Register;
 
 const
   LogFileName: string = 'Log.txt';
+  LogEnabled: Boolean = False;
 
 implementation
 
@@ -349,6 +355,7 @@ procedure Log(Text: string);
 var
   LogFile: TextFile;
 begin
+  if LogEnabled then
   try
     LogLock.Acquire;
     AssignFile(LogFile, LogFileName);
@@ -372,34 +379,54 @@ begin
   if Assigned(MT) then
   try
     MainScheduler.FMicroThreadsLock.Acquire;
-    Lock.Acquire;
+    {$IFDEF DebugCriticalSection}
+    Log('CriticalSection(' + IntToStr(FId) + ') Acquire start, MicroThread: ' + IntToStr(MT.Id) + '(' + MT.Name + ')');
+    {$ENDIF}
+    //Lock.Acquire;
     Inc(FCounter);
+    {$IFDEF DebugCriticalSection}
+    Log('CriticalSection(' + IntToStr(FId) + ') Acquire Counter: ' + IntToStr(FCounter));
+    {$ENDIF}
     if FCounter > 1 then begin
       FMicroThreads.Add(MT);
       MT.FBlockState := tbsCriticalSection;
       MT.FStatePending := tsBlocked;
       try
-        Lock.Release;
+        //Lock.Release;
         MainScheduler.FMicroThreadsLock.Release;
         MT.Yield;
       finally
         MainScheduler.FMicroThreadsLock.Acquire;
-        Lock.Acquire;
+        //Lock.Acquire;
       end;
     end;
   finally
-    Lock.Release;
+    {$IFDEF DebugCriticalSection}
+    Log('CriticalSection(' + IntToStr(FId) + ') Acquire end: Id:' + IntToStr(MT.Id) + ' Name:' + MT.Name);
+    {$ENDIF}
+    //Lock.Release;
     MainScheduler.FMicroThreadsLock.Release;
   end else
     raise EMicroThreadError.Create(SNotInMicroThread);
 end;
 
 procedure TMicroThreadCriticalSection.Release;
+var
+  MT: TMicroThread;
 begin
   try
     MainScheduler.FMicroThreadsLock.Acquire;
-    Lock.Acquire;
+    {$IFDEF DebugCriticalSection}
+    MT := GetCurrentMicroThread;
+    if Assigned(MT) then
+      Log('CriticalSection(' + IntToStr(FId) + ') Release start: Id:' + IntToStr(MT.Id) + ' Name:' + MT.Name)
+      else Log('CriticalSection(' + IntToStr(FId) + ') Release start: no microthread');
+    {$ENDIF}
+    //Lock.Acquire;
     Dec(FCounter);
+    {$IFDEF DebugCriticalSection}
+    Log('CriticalSection(' + IntToStr(FId) + ') Release Counter: ' + IntToStr(FCounter));
+    {$ENDIF}
     if FMicroThreads.Count > 0 then begin
       // Release one waiting micro thread
       TMicroThread(FMicroThreads[0]).FState := tsWaiting;
@@ -409,23 +436,27 @@ begin
     if FCounter < 0 then
       raise EMicroThreadError.Create(SCriticalSectionDecrement);
   finally
-    Lock.Release;
+    {$IFDEF DebugCriticalSection}
+    Log('CriticalSection(' + IntToStr(FId) + ') Release end: Id:' + IntToStr(MT.Id) + ' Name:' + MT.Name);
+    {$ENDIF}
+    //Lock.Release;
     MainScheduler.FMicroThreadsLock.Release;
   end;
 end;
 
 constructor TMicroThreadCriticalSection.Create;
 begin
-  Lock := TCriticalSection.Create;
+  //Lock := TCriticalSection.Create;
   FMicroThreads := TObjectList.Create;
   FMicroThreads.OwnsObjects := False;
+  FId := MainScheduler.GetCriticalSectionId;
 end;
 
 destructor TMicroThreadCriticalSection.Destroy;
 begin
   try
     MainScheduler.FMicroThreadsLock.Acquire;
-    Lock.Acquire;
+    //Lock.Acquire;
 
     while FMicroThreads.Count > 0 do begin
       // Release one waiting micro thread and lower counter
@@ -433,11 +464,11 @@ begin
       FMicroThreads.Delete(0);
     end;
   finally
-    Lock.Release;
+    //Lock.Release;
     MainScheduler.FMicroThreadsLock.Release;
   end;
   FMicroThreads.Free;
-  Lock.Free;
+  //Lock.Free;
   inherited Destroy;
 end;
 
@@ -487,7 +518,7 @@ begin
         Result := wrSignaled;
         Exit;
       end;
-      FMicroThreads.Add(Self);
+      FMicroThreads.Add(MT);
       MT.FBlockTime := NowPrecise + Duration;
       MT.FBlockState := tbsWaitFor;
       MT.FStatePending := tsBlocked;
@@ -797,8 +828,8 @@ end;
 
 procedure TMicroThread.Yield;
 begin
-//  if not Assigned(FManager) then
-//    raise EMicroThreadError.Create(SManagerReferenceLost);
+  if not Assigned(FManager) then
+    raise EMicroThreadError.Create(SManagerReferenceLost);
   if FStatePending = tsNone then
     FStatePending := tsWaiting;
   FManager.Yield;
@@ -895,22 +926,24 @@ function TMicroThreadScheduler.Add(MicroThread: TMicroThread): Integer;
 begin
   try
     FMicroThreadsLock.Acquire;
-    Inc(FLastId);
+    Inc(FMicroThreadLastId);
+    MicroThread.FId := FMicroThreadLastId;
     MicroThread.FScheduler := Self;
-    MicroThread.FId := FLastId;
     Result := FMicroThreads.Add(MicroThread);
   finally
     FMicroThreadsLock.Release;
   end;
 end;
 
-function TMicroThreadScheduler.AddMethod(Method: TProcedureOfObject; WaitForFinish: Boolean): Integer;
+function TMicroThreadScheduler.AddMethod(Method: TProcedureOfObject;
+  WaitForFinish: Boolean = True; ThreadName: string = ''): Integer;
 var
   NewMicroThread: TMicroThreadSimple;
   CurrentMT: TMicroThread;
 begin
   try
     NewMicroThread := TMicroThreadSimple.Create(True);
+    NewMicroThread.Name := ThreadName;
     NewMicroThread.Method := Method;
     NewMicroThread.FScheduler := Self;
     NewMicroThread.FreeOnTerminate := not WaitForFinish;
@@ -1082,6 +1115,12 @@ begin
 //    raise;
 //  end;
   FMainThreadOutsideStart := NowPrecise;
+end;
+
+function TMicroThreadScheduler.GetCriticalSectionId: Integer;
+begin
+  Inc(FCriticalSectionLastId);
+  Result := FCriticalSectionLastId;
 end;
 
 procedure TMicroThreadScheduler.GetNextMicroThread(Manager: TMicroThreadManager);
