@@ -5,7 +5,7 @@ unit UStreamHelper;
 interface
 
 uses
-  Classes, DateUtils, syncobjs;
+  Classes, DateUtils, syncobjs, UMicroThreading;
 
 type
   TEndianness = (enBig, enLittle);
@@ -62,7 +62,7 @@ type
   { TThreadStreamHelper }
 
   TThreadStreamHelper = class(TStreamHelper)
-    Lock: TCriticalSection;
+    Lock: TMicroThreadCriticalSection;
     procedure Clear;
     constructor Create;
     destructor Destroy; override;
@@ -362,7 +362,7 @@ end;
 constructor TThreadStreamHelper.Create;
 begin
   inherited Create;
-  Lock := TCriticalSection.Create;
+  Lock := TMicroThreadCriticalSection.Create;
 end;
 
 destructor TThreadStreamHelper.Destroy;

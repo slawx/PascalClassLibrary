@@ -1,21 +1,20 @@
-// 2010-03-30
+// 2011-02-22
 
 unit UVarBlockSerializer;
 
 {$mode Delphi}{$H+}
 
-// One recursive VarInt size level supported
+// One level of recursive VarInt size supported
 // Biggest UInt type is QWord (64-bit)
 
 interface
 
 uses
   Classes, DateUtils, UStreamHelper, Math, SysUtils, USubStream,
-  Contnrs, SpecializedList;
+  Contnrs, SpecializedList, LCLProc;
 
 const
   BitAlignment = 8;
-  RealBase = 2;
 
 type
 
@@ -43,8 +42,8 @@ type
     // Advanced data types
     procedure WriteVarSInt(Value: Int64);
     function ReadVarSInt: Int64;
-    procedure WriteVarFloat(Value: Double);
-    function ReadVarFloat: Double;
+    procedure WriteVarFloat(Value: Double; Base: Integer = 2);
+    function ReadVarFloat(Base: Integer = 2): Double;
     procedure WriteVarString(Value: string);
     function ReadVarString: string;
 
@@ -86,8 +85,10 @@ type
     function ReadVarFloat(Index: Integer): Double;
     procedure WriteVarString(Index: Integer; Value: string);
     function ReadVarString(Index: Integer): string;
-    procedure WriteVarIntegerArray(Index: Integer; List: TListInteger);
-    procedure ReadVarIntegerArray(Index: Integer; List: TListInteger);
+    procedure WriteVarUIntArray(Index: Integer; List: TListInteger);
+    procedure ReadVarUIntArray(Index: Integer; List: TListInteger);
+    procedure WriteVarStringArray(Index: Integer; List: TListString);
+    procedure ReadVarStringArray(Index: Integer; List: TListString);
 
     procedure Clear;
     function TestIndex(Index: Integer): Boolean;
@@ -197,11 +198,18 @@ begin
   while I < Length do begin
     Data := Stream.ReadByte;
     if I = 0 then begin
-      Length := DecodeUnaryLength(Data);
-      if Length > (BitAlignment) then
-        raise Exception.Create(SUInt64Overflow);
-      LengthMask := GetUnaryLengthMask(Length);
-      Data := Data and (LengthMask xor $ff);
+      if Data = $ff then begin
+        // Read recursive length
+        Length := ReadVarUInt;
+        if Length > BitAlignment then
+          raise Exception.Create(SUInt64Overflow);
+        if Length > 0 then Data := Stream.ReadByte else
+          Data := 0;
+      end else begin
+        Length := DecodeUnaryLength(Data);
+        LengthMask := GetUnaryLengthMask(Length);
+        Data := Data and (LengthMask xor $ff);
+      end;
     end;
     Result := Result or (QWord(Data) shl ((Length - I - 1) * BitAlignment));
     Inc(I);
@@ -218,7 +226,7 @@ begin
   ReadVarStream(Block.Stream);
 end;
 
-procedure TVarBlockSerializer.WriteVarFloat(Value: Double);
+procedure TVarBlockSerializer.WriteVarFloat(Value: Double; Base: Integer = 2);
 var
   Exponent: Integer;
   Block: TVarBlockSerializer;
@@ -228,13 +236,17 @@ begin
 
     // Normalize to integer number with base 10 exponent
     Exponent := 0;
-    while Frac(Value) > 0 do begin
-      Value := Value * RealBase;
-      Dec(Exponent);
-    end;
-    while Frac(Value / RealBase) = 0 do begin
-      Value := Value / RealBase;
-      Inc(Exponent);
+    if Value <> 0 then begin
+      if Frac(Value) > 0 then begin
+        while Frac(Value) > 0 do begin
+          Value := Value * Base;
+          Dec(Exponent);
+        end;
+      end else
+      while Frac(Value / Base) = 0 do begin
+        Value := Value / Base;
+        Inc(Exponent);
+      end;
     end;
     Block.WriteVarSInt(Trunc(Value));
     Block.WriteVarSInt(Exponent);
@@ -244,7 +256,7 @@ begin
   end;
 end;
 
-function TVarBlockSerializer.ReadVarFloat: Double;
+function TVarBlockSerializer.ReadVarFloat(Base: Integer = 2): Double;
 var
   Significant: Int64;
   Exponent: Integer;
@@ -255,7 +267,7 @@ begin
     ReadVarBlock(Block);
     Significant := Block.ReadVarSInt;
     Exponent := Block.ReadVarSInt;
-    Result := Significant * IntPower(RealBase, Exponent);
+    Result := Significant * IntPower(Base, Exponent);
   finally
     Block.Free;
   end;
@@ -265,11 +277,18 @@ procedure TVarBlockSerializer.WriteVarString(Value: string);
 var
   Stream: TVarBlockSerializer;
   I: Integer;
+  P: PChar;
+  Unicode: Cardinal;
+  CharLen: Integer;
 begin
   try
     Stream := TVarBlockSerializer.Create;
-    for I := 1 to Length(Value) do
-      Stream.WriteVarUInt(Integer(Value[I]));
+    P := PChar(Value);
+    for I := 0 to UTF8Length(Value) - 1 do begin
+      Unicode := UTF8CharacterToUnicode(P, CharLen);
+      Stream.WriteVarUInt(Unicode);
+      Inc(P, CharLen);
+    end;
     WriteVarBlock(Stream);
   finally
     Stream.Free;
@@ -287,7 +306,7 @@ begin
     Block.Stream.Position := 0;
     while Block.Stream.Position < Block.Stream.Size do begin
       Character := Block.ReadVarUInt;
-      Result := Result + Char(Character);
+      Result := Result + UnicodeToUTF8(Character);
     end;
   finally
     Block.Free;
@@ -351,22 +370,23 @@ begin
   AStream.Size := 0;
   I := 0;
   Length := 1;
-  while I < Length do begin
+
     Data := Stream.ReadByte;
-    if I = 0 then begin
       if Data = $ff then begin
         // Read recursive length
         Length := ReadVarUInt;
         AStream.Size := Length;
-        Data := Stream.ReadByte;
-        AStream.WriteByte(Data);
+        if Length > 0 then begin
+          Data := Stream.ReadByte;
+          AStream.WriteByte(Data);
+        end;
       end else begin
         // Read unary length
         Length := DecodeUnaryLength(Data);
         AStream.Size := Length;
         LengthMask := GetUnaryLengthMask(Length);
         Data := Data and (LengthMask xor $ff);
-        // Drop first byte if first data zero
+        // Drop first byte if first data is zero
         if Data <> 0 then AStream.WriteByte(Data)
           else begin
             Dec(Length);
@@ -377,9 +397,10 @@ begin
             end;
           end;
       end;
-    end else AStream.WriteByte(Data);
-    Inc(I);
-  end;
+
+  // If CopyFrom parameter count is zero then whole source is copied
+  if Length > 1 then
+    AStream.CopyFrom(Stream, Length - 1);
   AStream.Position := 0;
 end;
 
@@ -571,8 +592,10 @@ end;
 
 procedure TVarBlockIndexed.ReadVarBlock(Index: Integer; Block: TVarBlockSerializer);
 begin
-  TVarBlockSerializer(Items[Index]).Stream.Position := 0;
-  TVarBlockSerializer(Items[Index]).ReadVarBlock(Block);
+  with TVarBlockSerializer(Items[Index]) do begin
+    Stream.Position := 0;
+    ReadVarBlock(Block);
+  end;
 end;
 
 procedure TVarBlockIndexed.WriteVarStream(Index: Integer; Stream: TStream);
@@ -649,11 +672,13 @@ end;
 
 function TVarBlockIndexed.ReadVarString(Index: Integer):string;
 begin
-  TVarBlockSerializer(Items[Index]).Stream.Position := 0;
-  Result := TVarBlockSerializer(Items[Index]).ReadVarString;
+  with TVarBlockSerializer(Items[Index]) do begin
+    Stream.Position := 0;
+    Result := ReadVarString;
+  end;
 end;
 
-procedure TVarBlockIndexed.WriteVarIntegerArray(Index: Integer;
+procedure TVarBlockIndexed.WriteVarUIntArray(Index: Integer;
   List: TListInteger);
 var
   I: Integer;
@@ -669,7 +694,7 @@ begin
   end;
 end;
 
-procedure TVarBlockIndexed.ReadVarIntegerArray(Index: Integer;
+procedure TVarBlockIndexed.ReadVarUIntArray(Index: Integer;
   List: TListInteger);
 var
   Temp: TVarBlockSerializer;
@@ -680,6 +705,39 @@ begin
     ReadVarBlock(Index, Temp);
     while Temp.Stream.Position < Temp.Stream.Size do begin
       List.Add(Temp.ReadVarUInt);
+    end;
+  finally
+    Temp.Free;
+  end;
+end;
+
+procedure TVarBlockIndexed.WriteVarStringArray(Index: Integer;
+  List: TListString);
+var
+  I: Integer;
+  Temp: TVarBlockSerializer;
+begin
+  try
+    Temp := TVarBlockSerializer.Create;
+    for I := 0 to List.Count - 1 do
+      Temp.WriteVarString(List[I]);
+    WriteVarBlock(Index, Temp);
+  finally
+    Temp.Free;
+  end;
+end;
+
+procedure TVarBlockIndexed.ReadVarStringArray(Index: Integer; List: TListString
+  );
+var
+  Temp: TVarBlockSerializer;
+begin
+  try
+    Temp := TVarBlockSerializer.Create;
+    List.Clear;
+    ReadVarBlock(Index, Temp);
+    while Temp.Stream.Position < Temp.Stream.Size do begin
+      List.Add(Temp.ReadVarString);
     end;
   finally
     Temp.Free;
