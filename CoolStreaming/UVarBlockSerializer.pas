@@ -92,8 +92,8 @@ type
 
     procedure Clear;
     function TestIndex(Index: Integer): Boolean;
-    procedure WriteToVarBlock(Stream: TVarBlockSerializer);
-    procedure ReadFromVarBlock(Stream: TVarBlockSerializer);
+    procedure WriteToVarBlock(VarBlock: TVarBlockSerializer);
+    procedure ReadFromVarBlock(VarBlock: TVarBlockSerializer);
     procedure WriteToStream(Stream: TStream);
     procedure ReadFromStream(Stream: TStream);
     constructor Create;
@@ -532,6 +532,7 @@ begin
   try
     Temp := TVarBlockSerializer.Create;
     StreamHelper := TStreamHelper.Create(Stream);
+    Stream.Position := 0;
     ReadVarBlock(Temp);
     Stream.Size := 0;
     StreamHelper.WriteStream(Temp.Stream, Temp.Stream.Size);
@@ -756,42 +757,42 @@ begin
     else Result := False
 end;
 
-procedure TVarBlockIndexed.WriteToVarBlock(Stream: TVarBlockSerializer);
+procedure TVarBlockIndexed.WriteToVarBlock(VarBlock: TVarBlockSerializer);
 var
   Mask: Integer;
   I: Integer;
   StreamHelper: TStreamHelper;
 begin
   try
-    StreamHelper := TStreamHelper.Create(Stream.Stream);
-    Stream.Stream.Size := 0;
+    StreamHelper := TStreamHelper.Create(VarBlock.Stream);
+    VarBlock.Stream.Size := 0;
     Mask := 0;
     for I := 0 to Items.Count - 1 do
       if Assigned(Items[I]) then Mask := Mask or (1 shl I);
-    Stream.WriteVarUInt(Mask);
+    VarBlock.WriteVarUInt(Mask);
     for I := 0 to Items.Count - 1 do
       if Assigned(Items[I]) then StreamHelper.WriteStream(TVarBlockSerializer(Items[I]).Stream,
         TVarBlockSerializer(Items[I]).Stream.Size);
-    if Enclose then Stream.BlockEnclose;
+    if Enclose then VarBlock.BlockEnclose;
   finally
     StreamHelper.Free;
   end;
 end;
 
-procedure TVarBlockIndexed.ReadFromVarBlock(Stream: TVarBlockSerializer);
+procedure TVarBlockIndexed.ReadFromVarBlock(VarBlock: TVarBlockSerializer);
 var
   Mask: Integer;
   I: Integer;
 begin
-  if Enclose then Stream.BlockUnclose;
-  Stream.Stream.Position := 0;
-  Mask := Stream.ReadVarUInt;
+  if Enclose then VarBlock.BlockUnclose;
+  VarBlock.Stream.Position := 0;
+  Mask := VarBlock.ReadVarUInt;
   I := 0;
   while Mask <> 0 do begin
-    if Stream.TestMask(Mask, I) then begin
+    if VarBlock.TestMask(Mask, I) then begin
       if Items.Count <= I then Items.Count := I + 1;
       Items[I] := TVarBlockSerializer.Create;
-      Stream.ReadItemByMaskIndex(I, TVarBlockSerializer(Items[I]));
+      VarBlock.ReadItemByMaskIndex(I, TVarBlockSerializer(Items[I]));
       Mask := Mask xor (1 shl I); // Clear bit on current index
     end;
     Inc(I);

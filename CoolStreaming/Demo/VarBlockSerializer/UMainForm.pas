@@ -14,23 +14,32 @@ type
 
   TMainForm = class(TForm)
   published
-    ButtonDecodeString: TButton;
+    ButtonEncodeIndexed: TButton;
+    ButtonDecodeIndexed: TButton;
     ButtonDecodeRaw: TButton;
-    ButtonEncodeString: TButton;
+    ButtonDecodeString: TButton;
     ButtonEncodeRaw: TButton;
+    ButtonEncodeString: TButton;
     ButtonFloatDecode1: TButton;
     ButtonFloatEncode1: TButton;
-    ButtonUIntDecode: TButton;
     ButtonSIntDecode: TButton;
     ButtonSIntEncode: TButton;
-    EditRaw: TEdit;
-    EditFloat: TEdit;
-    EditStringData: TEdit;
-    EditString: TEdit;
-    EditRawData: TEdit;
-    EditUInt: TEdit;
+    ButtonUIntDecode: TButton;
     ButtonUIntEncode: TButton;
+    CheckBoxMask1: TCheckBox;
+    CheckBoxMask2: TCheckBox;
+    CheckBoxMask3: TCheckBox;
+    EditIndexedItem1: TEdit;
+    EditIndexedItem2: TEdit;
+    EditIndexedItem3: TEdit;
+    EditIndexed: TEdit;
+    EditFloat: TEdit;
+    EditRaw: TEdit;
+    EditRawData: TEdit;
     EditSInt: TEdit;
+    EditString: TEdit;
+    EditStringData: TEdit;
+    EditUInt: TEdit;
     FloatSpinEdit1: TFloatSpinEdit;
     GroupBox1: TGroupBox;
     GroupBox2: TGroupBox;
@@ -38,9 +47,19 @@ type
     GroupBox4: TGroupBox;
     GroupBox5: TGroupBox;
     Label1: TLabel;
+    Label2: TLabel;
+    Label3: TLabel;
+    Label4: TLabel;
+    Label5: TLabel;
+    Label6: TLabel;
+    PageControl1: TPageControl;
     SpinEditFloat: TSpinEdit;
-    SpinEditUInt: TSpinEdit;
     SpinEditSInt: TSpinEdit;
+    SpinEditUInt: TSpinEdit;
+    TabSheet1: TTabSheet;
+    TabSheet2: TTabSheet;
+    procedure ButtonDecodeIndexedClick(Sender: TObject);
+    procedure ButtonEncodeIndexedClick(Sender: TObject);
     procedure ButtonDecodeRawClick(Sender: TObject);
     procedure ButtonDecodeStringClick(Sender: TObject);
     procedure ButtonEncodeRawClick(Sender: TObject);
@@ -51,6 +70,7 @@ type
     procedure ButtonSIntEncodeClick(Sender: TObject);
     procedure ButtonUIntDecodeClick(Sender: TObject);
     procedure ButtonUIntEncodeClick(Sender: TObject);
+    procedure FormShow(Sender: TObject);
   public
     function StreamToString(Stream: TStream): string;
     procedure StringToStream(Text: string; Stream: TStream);
@@ -80,6 +100,69 @@ begin
   finally
     Stream.Free;
     Block.Free;
+  end;
+end;
+
+procedure TMainForm.ButtonEncodeIndexedClick(Sender: TObject);
+var
+  IndexedBlock: TVarBlockIndexed;
+  Stream: TMemoryStream;
+begin
+  try
+    IndexedBlock := TVarBlockIndexed.Create;
+    Stream := TMemoryStream.Create;
+    if CheckBoxMask1.Checked then begin
+      StringToStream(EditIndexedItem1.Text, Stream);
+      IndexedBlock.WriteVarStream(0, Stream);
+    end;
+    if CheckBoxMask2.Checked then begin
+      StringToStream(EditIndexedItem2.Text, Stream);
+      IndexedBlock.WriteVarStream(1, Stream);
+    end;
+    if CheckBoxMask3.Checked then begin
+      StringToStream(EditIndexedItem3.Text, Stream);
+      IndexedBlock.WriteVarStream(2, Stream);
+    end;
+    Stream.Clear;
+    IndexedBlock.WriteToStream(Stream);
+    EditIndexed.Text := StreamToString(Stream);
+  finally
+    IndexedBlock.Free;
+    Stream.Free;
+  end;
+end;
+
+procedure TMainForm.ButtonDecodeIndexedClick(Sender: TObject);
+var
+  IndexedBlock: TVarBlockIndexed;
+  Stream: TMemoryStream;
+begin
+  try
+    IndexedBlock := TVarBlockIndexed.Create;
+    Stream := TMemoryStream.Create;
+    StringToStream(EditIndexed.Text, Stream);
+    IndexedBlock.ReadFromStream(Stream);
+
+    CheckBoxMask1.Checked := IndexedBlock.TestIndex(0);
+    CheckBoxMask2.Checked := IndexedBlock.TestIndex(1);
+    CheckBoxMask3.Checked := IndexedBlock.TestIndex(2);
+
+    Stream.Clear;
+    if IndexedBlock.TestIndex(0) then begin
+      IndexedBlock.ReadVarStream(0, Stream);
+      EditIndexedItem1.Text := StreamToString(Stream);
+    end else EditIndexedItem1.Text := '';
+    if IndexedBlock.TestIndex(1) then begin
+      IndexedBlock.ReadVarStream(1, Stream);
+      EditIndexedItem2.Text := StreamToString(Stream);
+    end else EditIndexedItem2.Text := '';
+    if IndexedBlock.TestIndex(2) then begin
+      IndexedBlock.ReadVarStream(2, Stream);
+      EditIndexedItem3.Text := StreamToString(Stream);
+    end else EditIndexedItem3.Text := '';
+  finally
+    IndexedBlock.Free;
+    Stream.Free;
   end;
 end;
 
@@ -208,6 +291,11 @@ begin
   end;
 end;
 
+procedure TMainForm.FormShow(Sender: TObject);
+begin
+  PageControl1.TabIndex := 0;
+end;
+
 function TMainForm.StreamToString(Stream: TStream): string;
 begin
   Result := '';
@@ -245,7 +333,7 @@ begin
       Stream.WriteByte(Number);
     Delete(Text, 1, Pos(' ', Text));
   end;
-  if TryHexToInt(Text, Number) and (Number < 256) then
+  if TryHexToInt(Text, Number) and (Number < 256) and (Text <> '') then
     Stream.WriteByte(Number);
 end;
 
