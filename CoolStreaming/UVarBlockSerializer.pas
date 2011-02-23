@@ -105,6 +105,7 @@ implementation
 resourcestring
   SMaskedValueReadError = 'Error reading masked variable length block.';
   SUInt64Overflow = '64-bit UInt read overflow.';
+  SReadError = 'Stream read error. Expected length %d, read %d. Source stream size %d.';
 
 { TVarBlockSerializer }
 
@@ -364,11 +365,10 @@ procedure TVarBlockSerializer.ReadVarStream(AStream: TStream);
 var
   Data: Byte;
   Length: Cardinal;
-  I: Cardinal;
+  RealLength: Cardinal;
   LengthMask: Byte;
 begin
   AStream.Size := 0;
-  I := 0;
   Length := 1;
 
     Data := Stream.ReadByte;
@@ -399,8 +399,11 @@ begin
       end;
 
   // If CopyFrom parameter count is zero then whole source is copied
-  if Length > 1 then
-    AStream.CopyFrom(Stream, Length - 1);
+  if Length > 1 then begin
+    RealLength := AStream.CopyFrom(Stream, Length - 1);
+    if RealLength < (Length - 1) then
+      raise EReadError.Create(Format(SReadError, [Length - 1, RealLength, Stream.Size]));
+  end;
   AStream.Position := 0;
 end;
 
@@ -412,7 +415,7 @@ begin
   StoredPosition := Stream.Position;
   Result := 1; // Byte block length
   Data := Stream.ReadByte;
-  if Data = $ff then Result := ReadVarUInt + 2
+  if Data = $ff then Result := GetVarSize + ReadVarUInt + 1
   else begin
     Result := DecodeUnaryLength(Data);
   end;
