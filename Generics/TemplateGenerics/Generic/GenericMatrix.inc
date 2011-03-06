@@ -6,6 +6,7 @@
   TGMatrixToStringConverter = function(Item: TGMatrixItem): string;
   TGMatrixFromStringConverter = function(Text: string): TGMatrixItem;
   TGMatrixRow = array of TGMatrixItem;
+  TGMatrixMerge = function(Item1, Item2: TGMatrixItem): TGMatrixItem of object;
 
   TGMatrixIndex = record
     X: TGMatrixIndexX;
@@ -17,14 +18,16 @@
   private
     FItems: array of array of TGMatrixItem;
     FCount: TGMatrixIndex;
-    function Get(Y: TGMatrixIndexY; X: TGMatrixIndexX): TGMatrixItem;
+    function GetXY(Y: TGMatrixIndexY; X: TGMatrixIndexX): TGMatrixItem;
+    function Get(Index: TGMatrixIndex): TGMatrixItem;
     function GetCapacity: TGMatrixIndex;
     function GetLast: TGMatrixItem;
     function GetFirst: TGMatrixItem;
     procedure SetCapacity(const AValue: TGMatrixIndex);
     procedure SetLast(AValue: TGMatrixItem);
     procedure SetFirst(AValue: TGMatrixItem);
-    procedure Put(Y: TGMatrixIndexY; X: TGMatrixIndexX; const AValue: TGMatrixItem); virtual;
+    procedure PutXY(Y: TGMatrixIndexY; X: TGMatrixIndexX; const AValue: TGMatrixItem); virtual;
+    procedure Put(Index: TGMatrixIndex; const AValue: TGMatrixItem); virtual;
     procedure SetCount(const AValue: TGMatrixIndex);
   public
     function Add(Item: TGMatrixItem): TGMatrixIndex;
@@ -33,7 +36,7 @@
     procedure Assign(Source: TGMatrix);
     procedure Clear; virtual;
     procedure Contract;
-    function CreateIndex(Y: TGMatrixIndexY; X: TGMatrixIndexX): TGMatrixIndex;
+    function CreateIndex(X: TGMatrixIndexY; Y: TGMatrixIndexX): TGMatrixIndex;
     procedure Delete(Index: TGMatrixIndex); virtual;
     procedure DeleteItems(Index, Count: TGMatrixIndex);
     function EqualTo(List: TGMatrix): Boolean;
@@ -51,13 +54,18 @@
     procedure InsertArray(Index: TGMatrixIndex; Values: array of TGMatrixItem);
     procedure Move(CurIndex, NewIndex: TGMatrixIndex);
     procedure MoveItems(CurIndex, NewIndex, Count: TGMatrixIndex);
+    procedure Merge(Index: TGMatrixIndex; Source: TGMatrix; Proc: TGMatrixMerge);
+    procedure Replace(Index: TGMatrixIndex; Source: TGMatrix);
     function Remove(Item: TGMatrixItem): TGMatrixIndex;
     procedure Reverse;
+    procedure ReverseHorizontal;
+    procedure ReverseVertical;
     procedure Sort(Compare: TGMatrixSortCompare);
     procedure SetArray(Values: array of TGMatrixItem);
     property Count: TGMatrixIndex read FCount write SetCount;
     property Capacity: TGMatrixIndex read GetCapacity write SetCapacity;
-    property Items[Y: TGMatrixIndexY; X: TGMatrixIndexX]: TGMatrixItem read Get write Put; default;
+    property ItemsXY[Y: TGMatrixIndexY; X: TGMatrixIndexX]: TGMatrixItem read GetXY write PutXY; default;
+    property Items[Index: TGMatrixIndex]: TGMatrixItem read Get write Put;
     property Last: TGMatrixItem read GetLast write SetLast;
   end;
 
@@ -70,7 +78,7 @@ uses
   RtlConsts;
 
 resourcestring
-  SMatrixIndexError = 'Matrix index error [%d, %d]';
+  SMatrixIndexError = 'Matrix index error [X: %d, Y: %d]';
 
 {$UNDEF IMPLEMENTATION_USES}
 {$ENDIF}
@@ -79,7 +87,39 @@ resourcestring
 
 { TGMatrix }
 
-function TGMatrix.CreateIndex(Y: TGMatrixIndexY; X: TGMatrixIndexX): TGMatrixIndex;
+procedure TGMatrix.Replace(Index: TGMatrixIndex; Source: TGMatrix);
+var
+  X: TGMatrixIndexX;
+  Y: TGMatrixIndexY;
+begin
+  Y := 0;
+  while Y < Source.Count.Y do begin
+    X := 0;
+    while X < Source.Count.X do begin
+      ItemsXY[Index.Y + Y, Index.X + X] := Source.ItemsXY[Y, X];
+      X := X + 1;
+    end;
+    Y := Y + 1;
+  end;
+end;
+
+procedure TGMatrix.Merge(Index: TGMatrixIndex; Source: TGMatrix; Proc: TGMatrixMerge);
+var
+  X: TGMatrixIndexX;
+  Y: TGMatrixIndexY;
+begin
+  Y := 0;
+  while Y < Source.Count.Y do begin
+    X := 0;
+    while X < Source.Count.X do begin
+      ItemsXY[Index.Y + Y, Index.X + X] := Proc(ItemsXY[Index.Y + Y, Index.X + X], Source.ItemsXY[Y, X]);
+      X := X + 1;
+    end;
+    Y := Y + 1;
+  end;
+end;
+
+function TGMatrix.CreateIndex(X: TGMatrixIndexY; Y: TGMatrixIndexX): TGMatrixIndex;
 begin
   Result.X := X;
   Result.Y := Y;
@@ -96,44 +136,69 @@ var
   Y: TGMatrixIndexY;
 begin
   if (Capacity.X <> AValue.X) and (Capacity.Y <> AValue.Y) then begin
-    SetLength(FItems, AValue.Y);
+(*    SetLength(FItems, AValue.Y);
     Y := 0;
     while Y < Length(FItems) do begin
       SetLength(FItems[Y], AValue.X);
       Y := Y + 1;
     end;
   end;
+  *)
+    SetLength(FItems, AValue.Y, AValue.X);
+  end;
 end;
 
-function TGMatrix.Get(Y: TGMatrixIndexY; X: TGMatrixIndexX): TGMatrixItem;
+function TGMatrix.GetXY(Y: TGMatrixIndexY; X: TGMatrixIndexX): TGMatrixItem;
 begin
+  if (X < 0) or (X >= Count.X) or
+    (Y < 0) or (Y >= Count.Y) then
+    raise EListError.CreateFmt(SMatrixIndexError, [X, Y]);
   Result := FItems[Y, X];
 end;
 
-procedure TGMatrix.Put(Y: TGMatrixIndexY; X: TGMatrixIndexX; const AValue: TGMatrixItem);
+function TGMatrix.Get(Index: TGMatrixIndex): TGMatrixItem;
 begin
+  if (Index.X < 0) or (Index.X >= Count.X) or
+    (Index.Y < 0) or (Index.Y >= Count.Y) then
+    raise EListError.CreateFmt(SMatrixIndexError, [Index.X, Index.Y]);
+  Result := FItems[Index.Y, Index.X];
+end;
+
+procedure TGMatrix.PutXY(Y: TGMatrixIndexY; X: TGMatrixIndexX; const AValue: TGMatrixItem);
+begin
+  if (X < 0) or (X >= Count.X) or
+    (Y < 0) or (Y >= Count.Y) then
+    raise EListError.CreateFmt(SMatrixIndexError, [X, Y]);
   FItems[Y, X] := AValue;
+end;
+
+procedure TGMatrix.Put(Index: TGMatrixIndex; const AValue: TGMatrixItem);
+begin
+  if (Index.X < 0) or (Index.X >= Count.X) or
+    (Index.Y < 0) or (Index.Y >= Count.Y) then
+    raise EListError.CreateFmt(SMatrixIndexError, [Index.X, Index.Y]);
+  FItems[Index.Y, Index.X] := AValue;
 end;
 
 procedure TGMatrix.SetCount(const AValue: TGMatrixIndex);
 begin
-  Capacity := AValue;;
+  Capacity := AValue;
   FCount := AValue;
 end;
 
 procedure TGMatrix.Assign(Source: TGMatrix);
 var
-  X: TGMatrixIndexX;
-  Y: TGMatrixIndexY;
+  Index: TGMatrixIndex;
 begin
   Count := Source.Count;
-  Y := 0;
-  while Y < Count.Y do begin
-    while X < Count.X do begin
-      Items[Y, X] := Source[Y, X];
-      X := X + 1;
+  Index.Y := 0;
+  while Index.Y < Count.Y do begin
+    Index.X := 0;
+    while Index.X < Count.X do begin
+      Items[Index] := Source.Items[Index];
+      Index.X := Index.X + 1;
     end;
-    Y := Y + 1;
+    Index.Y := Index.Y + 1;
   end;
 end;
 
@@ -348,13 +413,50 @@ end;
 
 procedure TGMatrix.Reverse;
 var
-  I: TGMatrixIndex;
+  X: TGMatrixIndexX;
+  Y: TGMatrixIndexY;
 begin
-(*  I := 0;
-  while I < (Count div 2) do begin
-    Exchange(I, Count - 1 - I);
-    I := I + 1;
-  end; *)
+  Y := 0;
+  while Y < (Count.Y - 1) do begin
+    X := 1 + Y;
+    while X < Count.X do begin
+      Exchange(CreateIndex(X, Y), CreateIndex(Y, X));
+      X := X + 1;
+    end;
+    Y := Y + 1;
+  end;
+end;
+
+procedure TGMatrix.ReverseHorizontal;
+var
+  X: TGMatrixIndexX;
+  Y: TGMatrixIndexY;
+begin
+  Y := 0;
+  while Y < Count.Y do begin
+    X := 0;
+    while X < (Count.X div 2) do begin
+      Exchange(CreateIndex(X, Y), CreateIndex(Count.X - 1 - X, Y));
+      X := X + 1;
+    end;
+    Y := Y + 1;
+  end;
+end;
+
+procedure TGMatrix.ReverseVertical;
+var
+  X: TGMatrixIndexX;
+  Y: TGMatrixIndexY;
+begin
+  X := 0;
+  while X < Count.X do begin
+    Y := 0;
+    while Y < (Count.Y div 2) do begin
+      Exchange(CreateIndex(X, Y), CreateIndex(X, Count.Y - 1 - Y));
+      Y := Y + 1;
+    end;
+    X := X + 1;
+  end;
 end;
 
 procedure TGMatrix.Sort(Compare: TGMatrixSortCompare);
@@ -407,7 +509,7 @@ begin
   while Y < Count.Y do begin
     X := 0;
     while X < Count.X do begin
-      Result := Result + Converter(Items[Y, X]);
+      Result := Result + Converter(ItemsXY[Y, X]);
       if X < (Count.X - 1) then
         Result := Result + ColSeparator;
       X := X + 1;
@@ -486,7 +588,7 @@ begin
   while Y < Count.Y do begin
     X := Start.X;
     while X < Count.X do begin
-      Items[Y, X] := Value;
+      ItemsXY[Y, X] := Value;
       X := X + 1;
     end;
     Y := Y + 1;
@@ -497,12 +599,14 @@ procedure TGMatrix.Exchange(Index1, Index2: TGMatrixIndex);
 var
   Temp: TGMatrixItem;
 begin
-  if ((Index1.Y >= FCount.Y) or (Index1.Y < 0)) then
-    raise EListError.CreateFmt(SMatrixIndexError, [Index1.Y, Index1.X]);
-  if ((Index2.Y >= FCount.Y) or (Index2.Y < 0)) then
-    raise EListError.CreateFmt(SMatrixIndexError, [Index2.Y, Index2.X]);
+  if (Index1.X < 0) or (Index1.X >= Count.X) or
+    (Index1.Y < 0) or (Index1.Y >= Count.Y) then
+    raise EListError.CreateFmt(SMatrixIndexError, [Index1.X, Index1.Y]);
+  if (Index2.X < 0) or (Index2.X >= Count.X) or
+    (Index2.Y < 0) or (Index2.Y >= Count.Y) then
+    raise EListError.CreateFmt(SMatrixIndexError, [Index2.X, Index2.Y]);
   Temp := FItems[Index1.Y, Index1.X];
-  FItems[Index1.Y, Index1.X] := FItems[Index2.Y, Index1.X];
+  FItems[Index1.Y, Index1.X] := FItems[Index2.Y, Index2.X];
   FItems[Index2.Y, Index2.X] := Temp;
 end;
 

@@ -48,6 +48,7 @@
     procedure MoveItems(CurIndex, NewIndex, Count: TGListIndex);
     function Remove(Item: TGListItem): TGListIndex;
     procedure Reverse;
+    procedure Replace(Index: TGListIndex; Source: TGList);
     procedure Sort(Compare: TGListSortCompare);
     procedure SetArray(Values: TGListItemArray);
     property Count: TGListIndex read FCount write SetCount;
@@ -70,6 +71,17 @@ uses
 {$IFDEF IMPLEMENTATION}
 
 { TGList }
+
+procedure TGList.Replace(Index: TGListIndex; Source: TGList);
+var
+  I: TGListIndex;
+begin
+  I := 0;
+  while I < Source.Count do begin
+    Items[Index + I] := Source[I];
+    I := I + 1;
+  end;
+end;
 
 function TGList.GetCapacity: TGListIndex;
 begin
@@ -491,4 +503,4 @@ begin
 end;
 
 {$UNDEF IMPLEMENTATION}
-{$ENDIF}
+{$ENDIF}
