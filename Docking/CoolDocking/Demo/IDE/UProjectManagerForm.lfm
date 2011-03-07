@@ -1,0 +1,14 @@
+object ProjectManagerForm: TProjectManagerForm
+  Left = 316
+  Height = 240
+  Top = 148
+  Width = 320
+  Caption = 'Project Manager'
+  LCLVersion = '0.9.31'
+  object CoolDockClient1: TCoolDockClient
+    Floatable = False
+    Master = MainForm.CoolDockMaster1
+    left = 108
+    top = 64
+  end
+end

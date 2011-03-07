@@ -16,7 +16,7 @@ type
     MouseDown: Boolean;
     MouseButton: TMouseButton;
     MouseDownSkip: Boolean;
-    TabControl: TTabControl;
+    PageControl: TPageControl;
     TabImageList: TImageList;
     procedure TabControlMouseLeave(Sender: TObject);
     procedure TabControlChange(Sender: TObject);
@@ -29,6 +29,8 @@ type
     procedure UpdateClientSize; override;
   private
     FTabsPos: THeaderPos;
+    procedure InsertControlNoUpdate(NewPanel: TCoolDockClientPanel;
+      AControl: TControl; InsertAt: TAlign);
   public
     constructor Create(AManager: TObject);
     procedure SetVisible(const AValue: Boolean); override;
@@ -49,17 +51,17 @@ uses
 
 procedure TCoolDockStyleTabs.PopupMenuTabCloseClick(Sender: TObject);
 begin
-  if TabControl.TabIndex <> -1 then
-    TCoolDockClientPanel(TCoolDockManager(Manager).DockPanels[TabControl.TabIndex]).Control.Hide;
+  if Assigned(PageControl.ActivePage) then
+    TCoolDockClientPanel(TCoolDockManager(Manager).DockPanels[PageControl.TabIndex]).Control.Hide;
 end;
 
 procedure TCoolDockStyleTabs.TabControlMouseLeave(Sender: TObject);
 begin
   if MouseDown then
   with TCoolDockManager(Manager) do
-  if (TabControl.TabIndex <> -1) then begin
-    TCoolDockClientPanel(DockPanels[TabControl.TabIndex]).ClientAreaPanel.DockSite := False;
-    DragManager.DragStart(TCoolDockClientPanel(DockPanels[TabControl.TabIndex]).Control, False, 1);
+  if Assigned(PageControl.ActivePage) then begin
+    TCoolDockClientPanel(DockPanels[PageControl.TabIndex]).ClientAreaPanel.DockSite := False;
+    DragManager.DragStart(TCoolDockClientPanel(DockPanels[PageControl.TabIndex]).Control, False, 1);
   end;
   MouseDown := False;
 end;
@@ -71,12 +73,18 @@ begin
   // Hide all clients
   with TCoolDockManager(Manager) do
   for I := 0 to DockPanels.Count - 1 do
-    if TCoolDockClientPanel(DockPanels[I]).Control.Visible then begin
+    if TCoolDockClientPanel(DockPanels[I]).Control.Visible
+    //and (PageControl.TabIndex <> I)
+    then
+    begin
       TCoolDockClientPanel(DockPanels[I]).Control.Tag := 1;
       TCoolDockClientPanel(DockPanels[I]).Control.Hide;
       TCoolDockClientPanel(DockPanels[I]).ClientAreaPanel.Hide;
-      TCoolDockClientPanel(DockPanels[I]).ClientAreaPanel.Parent := DockSite;
+      TCoolDockClientPanel(DockPanels[I]).ClientAreaPanel.Parent := PageControl.Pages[I];
+      //TCoolDockClientPanel(DockPanels[I]).ClientAreaPanel.Parent := DockSite;
       TCoolDockClientPanel(DockPanels[I]).Control.Align := alClient;
+      //TCoolDockClientPanel(DockPanels[I]).Control.Parent :=
+      //  TCoolDockClientPanel(DockPanels[I]).ClientAreaPanel;
       //ShowMessage(TCoolDockClientPanel(DockPanels[I]).Control.ClassName);
       Application.ProcessMessages;
 
@@ -86,10 +94,11 @@ begin
 
   // Show selected
   with TCoolDockManager(Manager) do
-  if (TabControl.TabIndex <> -1) and (DockPanels.Count > TabControl.TabIndex) then begin
-    with TCoolDockClientPanel(DockPanels[TabControl.TabIndex]), ClientAreaPanel do begin
+  if (PageControl.TabIndex <> -1) and (DockPanels.Count > PageControl.TabIndex)
+//  and not TCoolDockClientPanel(DockPanels[PageControl.TabIndex]).Control.Visible
+  then begin
+    with TCoolDockClientPanel(DockPanels[PageControl.TabIndex]), ClientAreaPanel do begin
       Control.Show;
-      Control.Tag := 0;
       (*AutoHide.Enable := True;
       if AutoHide.Enable then begin
         //Parent := nil;
@@ -133,6 +142,7 @@ var
   NewMenuItem: TMenuItem;
   NewMenuItem2: TMenuItem;
   I: Integer;
+  NewTabSheet: TTabSheet;
 begin
   inherited;
 
@@ -140,14 +150,16 @@ begin
   with TabImageList do begin
     Name := TCoolDockManager(Manager).DockSite.Name + '_' + 'ImageList';
   end;
-  TabControl := TTabControl.Create(TCoolDockManager(AManager).DockSite); //FDockSite);
-  with TabControl do begin
+  PageControl := TPageControl.Create(TCoolDockManager(AManager).DockSite); //FDockSite);
+  with PageControl do begin
     Parent := TCoolDockManager(Manager).DockSite;
     Name := TCoolDockManager(Manager).DockSite.Name + '_' + 'TabControl';
     Visible := False;
     Align := alTop;
-    Height := 24;
+    //Height := 24;
+    Align := alClient;
     OnChange := TabControlChange;
+    MultiLine := True;
     PopupMenu := TCoolDockManager(Manager).PopupMenu;
     //TTabControlNoteBookStrings(Tabs).NoteBook.OnMouseLeave := TabControlMouseLeave;
     //TTabControlNoteBookStrings(Tabs).NoteBook.OnMouseDown := TabControlMouseDown;
@@ -158,25 +170,18 @@ begin
   //TabsPos := hpTop;
   //MoveDuration := 1000; // ms
 
-  TabControl.Visible := True;
-  TabControl.Tabs.Clear;
-  TabImageList.Clear;
+  PageControl.Visible := True;
+  //TabImageList.Clear;
   with TCoolDockManager(Manager) do
   for I := 0 to DockPanels.Count - 1 do
-  if TCoolDockClientPanel(DockPanels[I]).Control.Visible then begin
-    TCoolDockClientPanel(DockPanels[I]).Control.Tag := 1;
-    TabControl.Tabs.Add(TCoolDockClientPanel(DockPanels[I]).Control.Caption);
-    TabImageList.Add(TCoolDockClientPanel(DockPanels[I]).Header.Icon.Picture.Bitmap, nil);
-    if Assigned(TCoolDockClientPanel(DockPanels[I]).Splitter) then
-      TCoolDockClientPanel(DockPanels[I]).Splitter.Visible := False;
-    TCoolDockClientPanel(DockPanels[I]).ClientAreaPanel.Visible := False;
-    TCoolDockClientPanel(DockPanels[I]).Visible := False;
-  end;
+    Self.InsertControlNoUpdate(TCoolDockClientPanel(DockPanels[I]),
+      TCoolDockClientPanel(DockPanels[I]).Control, alNone);
+  TabControlChange(Self);
 end;
 
 destructor TCoolDockStyleTabs.Destroy;
 begin
-  TabControl.Free;
+  PageControl.Free;
   TabImageList.Free;
   inherited Destroy;
 end;
@@ -184,23 +189,37 @@ end;
 procedure TCoolDockStyleTabs.Switch(Index: Integer);
 begin
   inherited Switch(Index);
-  TabControl.TabIndex := Index;
+  PageControl.TabIndex := Index;
 end;
 
-procedure TCoolDockStyleTabs.InsertControl(NewPanel: TCoolDockClientPanel;
+procedure TCoolDockStyleTabs.InsertControlNoUpdate(NewPanel: TCoolDockClientPanel;
   AControl: TControl; InsertAt: TAlign);
+var
+  NewTabSheet: TTabSheet;
 begin
   inherited;
   if AControl.Visible then begin
-    AControl.Tag := 1;
-    TabControl.Tabs.Add(AControl.Caption);
+    NewTabSheet := TTabSheet.Create(PageControl);
+    NewTabSheet.PageControl := PageControl;
+    NewTabSheet.Caption := AControl.Caption;
+    NewTabSheet.ImageIndex := TabImageList.Count;
     TabImageList.Add(NewPanel.Header.Icon.Picture.Bitmap, nil);
     if Assigned(NewPanel.Splitter) then
       NewPanel.Splitter.Visible := False;
     NewPanel.ClientAreaPanel.Visible := False;
     NewPanel.Visible := False;
-    TabControlChange(Self);
+    //NewPanel.Parent := NewTabSheet;
   end;
+end;
+
+procedure TCoolDockStyleTabs.InsertControl(NewPanel: TCoolDockClientPanel;
+  AControl: TControl; InsertAt: TAlign);
+var
+  NewTabSheet: TTabSheet;
+begin
+  inherited;
+  InsertControlNoUpdate(NewPanel, AControl, InsertAt);
+  TabControlChange(Self);
 end;
 
 procedure TCoolDockStyleTabs.UpdateClientSize;
@@ -210,8 +229,8 @@ begin
   inherited UpdateClientSize;
   with TCoolDockManager(Manager) do
   for I := 0 to DockPanels.Count - 1 do begin
-    TCoolDockClientPanel(DockPanels[I]).ClientAreaPanel.Width := DockSite.Width;
-    TCoolDockClientPanel(DockPanels[I]).ClientAreaPanel.Height := DockSite.Height - TabControl.Height;
+    //TCoolDockClientPanel(DockPanels[I]).ClientAreaPanel.Width := DockSite.Width;
+    //TCoolDockClientPanel(DockPanels[I]).ClientAreaPanel.Height := DockSite.Height - PageControl.Height;
     //TCoolDockClientPanel(FDockPanels[I]).DockPanelPaint(Self);
   end;
 end;
@@ -220,10 +239,10 @@ procedure TCoolDockStyleTabs.SetVisible(const AValue: Boolean);
 begin
   inherited SetVisible(AValue);
   with TCoolDockManager(Manager) do
-    if (TabControl.TabIndex >= 0) and (TabControl.TabIndex < DockPanels.Count) then
-      with TCoolDockClientPanel(DockPanels[TabControl.TabIndex]) do begin
+    if (PageControl.TabIndex >= 0) and (PageControl.TabIndex < DockPanels.Count) then
+      with TCoolDockClientPanel(DockPanels[PageControl.TabIndex]) do begin
         //Show;
-        if AValue and (not Control.Visible) and (Control.Tag = 1) then begin
+        if AValue and (not Control.Visible) and (Control.Tag = 1)  then begin
           Control.Show;
           Control.Tag := 0;
         end;
@@ -238,8 +257,11 @@ var
 begin
   inherited;
   if not Visible then begin
-    if Assigned(TWinControl(Control).DockManager) then
-    with TCoolDockManager(TWinControl(Control).DockManager) do begin
+    //if Assigned(TWinControl(Control).DockManager) then
+    //with TCoolDockManager(TWinControl(Control).DockManager) do
+    if Assigned(Manager) then
+    with TCoolDockManager(Manager) do
+    begin
 //    ShowMessage(IntToStr(TabControl.TabIndex) + ' ' + IntToStr(DockPanels.Count));
 //    TabControl.Tabs[0].;
 //    if (TabControl.TabIndex >= 0) and (TabControl.TabIndex < DockPanels.Count) then begin
@@ -247,18 +269,32 @@ begin
 //      TCoolDockClientPanel(DockPanels[TabControl.TabIndex]).Control.Show;
 //    end;
     //    ShowMessage(IntToStr(DockPanels.Count));
-      if Control.Tag = 0 then begin
-        TabImageList.Delete(TabControl.Tabs.IndexOf(Control.Caption));
+        //TabImageList.Delete(PageControl.Tabs.IndexOf(Control.Caption));
 
-        with TabControl.Tabs do
-          Delete(IndexOf(Control.Caption));
-      end;
+        I := DockPanels.IndexOf(FindControlInPanels(Control));
+        if Control.Tag = 0 then
+        if I <> -1 then
+  //        Control.Hide;
+          PageControl.Page[I].TabVisible := False;
+        Control.Tag := 0;
+//      end;
     end;
   end else
   begin
-    if Control.Tag = 0 then begin
-      TabImageList.Add(TCoolDockClientPanel(TCoolDockManager(Manager).FindControlInPanels(Control)).Header.Icon.Picture.Bitmap, nil);
-      TabControl.Tabs.Add(Control.Caption);
+//    if Assigned(TWinControl(Control).DockManager) then
+//    with TCoolDockManager(TWinControl(Control).DockManager) do
+    if Assigned(Manager) then
+    with TCoolDockManager(Manager) do
+    begin
+//      if Control.Tag = 0 then begin
+        I := DockPanels.IndexOf(FindControlInPanels(Control));
+        //if  then
+        if I <> -1 then
+          PageControl.Page[I].TabVisible := True;
+//      TabImageList.Add(TCoolDockClientPanel(TCoolDockManager(Manager).FindControlInPanels(Control)).Header.Icon.Picture.Bitmap, nil);
+//      TabControl.Tabs.Add(Control.Caption);
+
+//      end;
     end;
   end;
 end;
@@ -267,7 +303,7 @@ procedure TCoolDockStyleTabs.SetTabsPos(const AValue: THeaderPos);
 begin
   if FTabsPos = AValue then Exit;
   FTabsPos := AValue;
-  with TabControl do
+  with PageControl do
   case AValue of
     hpAuto, hpTop: begin
       Align := alTop;

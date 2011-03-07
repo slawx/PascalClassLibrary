@@ -99,9 +99,11 @@ begin
     with TCoolDockManager(OwnerDockManager) do
     if Assigned(DockStyleHandler) then
     with DockStyleHandler do begin
+      //UpdateClientSize;
       if ControlVisible then
         Switch(DockPanels.IndexOf(FindControlInPanels(TControl(Sender))));
-      //UpdateClientSize;
+      if not (Control is TWinControl) then raise Exception.Create('Not TWinControl');
+      if not Assigned(Control) then raise Exception.Create('Control not assigned');
       ChangeVisible(TWinControl(Control), ControlVisible);
       // Show parent control
       Temp := TControl(Sender).HostDockSite;

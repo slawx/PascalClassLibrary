@@ -1,0 +1,14 @@
+object ToolPaletteForm: TToolPaletteForm
+  Left = 597
+  Height = 352
+  Top = 147
+  Width = 203
+  Caption = 'Tool Palette'
+  LCLVersion = '0.9.31'
+  object CoolDockClient1: TCoolDockClient
+    Floatable = False
+    Master = MainForm.CoolDockMaster1
+    left = 55
+    top = 143
+  end
+end

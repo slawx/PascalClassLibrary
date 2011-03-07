@@ -162,8 +162,8 @@ procedure TCoolDockPopupMenu.PopupMenuCloseClick(Sender: TObject);
 var
   Control: TControl;
 begin
-  if PopupComponent is TTabControl then
-  with TTabControl(PopupComponent) do begin
+  if PopupComponent is TPageControl then
+  with TPageControl(PopupComponent) do begin
     TForm(TCoolDockClientPanel(TCoolDockManager(Manager).DockPanels[TabIndex]).Control).Close;
   end;
   if PopupComponent is TCoolDockHeader then
@@ -177,12 +177,12 @@ var
   Value: string;
 begin
   //ShowMessage(PopupComponent.ClassName);
-  if PopupComponent is TTabControl then
-  with TTabControl(PopupComponent) do begin
+  if PopupComponent is TPageControl then
+  with TPageControl(PopupComponent) do begin
     Value := TCoolDockClientPanel(TCoolDockManager(Manager).DockPanels[TabIndex]).Control.Caption;
     if InputQuery(SRenameWindow, SEnterNewWindowName, False, Value) then begin
       TCoolDockClientPanel(TCoolDockManager(Manager).DockPanels[TabIndex]).Control.Caption := Value;
-      Tabs[TabIndex] := Value;
+      Pages[TabIndex].Caption := Value;
     end;
   end;
   if PopupComponent is TCoolDockHeader then
@@ -227,8 +227,16 @@ procedure TCoolDockPopupMenu.PopupMenuUndockClick(Sender: TObject);
 var
   Control: TControl;
 begin
-
-  //Control.ManualFloat(Control.BoundsRect);
+  if PopupComponent is TPageControl then
+  with TPageControl(PopupComponent) do begin
+    Control := TCoolDockClientPanel(TCoolDockManager(Manager).DockPanels[TabIndex]).Control;
+  end else
+  if PopupComponent is TCoolDockHeader then
+  with TCoolDockHeader(PopupComponent) do begin
+    Control := ParentClientPanel.Control;
+  end else Control := nil;
+  if Assigned(Control) then
+    Control.ManualFloat(Control.BoundsRect);
 end;
 
 procedure TCoolDockPopupMenu.PopupMenuCustomizeClick(Sender: TObject);

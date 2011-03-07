@@ -1,0 +1,14 @@
+object StructureForm: TStructureForm
+  Left = 512
+  Height = 338
+  Top = 128
+  Width = 230
+  Caption = 'Structure'
+  LCLVersion = '0.9.31'
+  object CoolDockClient1: TCoolDockClient
+    Floatable = False
+    Master = MainForm.CoolDockMaster1
+    left = 87
+    top = 162
+  end
+end

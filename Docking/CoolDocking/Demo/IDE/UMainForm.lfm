@@ -1,0 +1,97 @@
+object MainForm: TMainForm
+  Left = 271
+  Height = 445
+  Top = 112
+  Width = 626
+  Caption = 'CoolDocking IDE'
+  Menu = MainMenu1
+  LCLVersion = '0.9.31'
+  object MainMenu1: TMainMenu
+    left = 166
+    top = 67
+    object MenuItem1: TMenuItem
+      Caption = 'File'
+    end
+    object MenuItem4: TMenuItem
+      Caption = 'Edit'
+    end
+    object MenuItem3: TMenuItem
+      Caption = 'Search'
+    end
+    object MenuItem2: TMenuItem
+      Caption = 'View'
+      object MenuItem7: TMenuItem
+        Action = AViewProjectManager
+      end
+      object MenuItem8: TMenuItem
+        Action = AViewToolPalette
+      end
+      object MenuItem12: TMenuItem
+        Action = AViewObjectInspector
+      end
+      object MenuItem13: TMenuItem
+        Action = AViewWindowList
+      end
+      object MenuItem14: TMenuItem
+        Action = AViewStructure
+      end
+    end
+    object MenuItem5: TMenuItem
+      Caption = 'Project'
+    end
+    object MenuItem6: TMenuItem
+      Caption = 'Run'
+    end
+    object MenuItem11: TMenuItem
+      Caption = 'Tools'
+    end
+    object MenuItem10: TMenuItem
+      Caption = 'Window'
+    end
+    object MenuItem9: TMenuItem
+      Caption = 'Help'
+    end
+  end
+  object ActionList1: TActionList
+    left = 232
+    top = 67
+    object AViewToolPalette: TAction
+      Caption = 'Tool Palette'
+      OnExecute = AViewToolPaletteExecute
+      ShortCut = 49232
+    end
+    object AViewProjectManager: TAction
+      Caption = 'Project Manager'
+      OnExecute = AViewProjectManagerExecute
+      ShortCut = 49274
+    end
+    object AViewObjectInspector: TAction
+      Caption = 'Object Inspector'
+      OnExecute = AViewObjectInspectorExecute
+      ShortCut = 122
+    end
+    object AViewWindowList: TAction
+      Caption = 'Window List...'
+      OnExecute = AViewWindowListExecute
+      ShortCut = 32816
+    end
+    object AViewStructure: TAction
+      Caption = 'Structure'
+      OnExecute = AViewStructureExecute
+      ShortCut = 49274
+    end
+  end
+  object CoolDockMaster1: TCoolDockMaster
+    TabsEnabled = False
+    DefaultTabsPos = hpAuto
+    DefaultHeaderPos = hpAuto
+    DefaultMoveSpeed = 0
+    ShowIcons = False
+    left = 166
+    top = 126
+  end
+  object CoolDockWindowList1: TCoolDockWindowList
+    left = 168
+    top = 176
+  end
+end

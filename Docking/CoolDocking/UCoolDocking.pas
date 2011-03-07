@@ -506,7 +506,7 @@ var
 begin
   if FDockStyle <> AValue then begin
     FDockStyle := AValue;
-    DockStyleHandler.Free;
+    FreeAndNil(DockStyleHandler);
     if AValue = dsTabs then begin
       DockStyleHandler := TCoolDockStyleTabs.Create(Self);
       TCoolDockStyleTabs(DockStyleHandler).TabControlChange(Self);
