@@ -5,7 +5,8 @@ unit UCoolDockPopupMenu;
 interface
 
 uses
-  Classes, SysUtils, Menus, Controls, Dialogs, UCoolDockClientPanel;
+  Classes, SysUtils, Menus, Forms, Controls, Dialogs, UCoolDockClientPanel,
+  ExtCtrls, ComCtrls;
 
 type
 
@@ -33,7 +34,7 @@ type
 implementation
 
 uses
-  UCoolDocking;
+  UCoolDocking, UCoolDockStyleTabs;
 
 resourcestring
   SDockStyle = 'Style';
@@ -161,19 +162,37 @@ procedure TCoolDockPopupMenu.PopupMenuCloseClick(Sender: TObject);
 var
   Control: TControl;
 begin
-  Control := FindLCLControl(Mouse.CursorPos);
-  if Assigned(Control) then
-    ShowMessage(Control.ClassName);
-  //DockSiteTForm(TCoolDockManager(TControl(Sender).Parent.Parent.Parent.DockManager).FDockSite).Close;
+  if PopupComponent is TTabControl then
+  with TTabControl(PopupComponent) do begin
+    TForm(TCoolDockClientPanel(TCoolDockManager(Manager).DockPanels[TabIndex]).Control).Close;
+  end;
+  if PopupComponent is TCoolDockHeader then
+  with TCoolDockHeader(PopupComponent) do begin
+    TForm(ParentClientPanel.Control).Close;
+  end;
 end;
 
 procedure TCoolDockPopupMenu.PopupMenuRenameClick(Sender: TObject);
 var
   Value: string;
 begin
-  Value := TCoolDockManager(Manager).DockSite.Parent.Caption;
-  if InputQuery(SRenameWindow, SEnterNewWindowName, False, Value) then
-    TCoolDockManager(Manager).DockSite.Parent.Caption := Value;
+  //ShowMessage(PopupComponent.ClassName);
+  if PopupComponent is TTabControl then
+  with TTabControl(PopupComponent) do begin
+    Value := TCoolDockClientPanel(TCoolDockManager(Manager).DockPanels[TabIndex]).Control.Caption;
+    if InputQuery(SRenameWindow, SEnterNewWindowName, False, Value) then begin
+      TCoolDockClientPanel(TCoolDockManager(Manager).DockPanels[TabIndex]).Control.Caption := Value;
+      Tabs[TabIndex] := Value;
+    end;
+  end;
+  if PopupComponent is TCoolDockHeader then
+  with TCoolDockHeader(PopupComponent) do begin
+    Value := ParentClientPanel.Control.Caption;
+    if InputQuery(SRenameWindow, SEnterNewWindowName, False, Value) then begin
+      ParentClientPanel.Control.Caption := Value;
+      Title.Caption := Value;
+    end;
+  end;
 end;
 
 procedure TCoolDockPopupMenu.PopupMenuPositionAutoClick(Sender: TObject);

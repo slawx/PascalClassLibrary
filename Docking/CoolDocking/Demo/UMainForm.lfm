@@ -10,7 +10,7 @@ object MainForm: TMainForm
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
-  LCLVersion = '0.9.29'
+  LCLVersion = '0.9.31'
   object Button1: TButton
     Left = 10
     Height = 25
@@ -27,8 +27,53 @@ object MainForm: TMainForm
     Width = 576
     Align = alBottom
     Anchors = [akTop, akLeft, akRight, akBottom]
+    ClientHeight = 368
+    ClientWidth = 576
     DockSite = True
     TabOrder = 1
+    object PageControl1: TPageControl
+      Left = 80
+      Height = 160
+      Top = 50
+      Width = 256
+      ActivePage = TabSheet2
+      MultiLine = True
+      TabIndex = 1
+      TabOrder = 0
+      OnChange = PageControl1Change
+      Options = [nboMultiLine]
+      object TabSheet1: TTabSheet
+        Caption = 'TabSheet1'
+      end
+      object TabSheet2: TTabSheet
+        Caption = 'TabSheet2'
+      end
+      object TabSheet3: TTabSheet
+        Caption = 'TabSheet3'
+      end
+      object TabSheet4: TTabSheet
+        Caption = 'TabSheet4'
+      end
+    end
+    object TabControl1: TTabControl
+      Left = 344
+      Height = 150
+      Top = 144
+      Width = 200
+      MultiLine = True
+      TabIndex = 2
+      TabOrder = 1
+      Tabs.Strings = (
+        'ggdfg'
+        'gfgdfgfdgd'
+        'gdfgdfgdf'
+        'dfsdfs'
+        'dd'
+        'dddd'
+        'ddd'
+      )
+      TabStop = False
+    end
   end
   object Button2: TButton
     Left = 94

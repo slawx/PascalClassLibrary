@@ -21,7 +21,7 @@ begin
 
   Application.Initialize;
   Application.CreateForm(TMainForm, MainForm);
-  Application.CreateForm(TForm1, Form1);
+  Application.CreateForm(TDockableForm, DockableForm);
   Application.CreateForm(TComponentTree, ComponentTree);
   Application.Run;
 end.

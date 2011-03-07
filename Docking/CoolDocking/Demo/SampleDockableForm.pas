@@ -10,9 +10,9 @@ uses
 
 type
 
-  { TForm1 }
+  { TDockableForm }
 
-  TForm1 = class(TForm)
+  TDockableForm = class(TForm)
     CoolDockClient1: TCoolDockClient;
     ImageList1: TImageList;
     Memo1: TMemo;
@@ -23,7 +23,7 @@ type
   end; 
 
 var
-  Form1: TForm1; 
+  DockableForm: TDockableForm;
 
 implementation
 

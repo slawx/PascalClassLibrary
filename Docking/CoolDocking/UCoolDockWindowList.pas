@@ -14,14 +14,18 @@ type
 
   TCoolDockWindowListForm = class(TForm)
     ButtonFocus: TButton;
-    ButtonCancel: TButton;
+    ButtonHide: TButton;
+    ButtonShow: TButton;
     ImageList1: TImageList;
     ListView1: TListView;
-    procedure ButtonCancelClick(Sender: TObject);
     procedure ButtonFocusClick(Sender: TObject);
+    procedure ButtonHideClick(Sender: TObject);
+    procedure ButtonShowClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure ListView1DblClick(Sender: TObject);
     procedure ListView1KeyPress(Sender: TObject; var Key: char);
+    procedure ListView1SelectItem(Sender: TObject; Item: TListItem;
+      Selected: Boolean);
   private
     { private declarations }
   public
@@ -42,16 +46,25 @@ resourcestring
 
 { TCoolDockWindowListForm }
 
-procedure TCoolDockWindowListForm.ButtonCancelClick(Sender: TObject);
-begin
-  Close;
-end;
-
 procedure TCoolDockWindowListForm.ButtonFocusClick(Sender: TObject);
 begin
   if Assigned(ListView1.Selected) then
     TForm(ListView1.Selected.Data).Show;
   Close;
+end;
+
+procedure TCoolDockWindowListForm.ButtonHideClick(Sender: TObject);
+begin
+  if Assigned(ListView1.Selected) then
+    TForm(ListView1.Selected.Data).Close;
+  LoadList;
+end;
+
+procedure TCoolDockWindowListForm.ButtonShowClick(Sender: TObject);
+begin
+  if Assigned(ListView1.Selected) then
+    TForm(ListView1.Selected.Data).Show;
+  LoadList;
 end;
 
 procedure TCoolDockWindowListForm.FormShow(Sender: TObject);
@@ -67,6 +80,14 @@ end;
 procedure TCoolDockWindowListForm.ListView1KeyPress(Sender: TObject; var Key: char);
 begin
   if Key = #13 then ButtonFocusClick(Self);
+end;
+
+procedure TCoolDockWindowListForm.ListView1SelectItem(Sender: TObject;
+  Item: TListItem; Selected: Boolean);
+begin
+  ButtonFocus.Enabled := Selected;
+  ButtonHide.Enabled := Selected;
+  ButtonShow.Enabled := Selected;
 end;
 
 procedure TCoolDockWindowListForm.LoadList;
