@@ -5,7 +5,8 @@ unit UObjectInspectorForm;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, UCoolDocking;
+  Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs,
+  PopupNotifier, Grids, UCoolDocking;
 
 type
 
@@ -14,6 +15,7 @@ type
   TObjectInspectorForm = class(TForm)
   published
     CoolDockClient1: TCoolDockClient;
+    StringGrid1: TStringGrid;
     { private declarations }
   public
     { public declarations }

@@ -24,7 +24,7 @@
     </CompilerOptions>
     <Description Value="Set of components for docking of windows."/>
     <Version Minor="2"/>
-    <Files Count="11">
+    <Files Count="13">
       <Item1>
         <Filename Value="UCoolDocking.pas"/>
         <HasRegisterProc Value="True"/>
@@ -70,35 +70,32 @@
         <Filename Value="UCoolDockPopupMenu.pas"/>
         <UnitName Value="UCoolDockPopupMenu"/>
       </Item11>
+      <Item12>
+        <Filename Value="UCoolDockLayout.pas"/>
+        <HasRegisterProc Value="True"/>
+        <UnitName Value="UCoolDockLayout"/>
+      </Item12>
+      <Item13>
+        <Filename Value="URectangle.pas"/>
+        <UnitName Value="URectangle"/>
+      </Item13>
     </Files>
     <i18n>
       <EnableI18N Value="True"/>
       <OutDir Value="languages"/>
     </i18n>
     <Type Value="RunAndDesignTime"/>
-    <RequiredPkgs Count="7">
+    <RequiredPkgs Count="3">
       <Item1>
         <PackageName Value="LCLBase"/>
       </Item1>
       <Item2>
-        <PackageName Value="LCLBase"/>
+        <PackageName Value="LCL"/>
       </Item2>
       <Item3>
-        <PackageName Value="LCLBase"/>
-      </Item3>
-      <Item4>
-        <PackageName Value="LCLBase"/>
-      </Item4>
-      <Item5>
-        <PackageName Value="LCLBase"/>
-      </Item5>
-      <Item6>
-        <PackageName Value="LCL"/>
-      </Item6>
-      <Item7>
         <PackageName Value="FCL"/>
         <MinVersion Major="1" Valid="True"/>
-      </Item7>
+      </Item3>
     </RequiredPkgs>
     <UsageOptions>
       <UnitPath Value="$(PkgOutDir)"/>

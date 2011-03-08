@@ -4,7 +4,19 @@ object ToolPaletteForm: TToolPaletteForm
   Top = 147
   Width = 203
   Caption = 'Tool Palette'
+  ClientHeight = 352
+  ClientWidth = 203
   LCLVersion = '0.9.31'
+  object TreeView1: TTreeView
+    Left = 4
+    Height = 344
+    Top = 4
+    Width = 195
+    Align = alClient
+    BorderSpacing.Around = 4
+    DefaultItemHeight = 15
+    TabOrder = 0
+  end
   object CoolDockClient1: TCoolDockClient
     Floatable = False
     Master = MainForm.CoolDockMaster1

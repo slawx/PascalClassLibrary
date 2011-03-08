@@ -1,28 +1,26 @@
-unit UStructureForm;
+unit UCallStackForm;
 
 {$mode objfpc}{$H+}
 
 interface
 
 uses
-  Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, ComCtrls,
-  UCoolDocking;
+  Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, UCoolDocking;
 
 type
 
-  { TStructureForm }
+  { TCallStackForm }
 
-  TStructureForm = class(TForm)
+  TCallStackForm = class(TForm)
   published
     CoolDockClient1: TCoolDockClient;
-    TreeView1: TTreeView;
     { private declarations }
   public
     { public declarations }
   end; 
 
 var
-  StructureForm: TStructureForm;
+  CallStackForm: TCallStackForm;
 
 implementation
 

@@ -1,28 +1,28 @@
-unit UStructureForm;
+unit UMessagesForm;
 
 {$mode objfpc}{$H+}
 
 interface
 
 uses
-  Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, ComCtrls,
+  Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
   UCoolDocking;
 
 type
 
-  { TStructureForm }
+  { TMessagesForm }
 
-  TStructureForm = class(TForm)
+  TMessagesForm = class(TForm)
   published
     CoolDockClient1: TCoolDockClient;
-    TreeView1: TTreeView;
+    Memo1: TMemo;
     { private declarations }
   public
     { public declarations }
   end; 
 
 var
-  StructureForm: TStructureForm;
+  MessagesForm: TMessagesForm;
 
 implementation
 

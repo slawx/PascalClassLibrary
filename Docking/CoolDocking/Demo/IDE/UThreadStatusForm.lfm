@@ -1,0 +1,35 @@
+object ThreadStatusForm: TThreadStatusForm
+  Left = 300
+  Height = 248
+  Top = 109
+  Width = 320
+  Caption = 'Thread Status'
+  ClientHeight = 248
+  ClientWidth = 320
+  LCLVersion = '0.9.31'
+  object ListView1: TListView
+    Left = 4
+    Height = 240
+    Top = 4
+    Width = 312
+    Align = alClient
+    BorderSpacing.Around = 4
+    Columns = <    
+      item
+      end    
+      item
+      end    
+      item
+      end    
+      item
+      end>
+    TabOrder = 0
+    ViewStyle = vsReport
+  end
+  object CoolDockClient1: TCoolDockClient
+    Floatable = False
+    Master = MainForm.CoolDockMaster1
+    left = 120
+    top = 68
+  end
+end

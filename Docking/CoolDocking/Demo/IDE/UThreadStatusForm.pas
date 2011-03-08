@@ -1,4 +1,4 @@
-unit UStructureForm;
+unit UThreadStatusForm;
 
 {$mode objfpc}{$H+}
 
@@ -10,19 +10,19 @@ uses
 
 type
 
-  { TStructureForm }
+  { TThreadStatusForm }
 
-  TStructureForm = class(TForm)
+  TThreadStatusForm = class(TForm)
   published
     CoolDockClient1: TCoolDockClient;
-    TreeView1: TTreeView;
+    ListView1: TListView;
     { private declarations }
   public
     { public declarations }
   end; 
 
 var
-  StructureForm: TStructureForm;
+  ThreadStatusForm: TThreadStatusForm;
 
 implementation
 

@@ -1,16 +1,57 @@
 object MainForm: TMainForm
-  Left = 271
+  Left = 266
   Height = 445
-  Top = 112
+  Top = 130
   Width = 626
   Caption = 'CoolDocking IDE'
+  ClientHeight = 426
+  ClientWidth = 626
   Menu = MainMenu1
   LCLVersion = '0.9.31'
+  object Panel1: TPanel
+    Left = 0
+    Height = 426
+    Top = 0
+    Width = 626
+    Align = alClient
+    BevelOuter = bvNone
+    ClientHeight = 426
+    ClientWidth = 626
+    TabOrder = 0
+    object ToolBar1: TToolBar
+      Left = 0
+      Height = 26
+      Top = 0
+      Width = 626
+      Caption = 'ToolBar1'
+      Images = ImageList1
+      ParentShowHint = False
+      ShowHint = True
+      TabOrder = 0
+      object ComboBox1: TComboBox
+        Left = 1
+        Height = 21
+        Top = 2
+        Width = 100
+        ItemHeight = 13
+        TabOrder = 0
+        Text = 'ComboBox1'
+      end
+      object ToolButton1: TToolButton
+        Left = 101
+        Top = 2
+        Action = ADesktopSave
+      end
+    end
+  end
   object MainMenu1: TMainMenu
     left = 166
     top = 67
     object MenuItem1: TMenuItem
       Caption = 'File'
+      object MenuItem23: TMenuItem
+        Action = ANewFile
+      end
     end
     object MenuItem4: TMenuItem
       Caption = 'Edit'
@@ -35,6 +76,27 @@ object MainForm: TMainForm
       object MenuItem14: TMenuItem
         Action = AViewStructure
       end
+      object MenuItem15: TMenuItem
+        Action = AViewMessages
+      end
+      object MenuItem16: TMenuItem
+        Caption = 'Debug Windows'
+        object MenuItem17: TMenuItem
+          Action = AViewCallStack
+        end
+        object MenuItem18: TMenuItem
+          Action = AViewLocalVariables
+        end
+        object MenuItem20: TMenuItem
+          Action = AViewWatchList
+        end
+        object MenuItem21: TMenuItem
+          Action = AViewThreadStatus
+        end
+      end
+      object MenuItem19: TMenuItem
+        Action = AViewToDoList
+      end
     end
     object MenuItem5: TMenuItem
       Caption = 'Project'
@@ -44,6 +106,9 @@ object MainForm: TMainForm
     end
     object MenuItem11: TMenuItem
       Caption = 'Tools'
+      object MenuItem22: TMenuItem
+        Action = ACustomizeDocking
+      end
     end
     object MenuItem10: TMenuItem
       Caption = 'Window'
@@ -53,8 +118,9 @@ object MainForm: TMainForm
     end
   end
   object ActionList1: TActionList
-    left = 232
-    top = 67
+    Images = ImageList1
+    left = 284
+    top = 72
     object AViewToolPalette: TAction
       Caption = 'Tool Palette'
       OnExecute = AViewToolPaletteExecute
@@ -80,12 +146,51 @@ object MainForm: TMainForm
       OnExecute = AViewStructureExecute
       ShortCut = 49274
     end
+    object AViewMessages: TAction
+      Caption = 'Messages'
+      OnExecute = AViewMessagesExecute
+    end
+    object AViewCallStack: TAction
+      Caption = 'Call Stack'
+      OnExecute = AViewCallStackExecute
+    end
+    object AViewLocalVariables: TAction
+      Caption = 'Local Variables'
+      OnExecute = AViewLocalVariablesExecute
+    end
+    object AViewToDoList: TAction
+      Caption = 'To-Do List'
+      OnExecute = AViewToDoListExecute
+    end
+    object AViewWatchList: TAction
+      Caption = 'Watch List'
+      OnExecute = AViewWatchListExecute
+    end
+    object AViewThreadStatus: TAction
+      Caption = 'Thread Status'
+      OnExecute = AViewThreadStatusExecute
+    end
+    object ADesktopSave: TAction
+      Caption = 'Desktop Save'
+      Hint = 'Save current desktop'
+      ImageIndex = 0
+      OnExecute = ADesktopSaveExecute
+    end
+    object ACustomizeDocking: TAction
+      Caption = 'Customize Docking...'
+      OnExecute = ACustomizeDockingExecute
+    end
+    object ANewFile: TAction
+      Caption = 'New file'
+      OnExecute = ANewFileExecute
+    end
   end
   object CoolDockMaster1: TCoolDockMaster
     TabsEnabled = False
     DefaultTabsPos = hpAuto
     DefaultHeaderPos = hpAuto
     DefaultMoveSpeed = 0
+    Customize = CoolDockCustomize1
     ShowIcons = False
     left = 166
     top = 126
@@ -93,5 +198,61 @@ object MainForm: TMainForm
   object CoolDockWindowList1: TCoolDockWindowList
     left = 168
     top = 176
+  end
+  object CoolDockClient1: TCoolDockClient
+    Dockable = False
+    Floatable = False
+    Master = CoolDockMaster1
+    Panel = Panel1
+    left = 284
+    top = 127
+  end
+  object ImageList1: TImageList
+    left = 362
+    top = 72
+    Bitmap = {
+      4C69010000001000000010000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000000000000000000000000000000000000008484FF00000000FFFF
+      FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF0000
+      0000FFFFFFFF00000000000000000000000000000000008484FF00000000FFFF
+      FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF0000
+      00000000000000000000000000000000000000000000008484FF00000000FFFF
+      FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF0000
+      0000008484FF00000000000000000000000000000000008484FF00000000FFFF
+      FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF0000
+      0000008484FF00000000000000000000000000000000008484FF00000000FFFF
+      FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF0000
+      0000008484FF00000000000000000000000000000000008484FF00000000FFFF
+      FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF0000
+      0000008484FF00000000000000000000000000000000008484FF008484FF0000
+      0000000000000000000000000000000000000000000000000000000000000084
+      84FF008484FF00000000000000000000000000000000008484FF008484FF0084
+      84FF008484FF008484FF008484FF008484FF008484FF008484FF008484FF0084
+      84FF008484FF00000000000000000000000000000000008484FF008484FF0000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000008484FF00000000000000000000000000000000008484FF008484FF0000
+      00000000000000000000000000000000000000000000FFFFFFFFFFFFFFFF0000
+      0000008484FF00000000000000000000000000000000008484FF008484FF0000
+      00000000000000000000000000000000000000000000FFFFFFFFFFFFFFFF0000
+      0000008484FF00000000000000000000000000000000008484FF008484FF0000
+      00000000000000000000000000000000000000000000FFFFFFFFFFFFFFFF0000
+      0000008484FF0000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000
+    }
+  end
+  object CoolDockCustomize1: TCoolDockCustomize
+    Master = CoolDockMaster1
+    left = 284
+    top = 179
+  end
+  object CoolDockLayoutList1: TCoolDockLayoutList
+    left = 284
+    top = 232
   end
 end

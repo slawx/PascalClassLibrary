@@ -1,28 +1,28 @@
-unit UStructureForm;
+unit UWatchListForm;
 
 {$mode objfpc}{$H+}
 
 interface
 
 uses
-  Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, ComCtrls,
+  Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
   UCoolDocking;
 
 type
 
-  { TStructureForm }
+  { TWatchListForm }
 
-  TStructureForm = class(TForm)
+  TWatchListForm = class(TForm)
   published
+    Memo1: TMemo;
     CoolDockClient1: TCoolDockClient;
-    TreeView1: TTreeView;
     { private declarations }
   public
     { public declarations }
   end; 
 
 var
-  StructureForm: TStructureForm;
+  WatchListForm: TWatchListForm;
 
 implementation
 

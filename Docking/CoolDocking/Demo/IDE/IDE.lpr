@@ -8,7 +8,9 @@ uses
   {$ENDIF}{$ENDIF}
   Interfaces, // this includes the LCL widgetset
   Forms, UMainForm, UObjectInspectorForm, CoolDocking, UStructureForm, 
-UToolPaletteForm, UProjectManagerForm
+UToolPaletteForm, UProjectManagerForm, UMessagesForm, UCallStackForm, 
+ULocalVariablesForm, UToDoListForm, UWatchListForm, UThreadStatusForm, 
+USourceEditorForm
   { you can add units after this };
 
 {$R *.res}
@@ -21,6 +23,13 @@ begin
   Application.CreateForm(TStructureForm, StructureForm);
   Application.CreateForm(TToolPaletteForm, ToolPaletteForm);
   Application.CreateForm(TProjectManagerForm, ProjectManagerForm);
+  Application.CreateForm(TMessagesForm, MessagesForm);
+  Application.CreateForm(TCallStackForm, CallStackForm);
+  Application.CreateForm(TLocalVariablesForm, LocalVariablesForm);
+  Application.CreateForm(TToDoListForm, ToDoListForm);
+  Application.CreateForm(TWatchListForm, WatchListForm);
+  Application.CreateForm(TThreadStatusForm, ThreadStatusForm);
+  Application.CreateForm(TSourceEditorForm, SourceEditorForm);
   Application.Run;
 end.
 

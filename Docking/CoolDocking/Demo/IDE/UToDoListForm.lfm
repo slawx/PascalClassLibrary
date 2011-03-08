@@ -1,0 +1,35 @@
+object ToDoListForm: TToDoListForm
+  Left = 244
+  Height = 240
+  Top = 126
+  Width = 320
+  Caption = 'To-Do List'
+  ClientHeight = 240
+  ClientWidth = 320
+  LCLVersion = '0.9.31'
+  object ListView1: TListView
+    Left = 4
+    Height = 232
+    Top = 4
+    Width = 312
+    Align = alClient
+    BorderSpacing.Around = 4
+    Columns = <    
+      item
+      end    
+      item
+      end    
+      item
+      end    
+      item
+      end>
+    TabOrder = 0
+    ViewStyle = vsReport
+  end
+  object CoolDockClient1: TCoolDockClient
+    Floatable = False
+    Master = MainForm.CoolDockMaster1
+    left = 119
+    top = 88
+  end
+end

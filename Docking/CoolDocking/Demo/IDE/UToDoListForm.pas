@@ -1,4 +1,4 @@
-unit UStructureForm;
+unit UToDoListForm;
 
 {$mode objfpc}{$H+}
 
@@ -10,19 +10,19 @@ uses
 
 type
 
-  { TStructureForm }
+  { TToDoListForm }
 
-  TStructureForm = class(TForm)
+  TToDoListForm = class(TForm)
   published
     CoolDockClient1: TCoolDockClient;
-    TreeView1: TTreeView;
+    ListView1: TListView;
     { private declarations }
   public
     { public declarations }
   end; 
 
 var
-  StructureForm: TStructureForm;
+  ToDoListForm: TToDoListForm;
 
 implementation
 
