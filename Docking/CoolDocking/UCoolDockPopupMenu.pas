@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Menus, Forms, Controls, Dialogs, UCoolDockClientPanel,
-  ExtCtrls, ComCtrls;
+  ExtCtrls, ComCtrls, UCoolDockCommon;
 
 type
 

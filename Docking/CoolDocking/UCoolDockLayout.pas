@@ -1,11 +1,11 @@
 unit UCoolDockLayout;
 
-{$mode objfpc}{$H+}
+{$mode Delphi}{$H+}
 
 interface
 
 uses
-  Classes, SysUtils, FileUtil, Contnrs, URectangle, UCoolDocking, Forms,
+  Classes, SysUtils, FileUtil, Contnrs, URectangle, Forms, UCoolDockCommon,
   DOM, XMLWrite, XMLRead;
 
 type
@@ -51,6 +51,7 @@ type
     procedure LoadFromFile(FileName: string);
     procedure SaveToFile(FileName: string);
     procedure PopulateStringList(List: TStrings);
+    function FindByName(Name: string): TCoolDockLayout;
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
   end;
@@ -170,6 +171,15 @@ begin
   List.Clear;
   for I := 0 to Items.Count - 1 do
     List.AddObject(TCoolDockLayout(Items[I]).Name, TCoolDockLayout(Items[I]));
+end;
+
+function TCoolDockLayoutList.FindByName(Name: string): TCoolDockLayout;
+var
+  I: Integer;
+begin
+  I := 0;
+  while (I < Items.Count) and (TCoolDockLayout(Items[I]).Name <> Name) do Inc(I);
+  if I < Items.Count then Result := TCoolDockLayout(Items[I]) else Result := nil;
 end;
 
 { TCoolDockLayoutItem }

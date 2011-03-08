@@ -24,7 +24,7 @@
     </CompilerOptions>
     <Description Value="Set of components for docking of windows."/>
     <Version Minor="2"/>
-    <Files Count="13">
+    <Files Count="14">
       <Item1>
         <Filename Value="UCoolDocking.pas"/>
         <HasRegisterProc Value="True"/>
@@ -40,6 +40,7 @@
       </Item3>
       <Item4>
         <Filename Value="UCoolDockWindowList.pas"/>
+        <HasRegisterProc Value="True"/>
         <UnitName Value="UCoolDockWindowList"/>
       </Item4>
       <Item5>
@@ -79,6 +80,10 @@
         <Filename Value="URectangle.pas"/>
         <UnitName Value="URectangle"/>
       </Item13>
+      <Item14>
+        <Filename Value="UCoolDockCommon.pas"/>
+        <UnitName Value="UCoolDockCommon"/>
+      </Item14>
     </Files>
     <i18n>
       <EnableI18N Value="True"/>

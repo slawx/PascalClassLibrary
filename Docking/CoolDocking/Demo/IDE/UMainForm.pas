@@ -9,7 +9,7 @@ uses
   ActnList, ExtCtrls, ComCtrls, StdCtrls, UCoolDocking, UCoolDockLayout,
   UToolPaletteForm, UObjectInspectorForm, UProjectManagerForm, UStructureForm,
   UMessagesForm, UCallStackForm, ULocalVariablesForm, UToDoListForm,
-  UWatchListForm, UThreadStatusForm, USourceEditorForm;
+  UWatchListForm, UThreadStatusForm, USourceEditorForm, UCoolDockWindowList;
 
 const
   DockLayoutFileName = 'Layout.xml';
@@ -42,6 +42,7 @@ type
     CoolDockMaster1: TCoolDockMaster;
     CoolDockWindowList1: TCoolDockWindowList;
     ImageList1: TImageList;
+    Label1: TLabel;
     MenuItem11: TMenuItem;
     MenuItem10: TMenuItem;
     MenuItem12: TMenuItem;
@@ -54,9 +55,11 @@ type
     MenuItem19: TMenuItem;
     MenuItem20: TMenuItem;
     MenuItem21: TMenuItem;
-    MenuItem22: TMenuItem;
     MenuItem23: TMenuItem;
     MenuItem24: TMenuItem;
+    MenuItem25: TMenuItem;
+    MenuItem26: TMenuItem;
+    MenuItem27: TMenuItem;
     MenuItem9: TMenuItem;
     MenuItem8: TMenuItem;
     MenuItem7: TMenuItem;
@@ -193,6 +196,7 @@ end;
 procedure TMainForm.ACustomizeDockingExecute(Sender: TObject);
 begin
   CoolDockCustomize1.Execute;
+  CoolDockLayoutList1.PopulateStringList(ComboBox1.Items);
 end;
 
 procedure TMainForm.AViewLocalVariablesExecute(Sender: TObject);

@@ -10,13 +10,14 @@ uses
   UCoolDocking, UCoolDockCustomize, UCoolDockWindowList, UCoolDockStyleTabs, 
   UCoolDockStyleRegions, UCoolDockStylePopupTabs, UCoolDockStylePopupRegions, 
   UCoolDockStyle, UCoolDockClientPanel, UCoolDockPopupMenu, UCoolDockLayout, 
-  URectangle, LazarusPackageIntf;
+  URectangle, UCoolDockCommon, LazarusPackageIntf;
 
 implementation
 
 procedure Register; 
 begin
   RegisterUnit('UCoolDocking', @UCoolDocking.Register); 
+  RegisterUnit('UCoolDockWindowList', @UCoolDockWindowList.Register); 
   RegisterUnit('UCoolDockLayout', @UCoolDockLayout.Register); 
 end; 
 

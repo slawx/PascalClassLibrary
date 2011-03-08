@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs,
-  ComCtrls, StdCtrls, Menus;
+  ComCtrls, StdCtrls, Menus, UCoolDockLayout;
 
 type
 
@@ -33,8 +33,18 @@ type
     procedure LoadToMenuItem(MenuItem: TMenuItem);
   end; 
 
-var
-  CoolDockWindowListForm: TCoolDockWindowListForm;
+  TCoolDockWindowList = class(TComponent)
+  private
+    FLayoutList: TCoolDockLayoutList;
+    Form: TCoolDockWindowListForm;
+    procedure SetLayoutList(const AValue: TCoolDockLayoutList);
+  public
+    function Execute: Boolean;
+    constructor Create(AOwner: TComponent); override;
+  published
+  end;
+
+procedure Register;
 
 implementation
 
@@ -43,6 +53,32 @@ resourcestring
   SStateDocked = 'Docked';
   SStateVisible = 'Visible';
   SStateHidden = 'Hidden';
+
+procedure Register;
+begin
+  RegisterComponents('CoolDocking', [TCoolDockWindowList]);
+end;
+
+{ TCoolDockWindowList }
+
+function TCoolDockWindowList.Execute: Boolean;
+begin
+  Form := TCoolDockWindowListForm.Create(Self);
+  Form.ShowModal;
+  Form.Free;
+  Result := True;
+end;
+
+constructor TCoolDockWindowList.Create(AOwner: TComponent);
+begin
+  inherited Create(AOwner);
+end;
+
+procedure TCoolDockWindowList.SetLayoutList(const AValue: TCoolDockLayoutList);
+begin
+  if FLayoutList = AValue then Exit;
+  FLayoutList := AValue;
+end;
 
 { TCoolDockWindowListForm }
 

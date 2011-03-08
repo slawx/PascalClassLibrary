@@ -1,0 +1,12 @@
+msgid ""
+msgstr "Content-Type: text/plain; charset=UTF-8"
+
+#: ucooldockcustomize.senternewname
+msgctxt "ucooldockcustomize.senternewname"
+msgid "Enter new name"
+msgstr ""
+
+#: ucooldockcustomize.snewlayout
+msgid "New Layout"
+msgstr ""
+

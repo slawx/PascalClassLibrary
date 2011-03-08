@@ -9,10 +9,10 @@ interface
 uses
   Classes, SysUtils, Controls, LCLType, LMessages, Graphics, StdCtrls,
   Buttons, ExtCtrls, Contnrs, Forms, ComCtrls, Dialogs, Menus, FileUtil,
-  UCoolDockCustomize, DOM, XMLWrite, XMLRead, UCoolDockWindowList,
+  UCoolDockCustomize, DOM, XMLWrite, XMLRead, UCoolDockCommon,
   DateUtils, UCoolDockStyleTabs, UCoolDockStyleRegions, UCoolDockStylePopupTabs,
   UCoolDockStylePopupRegions, UCoolDockStyle, UCoolDockClientPanel,
-  UCoolDockPopupMenu;
+  UCoolDockPopupMenu, UCoolDockLayout;
 
 const
   GrabberSize = 22;
@@ -37,8 +37,6 @@ type
   private
     procedure PanelVisibleChange(Sender: TObject);
   end;
-
-  TDockStyle = (dsList, dsTabs, dsPopupTabs, dsPopupList);
 
   // TObjectList<TCoolDockClientPanel>
 
@@ -173,8 +171,10 @@ type
 
   TCoolDockCustomize = class(TComponent)
   private
+    FLayoutList: TCoolDockLayoutList;
     FMaster: TCoolDockMaster;
     Form: TCoolDockCustomizeForm;
+    procedure SetLayoutList(const AValue: TCoolDockLayoutList);
     procedure SetMaster(const AValue: TCoolDockMaster);
   public
     function Execute: Boolean;
@@ -182,17 +182,7 @@ type
     destructor Destroy; override;
   published
     property Master: TCoolDockMaster read FMaster write SetMaster;
-  end;
-
-  { TCoolDockWindowList }
-
-  TCoolDockWindowList = class(TComponent)
-  private
-    Form: TCoolDockWindowListForm;
-  public
-    function Execute: Boolean;
-    constructor Create(AOwner: TComponent); override;
-  published
+    property LayoutList: TCoolDockLayoutList read FLayoutList write SetLayoutList;
   end;
 
 procedure Register;
@@ -207,7 +197,6 @@ begin
   RegisterComponents('CoolDocking', [TCoolDockMaster]);
   RegisterComponents('CoolDocking', [TCoolDockClient]);
   RegisterComponents('CoolDocking', [TCoolDockCustomize]);
-  RegisterComponents('CoolDocking', [TCoolDockWindowList]);
 end;
 
 { TCoolDockPanels }
@@ -800,6 +789,12 @@ begin
   end;
 end;
 
+procedure TCoolDockCustomize.SetLayoutList(const AValue: TCoolDockLayoutList);
+begin
+  if FLayoutList=AValue then exit;
+  FLayoutList:=AValue;
+end;
+
 function TCoolDockCustomize.Execute: Boolean;
 begin
   Form := TCoolDockCustomizeForm.Create(Self);
@@ -807,6 +802,7 @@ begin
     Form.SpinEdit1.Value := Master.DefaultMoveSpeed;
     Form.ComboBox1.ItemIndex := Integer(Master.DefaultTabsPos);
     Form.ComboBox2.ItemIndex := Integer(Master.DefaultHeaderPos);
+    Form.LayoutList := FLayoutList;
   end;
   Form.ShowModal;
   if Assigned(Master) then begin
@@ -829,21 +825,6 @@ begin
   inherited Destroy;
 end;
 
-
-{ TCoolDockWindowList }
-
-function TCoolDockWindowList.Execute: Boolean;
-begin
-  Form := TCoolDockWindowListForm.Create(Self);
-  Form.ShowModal;
-  Form.Free;
-  Result := True;
-end;
-
-constructor TCoolDockWindowList.Create(AOwner: TComponent);
-begin
-  inherited Create(AOwner);
-end;
 
 { TCoolDockClient }
 
