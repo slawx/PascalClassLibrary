@@ -11,12 +11,16 @@ uses
   UMessagesForm, UCallStackForm, ULocalVariablesForm, UToDoListForm,
   UWatchListForm, UThreadStatusForm, USourceEditorForm;
 
+const
+  DockLayoutFileName = 'Layout.xml';
+
 type
 
   { TMainForm }
 
   TMainForm = class(TForm)
   published
+    AExit: TAction;
     ANewFile: TAction;
     ACustomizeDocking: TAction;
     ADesktopSave: TAction;
@@ -52,6 +56,7 @@ type
     MenuItem21: TMenuItem;
     MenuItem22: TMenuItem;
     MenuItem23: TMenuItem;
+    MenuItem24: TMenuItem;
     MenuItem9: TMenuItem;
     MenuItem8: TMenuItem;
     MenuItem7: TMenuItem;
@@ -68,6 +73,7 @@ type
     ToolButton1: TToolButton;
     procedure ACustomizeDockingExecute(Sender: TObject);
     procedure ADesktopSaveExecute(Sender: TObject);
+    procedure AExitExecute(Sender: TObject);
     procedure ANewFileExecute(Sender: TObject);
     procedure AViewThreadStatusExecute(Sender: TObject);
     procedure AViewCallStackExecute(Sender: TObject);
@@ -80,9 +86,11 @@ type
     procedure AViewToolPaletteExecute(Sender: TObject);
     procedure AViewWatchListExecute(Sender: TObject);
     procedure AViewWindowListExecute(Sender: TObject);
+    procedure ComboBox1Select(Sender: TObject);
+    procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
+    procedure FormShow(Sender: TObject);
   public
-    { public declarations }
-  end; 
+  end;
 
 var
   MainForm: TMainForm;
@@ -106,6 +114,26 @@ end;
 procedure TMainForm.AViewWindowListExecute(Sender: TObject);
 begin
   CoolDockWindowList1.Execute;
+end;
+
+procedure TMainForm.ComboBox1Select(Sender: TObject);
+begin
+  if ComboBox1.ItemIndex <> - 1 then
+    TCoolDockLayout(CoolDockLayoutList1.Items[ComboBox1.ItemIndex]).Restore;
+end;
+
+procedure TMainForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
+begin
+  CoolDockLayoutList1.SaveToFile(DockLayoutFileName);
+end;
+
+procedure TMainForm.FormShow(Sender: TObject);
+begin
+  with CoolDockLayoutList1 do begin
+    if FileExistsUTF8(DockLayoutFileName) then
+      LoadFromFile(DockLayoutFileName);
+    PopulateStringList(ComboBox1.Items);
+  end;
 end;
 
 procedure TMainForm.AViewProjectManagerExecute(Sender: TObject);
@@ -139,8 +167,22 @@ begin
 end;
 
 procedure TMainForm.ADesktopSaveExecute(Sender: TObject);
+var
+  NewLayout: TCoolDockLayout;
 begin
+  if ComboBox1.Items.IndexOf(ComboBox1.Text) = -1 then begin
+    NewLayout := TCoolDockLayout.Create;
+    NewLayout.Name := ComboBox1.Text;
+    NewLayout.Store;
+    CoolDockLayoutList1.Items.Add(NewLayout);
+  end else
+    TCoolDockLayout(CoolDockLayoutList1.Items[ComboBox1.ItemIndex]).Store;
+  CoolDockLayoutList1.PopulateStringList(ComboBox1.Items);
+end;
 
+procedure TMainForm.AExitExecute(Sender: TObject);
+begin
+  Close;
 end;
 
 procedure TMainForm.ANewFileExecute(Sender: TObject);

@@ -1,7 +1,7 @@
 object SourceEditorForm: TSourceEditorForm
-  Left = 283
+  Left = 265
   Height = 349
-  Top = 134
+  Top = 165
   Width = 448
   Caption = 'Source Editor'
   ClientHeight = 349
