@@ -9,7 +9,8 @@ uses
   ActnList, ExtCtrls, ComCtrls, StdCtrls, UCoolDocking, UCoolDockLayout,
   UToolPaletteForm, UObjectInspectorForm, UProjectManagerForm, UStructureForm,
   UMessagesForm, UCallStackForm, ULocalVariablesForm, UToDoListForm,
-  UWatchListForm, UThreadStatusForm, USourceEditorForm, UCoolDockWindowList;
+  UWatchListForm, UThreadStatusForm, USourceEditorForm, UCoolDockWindowList,
+  UCoolDockCustomize;
 
 const
   DockLayoutFileName = 'Layout.xml';

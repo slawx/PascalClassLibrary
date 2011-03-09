@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs,
-  ComCtrls, StdCtrls, Spin, UCoolDockLayout;
+  ComCtrls, StdCtrls, Spin, UCoolDockLayout, UCoolDockCommon;
 
 type
 
@@ -44,7 +44,26 @@ type
     LayoutList: TCoolDockLayoutList;
   end;
 
+  { TCoolDockCustomize }
+
+  TCoolDockCustomize = class(TCoolDockCustomizeBase)
+  private
+    FLayoutList: TCoolDockLayoutList;
+    Form: TCoolDockCustomizeForm;
+    procedure SetLayoutList(const AValue: TCoolDockLayoutList);
+  public
+    function Execute: Boolean;
+    constructor Create(AOwner: TComponent); override;
+    destructor Destroy; override;
+  published
+    property LayoutList: TCoolDockLayoutList read FLayoutList write SetLayoutList;
+  end;
+
+
 implementation
+
+uses
+  UCoolDocking, UCoolDockClientPanel;
 
 resourcestring
   SNewLayout = 'New Layout';
@@ -113,6 +132,46 @@ begin
   ButtonLayoutApply.Enabled := ListBox1.ItemIndex <> -1;
   ButtonLayoutSave.Enabled := ListBox1.ItemIndex <> -1;
 end;
+
+
+{ TCoolDockCustomize }
+
+procedure TCoolDockCustomize.SetLayoutList(const AValue: TCoolDockLayoutList);
+begin
+  if FLayoutList=AValue then exit;
+  FLayoutList:=AValue;
+end;
+
+function TCoolDockCustomize.Execute: Boolean;
+begin
+  Form := TCoolDockCustomizeForm.Create(Self);
+  if Assigned(Master) then begin
+    Form.SpinEdit1.Value := TCoolDockMaster(Master).DefaultMoveSpeed;
+    Form.ComboBox1.ItemIndex := Integer(TCoolDockMaster(Master).DefaultTabsPos);
+    Form.ComboBox2.ItemIndex := Integer(TCoolDockMaster(Master).DefaultHeaderPos);
+    Form.LayoutList := FLayoutList;
+  end;
+  Form.ShowModal;
+  if Assigned(Master) then begin
+    TCoolDockMaster(Master).DefaultMoveSpeed := Form.SpinEdit1.Value;
+    TCoolDockMaster(Master).DefaultTabsPos := THeaderPos(Form.ComboBox1.ItemIndex);
+    TCoolDockMaster(Master).DefaultHeaderPos := THeaderPos(Form.ComboBox2.ItemIndex);
+  end;
+  Form.Free;
+  Result := True;
+end;
+
+constructor TCoolDockCustomize.Create(AOwner: TComponent);
+begin
+  inherited Create(AOwner);
+end;
+
+destructor TCoolDockCustomize.Destroy;
+begin
+  Master := nil;
+  inherited Destroy;
+end;
+
 
 initialization
   {$I UCoolDockCustomize.lrs}

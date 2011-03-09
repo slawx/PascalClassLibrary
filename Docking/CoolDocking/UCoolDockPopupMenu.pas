@@ -34,7 +34,7 @@ type
 implementation
 
 uses
-  UCoolDocking, UCoolDockStyleTabs;
+  UCoolDocking, UCoolDockStyleTabs, UCoolDockCustomize;
 
 resourcestring
   SDockStyle = 'Style';
@@ -244,7 +244,7 @@ begin
   with TCoolDockManager(Manager) do
   if Assigned(Master) and
     Assigned(Master.Customize) then
-    Master.Customize.Execute;
+    TCoolDockCustomize(Master.Customize).Execute;
 end;
 
 procedure TCoolDockPopupMenu.PopupMenuListClick(Sender: TObject);

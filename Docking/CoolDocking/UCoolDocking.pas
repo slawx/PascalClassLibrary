@@ -12,7 +12,7 @@ uses
   UCoolDockCustomize, DOM, XMLWrite, XMLRead, UCoolDockCommon,
   DateUtils, UCoolDockStyleTabs, UCoolDockStyleRegions, UCoolDockStylePopupTabs,
   UCoolDockStylePopupRegions, UCoolDockStyle, UCoolDockClientPanel,
-  UCoolDockPopupMenu, UCoolDockLayout;
+  UCoolDockPopupMenu;
 
 const
   GrabberSize = 22;
@@ -21,13 +21,13 @@ type
   TDockDirection = (ddNone, ddHorizontal, ddVertical);
 
   TCoolDockManager = class;
-  TCoolDockCustomize = class;
   TCoolDockClient = class;
   TCoolDockMaster = class;
 
   { TCoolDockConjoinForm }
 
-  TCoolDockConjoinForm = class(TForm)
+  TCoolDockConjoinForm = class(TCoolDockConjoinFormBase)
+  public
     Panel: TPanel;
     CoolDockClient: TCoolDockClient;
     procedure FormShow(Sender : TObject);
@@ -35,6 +35,7 @@ type
     constructor Create(TheOwner: TComponent); override;
     destructor Destroy; override;
   private
+    procedure SetName(const NewName: TComponentName); override;
     procedure PanelVisibleChange(Sender: TObject);
   end;
 
@@ -106,9 +107,8 @@ type
 
   { TCoolDockMaster }
 
-  TCoolDockMaster = class(TComponent)
+  TCoolDockMaster = class(TCoolDockMasterBase)
   private
-    FCoolDockCustomize: TCoolDockCustomize;
     FDefaultHeaderPos: THeaderPos;
     FDefaultMoveSpeed: Integer;
     FDefaultTabsPos: THeaderPos;
@@ -116,7 +116,6 @@ type
     FTabsEnabled: Boolean;
     FClients: TObjectList;
     function GetClient(Index: Integer): TCoolDockClient;
-    procedure SetCustomize(const AValue: TCoolDockCustomize);
     procedure SetShowIcons(const AValue: Boolean);
     procedure SetTabsEnabled(const AValue: Boolean);
   public
@@ -137,8 +136,6 @@ type
       write FDefaultHeaderPos;
     property DefaultMoveSpeed: Integer read FDefaultMoveSpeed
       write FDefaultMoveSpeed;
-    property Customize: TCoolDockCustomize read FCoolDockCustomize
-      write SetCustomize;
     property ShowIcons: Boolean read FShowIcons
       write SetShowIcons;
   end;
@@ -167,23 +164,6 @@ type
       write SetPanel;
   end;
 
-  { TCoolDockCustomize }
-
-  TCoolDockCustomize = class(TComponent)
-  private
-    FLayoutList: TCoolDockLayoutList;
-    FMaster: TCoolDockMaster;
-    Form: TCoolDockCustomizeForm;
-    procedure SetLayoutList(const AValue: TCoolDockLayoutList);
-    procedure SetMaster(const AValue: TCoolDockMaster);
-  public
-    function Execute: Boolean;
-    constructor Create(AOwner: TComponent); override;
-    destructor Destroy; override;
-  published
-    property Master: TCoolDockMaster read FMaster write SetMaster;
-    property LayoutList: TCoolDockLayoutList read FLayoutList write SetLayoutList;
-  end;
 
 procedure Register;
 
@@ -197,6 +177,15 @@ begin
   RegisterComponents('CoolDocking', [TCoolDockMaster]);
   RegisterComponents('CoolDocking', [TCoolDockClient]);
   RegisterComponents('CoolDocking', [TCoolDockCustomize]);
+end;
+
+function GetUniqueName(BaseName: string): string;
+var
+  I: Integer;
+begin
+  I := 1;
+  while Assigned(FindGlobalComponent(BaseName + IntToStr(I))) do Inc(I);
+  Result := BaseName + IntToStr(I);
 end;
 
 { TCoolDockPanels }
@@ -480,6 +469,7 @@ var
   NewConjoinDockForm: TCoolDockConjoinForm;
 begin
   NewConjoinDockForm := TCoolDockConjoinForm.Create(Application);
+  NewConjoinDockForm.Name := GetUniqueName('ConjoinForm');
   NewConjoinDockForm.Visible := True;
   NewConjoinDockForm.BoundsRect := FDockSite.BoundsRect;
   NewConjoinDockForm.CoolDockClient.Master := Self.Master;
@@ -565,11 +555,10 @@ end;
 
 constructor TCoolDockConjoinForm.Create(TheOwner: TComponent);
 begin
-  inherited Create(TheOwner);
+  inherited CreateNew(TheOwner);
   Panel := TPanel.Create(Self);
   with Panel do begin
     Parent := Self;
-    Name := Parent.Name + '_Panel';
     Caption := '';
     DockSite := True;
     UseDockManager := True;
@@ -581,7 +570,6 @@ begin
   CoolDockClient := TCoolDockClient.Create(Self);
   with CoolDockClient do begin
     Panel := Self.Panel;
-    Name := Owner.Name + '_CoolDockClient';
   end;
   OnShow := FormShow;
   OnHide := FormHide;
@@ -595,6 +583,14 @@ begin
   inherited;
 end;
 
+procedure TCoolDockConjoinForm.SetName(const NewName: TComponentName);
+begin
+  inherited SetName(NewName);
+  Panel.Name := Name + '_Panel';
+  Panel.Caption := '';
+  CoolDockClient.Name := Name + '_CoolDockClient';
+end;
+
 procedure TCoolDockConjoinForm.PanelVisibleChange(Sender: TObject);
 begin
   Visible := Panel.Visible;
@@ -606,21 +602,6 @@ procedure TCoolDockMaster.SetTabsEnabled(const AValue: Boolean);
 begin
   if FTabsEnabled = AValue then Exit;
   FTabsEnabled := AValue;
-end;
-
-procedure TCoolDockMaster.SetCustomize(const AValue: TCoolDockCustomize
-  );
-var
-  OldCustomize: TCoolDockCustomize;
-begin
-  if FCoolDockCustomize = AValue then Exit;
-  OldCustomize := FCoolDockCustomize;
-  FCoolDockCustomize := AValue;
-  if Assigned(AValue) then begin
-    FCoolDockCustomize.Master := Self;
-  end else begin
-    OldCustomize.Master := nil;
-  end;
 end;
 
 function TCoolDockMaster.GetClient(Index: Integer): TCoolDockClient;
@@ -773,59 +754,6 @@ begin
   end;
 end;
 
-{ TCoolDockCustomize }
-
-procedure TCoolDockCustomize.SetMaster(const AValue: TCoolDockMaster);
-var
-  OldMaster: TCoolDockMaster;
-begin
-  if FMaster = AValue then Exit;
-  OldMaster := FMaster;
-  FMaster := AValue;
-  if Assigned(AValue) then begin
-    FMaster.Customize := Self;
-  end else begin
-    OldMaster.Customize := nil;
-  end;
-end;
-
-procedure TCoolDockCustomize.SetLayoutList(const AValue: TCoolDockLayoutList);
-begin
-  if FLayoutList=AValue then exit;
-  FLayoutList:=AValue;
-end;
-
-function TCoolDockCustomize.Execute: Boolean;
-begin
-  Form := TCoolDockCustomizeForm.Create(Self);
-  if Assigned(Master) then begin
-    Form.SpinEdit1.Value := Master.DefaultMoveSpeed;
-    Form.ComboBox1.ItemIndex := Integer(Master.DefaultTabsPos);
-    Form.ComboBox2.ItemIndex := Integer(Master.DefaultHeaderPos);
-    Form.LayoutList := FLayoutList;
-  end;
-  Form.ShowModal;
-  if Assigned(Master) then begin
-    Master.DefaultMoveSpeed := Form.SpinEdit1.Value;
-    Master.DefaultTabsPos := THeaderPos(Form.ComboBox1.ItemIndex);
-    Master.DefaultHeaderPos := THeaderPos(Form.ComboBox2.ItemIndex);
-  end;
-  Form.Free;
-  Result := True;
-end;
-
-constructor TCoolDockCustomize.Create(AOwner: TComponent);
-begin
-  inherited Create(AOwner);
-end;
-
-destructor TCoolDockCustomize.Destroy;
-begin
-  Master := nil;
-  inherited Destroy;
-end;
-
-
 { TCoolDockClient }
 
 procedure TCoolDockClient.SetMaster(const AValue: TCoolDockMaster);
@@ -914,6 +842,14 @@ begin
     end;
   end;
 end;
+
+initialization
+
+RegisterClass(TCoolDockConjoinForm);
+
+finalization
+
+UnRegisterClass(TCoolDockConjoinForm);
 
 
 end.

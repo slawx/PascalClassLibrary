@@ -3,7 +3,7 @@ object MainForm: TMainForm
   Height = 445
   Top = 130
   Width = 626
-  Caption = 'CoolDocking IDE'
+  Caption = 'CoolDocking Demo IDE'
   ClientHeight = 426
   ClientWidth = 626
   Menu = MainMenu1

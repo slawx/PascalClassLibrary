@@ -6,15 +6,19 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Contnrs, URectangle, Forms, UCoolDockCommon,
-  DOM, XMLWrite, XMLRead;
+  DOM, XMLWrite, XMLRead, Controls;
 
 type
+  TCoolDockLayout = class;
 
   { TCoolDockLayoutItem }
 
   TCoolDockLayoutItem = class
+    Parent: TCoolDockLayout;
     Name: string;
+    StoredClassName: string;
     ParentName: string;
+    HostDockSiteName: string;
     Caption: string;
     Visible: Boolean;
     Rect: TRectangle;
@@ -24,6 +28,8 @@ type
     DockStyle: TDockStyle;
     procedure SaveToNode(Node: TDOMNode);
     procedure LoadFromNode(Node: TDOMNode);
+    procedure Store(Form: TWinControl);
+    procedure Restore(Form: TWinControl);
     constructor Create;
     destructor Destroy; override;
   end;
@@ -35,6 +41,7 @@ type
     Name: string;
     procedure SaveToNode(Node: TDOMNode);
     procedure LoadFromNode(Node: TDOMNode);
+    function FindByName(Name: string): TCoolDockLayoutItem;
     constructor Create;
     destructor Destroy; override;
     procedure Store;
@@ -59,6 +66,9 @@ type
 procedure Register;
 
 implementation
+
+uses
+  UCoolDocking;
 
 procedure Register;
 begin
@@ -179,7 +189,8 @@ var
 begin
   I := 0;
   while (I < Items.Count) and (TCoolDockLayout(Items[I]).Name <> Name) do Inc(I);
-  if I < Items.Count then Result := TCoolDockLayout(Items[I]) else Result := nil;
+  if I < Items.Count then Result := TCoolDockLayout(Items[I])
+    else Result := nil;
 end;
 
 { TCoolDockLayoutItem }
@@ -194,6 +205,12 @@ begin
     AppendChild(NewNode);
     NewNode := OwnerDocument.CreateElement('ParentName');
     NewNode.TextContent := UTF8Decode(ParentName);
+    AppendChild(NewNode);
+    NewNode := OwnerDocument.CreateElement('StoredClassName');
+    NewNode.TextContent := UTF8Decode(StoredClassName);
+    AppendChild(NewNode);
+    NewNode := OwnerDocument.CreateElement('HostDockSiteName');
+    NewNode.TextContent := UTF8Decode(HostDockSiteName);
     AppendChild(NewNode);
     NewNode := OwnerDocument.CreateElement('Caption');
     NewNode.TextContent := UTF8Decode(Caption);
@@ -251,6 +268,12 @@ begin
     NewNode := FindNode('ParentName');
     if Assigned(NewNode) then
       ParentName := UTF8Encode(NewNode.TextContent);
+    NewNode := FindNode('StoredClassName');
+    if Assigned(NewNode) then
+      StoredClassName := UTF8Encode(NewNode.TextContent);
+    NewNode := FindNode('HostDockSiteName');
+    if Assigned(NewNode) then
+      HostDockSiteName := UTF8Encode(NewNode.TextContent);
     NewNode := FindNode('Caption');
     if Assigned(NewNode) then
       Caption := UTF8Encode(NewNode.TextContent);
@@ -293,6 +316,88 @@ begin
     NewNode := FindNode('RestoredHeight');
     if Assigned(NewNode) then
       RestoredRect.Height := StrToInt(NewNode.TextContent);
+  end;
+end;
+
+procedure TCoolDockLayoutItem.Store(Form: TWinControl);
+var
+  NewItem: TCoolDockLayoutItem;
+begin
+  Name := Form.Name;
+  StoredClassName := Form.ClassName;
+  Caption := Form.Caption;
+  UndockSize.X := Form.UndockWidth;
+  UndockSize.Y := Form.UndockHeight;
+  Visible := Form.Visible;
+  Rect.Left := Form.Left;
+  Rect.Top := Form.Top;
+  Rect.Width := Form.Width;
+  Rect.Height := Form.Height;
+  if Form is TForm then begin
+    RestoredRect.Left := TForm(Form).RestoredLeft;
+    RestoredRect.Top := TForm(Form).RestoredTop;
+    RestoredRect.Width := TForm(Form).RestoredWidth;
+    RestoredRect.Height := TForm(Form).RestoredHeight;
+    WindowState := TForm(Form).WindowState;
+  end;
+  if Assigned(Form.Parent) then
+    ParentName := Form.Parent.Name
+    else ParentName := '';
+  if Assigned(Form.HostDockSite) then begin
+    if Assigned(Form.HostDockSite.Parent) and (Form.HostDockSite.Parent is TForm) then
+    begin
+      HostDockSiteName := Form.HostDockSite.Parent.Name;
+      if not Assigned(Parent.FindByName(HostDockSiteName)) then begin
+        NewItem := TCoolDockLayoutItem.Create;
+        NewItem.Parent := Parent;
+        NewItem.Store(Form.HostDockSite.Parent);
+        Parent.Items.Add(NewItem);
+      end;
+    end;
+  end else HostDockSiteName := '';
+end;
+
+procedure TCoolDockLayoutItem.Restore(Form: TWinControl);
+var
+  ParentComponent: TComponent;
+  ParentLayoutItem: TCoolDockLayoutItem;
+  FormClass: TFormClass;
+begin
+  if Form is TForm then
+  if WindowState = wsMaximized then begin
+    TForm(Form).SetRestoredBounds(RestoredRect.Left, RestoredRect.Top,
+      RestoredRect.Width, RestoredRect.Height);
+    TForm(Form).WindowState := WindowState;
+  end else begin
+    TForm(Form).WindowState := WindowState;
+    TForm(Form).SetRestoredBounds(RestoredRect.Left, RestoredRect.Top,
+      RestoredRect.Width, RestoredRect.Height);
+  end;
+  Form.Name := Name;
+  Form.Caption := Caption;
+  Form.SetBounds(Rect.Left, Rect.Top, Rect.Width, Rect.Height);
+  Form.UndockWidth := UndockSize.X;
+  Form.UndockHeight := UndockSize.Y;
+  Form.Visible := Visible;
+  if HostDockSiteName <> '' then begin
+    ParentComponent := FindGlobalComponent(HostDockSiteName);
+    if not Assigned(ParentComponent) then begin
+      ParentLayoutItem := Parent.FindByName(HostDockSiteName);
+      if Assigned(ParentLayoutItem) then begin
+        if ParentLayoutItem.StoredClassName <> '' then begin
+          //ParentComponent := TComponent(FindClass(ParentLayoutItem.StoredClassName).Create);
+          if (ParentLayoutItem.StoredClassName = 'TCoolDockConjoinForm') then begin
+            FormClass := TFormClass(FindClass('TCoolDockConjoinForm'));
+            if FormClass = TCoolDockConjoinForm then begin
+              ParentComponent := TCoolDockConjoinForm.Create(Application);
+              ParentLayoutItem.Restore(TWinControl(ParentComponent));
+            end;
+          end;
+        end;
+      end;
+    end;
+    if Assigned(ParentComponent) and (ParentComponent is TCoolDockConjoinForm) then
+      Form.ManualDock(TCoolDockConjoinForm(ParentComponent).Panel);
   end;
 end;
 
@@ -348,12 +453,23 @@ begin
       Child := FirstChild;
       while Assigned(Child) do begin
         NewItem := TCoolDockLayoutItem.Create;
+        NewItem.Parent := Self;
         NewItem.LoadFromNode(Child);
         Items.Add(NewItem);
         Child := Child.NextSibling;
       end;
     end;
   end;
+end;
+
+function TCoolDockLayout.FindByName(Name: string): TCoolDockLayoutItem;
+var
+  I: Integer;
+begin
+  I := 0;
+  while (I < Items.Count) and (TCoolDockLayoutItem(Items[I]).Name <> Name) do Inc(I);
+  if I < Items.Count then Result := TCoolDockLayoutItem(Items[I])
+    else Result := nil;
 end;
 
 constructor TCoolDockLayout.Create;
@@ -378,20 +494,8 @@ begin
   if (Application.Components[I] is TForm) then begin
     Form := (Application.Components[I] as TForm);
     NewItem := TCoolDockLayoutItem.Create;
-    NewItem.Name := Form.Name;
-    NewItem.Caption := Form.Caption;
-    NewItem.UndockSize.X := Form.UndockWidth;
-    NewItem.UndockSize.Y := Form.UndockHeight;
-    NewItem.Visible := Form.Visible;
-    NewItem.Rect.Left := Form.Left;
-    NewItem.Rect.Top := Form.Top;
-    NewItem.Rect.Width := Form.Width;
-    NewItem.Rect.Height := Form.Height;
-    NewItem.RestoredRect.Left := Form.RestoredLeft;
-    NewItem.RestoredRect.Top := Form.RestoredTop;
-    NewItem.RestoredRect.Width := Form.RestoredWidth;
-    NewItem.RestoredRect.Height := Form.RestoredHeight;
-    NewItem.WindowState := Form.WindowState;
+    NewItem.Parent := Self;
+    NewItem.Store(Form);
     Items.Add(NewItem);
   end;
 end;
@@ -404,20 +508,7 @@ begin
   for I := 0 to Items.Count - 1 do
   with TCoolDockLayoutItem(Items[I]) do begin
     Form := TForm(Application.FindComponent(Name));
-    if WindowState = wsMaximized then begin
-      Form.SetRestoredBounds(RestoredRect.Left, RestoredRect.Top,
-        RestoredRect.Width, RestoredRect.Height);
-      Form.WindowState := WindowState;
-    end else begin
-      Form.WindowState := WindowState;
-      Form.SetRestoredBounds(RestoredRect.Left, RestoredRect.Top,
-        RestoredRect.Width, RestoredRect.Height);
-    end;
-    Form.Caption := Caption;
-    Form.SetBounds(Rect.Left, Rect.Top, Rect.Width, Rect.Height);
-    Form.UndockWidth := UndockSize.X;
-    Form.UndockHeight := UndockSize.Y;
-    Form.Visible := Visible;
+    if Assigned(Form) then Restore(Form);
   end;
 end;
 
