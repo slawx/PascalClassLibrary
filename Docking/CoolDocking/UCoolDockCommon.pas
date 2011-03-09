@@ -5,13 +5,16 @@ unit UCoolDockCommon;
 interface
 
 uses
-  Classes, SysUtils, Forms;
+  Classes, SysUtils, Forms, Controls;
 
 type
   TDockStyle = (dsList, dsTabs, dsPopupTabs, dsPopupList);
+  TDockHideType = (dhtPermanent, dhtTemporal);
 
   TCoolDockMasterBase = class;
 
+  TCoolDockManagerBase = class(TDockManager)
+  end;
 
   TCoolDockConjoinFormBase = class(TForm)
     constructor Create(TheOwner: TComponent); override;

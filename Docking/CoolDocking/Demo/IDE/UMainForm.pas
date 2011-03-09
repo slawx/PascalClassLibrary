@@ -94,6 +94,7 @@ type
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormShow(Sender: TObject);
   public
+    procedure InitDefaultDockLayout;
   end;
 
 var
@@ -136,7 +137,45 @@ begin
   with CoolDockLayoutList1 do begin
     if FileExistsUTF8(DockLayoutFileName) then
       LoadFromFile(DockLayoutFileName);
+    InitDefaultDockLayout;
     PopulateStringList(ComboBox1.Items);
+  end;
+end;
+
+procedure TMainForm.InitDefaultDockLayout;
+const
+  DefaultLayoutName = 'Default Layout';
+var
+  NewContainer1: TCoolDockConjoinForm;
+  NewContainer2: TCoolDockConjoinForm;
+  DefaultLayout: TCoolDockLayout;
+begin
+  DefaultLayout := CoolDockLayoutList1.FindByName(DefaultLayoutName);
+  if not Assigned(DefaultLayout) then begin
+    NewContainer1 := TCoolDockConjoinForm.Create(nil);
+    NewContainer1.Show;
+
+    StructureForm.ManualDock(NewContainer1.Panel, nil, alTop);
+    StructureForm.Show;
+    ObjectInspectorForm.ManualDock(NewContainer1.Panel, nil, alTop);
+    ObjectInspectorForm.Show;
+
+    NewContainer2 := TCoolDockConjoinForm.Create(nil);
+    NewContainer2.Show;
+    ProjectManagerForm.ManualDock(NewContainer2.Panel, nil, alTop);
+    ProjectManagerForm.Show;
+    ToolPaletteForm.ManualDock(NewContainer2.Panel, nil, alTop);
+    ToolPaletteForm.Show;
+
+    NewContainer1.ManualDock(Panel1);
+    SourceEditorForm.ManualDock(Panel1);
+    SourceEditorForm.Show;
+    NewContainer2.ManualDock(Panel1);
+
+    DefaultLayout := TCoolDockLayout.Create;
+    DefaultLayout.Name := DefaultLayoutName;
+    CoolDockLayoutList1.Items.Add(DefaultLayout);
+    DefaultLayout.Store;
   end;
 end;
 

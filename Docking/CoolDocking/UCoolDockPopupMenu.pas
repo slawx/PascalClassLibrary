@@ -14,8 +14,8 @@ type
 
   TCoolDockPopupMenu = class(TPopupMenu)
   public
-    Manager: TObject; // TCoolDockManager
-    constructor Create(AManager: TObject);
+    Manager: TCoolDockManagerBase;
+    constructor Create(AManager: TCoolDockManagerBase);
     procedure PopupMenuListClick(Sender: TObject);
     procedure PopupMenuTabsClick(Sender: TObject);
     procedure PopupMenuPopupListClick(Sender: TObject);
@@ -58,7 +58,7 @@ resourcestring
 
 { TCoolDockPopupMenu }
 
-constructor TCoolDockPopupMenu.Create(AManager: TObject);
+constructor TCoolDockPopupMenu.Create(AManager: TCoolDockManagerBase);
 var
   NewMenuItem: TMenuItem;
   NewMenuItem2: TMenuItem;
@@ -197,30 +197,62 @@ end;
 
 procedure TCoolDockPopupMenu.PopupMenuPositionAutoClick(Sender: TObject);
 begin
-  TCoolDockManager(Manager).HeaderPos := hpAuto;
+  if PopupComponent is TPageControl then
+  with TPageControl(PopupComponent) do begin
+    TCoolDockStyleTabs(TCoolDockManager(Manager).DockStyleHandler).TabsPos := hpAuto;
+  end else
+  if PopupComponent is TCoolDockHeader then
+  with TCoolDockHeader(PopupComponent) do begin
+    TCoolDockManager(Manager).HeaderPos := hpAuto;
+  end;
 end;
 
 procedure TCoolDockPopupMenu.PopupMenuPositionLeftClick(Sender: TObject);
-var
-  Control: TControl;
 begin
-  Control := FindLCLControl(Mouse.CursorPos);
-  TCoolDockManager(Manager).HeaderPos := hpLeft;
+  if PopupComponent is TPageControl then
+  with TPageControl(PopupComponent) do begin
+    TCoolDockStyleTabs(TCoolDockManager(Manager).DockStyleHandler).TabsPos := hpLeft;
+  end else
+  if PopupComponent is TCoolDockHeader then
+  with TCoolDockHeader(PopupComponent) do begin
+    TCoolDockManager(Manager).HeaderPos := hpLeft;
+  end;
 end;
 
 procedure TCoolDockPopupMenu.PopupMenuPositionRightClick(Sender: TObject);
 begin
-  TCoolDockManager(Manager).HeaderPos := hpRight;
+  if PopupComponent is TPageControl then
+  with TPageControl(PopupComponent) do begin
+    TCoolDockStyleTabs(TCoolDockManager(Manager).DockStyleHandler).TabsPos := hpRight;
+  end else
+  if PopupComponent is TCoolDockHeader then
+  with TCoolDockHeader(PopupComponent) do begin
+    TCoolDockManager(Manager).HeaderPos := hpRight;
+  end;
 end;
 
 procedure TCoolDockPopupMenu.PopupMenuPositionTopClick(Sender: TObject);
 begin
-  TCoolDockManager(Manager).HeaderPos := hpTop;
+  if PopupComponent is TPageControl then
+  with TPageControl(PopupComponent) do begin
+    TCoolDockStyleTabs(TCoolDockManager(Manager).DockStyleHandler).TabsPos := hpTop;
+  end else
+  if PopupComponent is TCoolDockHeader then
+  with TCoolDockHeader(PopupComponent) do begin
+    TCoolDockManager(Manager).HeaderPos := hpTop;
+  end;
 end;
 
 procedure TCoolDockPopupMenu.PopupMenuPositionBottomClick(Sender: TObject);
 begin
-  TCoolDockManager(Manager).HeaderPos := hpBottom;
+  if PopupComponent is TPageControl then
+  with TPageControl(PopupComponent) do begin
+    TCoolDockStyleTabs(TCoolDockManager(Manager).DockStyleHandler).TabsPos := hpBottom;
+  end else
+  if PopupComponent is TCoolDockHeader then
+  with TCoolDockHeader(PopupComponent) do begin
+    TCoolDockManager(Manager).HeaderPos := hpBottom;
+  end;
 end;
 
 procedure TCoolDockPopupMenu.PopupMenuUndockClick(Sender: TObject);

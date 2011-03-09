@@ -87,7 +87,6 @@ begin
   Temp := TControl(Sender);
   if Assigned(Control) then
   begin
-
     ControlVisible := TControl(Sender).Visible;
     (*if Assigned(ClientAreaPanel) then
       ClientAreaPanel.Visible := ControlVisible;

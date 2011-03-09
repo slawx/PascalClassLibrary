@@ -12,49 +12,47 @@ object MainForm: TMainForm
   LCLVersion = '0.9.31'
   object Panel1: TPanel
     Left = 0
-    Height = 426
-    Top = 0
+    Height = 400
+    Top = 26
     Width = 626
     Align = alClient
     BevelOuter = bvNone
-    ClientHeight = 426
-    ClientWidth = 626
     TabOrder = 0
-    object ToolBar1: TToolBar
-      Left = 0
-      Height = 26
-      Top = 0
-      Width = 626
-      Caption = 'ToolBar1'
-      Images = ImageList1
-      ParentShowHint = False
-      ShowHint = True
+  end
+  object ToolBar1: TToolBar
+    Left = 0
+    Height = 26
+    Top = 0
+    Width = 626
+    Caption = 'ToolBar1'
+    Images = ImageList1
+    ParentShowHint = False
+    ShowHint = True
+    TabOrder = 1
+    object ComboBox1: TComboBox
+      Left = 44
+      Height = 21
+      Top = 2
+      Width = 100
+      Align = alLeft
+      ItemHeight = 13
+      OnSelect = ComboBox1Select
       TabOrder = 0
-      object ComboBox1: TComboBox
-        Left = 44
-        Height = 21
-        Top = 2
-        Width = 100
-        Align = alLeft
-        ItemHeight = 13
-        OnSelect = ComboBox1Select
-        TabOrder = 0
-      end
-      object ToolButton1: TToolButton
-        Left = 144
-        Top = 2
-        Action = ADesktopSave
-      end
-      object Label1: TLabel
-        Left = 1
-        Height = 24
-        Top = 2
-        Width = 43
-        Align = alLeft
-        Caption = 'Layouts:'
-        Layout = tlCenter
-        ParentColor = False
-      end
+    end
+    object ToolButton1: TToolButton
+      Left = 144
+      Top = 2
+      Action = ADesktopSave
+    end
+    object Label1: TLabel
+      Left = 1
+      Height = 24
+      Top = 2
+      Width = 43
+      Align = alLeft
+      Caption = 'Layouts:'
+      Layout = tlCenter
+      ParentColor = False
     end
   end
   object MainMenu1: TMainMenu

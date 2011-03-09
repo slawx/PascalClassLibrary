@@ -5,7 +5,7 @@ unit UCoolDockStyle;
 interface
 
 uses
-  Classes, Controls, SysUtils, UCoolDockClientPanel;
+  Classes, Controls, SysUtils, UCoolDockClientPanel, UCoolDockCommon;
 
 type
   { TCoolDockStyle }
@@ -13,10 +13,10 @@ type
   TCoolDockStyle = class
   private
   public
-    Manager: TObject; // TCoolDockManager;
+    Manager: TCoolDockManagerBase;
     function GetHeaderPos: THeaderPos; virtual;
     procedure SetHeaderPos(const AValue: THeaderPos); virtual;
-    constructor Create(AManager: TObject);
+    constructor Create(AManager: TCoolDockManagerBase);
     procedure InsertControl(NewPanel: TCoolDockClientPanel; AControl: TControl;
       InsertAt: TAlign); virtual;
     procedure UpdateClientSize; virtual;
@@ -49,7 +49,7 @@ begin
 
 end;
 
-constructor TCoolDockStyle.Create(AManager: TObject);
+constructor TCoolDockStyle.Create(AManager: TCoolDockManagerBase);
 begin
   Manager := AManager;
 end;

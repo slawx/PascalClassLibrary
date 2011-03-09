@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, Controls, ExtCtrls, ComCtrls, SysUtils, Dialogs,
-  Menus, UCoolDockStyle, Forms, UCoolDockClientPanel;
+  Menus, UCoolDockStyle, Forms, UCoolDockClientPanel, UCoolDockCommon;
 
 type
 
@@ -32,7 +32,7 @@ type
     procedure InsertControlNoUpdate(NewPanel: TCoolDockClientPanel;
       AControl: TControl; InsertAt: TAlign);
   public
-    constructor Create(AManager: TObject);
+    constructor Create(AManager: TCoolDockManagerBase);
     procedure SetVisible(const AValue: Boolean); override;
     destructor Destroy; override;
     procedure ChangeVisible(Control: TWinControl; Visible: Boolean); override;
@@ -77,7 +77,7 @@ begin
     //and (PageControl.TabIndex <> I)
     then
     begin
-      TCoolDockClientPanel(DockPanels[I]).Control.Tag := 1;
+      TCoolDockClientPanel(DockPanels[I]).Control.Tag := Integer(dhtTemporal);
       TCoolDockClientPanel(DockPanels[I]).Control.Hide;
       TCoolDockClientPanel(DockPanels[I]).ClientAreaPanel.Hide;
       TCoolDockClientPanel(DockPanels[I]).ClientAreaPanel.Parent := PageControl.Pages[I];
@@ -137,7 +137,7 @@ begin
   MouseDown := False;
 end;
 
-constructor TCoolDockStyleTabs.Create(AManager: TObject);
+constructor TCoolDockStyleTabs.Create(AManager: TCoolDockManagerBase);
 var
   NewMenuItem: TMenuItem;
   NewMenuItem2: TMenuItem;
@@ -242,9 +242,10 @@ begin
     if (PageControl.TabIndex >= 0) and (PageControl.TabIndex < DockPanels.Count) then
       with TCoolDockClientPanel(DockPanels[PageControl.TabIndex]) do begin
         //Show;
-        if AValue and (not Control.Visible) and (Control.Tag = 1)  then begin
+        //ShowMessage(IntToStr(Control.Tag));
+        if AValue and (not Control.Visible) and (Control.Tag = Integer(dhtTemporal))  then begin
           Control.Show;
-          Control.Tag := 0;
+          Control.Tag := Integer(dhtPermanent);
         end;
         //TabControl.Show;
         //ClientAreaPanel.Show;
@@ -272,11 +273,11 @@ begin
         //TabImageList.Delete(PageControl.Tabs.IndexOf(Control.Caption));
 
         I := DockPanels.IndexOf(FindControlInPanels(Control));
-        if Control.Tag = 0 then
+        if Control.Tag = Integer(dhtPermanent) then
         if I <> -1 then
   //        Control.Hide;
           PageControl.Page[I].TabVisible := False;
-        Control.Tag := 0;
+        //Control.Tag := 0;
 //      end;
     end;
   end else

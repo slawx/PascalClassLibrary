@@ -39,17 +39,17 @@ type
     procedure PanelVisibleChange(Sender: TObject);
   end;
 
-  // TObjectList<TCoolDockClientPanel>
 
   { TCoolDockPanels }
 
+  // TCoolDockPanels = TObjectList<TCoolDockClientPanel>
   TCoolDockPanels = class(TObjectList)
     destructor Destroy; override;
   end;
 
   { TCoolDockManager }
 
-  TCoolDockManager = class(TDockManager)
+  TCoolDockManager = class(TCoolDockManagerBase)
   private
     FMaster: TCoolDockMaster;
     FDockStyle: TDockStyle;
@@ -103,6 +103,8 @@ type
     property DockSite: TWinControl read GetDockSite;
     property HeaderPos: THeaderPos read GetHeaderPos write SetHeaderPos;
     property Visible: Boolean write SetVisible;
+    property DockDirection: TDockDirection read FDockDirection
+      write FDockDirection;
   end;
 
   { TCoolDockMaster }
@@ -119,10 +121,6 @@ type
     procedure SetShowIcons(const AValue: Boolean);
     procedure SetTabsEnabled(const AValue: Boolean);
   public
-    procedure SaveLayoutToStream(Stream: TStream);
-    procedure LoadLayoutFromStream(Stream: TStream);
-    procedure SaveLayoutToFile(FileName: string);
-    procedure LoadLayoutFromFile(FileName: string);
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure RegisterClient(Client: TCoolDockClient);
@@ -331,7 +329,9 @@ begin
     Control.AddHandlerOnVisibleChanged(NewPanel.VisibleChange);
     Control.Parent := NewPanel.ClientAreaPanel;
     Control.Align := alClient;
-    FDockPanels.Add(NewPanel);
+    if (InsertAt = alTop) or (InsertAt = alLeft) then
+      FDockPanels.Insert(0, NewPanel)
+      else FDockPanels.Add(NewPanel);
     UpdateClientSize;
 end;
 
@@ -549,8 +549,10 @@ begin
   // Hide all docked childs
   with TCoolDockManager(Panel.DockManager) do
   for I := 0 to DockPanels.Count - 1 do
-    if Assigned(TCoolDockClientPanel(DockPanels[I]).Control) then
-    TCoolDockClientPanel(DockPanels[I]).Control.Hide;
+    if Assigned(TCoolDockClientPanel(DockPanels[I]).Control) then begin
+      TCoolDockClientPanel(DockPanels[I]).Control.Tag := Integer(dhtTemporal);
+      TCoolDockClientPanel(DockPanels[I]).Control.Hide;
+    end;
 end;
 
 constructor TCoolDockConjoinForm.Create(TheOwner: TComponent);
@@ -613,109 +615,6 @@ procedure TCoolDockMaster.SetShowIcons(const AValue: Boolean);
 begin
   if FShowIcons = AValue then Exit;
   FShowIcons := AValue;
-end;
-
-procedure TCoolDockMaster.SaveLayoutToStream(Stream: TStream);
-var
-  Doc: TXMLDocument;
-  RootNode: TDOMNode;
-  NewNode: TDOMNode;
-  NewNode2: TDOMNode;
-  I: Integer;
-begin
-  Doc := TXMLDocument.Create;
-  with Doc do try
-    RootNode := CreateElement('DockLayout');
-    AppendChild(RootNode);
-    with RootNode do begin
-      for I := 0 to Application.ComponentCount - 1 do begin
-        if Application.Components[I] is TForm then
-        with Application.Components[I] as TForm do
-        if Assigned(HostDockSite) then
-        begin
-          NewNode := OwnerDocument.CreateElement('Form');
-
-          if HostDockSite.Parent is TForm then begin
-            NewNode2 := OwnerDocument.CreateElement('ParentFormName');
-            NewNode2.TextContent := UTF8Decode(HostDockSite.Parent.Name);
-            NewNode.AppendChild(NewNode2);
-
-            NewNode2 := OwnerDocument.CreateElement('ParentFormClassName');
-            NewNode2.TextContent := UTF8Decode(HostDockSite.Parent.ClassName);
-            NewNode.AppendChild(NewNode2);
-          end;
-
-          NewNode2 := OwnerDocument.CreateElement('Name');
-          NewNode2.TextContent := UTF8Decode(Name);
-          NewNode.AppendChild(NewNode2);
-
-          NewNode2 := OwnerDocument.CreateElement('Caption');
-          NewNode2.TextContent := UTF8Decode(Caption);
-          NewNode.AppendChild(NewNode2);
-
-          NewNode2 := OwnerDocument.CreateElement('Width');
-          NewNode2.TextContent := IntToStr(Width);
-          NewNode.AppendChild(NewNode2);
-
-          NewNode2 := OwnerDocument.CreateElement('Height');
-          NewNode2.TextContent := IntToStr(Height);
-          NewNode.AppendChild(NewNode2);
-
-          NewNode2 := OwnerDocument.CreateElement('UndockWidth');
-          NewNode2.TextContent := IntToStr(UndockWidth);
-          NewNode.AppendChild(NewNode2);
-
-          NewNode2 := OwnerDocument.CreateElement('UndockHeight');
-          NewNode2.TextContent := IntToStr(UndockHeight);
-          NewNode.AppendChild(NewNode2);
-
-          NewNode2 := OwnerDocument.CreateElement('FormState');
-          NewNode2.TextContent := IntToStr(Integer(FormState));
-          NewNode.AppendChild(NewNode2);
-
-          NewNode2 := OwnerDocument.CreateElement('Visible');
-          NewNode2.TextContent := IntToStr(Integer(Visible));
-          NewNode.AppendChild(NewNode2);
-
-          AppendChild(NewNode);
-        end;
-      end;
-    end;
-    WriteXMLFile(Doc, Stream);
-  finally
-    Free;
-  end;
-end;
-
-procedure TCoolDockMaster.LoadLayoutFromStream(Stream: TStream);
-begin
-
-end;
-
-procedure TCoolDockMaster.SaveLayoutToFile(FileName: string);
-var
-  LayoutFile: TFileStream;
-begin
-  try
-    if FileExistsUTF8(FileName) then
-    LayoutFile := TFileStream.Create(FileName, fmOpenReadWrite)
-    else LayoutFile := TFileStream.Create(FileName, fmCreate);
-    SaveLayoutToStream(LayoutFile);
-  finally
-    LayoutFile.Free;
-  end;
-end;
-
-procedure TCoolDockMaster.LoadLayoutFromFile(FileName: string);
-var
-  LayoutFile: TFileStream;
-begin
-  LayoutFile := TFileStream.Create(FileName, fmOpenRead);
-  try
-    LoadLayoutFromStream(LayoutFile);
-  finally
-    Free;
-  end;
 end;
 
 constructor TCoolDockMaster.Create(AOwner: TComponent);

@@ -5,7 +5,7 @@ unit UCoolDockStylePopupTabs;
 interface
 
 uses
-  Classes, Controls, SysUtils, ComCtrls, ExtCtrls,
+  Classes, Controls, SysUtils, ComCtrls, ExtCtrls, UCoolDockCommon,
   UCoolDockStyleTabs, UCoolDockStyle, UCoolDockClientPanel;
 
 type
@@ -49,7 +49,7 @@ type
       Shift: TShiftState; X, Y: Integer);
     procedure TabControlMouseUp(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
-    constructor Create(AManager: TObject);
+    constructor Create(AManager: TCoolDockManagerBase);
     destructor Destroy; override;
   private
   end;
@@ -180,7 +180,7 @@ begin
 
 end;
 
-constructor TCoolDockStylePopupTabs.Create(AManager: TObject);
+constructor TCoolDockStylePopupTabs.Create(AManager: TCoolDockManagerBase);
 var
   I: Integer;
 begin

@@ -350,8 +350,9 @@ begin
       if not Assigned(Parent.FindByName(HostDockSiteName)) then begin
         NewItem := TCoolDockLayoutItem.Create;
         NewItem.Parent := Parent;
-        NewItem.Store(Form.HostDockSite.Parent);
+        NewItem.DockStyle := TCoolDockManager(Form.HostDockSite.Parent.DockManager).DockStyle;
         Parent.Items.Add(NewItem);
+        NewItem.Store(Form.HostDockSite.Parent);
       end;
     end;
   end else HostDockSiteName := '';
@@ -390,6 +391,7 @@ begin
             FormClass := TFormClass(FindClass('TCoolDockConjoinForm'));
             if FormClass = TCoolDockConjoinForm then begin
               ParentComponent := TCoolDockConjoinForm.Create(Application);
+              TCoolDockManager(TCoolDockConjoinForm(ParentComponent).Panel.DockManager).DockStyle := ParentLayoutItem.DockStyle;
               ParentLayoutItem.Restore(TWinControl(ParentComponent));
             end;
           end;
