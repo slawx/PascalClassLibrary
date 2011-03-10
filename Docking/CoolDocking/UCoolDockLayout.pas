@@ -26,6 +26,7 @@ type
     WindowState: TWindowState;
     UndockSize: TPoint;
     DockStyle: TDockStyle;
+    Processed: Boolean;
     procedure SaveToNode(Node: TDOMNode);
     procedure LoadFromNode(Node: TDOMNode);
     procedure Store(Form: TWinControl);
@@ -390,7 +391,7 @@ begin
           if (ParentLayoutItem.StoredClassName = 'TCoolDockConjoinForm') then begin
             FormClass := TFormClass(FindClass('TCoolDockConjoinForm'));
             if FormClass = TCoolDockConjoinForm then begin
-              ParentComponent := TCoolDockConjoinForm.Create(Application);
+              ParentComponent := TCoolDockManager(Form.DockManager).CreateContainer(alNone);
               TCoolDockManager(TCoolDockConjoinForm(ParentComponent).Panel.DockManager).DockStyle := ParentLayoutItem.DockStyle;
               ParentLayoutItem.Restore(TWinControl(ParentComponent));
             end;
@@ -400,8 +401,8 @@ begin
     end;
     if Assigned(ParentComponent) and (ParentComponent is TCoolDockConjoinForm) then
       Form.ManualDock(TCoolDockConjoinForm(ParentComponent).Panel);
-  end else
-  if Assigned(Form.HostDockSite) then Form.ManualFloat(Rect.AsTRect);
+  end;
+  Processed := True;
 end;
 
 constructor TCoolDockLayoutItem.Create;
@@ -508,10 +509,25 @@ var
   Form: TForm;
   I: Integer;
 begin
+  // Undock all forms
+  I := 0;
+  while (I < Application.ComponentCount) do begin
+    if (Application.Components[I] is TForm) then begin
+      Form := (Application.Components[I] as TForm);
+      if Assigned(Form.HostDockSite) then
+        Form.ManualFloat(Rect(Form.Left, Form.Top, Form.Left + Form.Width, Form.Top + Form.Height));
+    end;
+    Inc(I);
+  end;
+
+  for I := 0 to Items.Count - 1 do
+  with TCoolDockLayoutItem(Items[I]) do
+    Processed := False;
+
   for I := 0 to Items.Count - 1 do
   with TCoolDockLayoutItem(Items[I]) do begin
     Form := TForm(Application.FindComponent(Name));
-    if Assigned(Form) then Restore(Form);
+    if Assigned(Form) and (not Assigned(Form.HostDockSite)) and (not Processed) then Restore(Form);
   end;
 end;
 

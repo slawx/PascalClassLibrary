@@ -126,7 +126,7 @@ end;
 
 procedure TMainForm.ComboBox1Select(Sender: TObject);
 begin
-  if ComboBox1.ItemIndex <> - 1 then
+  if (ComboBox1.ItemIndex <> - 1) and (ComboBox1.ItemIndex < CoolDockLayoutList1.Items.Count) then
     TCoolDockLayout(CoolDockLayoutList1.Items[ComboBox1.ItemIndex]).Restore;
 end;
 
@@ -216,15 +216,17 @@ procedure TMainForm.ADesktopSaveExecute(Sender: TObject);
 var
   NewLayout: TCoolDockLayout;
 begin
-  if ComboBox1.Items.IndexOf(ComboBox1.Text) = -1 then begin
-    NewLayout := TCoolDockLayout.Create;
-    NewLayout.Name := ComboBox1.Text;
-    NewLayout.Store;
-    CoolDockLayoutList1.Items.Add(NewLayout);
-  end else
-    TCoolDockLayout(CoolDockLayoutList1.Items[ComboBox1.Items.IndexOf(ComboBox1.Text)]).Store;
-  CoolDockLayoutList1.SaveToFile(DockLayoutFileName);
-  CoolDockLayoutList1.PopulateStringList(ComboBox1.Items);
+  if ComboBox1.Text <> '' then begin
+    if ComboBox1.Items.IndexOf(ComboBox1.Text) = -1 then begin
+      NewLayout := TCoolDockLayout.Create;
+      NewLayout.Name := ComboBox1.Text;
+      NewLayout.Store;
+      CoolDockLayoutList1.Items.Add(NewLayout);
+    end else
+      TCoolDockLayout(CoolDockLayoutList1.Items[ComboBox1.Items.IndexOf(ComboBox1.Text)]).Store;
+    CoolDockLayoutList1.SaveToFile(DockLayoutFileName);
+    CoolDockLayoutList1.PopulateStringList(ComboBox1.Items);
+  end else ShowMessage('Enter layout name');
 end;
 
 procedure TMainForm.AExitExecute(Sender: TObject);

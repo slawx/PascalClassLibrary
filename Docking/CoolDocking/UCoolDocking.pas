@@ -296,9 +296,9 @@ begin
       NewConjoinDockForm := CreateContainer(InsertAt);
       NewDockSite := FDockSite.HostDockSite;
 //      FDockSite.ManualFloat(FDockSite.BoundsRect);
+      NewConjoinDockForm.ManualDock(NewDockSite, nil, InsertAt);
       FDockSite.ManualDock(NewConjoinDockForm.Panel);
       Control.ManualDock(NewConjoinDockForm.Panel, nil, InsertAt);
-      NewConjoinDockForm.ManualDock(NewDockSite);
     end;
   end else
   if (FDockSite is TPanel) or (FDockSite is TCoolDockClientPanel) then begin
@@ -365,8 +365,9 @@ procedure TCoolDockManager.RemoveControl(Control: TControl);
 var
   ClientPanel: TCoolDockClientPanel;
 begin
+  DockStyleHandler.RemoveControl(Control);
   //inherited;
-  if Control.HostDockSite = Self.FDockSite then begin
+(*  if Control.HostDockSite = Self.FDockSite then begin
     ClientPanel := FindControlInPanels(Control);
 
     //if Assigned(ClientPanel) then ClientPanel.Splitter.Free;
@@ -379,6 +380,7 @@ begin
     //  FDockSite.Free;
     DockStyle := DockStyle;
   end;
+  *)
 end;
 
 procedure TCoolDockManager.ResetBounds(Force: Boolean);

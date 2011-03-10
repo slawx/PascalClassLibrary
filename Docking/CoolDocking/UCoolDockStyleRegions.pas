@@ -72,13 +72,13 @@ begin
         NewConjoinDockForm := CreateContainer(InsertAt);
         NewDockSite := DockSite.HostDockSite;
         // FDockSite.ManualFloat(FDockSite.BoundsRect);
+        NewConjoinDockForm.ManualDock(NewDockSite);
         AControl.ManualDock(NewConjoinDockForm.Panel, nil, InsertAt);
         if DockSite is TForm then
           DockSite.ManualDock(NewConjoinDockForm.Panel)
         else
         if DockSite is TPanel then
           DockSite.Parent.ManualDock(NewConjoinDockForm.Panel);
-        NewConjoinDockForm.ManualDock(NewDockSite);
         UpdateClientSize;
         Exit;
       end;
@@ -113,7 +113,20 @@ begin
   ClientPanel := TCoolDockManager(Manager).FindControlInPanels(Control);
   Control.RemoveHandlerOnVisibleChanged(ClientPanel.VisibleChange);
 
-  if TCoolDockManager(Manager).DockSite.DockClientCount = 2 then FDockDirection := ddNone;
+  TCoolDockManager(Manager).DockPanels.Remove(ClientPanel);
+
+  //if TCoolDockManager(Manager).DockSite.DockClientCount = 2 then FDockDirection := ddNone;
+  if TCoolDockManager(Manager).DockPanels.Count = 1 then begin
+    // Last removed control => Free parent if it is TCoolDockConjoinForm
+    if TCoolDockManager(Manager).DockSite.Parent is TCoolDockConjoinForm then
+    with TCoolDockConjoinForm(TCoolDockManager(Manager).DockSite.Parent) do begin
+      if Assigned(Parent) then begin
+        TCoolDockClientPanel(TCoolDockManager(Manager).DockPanels[0]).Control.ManualDock(HostDockSite);
+      end else TCoolDockClientPanel(TCoolDockManager(Manager).DockPanels[0]).Control.ManualFloat(Rect(Left, Top, Left + Width, Top + Height));
+      ManualFloat(Rect(Left, Top, Left + Width, Top + Height));
+      Free;
+    end;
+  end;
   inherited RemoveControl(Control);
 end;
 
