@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Contnrs, URectangle, Forms, UCoolDockCommon,
-  DOM, XMLWrite, XMLRead, Controls;
+  DOM, XMLWrite, XMLRead, Controls, Dialogs;
 
 type
   TCoolDockLayout = class;
@@ -74,6 +74,20 @@ uses
 procedure Register;
 begin
   RegisterComponents('CoolDocking', [TCoolDockLayoutList]);
+end;
+
+function FindGlobalComponentDeep(Name: string): TComponent;
+var
+  I: Integer;
+begin
+  for I := 0 to Application.ComponentCount - 1 do begin
+    Result := Application.Components[I];
+    if Result.Name = Name then Exit
+      else begin
+        Result := Result.FindComponent(Name);
+        if Assigned(Result) and (Result.Name = Name) then Exit;
+      end;
+  end;
 end;
 
 { TCoolDockLayoutList }
@@ -345,15 +359,15 @@ begin
     ParentName := Form.Parent.Name
     else ParentName := '';
   if Assigned(Form.HostDockSite) then begin
-    if Assigned(Form.HostDockSite.Parent) and (Form.HostDockSite.Parent is TForm) then
+    if Assigned(Form.HostDockSite) then
     begin
-      HostDockSiteName := Form.HostDockSite.Parent.Name;
+      HostDockSiteName := Form.HostDockSite.Name;
       if not Assigned(Parent.FindByName(HostDockSiteName)) then begin
         NewItem := TCoolDockLayoutItem.Create;
         NewItem.Parent := Parent;
-        NewItem.DockStyle := TCoolDockManager(Form.HostDockSite.Parent.DockManager).DockStyle;
+        NewItem.DockStyle := TCoolDockManager(Form.HostDockSite.DockManager).DockStyle;
         Parent.Items.Add(NewItem);
-        NewItem.Store(Form.HostDockSite.Parent);
+        NewItem.Store(Form.HostDockSite);
       end;
     end;
   end else HostDockSiteName := '';
@@ -382,7 +396,7 @@ begin
   Form.UndockHeight := UndockSize.Y;
   Form.Visible := Visible;
   if HostDockSiteName <> '' then begin
-    ParentComponent := FindGlobalComponent(HostDockSiteName);
+    ParentComponent := FindGlobalComponentDeep(HostDockSiteName);
     if not Assigned(ParentComponent) then begin
       ParentLayoutItem := Parent.FindByName(HostDockSiteName);
       if Assigned(ParentLayoutItem) then begin
@@ -392,15 +406,15 @@ begin
             FormClass := TFormClass(FindClass('TCoolDockConjoinForm'));
             if FormClass = TCoolDockConjoinForm then begin
               ParentComponent := TCoolDockManager(Form.DockManager).CreateContainer(alNone);
-              TCoolDockManager(TCoolDockConjoinForm(ParentComponent).Panel.DockManager).DockStyle := ParentLayoutItem.DockStyle;
+              TCoolDockManager(TCoolDockConjoinForm(ParentComponent).DockManager).DockStyle := ParentLayoutItem.DockStyle;
               ParentLayoutItem.Restore(TWinControl(ParentComponent));
             end;
           end;
         end;
       end;
     end;
-    if Assigned(ParentComponent) and (ParentComponent is TCoolDockConjoinForm) then
-      Form.ManualDock(TCoolDockConjoinForm(ParentComponent).Panel);
+    if Assigned(ParentComponent) and (ParentComponent is TWinControl) then
+      Form.ManualDock(TWinControl(ParentComponent));
   end;
   Processed := True;
 end;

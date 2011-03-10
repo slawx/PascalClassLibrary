@@ -26,7 +26,6 @@ type
 
   TCoolDockConjoinForm = class(TCoolDockConjoinFormBase)
   public
-    Panel: TPanel;
     CoolDockClient: TCoolDockClient;
     procedure FormShow(Sender : TObject);
     procedure FormHide(Sender : TObject);
@@ -34,7 +33,6 @@ type
     destructor Destroy; override;
   private
     procedure SetName(const NewName: TComponentName); override;
-    procedure PanelVisibleChange(Sender: TObject);
   end;
 
 
@@ -286,22 +284,22 @@ var
   NewDockSite: TWinControl;
   NewForm: TForm;
 begin
-  if (FDockSite is TForm) then begin
+  if (FDockSite is TForm) and (not (FDockSite is TCoolDockConjoinForm)) then begin
     if (not Assigned(FDockSite.Parent)) then begin
       // Create conjointed form
       NewConjoinDockForm := CreateContainer(InsertAt);
-      FDockSite.ManualDock(NewConjoinDockForm.Panel);
-      Control.ManualDock(NewConjoinDockForm.Panel, nil, InsertAt);
+      FDockSite.ManualDock(NewConjoinDockForm);
+      Control.ManualDock(NewConjoinDockForm, nil, InsertAt);
     end else begin
       NewConjoinDockForm := CreateContainer(InsertAt);
       NewDockSite := FDockSite.HostDockSite;
 //      FDockSite.ManualFloat(FDockSite.BoundsRect);
       NewConjoinDockForm.ManualDock(NewDockSite, nil, InsertAt);
-      FDockSite.ManualDock(NewConjoinDockForm.Panel);
-      Control.ManualDock(NewConjoinDockForm.Panel, nil, InsertAt);
+      FDockSite.ManualDock(NewConjoinDockForm);
+      Control.ManualDock(NewConjoinDockForm, nil, InsertAt);
     end;
   end else
-  if (FDockSite is TPanel) or (FDockSite is TCoolDockClientPanel) then begin
+  if (FDockSite is TCoolDockConjoinForm) or (FDockSite is TPanel) or (FDockSite is TCoolDockClientPanel) then begin
     InsertControlPanel(Control, InsertAt, DropCtl);
   end;
 
@@ -478,18 +476,16 @@ end;
 
 procedure TCoolDockConjoinForm.FormShow(Sender: TObject);
 begin
-  Panel.Show;
-  TCoolDockManager(Panel.DockManager).Visible := True;
+  TCoolDockManager(DockManager).Visible := True;
 end;
 
 procedure TCoolDockConjoinForm.FormHide(Sender: TObject);
 var
   I: Integer;
 begin
-  Panel.Hide;
-  TCoolDockManager(Panel.DockManager).Visible := False;
+  TCoolDockManager(DockManager).Visible := False;
   // Hide all docked childs
-  with TCoolDockManager(Panel.DockManager) do
+  with TCoolDockManager(DockManager) do
   for I := 0 to DockPanels.Count - 1 do
     if Assigned(TCoolDockClientPanel(DockPanels[I]).Control) then begin
       TCoolDockClientPanel(DockPanels[I]).Control.Tag := Integer(dhtTemporal);
@@ -500,44 +496,22 @@ end;
 constructor TCoolDockConjoinForm.Create(TheOwner: TComponent);
 begin
   inherited CreateNew(TheOwner);
-  Panel := TPanel.Create(Self);
-  with Panel do begin
-    Parent := Self;
-    Caption := '';
-    DockSite := True;
-    UseDockManager := True;
-    Align := alClient;
-    BevelOuter := bvNone;
-    BevelInner := bvNone;
-  //  Color := clYellow;
-  end;
   CoolDockClient := TCoolDockClient.Create(Self);
   with CoolDockClient do begin
-    Panel := Self.Panel;
   end;
   OnShow := FormShow;
   OnHide := FormHide;
-
-  Panel.AddHandlerOnVisibleChanged(PanelVisibleChange);
 end;
 
 destructor TCoolDockConjoinForm.Destroy;
 begin
-  Panel.RemoveHandlerOnVisibleChanged(PanelVisibleChange);
   inherited;
 end;
 
 procedure TCoolDockConjoinForm.SetName(const NewName: TComponentName);
 begin
   inherited SetName(NewName);
-  Panel.Name := Name + 'Panel';
-  Panel.Caption := '';
   CoolDockClient.Name := Name + 'CoolDockClient';
-end;
-
-procedure TCoolDockConjoinForm.PanelVisibleChange(Sender: TObject);
-begin
-  Visible := Panel.Visible;
 end;
 
 { TCoolDockMaster }

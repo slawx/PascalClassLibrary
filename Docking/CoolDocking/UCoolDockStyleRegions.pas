@@ -73,12 +73,12 @@ begin
         NewDockSite := DockSite.HostDockSite;
         // FDockSite.ManualFloat(FDockSite.BoundsRect);
         NewConjoinDockForm.ManualDock(NewDockSite);
-        AControl.ManualDock(NewConjoinDockForm.Panel, nil, InsertAt);
+        AControl.ManualDock(NewConjoinDockForm, nil, InsertAt);
         if DockSite is TForm then
-          DockSite.ManualDock(NewConjoinDockForm.Panel)
+          DockSite.ManualDock(NewConjoinDockForm)
         else
         if DockSite is TPanel then
-          DockSite.Parent.ManualDock(NewConjoinDockForm.Panel);
+          DockSite.Parent.ManualDock(NewConjoinDockForm);
         UpdateClientSize;
         Exit;
       end;
@@ -109,17 +109,19 @@ end;
 procedure TCoolDockStyleRegions.RemoveControl(Control: TControl);
 var
   ClientPanel: TCoolDockClientPanel;
+  ClientCount: Integer;
 begin
   ClientPanel := TCoolDockManager(Manager).FindControlInPanels(Control);
   Control.RemoveHandlerOnVisibleChanged(ClientPanel.VisibleChange);
 
   TCoolDockManager(Manager).DockPanels.Remove(ClientPanel);
+  ClientCount := TCoolDockManager(Manager).DockPanels.Count;
 
   //if TCoolDockManager(Manager).DockSite.DockClientCount = 2 then FDockDirection := ddNone;
-  if TCoolDockManager(Manager).DockPanels.Count = 1 then begin
+  if ClientCount = 1 then begin
     // Last removed control => Free parent if it is TCoolDockConjoinForm
-    if TCoolDockManager(Manager).DockSite.Parent is TCoolDockConjoinForm then
-    with TCoolDockConjoinForm(TCoolDockManager(Manager).DockSite.Parent) do begin
+    if TCoolDockManager(Manager).DockSite is TCoolDockConjoinForm then
+    with TCoolDockConjoinForm(TCoolDockManager(Manager).DockSite) do begin
       if Assigned(Parent) then begin
         TCoolDockClientPanel(TCoolDockManager(Manager).DockPanels[0]).Control.ManualDock(HostDockSite);
       end else TCoolDockClientPanel(TCoolDockManager(Manager).DockPanels[0]).Control.ManualFloat(Rect(Left, Top, Left + Width, Top + Height));
@@ -128,6 +130,7 @@ begin
     end;
   end;
   inherited RemoveControl(Control);
+  if ClientCount > 1 then UpdateClientSize;
 end;
 
 function TCoolDockStyleRegions.GetHeaderPos: THeaderPos;
@@ -190,14 +193,15 @@ begin
     if I < (DockPanels.Count - 1) then Align := BaseAlign
       else Align := alClient;
 
-    Splitter.Left := SplitterLeft;
-    Splitter.Top := SplitterTop;
     Inc(SplitterLeft, Width);
     Inc(SplitterTop, Height);
+    Splitter.Left := SplitterLeft;
+    Splitter.Top := SplitterTop;
     Splitter.Parent := TCoolDockManager(Manager).DockSite;
     Splitter.Align := BaseAlign;
     Splitter.Visible := I < (DockPanels.Count - 1);
-
+    Inc(SplitterLeft, Splitter.Width);
+    Inc(SplitterTop, Splitter.Height);
 
     DockPanelPaint(Self);
     if I < (DockPanels.Count - 1) then begin

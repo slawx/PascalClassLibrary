@@ -158,16 +158,16 @@ begin
     NewContainer1 := TCoolDockManager(DockPanel.DockManager).CreateContainer(alRight);
     NewContainer1.Show;
 
-    StructureForm.ManualDock(NewContainer1.Panel, nil, alTop);
+    StructureForm.ManualDock(NewContainer1, nil, alTop);
     StructureForm.Show;
-    ObjectInspectorForm.ManualDock(NewContainer1.Panel, nil, alTop);
+    ObjectInspectorForm.ManualDock(NewContainer1, nil, alTop);
     ObjectInspectorForm.Show;
 
     NewContainer2 := TCoolDockManager(DockPanel.DockManager).CreateContainer(alRight);
     NewContainer2.Show;
-    ProjectManagerForm.ManualDock(NewContainer2.Panel, nil, alTop);
+    ProjectManagerForm.ManualDock(NewContainer2, nil, alTop);
     ProjectManagerForm.Show;
-    ToolPaletteForm.ManualDock(NewContainer2.Panel, nil, alTop);
+    ToolPaletteForm.ManualDock(NewContainer2, nil, alTop);
     ToolPaletteForm.Show;
 
     NewContainer1.ManualDock(DockPanel);
