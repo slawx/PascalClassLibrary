@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, Controls, SysUtils, Forms, StdCtrls, ExtCtrls, Graphics,
-  Buttons;
+  Buttons, UCoolDockCommon;
 
 type
 
@@ -46,7 +46,7 @@ type
     procedure SetHeaderPos(const AValue: THeaderPos);
     procedure SetShowHeader(const AValue: Boolean);
   public
-    OwnerDockManager: TObject; // TCoolDockManager;
+    OwnerDockManager: TCoolDockManagerBase;
     Splitter: TSplitter;
     ClientAreaPanel: TPanel;
     Header: TCoolDockHeader;
@@ -67,7 +67,7 @@ type
 implementation
 
 uses
-  UCoolDocking;
+  UCoolDocking, UCoolDockStyle;
 
 { TCoolDockClientPanel }
 
@@ -83,6 +83,7 @@ var
   ControlVisible: Boolean;
   Temp: TControl;
   Temp2: TControl;
+  Temp3: TCoolDockStyle;
 begin
   Temp := TControl(Sender);
   if Assigned(Control) then
@@ -98,6 +99,7 @@ begin
     with TCoolDockManager(OwnerDockManager) do
     if Assigned(DockStyleHandler) then
     with DockStyleHandler do begin
+      Temp3 := DockStyleHandler;
       //UpdateClientSize;
       if ControlVisible then
         Switch(DockPanels.IndexOf(FindControlInPanels(TControl(Sender))));
@@ -257,6 +259,15 @@ begin
     Height := Self.Height - 2;
     Brush.Style := bsClear;
   end;
+  Title := TLabel.Create(Self);
+  with Title do begin
+    Parent := Self;
+    Visible := True;
+    Top := 4;
+    Left := 6;
+    BevelInner := bvNone;
+    BevelOuter := bvNone;
+  end;
   CloseButton := TSpeedButton.Create(Self);
   with CloseButton do begin
     Parent := Self;
@@ -269,15 +280,6 @@ begin
     Top := 4;
     Visible := True;
     OnClick := CloseButtonClick;
-  end;
-  Title := TLabel.Create(Self);
-  with Title do begin
-    Parent := Self;
-    Visible := True;
-    Top := 4;
-    Left := 6;
-    BevelInner := bvNone;
-    BevelOuter := bvNone;
   end;
   Icon := TImage.Create(Self);
   with Icon do begin

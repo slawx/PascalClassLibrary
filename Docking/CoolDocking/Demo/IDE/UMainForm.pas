@@ -10,7 +10,7 @@ uses
   UToolPaletteForm, UObjectInspectorForm, UProjectManagerForm, UStructureForm,
   UMessagesForm, UCallStackForm, ULocalVariablesForm, UToDoListForm,
   UWatchListForm, UThreadStatusForm, USourceEditorForm, UCoolDockWindowList,
-  UCoolDockCustomize;
+  UCoolDockCustomize, UComponentTree;
 
 const
   DockLayoutFileName = 'Layout.xml';
@@ -21,6 +21,7 @@ type
 
   TMainForm = class(TForm)
   published
+    AViewComponentTree: TAction;
     AExit: TAction;
     ANewFile: TAction;
     ACustomizeDocking: TAction;
@@ -56,6 +57,7 @@ type
     MenuItem19: TMenuItem;
     MenuItem20: TMenuItem;
     MenuItem21: TMenuItem;
+    MenuItem22: TMenuItem;
     MenuItem23: TMenuItem;
     MenuItem24: TMenuItem;
     MenuItem25: TMenuItem;
@@ -72,13 +74,14 @@ type
     ActionList1: TActionList;
     MenuItem1: TMenuItem;
     MainMenu1: TMainMenu;
-    Panel1: TPanel;
+    DockPanel: TPanel;
     ToolBar1: TToolBar;
     ToolButton1: TToolButton;
     procedure ACustomizeDockingExecute(Sender: TObject);
     procedure ADesktopSaveExecute(Sender: TObject);
     procedure AExitExecute(Sender: TObject);
     procedure ANewFileExecute(Sender: TObject);
+    procedure AViewComponentTreeExecute(Sender: TObject);
     procedure AViewThreadStatusExecute(Sender: TObject);
     procedure AViewCallStackExecute(Sender: TObject);
     procedure AViewLocalVariablesExecute(Sender: TObject);
@@ -152,7 +155,7 @@ var
 begin
   DefaultLayout := CoolDockLayoutList1.FindByName(DefaultLayoutName);
   if not Assigned(DefaultLayout) then begin
-    NewContainer1 := TCoolDockConjoinForm.Create(nil);
+    NewContainer1 := TCoolDockManager(DockPanel.DockManager).CreateContainer(alRight);
     NewContainer1.Show;
 
     StructureForm.ManualDock(NewContainer1.Panel, nil, alTop);
@@ -160,17 +163,17 @@ begin
     ObjectInspectorForm.ManualDock(NewContainer1.Panel, nil, alTop);
     ObjectInspectorForm.Show;
 
-    NewContainer2 := TCoolDockConjoinForm.Create(nil);
+    NewContainer2 := TCoolDockManager(DockPanel.DockManager).CreateContainer(alRight);
     NewContainer2.Show;
     ProjectManagerForm.ManualDock(NewContainer2.Panel, nil, alTop);
     ProjectManagerForm.Show;
     ToolPaletteForm.ManualDock(NewContainer2.Panel, nil, alTop);
     ToolPaletteForm.Show;
 
-    NewContainer1.ManualDock(Panel1);
-    SourceEditorForm.ManualDock(Panel1);
+    NewContainer1.ManualDock(DockPanel);
+    SourceEditorForm.ManualDock(DockPanel);
     SourceEditorForm.Show;
-    NewContainer2.ManualDock(Panel1);
+    NewContainer2.ManualDock(DockPanel);
 
     DefaultLayout := TCoolDockLayout.Create;
     DefaultLayout.Name := DefaultLayoutName;
@@ -219,7 +222,8 @@ begin
     NewLayout.Store;
     CoolDockLayoutList1.Items.Add(NewLayout);
   end else
-    TCoolDockLayout(CoolDockLayoutList1.Items[ComboBox1.ItemIndex]).Store;
+    TCoolDockLayout(CoolDockLayoutList1.Items[ComboBox1.Items.IndexOf(ComboBox1.Text)]).Store;
+  CoolDockLayoutList1.SaveToFile(DockLayoutFileName);
   CoolDockLayoutList1.PopulateStringList(ComboBox1.Items);
 end;
 
@@ -231,6 +235,11 @@ end;
 procedure TMainForm.ANewFileExecute(Sender: TObject);
 begin
   SourceEditorForm.Show;
+end;
+
+procedure TMainForm.AViewComponentTreeExecute(Sender: TObject);
+begin
+  ComponentTree.Show;
 end;
 
 procedure TMainForm.ACustomizeDockingExecute(Sender: TObject);

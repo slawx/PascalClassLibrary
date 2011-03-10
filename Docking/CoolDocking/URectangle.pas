@@ -17,12 +17,14 @@ type
     function GetHeight: Integer;
     function GetTopLeft: TPoint;
     function GetTopRight: TPoint;
+    function GetTRect: TRect;
     function GetWidth: Integer;
     procedure SetBottomLeft(const AValue: TPoint);
     procedure SetBottomRight(const AValue: TPoint);
     procedure SetHeight(const AValue: Integer);
     procedure SetTopLeft(const AValue: TPoint);
     procedure SetTopRight(const AValue: TPoint);
+    procedure SetTRect(const AValue: TRect);
     procedure SetWidth(const AValue: Integer);
   public
     Left: Integer;
@@ -37,6 +39,8 @@ type
     property TopRight: TPoint read GetTopRight write SetTopRight;
     property BottomLeft: TPoint read GetBottomLeft write SetBottomLeft;
     property BottomRight: TPoint read GetBottomRight write SetBottomRight;
+
+    property AsTRect: TRect read GetTRect write SetTRect;
   end;
 
 implementation
@@ -72,6 +76,14 @@ begin
   Result.Y := Top;
 end;
 
+function TRectangle.GetTRect: TRect;
+begin
+  Result.Left := Left;
+  Result.Top := Top;
+  Result.Bottom := Bottom;
+  Result.Right := Right;
+end;
+
 function TRectangle.GetWidth: Integer;
 begin
   Result := Right - Left;
@@ -104,6 +116,14 @@ procedure TRectangle.SetTopRight(const AValue: TPoint);
 begin
   Right := AValue.X;
   Top := AValue.Y;
+end;
+
+procedure TRectangle.SetTRect(const AValue: TRect);
+begin
+  Left := AValue.Left;
+  Top := AValue.Top;
+  Bottom := AValue.Bottom;
+  Right := AValue.Right;
 end;
 
 procedure TRectangle.SetWidth(const AValue: Integer);

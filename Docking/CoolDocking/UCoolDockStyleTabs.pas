@@ -202,7 +202,7 @@ begin
     NewPanel := TCoolDockClientPanel.Create(nil);
     with NewPanel do begin
       Parent := TCoolDockManager(Manager).DockSite;
-      OwnerDockManager := Self;
+      OwnerDockManager := TCoolDockManager(Manager);
       if DockStyle = dsList then Visible := True;
       Align := alClient;
       Header.PopupMenu := TCoolDockManager(Manager).PopupMenu;

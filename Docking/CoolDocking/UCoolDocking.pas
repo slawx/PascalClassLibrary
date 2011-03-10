@@ -296,9 +296,9 @@ begin
       NewConjoinDockForm := CreateContainer(InsertAt);
       NewDockSite := FDockSite.HostDockSite;
 //      FDockSite.ManualFloat(FDockSite.BoundsRect);
-      NewConjoinDockForm.ManualDock(NewDockSite);
       FDockSite.ManualDock(NewConjoinDockForm.Panel);
       Control.ManualDock(NewConjoinDockForm.Panel, nil, InsertAt);
+      NewConjoinDockForm.ManualDock(NewDockSite);
     end;
   end else
   if (FDockSite is TPanel) or (FDockSite is TCoolDockClientPanel) then begin
@@ -414,8 +414,8 @@ begin
   NewConjoinDockForm.BoundsRect := FDockSite.BoundsRect;
   NewConjoinDockForm.CoolDockClient.Master := Self.Master;
   NewDockSite := FDockSite.HostDockSite;
-  //      FDockSite.ManualFloat(FDockSite.BoundsRect);
-  NewConjoinDockForm.ManualDock(NewDockSite, nil, InsertAt);
+  // FDockSite.ManualFloat(FDockSite.BoundsRect);
+  //NewConjoinDockForm.ManualDock(NewDockSite, nil, InsertAt);
   Result := NewConjoinDockForm;
 end;
 
@@ -528,9 +528,9 @@ end;
 procedure TCoolDockConjoinForm.SetName(const NewName: TComponentName);
 begin
   inherited SetName(NewName);
-  Panel.Name := Name + '_Panel';
+  Panel.Name := Name + 'Panel';
   Panel.Caption := '';
-  CoolDockClient.Name := Name + '_CoolDockClient';
+  CoolDockClient.Name := Name + 'CoolDockClient';
 end;
 
 procedure TCoolDockConjoinForm.PanelVisibleChange(Sender: TObject);

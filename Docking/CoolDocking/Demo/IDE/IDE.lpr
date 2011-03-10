@@ -10,7 +10,7 @@ uses
   Forms, UMainForm, UObjectInspectorForm, CoolDocking, UStructureForm, 
 UToolPaletteForm, UProjectManagerForm, UMessagesForm, UCallStackForm, 
 ULocalVariablesForm, UToDoListForm, UWatchListForm, UThreadStatusForm, 
-USourceEditorForm
+USourceEditorForm, UComponentTree
   { you can add units after this };
 
 {$R *.res}
@@ -30,6 +30,7 @@ begin
   Application.CreateForm(TWatchListForm, WatchListForm);
   Application.CreateForm(TThreadStatusForm, ThreadStatusForm);
   Application.CreateForm(TSourceEditorForm, SourceEditorForm);
+  Application.CreateForm(TComponentTree, ComponentTree);
   Application.Run;
 end.
 

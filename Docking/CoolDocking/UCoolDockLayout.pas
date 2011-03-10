@@ -400,7 +400,8 @@ begin
     end;
     if Assigned(ParentComponent) and (ParentComponent is TCoolDockConjoinForm) then
       Form.ManualDock(TCoolDockConjoinForm(ParentComponent).Panel);
-  end;
+  end else
+  if Assigned(Form.HostDockSite) then Form.ManualFloat(Rect.AsTRect);
 end;
 
 constructor TCoolDockLayoutItem.Create;

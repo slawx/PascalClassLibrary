@@ -72,9 +72,14 @@ begin
         NewConjoinDockForm := CreateContainer(InsertAt);
         NewDockSite := DockSite.HostDockSite;
         // FDockSite.ManualFloat(FDockSite.BoundsRect);
-        NewConjoinDockForm.ManualDock(NewDockSite);
-        DockSite.ManualDock(NewConjoinDockForm.Panel);
         AControl.ManualDock(NewConjoinDockForm.Panel, nil, InsertAt);
+        if DockSite is TForm then
+          DockSite.ManualDock(NewConjoinDockForm.Panel)
+        else
+        if DockSite is TPanel then
+          DockSite.Parent.ManualDock(NewConjoinDockForm.Panel);
+        NewConjoinDockForm.ManualDock(NewDockSite);
+        UpdateClientSize;
         Exit;
       end;
     end;
@@ -82,7 +87,7 @@ begin
     NewPanel := TCoolDockClientPanel.Create(nil);
     with NewPanel do begin
       Parent := TCoolDockManager(Manager).DockSite;
-      OwnerDockManager := Self;
+      OwnerDockManager := Manager;
       if DockStyle = dsList then Visible := True;
       Header.PopupMenu := TCoolDockManager(Manager).PopupMenu;
       //PopupMenu.Parent := Self.DockSite;
@@ -102,7 +107,12 @@ begin
 end;
 
 procedure TCoolDockStyleRegions.RemoveControl(Control: TControl);
+var
+  ClientPanel: TCoolDockClientPanel;
 begin
+  ClientPanel := TCoolDockManager(Manager).FindControlInPanels(Control);
+  Control.RemoveHandlerOnVisibleChanged(ClientPanel.VisibleChange);
+
   if TCoolDockManager(Manager).DockSite.DockClientCount = 2 then FDockDirection := ddNone;
   inherited RemoveControl(Control);
 end;
@@ -173,7 +183,7 @@ begin
     Inc(SplitterTop, Height);
     Splitter.Parent := TCoolDockManager(Manager).DockSite;
     Splitter.Align := BaseAlign;
-    Splitter.Visible := True;
+    Splitter.Visible := I < (DockPanels.Count - 1);
 
 
     DockPanelPaint(Self);

@@ -10,7 +10,7 @@ object MainForm: TMainForm
   OnClose = FormClose
   OnShow = FormShow
   LCLVersion = '0.9.31'
-  object Panel1: TPanel
+  object DockPanel: TPanel
     Left = 0
     Height = 400
     Top = 26
@@ -126,6 +126,9 @@ object MainForm: TMainForm
       object MenuItem13: TMenuItem
         Action = ADesktopSave
       end
+      object MenuItem22: TMenuItem
+        Action = AViewComponentTree
+      end
     end
     object MenuItem11: TMenuItem
       Caption = 'Tools'
@@ -208,6 +211,10 @@ object MainForm: TMainForm
       Caption = 'Exit'
       OnExecute = AExitExecute
     end
+    object AViewComponentTree: TAction
+      Caption = 'Component Tree'
+      OnExecute = AViewComponentTreeExecute
+    end
   end
   object CoolDockMaster1: TCoolDockMaster
     TabsEnabled = False
@@ -227,7 +234,7 @@ object MainForm: TMainForm
     Dockable = False
     Floatable = False
     Master = CoolDockMaster1
-    Panel = Panel1
+    Panel = DockPanel
     left = 284
     top = 127
   end
