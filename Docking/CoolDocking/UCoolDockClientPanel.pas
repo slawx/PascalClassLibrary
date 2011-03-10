@@ -174,6 +174,7 @@ begin
   end;
   OnPaint := DockPanelPaint;
   Header.Shape.OnMouseDown := DockPanelMouseDown;
+  Header.Title.OnMouseDown := DockPanelMouseDown;
   OnResize := ResizeExecute;
   BevelInner := bvNone;
   BevelOuter := bvNone;

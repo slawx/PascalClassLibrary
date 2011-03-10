@@ -24,13 +24,12 @@ type
       Shift: TShiftState; X, Y: Integer);
     procedure TabControlMouseUp(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
-    procedure InsertControl(NewPanel: TCoolDockClientPanel;
-      AControl: TControl; InsertAt: TAlign); override;
+    procedure InsertControl(AControl: TControl; InsertAt: TAlign); override;
     procedure UpdateClientSize; override;
   private
     FTabsPos: THeaderPos;
-    procedure InsertControlNoUpdate(NewPanel: TCoolDockClientPanel;
-      AControl: TControl; InsertAt: TAlign);
+    procedure InsertControlNoUpdate(AControl: TControl; InsertAt: TAlign);
+    procedure RemoveControl(Control: TControl); override;
   public
     constructor Create(AManager: TCoolDockManagerBase);
     procedure SetVisible(const AValue: Boolean); override;
@@ -161,6 +160,8 @@ begin
     OnChange := TabControlChange;
     MultiLine := True;
     PopupMenu := TCoolDockManager(Manager).PopupMenu;
+    OnMouseLeave := TabControlMouseLeave;
+    OnMouseDown := TabControlMouseDown;
     //TTabControlNoteBookStrings(Tabs).NoteBook.OnMouseLeave := TabControlMouseLeave;
     //TTabControlNoteBookStrings(Tabs).NoteBook.OnMouseDown := TabControlMouseDown;
     //TTabControlNoteBookStrings(Tabs).NoteBook.OnMouseUp := TabControlMouseUp;
@@ -174,8 +175,7 @@ begin
   //TabImageList.Clear;
   with TCoolDockManager(Manager) do
   for I := 0 to DockPanels.Count - 1 do
-    Self.InsertControlNoUpdate(TCoolDockClientPanel(DockPanels[I]),
-      TCoolDockClientPanel(DockPanels[I]).Control, alNone);
+    Self.InsertControlNoUpdate(TCoolDockClientPanel(DockPanels[I]).Control, alNone);
   TabControlChange(Self);
 end;
 
@@ -192,12 +192,35 @@ begin
   PageControl.TabIndex := Index;
 end;
 
-procedure TCoolDockStyleTabs.InsertControlNoUpdate(NewPanel: TCoolDockClientPanel;
-  AControl: TControl; InsertAt: TAlign);
+procedure TCoolDockStyleTabs.InsertControlNoUpdate(AControl: TControl; InsertAt: TAlign);
 var
   NewTabSheet: TTabSheet;
+  NewPanel: TCoolDockClientPanel;
 begin
   inherited;
+  with TCoolDockManager(Manager) do begin
+    NewPanel := TCoolDockClientPanel.Create(nil);
+    with NewPanel do begin
+      Parent := TCoolDockManager(Manager).DockSite;
+      OwnerDockManager := Self;
+      if DockStyle = dsList then Visible := True;
+      Align := alClient;
+      Header.PopupMenu := TCoolDockManager(Manager).PopupMenu;
+      //PopupMenu.Parent := Self.DockSite;
+    end;
+    if (AControl is TForm) and Assigned((AControl as TForm).Icon) then
+      NewPanel.Header.Icon.Picture.Assign((AControl as TForm).Icon);
+
+    NewPanel.Control := AControl;
+    AControl.AddHandlerOnVisibleChanged(NewPanel.VisibleChange);
+    AControl.Parent := NewPanel.ClientAreaPanel;
+    AControl.Align := alClient;
+    if (InsertAt = alTop) or (InsertAt = alLeft) then
+      DockPanels.Insert(0, NewPanel)
+      else DockPanels.Add(NewPanel);
+
+  end;
+
   if AControl.Visible then begin
     NewTabSheet := TTabSheet.Create(PageControl);
     NewTabSheet.PageControl := PageControl;
@@ -212,13 +235,17 @@ begin
   end;
 end;
 
-procedure TCoolDockStyleTabs.InsertControl(NewPanel: TCoolDockClientPanel;
-  AControl: TControl; InsertAt: TAlign);
+procedure TCoolDockStyleTabs.RemoveControl(Control: TControl);
+begin
+  inherited RemoveControl(Control);
+end;
+
+procedure TCoolDockStyleTabs.InsertControl(AControl: TControl; InsertAt: TAlign);
 var
   NewTabSheet: TTabSheet;
 begin
   inherited;
-  InsertControlNoUpdate(NewPanel, AControl, InsertAt);
+  InsertControlNoUpdate(AControl, InsertAt);
   TabControlChange(Self);
 end;
 

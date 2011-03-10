@@ -17,8 +17,9 @@ type
     function GetHeaderPos: THeaderPos; virtual;
     procedure SetHeaderPos(const AValue: THeaderPos); virtual;
     constructor Create(AManager: TCoolDockManagerBase);
-    procedure InsertControl(NewPanel: TCoolDockClientPanel; AControl: TControl;
+    procedure InsertControl(AControl: TControl;
       InsertAt: TAlign); virtual;
+    procedure RemoveControl(Control: TControl); virtual;
     procedure UpdateClientSize; virtual;
     procedure Switch(Index: Integer); virtual;
     procedure ChangeVisible(Control: TWinControl; Visible: Boolean); virtual;
@@ -54,8 +55,12 @@ begin
   Manager := AManager;
 end;
 
-procedure TCoolDockStyle.InsertControl(NewPanel: TCoolDockClientPanel;
-  AControl: TControl; InsertAt: TAlign);
+procedure TCoolDockStyle.InsertControl(AControl: TControl; InsertAt: TAlign);
+begin
+
+end;
+
+procedure TCoolDockStyle.RemoveControl(Control: TControl);
 begin
 
 end;

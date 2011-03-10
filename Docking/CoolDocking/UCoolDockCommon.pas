@@ -10,6 +10,7 @@ uses
 type
   TDockStyle = (dsList, dsTabs, dsPopupTabs, dsPopupList);
   TDockHideType = (dhtPermanent, dhtTemporal);
+  TDockDirection = (ddNone, ddHorizontal, ddVertical);
 
   TCoolDockMasterBase = class;
 

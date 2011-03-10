@@ -18,8 +18,6 @@ const
   GrabberSize = 22;
 
 type
-  TDockDirection = (ddNone, ddHorizontal, ddVertical);
-
   TCoolDockManager = class;
   TCoolDockClient = class;
   TCoolDockMaster = class;
@@ -53,7 +51,6 @@ type
   private
     FMaster: TCoolDockMaster;
     FDockStyle: TDockStyle;
-    FDockDirection: TDockDirection;
     FDockSite: TWinControl;
     FDockPanels: TCoolDockPanels;
     function GetDockSite: TWinControl;
@@ -103,8 +100,6 @@ type
     property DockSite: TWinControl read GetDockSite;
     property HeaderPos: THeaderPos read GetHeaderPos write SetHeaderPos;
     property Visible: Boolean write SetVisible;
-    property DockDirection: TDockDirection read FDockDirection
-      write FDockDirection;
   end;
 
   { TCoolDockMaster }
@@ -276,63 +271,8 @@ end;
 
 procedure TCoolDockManager.InsertControlPanel(Control: TControl; InsertAt: TAlign;
   DropCtl: TControl);
-var
-  NewPanel: TCoolDockClientPanel;
-  I: Integer;
 begin
-    if FDockSite.DockClientCount = 2 then begin
-      if (InsertAt = alTop) or (InsertAt = alBottom) then
-        FDockDirection := ddVertical
-      else
-      if (InsertAt = alLeft) or (InsertAt = alRight) then
-        FDockDirection := ddHorizontal
-      else FDockDirection := ddHorizontal;
-    end;// else FDockSite.DockClientCount > 2 then begin
-
-    //end;
-    if FDockSite.DockClientCount > 1 then begin
-      with TCoolDockClientPanel(FDockPanels.Last).Splitter do begin
-        Parent := FDockSite;
-        Visible := (DockStyle = dsList);
-        if FDockDirection = ddVertical then begin
-          Align := alTop;
-          Top := FDockSite.Height;
-        end else
-        if FDockDirection = ddHorizontal then begin
-          Align := alLeft;
-          Left := FDockSite.Width;
-        end;
-      end;
-
-      with TCoolDockClientPanel(FDockPanels.Last) do
-      if FDockDirection = ddVertical then
-        Align := alTop
-      else
-      if FDockDirection = ddHorizontal then
-        Align := alLeft;
-    end;
-    NewPanel := TCoolDockClientPanel.Create(nil);
-    with NewPanel do begin
-      Parent := FDockSite;
-      OwnerDockManager := Self;
-      if DockStyle = dsList then Visible := True;
-      Align := alClient;
-      Header.PopupMenu := Self.PopupMenu;
-      //PopupMenu.Parent := Self.DockSite;
-    end;
-    if (Control is TForm) and Assigned((Control as TForm).Icon) then
-      NewPanel.Header.Icon.Picture.Assign((Control as TForm).Icon);
-
-    DockStyleHandler.InsertControl(NewPanel, Control, InsertAt);
-
-    NewPanel.Control := Control;
-    Control.AddHandlerOnVisibleChanged(NewPanel.VisibleChange);
-    Control.Parent := NewPanel.ClientAreaPanel;
-    Control.Align := alClient;
-    if (InsertAt = alTop) or (InsertAt = alLeft) then
-      FDockPanels.Insert(0, NewPanel)
-      else FDockPanels.Add(NewPanel);
-    UpdateClientSize;
+  DockStyleHandler.InsertControl(Control, InsertAt);
 end;
 
 procedure TCoolDockManager.InsertControl(Control: TControl; InsertAt: TAlign;
@@ -432,7 +372,7 @@ begin
     //if Assigned(ClientPanel) then ClientPanel.Splitter.Free;
     //Control.RemoveHandlerOnVisibleChanged(ClientPanel.VisibleChange);
     FDockPanels.Remove(ClientPanel);
-    if FDockSite.DockClientCount = 2 then FDockDirection := ddNone;
+    DockStyleHandler.RemoveControl(Control);
     UpdateClientSize;
     //FDockSite.Invalidate;
     //if (FDockSite is TCoolDockConjoinForm) and (FDockSite.DockClientCount = 1) then
