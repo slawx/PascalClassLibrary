@@ -26,7 +26,7 @@
     <Description Value="Set of components for docking of windows."/>
     <License Value="GNU/GPL"/>
     <Version Minor="3"/>
-    <Files Count="16">
+    <Files Count="15">
       <Item1>
         <Filename Value="UCDClient.pas"/>
         <HasRegisterProc Value="True"/>
@@ -62,39 +62,35 @@
         <UnitName Value="UCDManagerRegionsPopup"/>
       </Item8>
       <Item9>
-        <Filename Value="UCDClientPanel.pas"/>
-        <UnitName Value="UCDClientPanel"/>
-      </Item9>
-      <Item10>
         <Filename Value="UCDPopupMenu.pas"/>
         <UnitName Value="UCDPopupMenu"/>
-      </Item10>
-      <Item11>
+      </Item9>
+      <Item10>
         <Filename Value="UCDLayout.pas"/>
         <HasRegisterProc Value="True"/>
         <UnitName Value="UCDLayout"/>
-      </Item11>
-      <Item12>
+      </Item10>
+      <Item11>
         <Filename Value="URectangle.pas"/>
         <UnitName Value="URectangle"/>
-      </Item12>
-      <Item13>
+      </Item11>
+      <Item12>
         <Filename Value="UCDCommon.pas"/>
         <UnitName Value="UCDCommon"/>
-      </Item13>
-      <Item14>
+      </Item12>
+      <Item13>
         <Filename Value="UCDManager.pas"/>
         <UnitName Value="UCDManager"/>
-      </Item14>
-      <Item15>
+      </Item13>
+      <Item14>
         <Filename Value="UCDConjoinForm.pas"/>
         <UnitName Value="UCDConjoinForm"/>
-      </Item15>
-      <Item16>
+      </Item14>
+      <Item15>
         <Filename Value="UCDMaster.pas"/>
         <HasRegisterProc Value="True"/>
         <UnitName Value="UCDMaster"/>
-      </Item16>
+      </Item15>
     </Files>
     <i18n>
       <EnableI18N Value="True"/>

@@ -5,7 +5,7 @@ unit UCDConjoinForm;
 interface
 
 uses
-  Classes, SysUtils, UCDCommon, UCDClientPanel;
+  Classes, SysUtils, UCDCommon;
 
 type
   { TCDConjoinForm }
@@ -39,13 +39,6 @@ var
   I: Integer;
 begin
   TCDManager(DockManager).Visible := False;
-  // Hide all docked childs
-  with TCDManager(DockManager) do
-  for I := 0 to DockPanels.Count - 1 do
-    if Assigned(TCDClientPanel(DockPanels[I]).Control) then begin
-      TCDClientPanel(DockPanels[I]).Control.Tag := Integer(dhtTemporal);
-      TCDClientPanel(DockPanels[I]).Control.Hide;
-    end;
 end;
 
 constructor TCDConjoinForm.Create(TheOwner: TComponent);

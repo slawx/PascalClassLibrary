@@ -10,7 +10,7 @@ uses
   Classes, SysUtils, Controls, LCLType, LMessages, Graphics, StdCtrls,
   Buttons, ExtCtrls, Contnrs, Forms, ComCtrls, Dialogs, Menus, FileUtil,
   UCDCustomize, DOM, XMLWrite, XMLRead, UCDCommon,
-  DateUtils, UCDClientPanel, UCDPopupMenu, UCDManager;
+  DateUtils, UCDPopupMenu, UCDManager;
 
 const
   GrabberSize = 22;

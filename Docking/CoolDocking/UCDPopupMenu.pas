@@ -5,7 +5,7 @@ unit UCDPopupMenu;
 interface
 
 uses
-  Classes, SysUtils, Menus, Forms, Controls, Dialogs, UCDClientPanel,
+  Classes, SysUtils, Menus, Forms, Controls, Dialogs,
   ExtCtrls, ComCtrls, UCDCommon;
 
 type
@@ -164,11 +164,11 @@ var
 begin
   if PopupComponent is TPageControl then
   with TPageControl(PopupComponent) do begin
-    TForm(TCDClientPanel(TCDManager(Manager).DockPanels[TabIndex]).Control).Close;
+    TForm(TCDManagerTabsItem(TCDManagerTabs(Manager).DockItems[TabIndex]).Control).Close;
   end;
   if PopupComponent is TCDHeader then
   with TCDHeader(PopupComponent) do begin
-    TForm(ParentClientPanel.Control).Close;
+    TForm(ManagerItem.Control).Close;
   end;
 end;
 
@@ -179,17 +179,17 @@ begin
   //ShowMessage(PopupComponent.ClassName);
   if PopupComponent is TPageControl then
   with TPageControl(PopupComponent) do begin
-    Value := TCDClientPanel(TCDManager(Manager).DockPanels[TabIndex]).Control.Caption;
+    Value := TCDManagerTabsItem(TCDManagerTabs(Manager).DockItems[TabIndex]).Control.Caption;
     if InputQuery(SRenameWindow, SEnterNewWindowName, False, Value) then begin
-      TCDClientPanel(TCDManager(Manager).DockPanels[TabIndex]).Control.Caption := Value;
+      TCDManagerTabsItem(TCDManagerTabs(Manager).DockItems[TabIndex]).Control.Caption := Value;
       Pages[TabIndex].Caption := Value;
     end;
   end;
   if PopupComponent is TCDHeader then
   with TCDHeader(PopupComponent) do begin
-    Value := ParentClientPanel.Control.Caption;
+    Value := ManagerItem.Control.Caption;
     if InputQuery(SRenameWindow, SEnterNewWindowName, False, Value) then begin
-      ParentClientPanel.Control.Caption := Value;
+      ManagerItem.Control.Caption := Value;
       Title.Caption := Value;
     end;
   end;
@@ -261,11 +261,11 @@ var
 begin
   if PopupComponent is TPageControl then
   with TPageControl(PopupComponent) do begin
-    Control := TCDClientPanel(TCDManager(Manager).DockPanels[TabIndex]).Control;
+    Control := TCDManagerTabsItem(TCDManagerTabs(Manager).DockItems[TabIndex]).Control;
   end else
   if PopupComponent is TCDHeader then
   with TCDHeader(PopupComponent) do begin
-    Control := ParentClientPanel.Control;
+    Control := ManagerItem.Control;
   end else Control := nil;
   if Assigned(Control) then
     Control.ManualFloat(Control.BoundsRect);

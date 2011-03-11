@@ -1,20 +1,57 @@
 unit UCDManager;
 
-{$mode objfpc}{$H+}
+{$mode Delphi}{$H+}
 
 interface
 
 uses
-  Classes, SysUtils, UCDCommon, Controls, Contnrs, UCDClientPanel,
-  UCDPopupMenu, LCLType, LMessages, Graphics,
+  Classes, SysUtils, UCDCommon, Controls, Contnrs,
+  UCDPopupMenu, LCLType, LMessages, Graphics, Buttons,
   UCDConjoinForm, Menus, StdCtrls, ExtCtrls, Forms;
 
-type
-  { TCoolDockPanels }
+const
+  GrabberSize = 22;
 
-  // TCoolDockPanels = TObjectList<TCDClientPanel>
-  TCDPanels = class(TObjectList)
+type
+  THeaderPos = (hpAuto, hpLeft, hpTop, hpRight, hpBottom);
+
+  TCDManager = class;
+  TCDManagerItem = class;
+
+  TCDHeader = class(TPanel)
+  private
+    procedure CloseButtonClick(Sender: TObject);
+    procedure DrawGrabber(Canvas: TCanvas; AControl: TControl);
+  public
+    CloseButton: TSpeedButton;
+    Title: TLabel;
+    Icon: TImage;
+    ManagerItem: TCDManagerItem;
+    Shape: TShape;
+    constructor Create(TheOwner: TComponent); override;
     destructor Destroy; override;
+  end;
+
+  { TCDManagerItem }
+
+  TCDManagerItem = class
+  private
+    FHeaderPos: THeaderPos;
+    FShowHeader: Boolean;
+    procedure DockPanelMouseDown(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
+    procedure ResizeExecute(Sender: TObject);
+    procedure SetHeaderPos(const AValue: THeaderPos);
+  public
+    Header: TCDHeader;
+    Control: TControl;
+    Manager: TCDManager;
+    procedure Paint(Sender: TObject); virtual;
+    procedure VisibleChange(Sender: TObject); virtual;
+    constructor Create;
+    destructor Destroy; override;
+    property ShowHeader: Boolean read FShowHeader write FShowHeader;
+    property HeaderPos: THeaderPos read FHeaderPos write SetHeaderPos;
   end;
 
   { TCDManager }
@@ -22,7 +59,6 @@ type
   TCDManager = class(TCDManagerBase)
   private
     FDockSite: TWinControl;
-    FDockPanels: TCDPanels;
     function GetDockSite: TWinControl;
     function GetHeaderPos: THeaderPos;
     function GetMoveDuration: Integer;
@@ -64,9 +100,8 @@ type
     procedure SetReplacingControl(Control: TControl); override;
     function AutoFreeByControl: Boolean; override;
 
-    function FindControlInPanels(Control: TControl): TCDClientPanel;
+    function FindControlInPanels(Control: TControl): TCDManagerItem; virtual;
     function CreateContainer(InsertAt: TAlign): TCDConjoinForm;
-    property DockPanels: TCDPanels read FDockPanels write FDockPanels;
     property DockStyle: TCDStyleType read FDockStyle write SetDockStyle;
     property MoveDuration: Integer read GetMoveDuration write SetMoveDuration;
     property DockSite: TWinControl read GetDockSite;
@@ -80,18 +115,129 @@ implementation
 uses
   UCDManagerRegions, UCDManagerTabs, UCDManagerRegionsPopup, UCDManagerTabsPopup;
 
+{ TCDManagerItem }
+
+procedure TCDManagerItem.SetHeaderPos(const AValue: THeaderPos);
+begin
+  if FHeaderPos=AValue then exit;
+  FHeaderPos:=AValue;
+  Paint(Self);
+end;
+
+procedure TCDManagerItem.Paint(Sender: TObject);
+var
+  I: Integer;
+  R: TRect;
+begin
+(*  if not (csDesigning in ComponentState) then
+  if Assigned(Control) then begin
+    R := Control.ClientRect;
+    Canvas.FillRect(R);
+    Header.Visible := ShowHeader;
+    if ShowHeader then begin
+      if ClientAreaPanel.DockClientCount = 0 then
+        Header.DrawGrabber(Canvas, Control) else
+      Header.DrawGrabber(Canvas, ClientAreaPanel);
+    end;
+  end;*)
+end;
+
+constructor TCDManagerItem.Create;
+begin
+  //Paint.OnPaint := Paint;
+  Header.Shape.OnMouseDown := DockPanelMouseDown;
+  Header.Title.OnMouseDown := DockPanelMouseDown;
+  //OnResize := ResizeExecute;
+  //BevelInner := bvNone;
+  //BevelOuter := bvNone;
+  HeaderPos := hpTop;
+
+  ShowHeader := True;
+  Header := TCDHeader.Create(nil);
+  with Header do begin
+    Parent := nil;
+    Visible := ShowHeader;
+    Align := alTop;
+    Height := GrabberSize;
+    ManagerItem := Self;
+  end;
+end;
+
+procedure TCDManagerItem.ResizeExecute(Sender: TObject);
+begin
+(*  if Assigned(Control) then begin
+    Control.Top := GrabberSize;
+    Control.Left := 0;
+    Control.Width := Width;
+    Control.Height := Height - GrabberSize;
+    //Control.SetBounds(0, GrabberSize, Width - Control.Left,
+    //  Height - Control.Top);
+  end;*)
+end;
+
+procedure TCDManagerItem.DockPanelMouseDown(Sender: TObject;
+  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+begin
+  if Control is TForm then begin
+    //TForm(Control).SetFocus;
+    Paint(Self);
+  end;
+  if (Button = mbLeft) then begin
+    //(Control as TWinControl).DockSite := False;
+    //ClientAreaPanel.DockSite := False;
+    //(Control as TWinControl).BeginDrag(False, 10);
+    //DragManager.DragStart(Control, False, 1);
+  end;
+end;
+
+destructor TCDManagerItem.Destroy;
+begin
+  if Assigned(Control) then
+    Control.RemoveHandlerOnVisibleChanged(VisibleChange);
+  inherited Destroy;
+end;
+
+procedure TCDManagerItem.VisibleChange(Sender: TObject);
+var
+  ControlVisible: Boolean;
+  Temp: TControl;
+  Temp2: TControl;
+begin
+{  Temp := TControl(Sender);
+  if Assigned(Control) then
+  begin
+    ControlVisible := TControl(Sender).Visible;
+    (*if Assigned(ClientAreaPanel) then
+      ClientAreaPanel.Visible := ControlVisible;
+    if Assigned(Splitter) then
+      Splitter.Visible := ControlVisible;
+      *)
+//    if Assigned(TCDManager(OwnerDockManager).DockStyleHandler) then
+    if Assigned(Manager) then
+    with TCDManager(Manager) do
+    begin
+      //UpdateClientSize;
+      if ControlVisible then
+        Switch(DockItems.IndexOf(FindControlInPanels(TControl(Sender))));
+      if not (Control is TWinControl) then raise Exception.Create('Not TWinControl');
+      if not Assigned(Control) then raise Exception.Create('Control not assigned');
+      ChangeVisible(TWinControl(Control), ControlVisible);
+      // Show parent control
+      Temp := TControl(Sender).HostDockSite;
+
+      if ControlVisible then
+        TControl(Sender).HostDockSite.Visible := ControlVisible;
+    end;
+    if csDestroying in Control.ComponentState then Control := nil;
+  end;}
+end;
+
 { TCDManager }
 
 function TCDManager.FindControlInPanels(Control: TControl
-  ): TCDClientPanel;
-var
-  I: Integer;
+  ): TCDManagerItem;
 begin
-  I := 0;
-  while (I < FDockPanels.Count) and
-    (TCDClientPanel(FDockPanels[I]).Control <> Control) do Inc(I);
-  if I < FDockPanels.Count then Result := TCDClientPanel(FDockPanels[I])
-    else Result := nil;
+  Result := nil;
 end;
 
 function TCDManager.GetDockSite: TWinControl;
@@ -117,7 +263,6 @@ begin
   inherited Create(ADockSite);
 
   FDockSite := ADockSite;
-  FDockPanels := TCDPanels.Create;
 
   FDockStyle := dsList; // dsNone
   PopupMenu := TCDPopupMenu.Create(Self);
@@ -127,7 +272,6 @@ end;
 destructor TCDManager.Destroy;
 begin
   PopupMenu.Free;
-  FDockPanels.Free;
   inherited Destroy;
 end;
 
@@ -170,7 +314,7 @@ procedure TCDManager.InsertControl(Control: TControl; InsertAt: TAlign;
   DropCtl: TControl);
 var
   NewSplitter: TSplitter;
-  NewDockPanel: TCDClientPanel;
+  NewDockPanel: TCDManagerItem;
   NewPanel: TPanel;
   I: Integer;
   NewConjoinDockForm: TCDConjoinForm;
@@ -192,7 +336,7 @@ begin
       Control.ManualDock(NewConjoinDockForm, nil, InsertAt);
     end;
   end else
-  if (FDockSite is TCDConjoinForm) or (FDockSite is TPanel) or (FDockSite is TCDClientPanel) then begin
+  if (FDockSite is TCDConjoinForm) or (FDockSite is TPanel)  then begin
     InsertControlPanel(Control, InsertAt, DropCtl);
   end;
 
@@ -205,16 +349,7 @@ begin
 end;
 
 procedure TCDManager.PaintSite(DC: HDC);
-var
-  Canvas: TControlCanvas;
-  Control: TControl;
-  I: Integer;
-  R: TRect;
 begin
-  for I := 0 to FDockPanels.Count - 1 do
-    with TCDClientPanel(FDockPanels[I]) do begin
-      Invalidate;
-    end;
 end;
 
 procedure TCDManager.MessageHandler(Sender: TControl;
@@ -253,8 +388,8 @@ begin
 end;
 
 procedure TCDManager.RemoveControl(Control: TControl);
-var
-  ClientPanel: TCDClientPanel;
+//var
+//  ClientPanel: TCDClientPanel;
 begin
   //DockStyleHandler.RemoveControl(Control);
   //inherited;
@@ -321,13 +456,13 @@ begin
     FDockStyle := AValue;
     if AValue = dsTabs then begin
       NewManager := TCDManagerTabs.Create(FDockSite);
-      TCDManagerTabs(Self).TabControlChange(Self);
+      //TCDManagerTabs(Self).TabControlChange(Self);
     end else
     if AValue = dsList then begin
       NewManager := TCDManagerRegions.Create(FDockSite);
     end else
     if AValue = dsPopupList then begin
-      NewManager := TCDStylePopupRegions.Create(FDockSite);
+      NewManager := TCDManagerPopupRegions.Create(FDockSite);
     end else
     if AValue = dsPopupTabs then begin
       NewManager := TCDStylePopupTabs.Create(FDockSite);
@@ -335,8 +470,8 @@ begin
     if DockSite.DockManager is TCDManager then
       NewManager.Assign(TCDManager(DockSite.DockManager));
     DockSite.DockManager := NewManager;
+    NewManager.UpdateClientSize;
   end;
-  UpdateClientSize;
 end;
 
 procedure TCDManager.SetHeaderPos(const AValue: THeaderPos);
@@ -378,14 +513,77 @@ begin
   FDockSite := Source.FDockSite;
 end;
 
-{ TCDPanels }
+{ TCDHeader }
 
-destructor TCDPanels.Destroy;
-var
-  Temp: Integer;
+constructor TCDHeader.Create(TheOwner: TComponent);
 begin
-  Temp := Count;
+  inherited Create(TheOwner);
+  Shape := TShape.Create(Self);
+  with Shape do begin
+    Parent := Self;
+    Anchors := [akRight, akBottom, akLeft, akTop];
+    Left := 1;
+    Top := 1;
+    Width := Self.Width - 2;
+    Height := Self.Height - 2;
+    Brush.Style := bsClear;
+  end;
+  Title := TLabel.Create(Self);
+  with Title do begin
+    Parent := Self;
+    Visible := True;
+    Top := 4;
+    Left := 6;
+    BevelInner := bvNone;
+    BevelOuter := bvNone;
+  end;
+  CloseButton := TSpeedButton.Create(Self);
+  with CloseButton do begin
+    Parent := Self;
+    Caption := 'X';
+    Font.Size := 6;
+    Width := GrabberSize - 8;
+    Height := GrabberSize - 8;
+    Anchors := [akRight, akTop];
+    Left := Self.Width - Width - 4;
+    Top := 4;
+    Visible := True;
+    OnClick := CloseButtonClick;
+  end;
+  Icon := TImage.Create(Self);
+  with Icon do begin
+    Parent := Self;
+    Left := 4;
+    Top := 2;
+    Visible := True;
+  end;
+end;
+
+destructor TCDHeader.Destroy;
+begin
   inherited Destroy;
+end;
+
+procedure TCDHeader.DrawGrabber(Canvas: TCanvas; AControl: TControl);
+begin
+  with Canvas do begin
+    Brush.Color := clBtnFace;
+    Pen.Color := clBlack;
+    //FillRect(0, 0, AControl.Width, GrabberSize);
+
+    if (AControl as TWinControl).Focused then
+      Title.Font.Style := Font.Style + [fsBold]
+      else Title.Font.Style := Font.Style - [fsBold];
+    Rectangle(1, 1, AControl.Width - 1, GrabberSize - 1);
+    if Icon.Picture.Width > 0 then Title.Left := 8 + Icon.Picture.Width
+      else Title.Left := 6;
+    Title.Caption := AControl.Caption;
+  end;
+end;
+
+procedure TCDHeader.CloseButtonClick(Sender: TObject);
+begin
+  ManagerItem.Control.Hide;
 end;
 
 

@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs,
-  ComCtrls, StdCtrls, Spin, UCDLayout, UCDCommon;
+  ComCtrls, StdCtrls, Spin, UCDLayout, UCDCommon, UCDManager;
 
 type
 
@@ -63,7 +63,7 @@ type
 implementation
 
 uses
-  UCDClient, UCDMaster, UCDClientPanel;
+  UCDClient, UCDMaster;
 
 resourcestring
   SNewLayout = 'New Layout';

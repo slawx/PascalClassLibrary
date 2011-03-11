@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, Controls, SysUtils, ComCtrls, ExtCtrls, UCDCommon,
-  UCDManagerTabs, UCDClientPanel;
+  UCDManagerTabs;
 
 type
   { TCDAutoHide }
@@ -37,11 +37,19 @@ type
     property StepCount: Integer read FStepCount write SetStepCount;
   end;
 
+  { TCDManagerTabsPopupItem }
+
+  TCDManagerTabsPopupItem = class
+    constructor Create;
+  end;
+
   { TCDStylePopupTabs }
 
   TCDStylePopupTabs = class(TCDManagerTabs)
+  public
     TabControl: TTabControl;
     TabImageList: TImageList;
+    AutoHideEnabled: Boolean;
     AutoHide: TCDAutoHide;
     procedure TabControlMouseLeave(Sender: TObject);
     procedure TabControlChange(Sender: TObject);
@@ -59,6 +67,12 @@ implementation
 
 uses
   UCDClient;
+
+{ TCDManagerTabsPopupItem }
+
+constructor TCDManagerTabsPopupItem.Create;
+begin
+end;
 
 { TCDAutoHide }
 
