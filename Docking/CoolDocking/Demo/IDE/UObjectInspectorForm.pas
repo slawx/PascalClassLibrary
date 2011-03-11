@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs,
-  PopupNotifier, Grids, UCoolDockClient;
+  PopupNotifier, Grids, UCDClient;
 
 type
 
@@ -14,7 +14,7 @@ type
 
   TObjectInspectorForm = class(TForm)
   published
-    CoolDockClient1: TCoolDockClient;
+    CoolDockClient1: TCDClient;
     StringGrid1: TStringGrid;
     { private declarations }
   public

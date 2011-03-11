@@ -5,7 +5,7 @@ unit UCallStackForm;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, UCoolDockClient;
+  Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, UCDClient;
 
 type
 
@@ -13,7 +13,7 @@ type
 
   TCallStackForm = class(TForm)
   published
-    CoolDockClient1: TCoolDockClient;
+    CoolDockClient1: TCDClient;
     { private declarations }
   public
     { public declarations }

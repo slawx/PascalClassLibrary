@@ -5,8 +5,8 @@ unit UMessagesForm;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  UCoolDockClient;
+  Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs,
+  StdCtrls, UCDClient;
 
 type
 
@@ -14,7 +14,7 @@ type
 
   TMessagesForm = class(TForm)
   published
-    CoolDockClient1: TCoolDockClient;
+    CoolDockClient1: TCDClient;
     Memo1: TMemo;
     { private declarations }
   public

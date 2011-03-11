@@ -7,19 +7,19 @@ unit CoolDocking;
 interface
 
 uses
-  UCoolDockClient, UCoolDockCustomize, UCoolDockWindowList, 
-  UCoolDockStyleTabs, UCoolDockStyleRegions, UCoolDockStylePopupTabs, 
-  UCoolDockStylePopupRegions, UCoolDockStyle, UCoolDockClientPanel, 
-  UCoolDockPopupMenu, UCoolDockLayout, URectangle, UCoolDockCommon, 
-  UCoolDockManager, UCoolDockConjoinForm, UCoolDockMaster, LazarusPackageIntf;
+  UCDClient, UCDCustomize, UCDWindowList, UCDStyleTabs, UCDStyleRegions, 
+  UCDStylePopupTabs, UCDStylePopupRegions, UCDStyle, UCDClientPanel, 
+  UCDPopupMenu, UCDLayout, URectangle, UCDCommon, UCDManager, UCDConjoinForm, 
+  UCDMaster, LazarusPackageIntf;
 
 implementation
 
 procedure Register; 
 begin
-  RegisterUnit('UCoolDockClient', @UCoolDockClient.Register); 
-  RegisterUnit('UCoolDockWindowList', @UCoolDockWindowList.Register); 
-  RegisterUnit('UCoolDockLayout', @UCoolDockLayout.Register); 
+  RegisterUnit('UCDClient', @UCDClient.Register); 
+  RegisterUnit('UCDWindowList', @UCDWindowList.Register); 
+  RegisterUnit('UCDLayout', @UCDLayout.Register); 
+  RegisterUnit('UCDMaster', @UCDMaster.Register); 
 end; 
 
 initialization

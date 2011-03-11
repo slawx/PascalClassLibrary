@@ -1,0 +1,71 @@
+msgid ""
+msgstr "Content-Type: text/plain; charset=UTF-8"
+
+#: ucdpopupmenu.scloseform
+msgid "Close"
+msgstr ""
+
+#: ucdpopupmenu.scustomize
+msgid "Customize..."
+msgstr ""
+
+#: ucdpopupmenu.sdocklist
+msgid "List"
+msgstr ""
+
+#: ucdpopupmenu.sdockpopuplist
+msgid "Popup list"
+msgstr ""
+
+#: ucdpopupmenu.sdockpopuptabs
+msgid "Popup tabs"
+msgstr ""
+
+#: ucdpopupmenu.sdockstyle
+msgid "Style"
+msgstr ""
+
+#: ucdpopupmenu.sdocktabs
+msgid "Tabs"
+msgstr ""
+
+#: ucdpopupmenu.senternewwindowname
+msgid "Enter new window name"
+msgstr ""
+
+#: ucdpopupmenu.sposition
+msgid "Position"
+msgstr ""
+
+#: ucdpopupmenu.spositionauto
+msgid "Auto"
+msgstr ""
+
+#: ucdpopupmenu.spositionbottom
+msgid "Bottom"
+msgstr ""
+
+#: ucdpopupmenu.spositionleft
+msgid "Left"
+msgstr ""
+
+#: ucdpopupmenu.spositionright
+msgid "Right"
+msgstr ""
+
+#: ucdpopupmenu.spositiontop
+msgid "Top"
+msgstr ""
+
+#: ucdpopupmenu.srenameform
+msgid "Rename"
+msgstr ""
+
+#: ucdpopupmenu.srenamewindow
+msgid "Rename window"
+msgstr ""
+
+#: ucdpopupmenu.sundock
+msgid "Undock"
+msgstr ""
+

@@ -5,7 +5,7 @@ unit USourceEditorForm;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, UCoolDockClient,
+  Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, UCDClient,
   SynHighlighterPas, SynEdit, SynHighlighterMulti;
 
 type
@@ -14,7 +14,7 @@ type
 
   TSourceEditorForm = class(TForm)
   published
-    CoolDockClient1: TCoolDockClient;
+    CoolDockClient1: TCDClient;
     SynMultiSyn1: TSynMultiSyn;
     SynEdit1: TSynEdit;
     SynPasSyn1: TSynPasSyn;

@@ -1,4 +1,4 @@
-unit UCoolDockWindowList; 
+unit UCDWindowList; 
 
 {$mode objfpc}{$H+}
 
@@ -6,13 +6,13 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs,
-  ComCtrls, StdCtrls, Menus, UCoolDockLayout;
+  ComCtrls, StdCtrls, Menus, UCDLayout;
 
 type
 
-  { TCoolDockWindowListForm }
+  { TCDWindowListForm }
 
-  TCoolDockWindowListForm = class(TForm)
+  TCDWindowListForm = class(TForm)
     ButtonFocus: TButton;
     ButtonHide: TButton;
     ButtonShow: TButton;
@@ -33,11 +33,11 @@ type
     procedure LoadToMenuItem(MenuItem: TMenuItem);
   end; 
 
-  TCoolDockWindowList = class(TComponent)
+  TCDWindowList = class(TComponent)
   private
-    FLayoutList: TCoolDockLayoutList;
-    Form: TCoolDockWindowListForm;
-    procedure SetLayoutList(const AValue: TCoolDockLayoutList);
+    FLayoutList: TCDLayoutList;
+    Form: TCDWindowListForm;
+    procedure SetLayoutList(const AValue: TCDLayoutList);
   public
     function Execute: Boolean;
     constructor Create(AOwner: TComponent); override;
@@ -56,69 +56,69 @@ resourcestring
 
 procedure Register;
 begin
-  RegisterComponents('CoolDocking', [TCoolDockWindowList]);
+  RegisterComponents('CoolDocking', [TCDWindowList]);
 end;
 
-{ TCoolDockWindowList }
+{ TCDWindowList }
 
-function TCoolDockWindowList.Execute: Boolean;
+function TCDWindowList.Execute: Boolean;
 begin
-  Form := TCoolDockWindowListForm.Create(Self);
+  Form := TCDWindowListForm.Create(Self);
   Form.ShowModal;
   Form.Free;
   Result := True;
 end;
 
-constructor TCoolDockWindowList.Create(AOwner: TComponent);
+constructor TCDWindowList.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
 end;
 
-procedure TCoolDockWindowList.SetLayoutList(const AValue: TCoolDockLayoutList);
+procedure TCDWindowList.SetLayoutList(const AValue: TCDLayoutList);
 begin
   if FLayoutList = AValue then Exit;
   FLayoutList := AValue;
 end;
 
-{ TCoolDockWindowListForm }
+{ TCDWindowListForm }
 
-procedure TCoolDockWindowListForm.ButtonFocusClick(Sender: TObject);
+procedure TCDWindowListForm.ButtonFocusClick(Sender: TObject);
 begin
   if Assigned(ListView1.Selected) then
     TForm(ListView1.Selected.Data).Show;
   Close;
 end;
 
-procedure TCoolDockWindowListForm.ButtonHideClick(Sender: TObject);
+procedure TCDWindowListForm.ButtonHideClick(Sender: TObject);
 begin
   if Assigned(ListView1.Selected) then
     TForm(ListView1.Selected.Data).Close;
   LoadList;
 end;
 
-procedure TCoolDockWindowListForm.ButtonShowClick(Sender: TObject);
+procedure TCDWindowListForm.ButtonShowClick(Sender: TObject);
 begin
   if Assigned(ListView1.Selected) then
     TForm(ListView1.Selected.Data).Show;
   LoadList;
 end;
 
-procedure TCoolDockWindowListForm.FormShow(Sender: TObject);
+procedure TCDWindowListForm.FormShow(Sender: TObject);
 begin
   LoadList;
 end;
 
-procedure TCoolDockWindowListForm.ListView1DblClick(Sender: TObject);
+procedure TCDWindowListForm.ListView1DblClick(Sender: TObject);
 begin
   ButtonFocusClick(Self);
 end;
 
-procedure TCoolDockWindowListForm.ListView1KeyPress(Sender: TObject; var Key: char);
+procedure TCDWindowListForm.ListView1KeyPress(Sender: TObject; var Key: char);
 begin
   if Key = #13 then ButtonFocusClick(Self);
 end;
 
-procedure TCoolDockWindowListForm.ListView1SelectItem(Sender: TObject;
+procedure TCDWindowListForm.ListView1SelectItem(Sender: TObject;
   Item: TListItem; Selected: Boolean);
 begin
   ButtonFocus.Enabled := Selected;
@@ -126,7 +126,7 @@ begin
   ButtonShow.Enabled := Selected;
 end;
 
-procedure TCoolDockWindowListForm.LoadList;
+procedure TCDWindowListForm.LoadList;
 var
   I: Integer;
   NewItem: TListItem;
@@ -179,7 +179,7 @@ begin
   end;
 end;
 
-procedure TCoolDockWindowListForm.LoadToMenuItem(MenuItem: TMenuItem);
+procedure TCDWindowListForm.LoadToMenuItem(MenuItem: TMenuItem);
 var
   NewMenuItem: TMenuItem;
   I: Integer;
@@ -199,7 +199,7 @@ begin
 end;
 
 initialization
-  {$I UCoolDockWindowList.lrs}
+  {$I UCDWindowList.lrs}
 
 end.
 

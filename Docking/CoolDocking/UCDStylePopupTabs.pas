@@ -1,17 +1,17 @@
-unit UCoolDockStylePopupTabs;
+unit UCDStylePopupTabs;
 
 {$mode Delphi}{$H+}
 
 interface
 
 uses
-  Classes, Controls, SysUtils, ComCtrls, ExtCtrls, UCoolDockCommon,
-  UCoolDockStyleTabs, UCoolDockStyle, UCoolDockClientPanel;
+  Classes, Controls, SysUtils, ComCtrls, ExtCtrls, UCDCommon,
+  UCDStyleTabs, UCDStyle, UCDClientPanel;
 
 type
-  { TCoolDockAutoHide }
+  { TCDAutoHide }
 
-  TCoolDockAutoHide = class
+  TCDAutoHide = class
   private
     FDuration: Real;
     FStepCount: Integer;
@@ -37,19 +37,19 @@ type
     property StepCount: Integer read FStepCount write SetStepCount;
   end;
 
-  { TCoolDockStylePopupTabs }
+  { TCDStylePopupTabs }
 
-  TCoolDockStylePopupTabs = class(TCoolDockStyleTabs)
+  TCDStylePopupTabs = class(TCDStyleTabs)
     TabControl: TTabControl;
     TabImageList: TImageList;
-    AutoHide: TCoolDockAutoHide;
+    AutoHide: TCDAutoHide;
     procedure TabControlMouseLeave(Sender: TObject);
     procedure TabControlChange(Sender: TObject);
     procedure TabControlMouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     procedure TabControlMouseUp(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
-    constructor Create(AManager: TCoolDockManagerBase);
+    constructor Create(AManager: TCDManagerBase);
     destructor Destroy; override;
   private
   end;
@@ -58,11 +58,11 @@ type
 implementation
 
 uses
-  UCoolDockClient;
+  UCDClient;
 
-{ TCoolDockAutoHide }
+{ TCDAutoHide }
 
-procedure TCoolDockAutoHide.UpdateBounds;
+procedure TCDAutoHide.UpdateBounds;
 begin
   case TabPosition of
     tpBottom: begin
@@ -82,26 +82,26 @@ begin
   end;
 end;
 
-procedure TCoolDockAutoHide.UpdateTimerInterval;
+procedure TCDAutoHide.UpdateTimerInterval;
 begin
   Timer.Interval := Round(FDuration * 1000 / FStepCount);
 end;
 
-procedure TCoolDockAutoHide.SetDuration(const AValue: Real);
+procedure TCDAutoHide.SetDuration(const AValue: Real);
 begin
   if FDuration = AValue then Exit;
   FDuration := AValue;
   UpdateTimerInterval;
 end;
 
-procedure TCoolDockAutoHide.SetStepCount(const AValue: Integer);
+procedure TCDAutoHide.SetStepCount(const AValue: Integer);
 begin
   if FStepCount = AValue then Exit;
   FStepCount := AValue;
   UpdateTimerInterval;
 end;
 
-procedure TCoolDockAutoHide.Hide;
+procedure TCDAutoHide.Hide;
 begin
   StartBounds := Control.BoundsRect;
   Direction := -1;
@@ -110,7 +110,7 @@ begin
   UpdateBounds;
 end;
 
-procedure TCoolDockAutoHide.Show;
+procedure TCDAutoHide.Show;
 begin
   StartBounds := Control.BoundsRect;
   Control.Align := alCustom;
@@ -120,7 +120,7 @@ begin
   UpdateBounds;
 end;
 
-constructor TCoolDockAutoHide.Create;
+constructor TCDAutoHide.Create;
 begin
   Timer := TTimer.Create(nil);
   Timer.Enabled := False;
@@ -129,13 +129,13 @@ begin
   Duration := 0.5;
 end;
 
-destructor TCoolDockAutoHide.Destroy;
+destructor TCDAutoHide.Destroy;
 begin
   Timer.Free;
   inherited Destroy;
 end;
 
-procedure TCoolDockAutoHide.TimerExecute(Sender: TObject);
+procedure TCDAutoHide.TimerExecute(Sender: TObject);
 begin
   if Direction = 1 then begin
     Position := Position + 1 / StepCount;
@@ -156,40 +156,40 @@ begin
   UpdateBounds;
 end;
 
-{ TCoolDockStylePopupTabs }
+{ TCDStylePopupTabs }
 
-procedure TCoolDockStylePopupTabs.TabControlMouseLeave(Sender: TObject);
+procedure TCDStylePopupTabs.TabControlMouseLeave(Sender: TObject);
 begin
 
 end;
 
-procedure TCoolDockStylePopupTabs.TabControlChange(Sender: TObject);
+procedure TCDStylePopupTabs.TabControlChange(Sender: TObject);
 begin
 
 end;
 
-procedure TCoolDockStylePopupTabs.TabControlMouseDown(Sender: TObject;
+procedure TCDStylePopupTabs.TabControlMouseDown(Sender: TObject;
   Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
 
 end;
 
-procedure TCoolDockStylePopupTabs.TabControlMouseUp(Sender: TObject;
+procedure TCDStylePopupTabs.TabControlMouseUp(Sender: TObject;
   Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
 
 end;
 
-constructor TCoolDockStylePopupTabs.Create(AManager: TCoolDockManagerBase);
+constructor TCDStylePopupTabs.Create(AManager: TCDManagerBase);
 var
   I: Integer;
 begin
   inherited;
 
-  AutoHide := TCoolDockAutoHide.Create;
+  AutoHide := TCDAutoHide.Create;
 end;
 
-destructor TCoolDockStylePopupTabs.Destroy;
+destructor TCDStylePopupTabs.Destroy;
 begin
   AutoHide.Free;
   inherited Destroy;

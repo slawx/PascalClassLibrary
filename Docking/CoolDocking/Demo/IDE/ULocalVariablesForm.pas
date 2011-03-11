@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  UCoolDockClient;
+  UCDClient;
 
 type
 
@@ -15,7 +15,7 @@ type
   TLocalVariablesForm = class(TForm)
   published
     Memo1: TMemo;
-    CoolDockClient1: TCoolDockClient;
+    CoolDockClient1: TCDClient;
     { private declarations }
   public
     { public declarations }

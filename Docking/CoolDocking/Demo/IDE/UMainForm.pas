@@ -6,12 +6,12 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, Menus,
-  ActnList, ExtCtrls, ComCtrls, StdCtrls, UCoolDockClient, UCoolDockLayout,
+  ActnList, ExtCtrls, ComCtrls, StdCtrls, UCDClient, UCDLayout,
   UToolPaletteForm, UObjectInspectorForm, UProjectManagerForm, UStructureForm,
   UMessagesForm, UCallStackForm, ULocalVariablesForm, UToDoListForm,
-  UWatchListForm, UThreadStatusForm, USourceEditorForm, UCoolDockWindowList,
-  UCoolDockCustomize, UComponentTree, UCoolDockConjoinForm, UCoolDockManager,
-  UCoolDockMaster;
+  UWatchListForm, UThreadStatusForm, USourceEditorForm, UCDWindowList,
+  UCDCustomize, UComponentTree, UCDConjoinForm, UCDManager,
+  UCDMaster;
 
 const
   DockLayoutFileName = 'Layout.xml';
@@ -39,11 +39,11 @@ type
     AViewObjectInspector: TAction;
     AViewWindowList: TAction;
     ComboBox1: TComboBox;
-    CoolDockClient1: TCoolDockClient;
-    CoolDockCustomize1: TCoolDockCustomize;
-    CoolDockLayoutList1: TCoolDockLayoutList;
-    CoolDockMaster1: TCoolDockMaster;
-    CoolDockWindowList1: TCoolDockWindowList;
+    CoolDockClient1: TCDClient;
+    CoolDockCustomize1: TCDCustomize;
+    CoolDockLayoutList1: TCDLayoutList;
+    CoolDockMaster1: TCDMaster;
+    CoolDockWindowList1: TCDWindowList;
     ImageList1: TImageList;
     Label1: TLabel;
     MenuItem11: TMenuItem;
@@ -128,7 +128,7 @@ end;
 procedure TMainForm.ComboBox1Select(Sender: TObject);
 begin
   if (ComboBox1.ItemIndex <> - 1) and (ComboBox1.ItemIndex < CoolDockLayoutList1.Items.Count) then
-    TCoolDockLayout(CoolDockLayoutList1.Items[ComboBox1.ItemIndex]).Restore;
+    TCDLayout(CoolDockLayoutList1.Items[ComboBox1.ItemIndex]).Restore;
 end;
 
 procedure TMainForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
@@ -150,13 +150,13 @@ procedure TMainForm.InitDefaultDockLayout;
 const
   DefaultLayoutName = 'Default Layout';
 var
-  NewContainer1: TCoolDockConjoinForm;
-  NewContainer2: TCoolDockConjoinForm;
-  DefaultLayout: TCoolDockLayout;
+  NewContainer1: TCDConjoinForm;
+  NewContainer2: TCDConjoinForm;
+  DefaultLayout: TCDLayout;
 begin
   DefaultLayout := CoolDockLayoutList1.FindByName(DefaultLayoutName);
   if not Assigned(DefaultLayout) then begin
-    NewContainer1 := TCoolDockManager(DockPanel.DockManager).CreateContainer(alRight);
+    NewContainer1 := TCDManager(DockPanel.DockManager).CreateContainer(alRight);
     NewContainer1.Show;
 
     StructureForm.ManualDock(NewContainer1, nil, alTop);
@@ -164,7 +164,7 @@ begin
     ObjectInspectorForm.ManualDock(NewContainer1, nil, alTop);
     ObjectInspectorForm.Show;
 
-    NewContainer2 := TCoolDockManager(DockPanel.DockManager).CreateContainer(alRight);
+    NewContainer2 := TCDManager(DockPanel.DockManager).CreateContainer(alRight);
     NewContainer2.Show;
     ProjectManagerForm.ManualDock(NewContainer2, nil, alTop);
     ProjectManagerForm.Show;
@@ -176,7 +176,7 @@ begin
     SourceEditorForm.Show;
     NewContainer2.ManualDock(DockPanel);
 
-    DefaultLayout := TCoolDockLayout.Create;
+    DefaultLayout := TCDLayout.Create;
     DefaultLayout.Name := DefaultLayoutName;
     CoolDockLayoutList1.Items.Add(DefaultLayout);
     DefaultLayout.Store;
@@ -215,16 +215,16 @@ end;
 
 procedure TMainForm.ADesktopSaveExecute(Sender: TObject);
 var
-  NewLayout: TCoolDockLayout;
+  NewLayout: TCDLayout;
 begin
   if ComboBox1.Text <> '' then begin
     if ComboBox1.Items.IndexOf(ComboBox1.Text) = -1 then begin
-      NewLayout := TCoolDockLayout.Create;
+      NewLayout := TCDLayout.Create;
       NewLayout.Name := ComboBox1.Text;
       NewLayout.Store;
       CoolDockLayoutList1.Items.Add(NewLayout);
     end else
-      TCoolDockLayout(CoolDockLayoutList1.Items[ComboBox1.Items.IndexOf(ComboBox1.Text)]).Store;
+      TCDLayout(CoolDockLayoutList1.Items[ComboBox1.Items.IndexOf(ComboBox1.Text)]).Store;
     CoolDockLayoutList1.SaveToFile(DockLayoutFileName);
     CoolDockLayoutList1.PopulateStringList(ComboBox1.Items);
   end else ShowMessage('Enter layout name');

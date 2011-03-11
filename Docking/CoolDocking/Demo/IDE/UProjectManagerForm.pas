@@ -5,8 +5,8 @@ unit UProjectManagerForm;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, ComCtrls,
-  UCoolDockClient;
+  Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs,
+  ComCtrls, UCDClient;
 
 type
 
@@ -14,7 +14,7 @@ type
 
   TProjectManagerForm = class(TForm)
   published
-    CoolDockClient1: TCoolDockClient;
+    CoolDockClient1: TCDClient;
     TreeView1: TTreeView;
     { private declarations }
   public

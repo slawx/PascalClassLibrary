@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, ComCtrls,
-  UCoolDockClient;
+  UCDClient;
 
 type
 
@@ -14,7 +14,7 @@ type
 
   TStructureForm = class(TForm)
   published
-    CoolDockClient1: TCoolDockClient;
+    CoolDockClient1: TCDClient;
     TreeView1: TTreeView;
     { private declarations }
   public

@@ -1,4 +1,4 @@
-unit UCoolDockClientPanel;
+unit UCDClientPanel;
 
 {$mode Delphi}{$H+}
 
@@ -6,17 +6,17 @@ interface
 
 uses
   Classes, Controls, SysUtils, Forms, StdCtrls, ExtCtrls, Graphics,
-  Buttons, UCoolDockCommon;
+  Buttons, UCDCommon;
 
 type
 
   THeaderPos = (hpAuto, hpLeft, hpTop, hpRight, hpBottom);
 
-  { TCoolDockHeader }
+  { TCDHeader }
 
-  TCoolDockClientPanel = class;
+  TCDClientPanel = class;
 
-  TCoolDockHeader = class(TPanel)
+  TCDHeader = class(TPanel)
   private
     procedure CloseButtonClick(Sender: TObject);
     procedure DrawGrabber(Canvas: TCanvas; AControl: TControl);
@@ -24,15 +24,15 @@ type
     CloseButton: TSpeedButton;
     Title: TLabel;
     Icon: TImage;
-    ParentClientPanel: TCoolDockClientPanel;
+    ParentClientPanel: TCDClientPanel;
     Shape: TShape;
     constructor Create(TheOwner: TComponent); override;
     destructor Destroy; override;
   end;
 
-  { TCoolDockClientPanel }
+  { TCDClientPanel }
 
-  TCoolDockClientPanel = class(TPanel)
+  TCDClientPanel = class(TPanel)
   private
     FAutoHide: Boolean;
     FHeaderPos: THeaderPos;
@@ -46,10 +46,10 @@ type
     procedure SetHeaderPos(const AValue: THeaderPos);
     procedure SetShowHeader(const AValue: Boolean);
   public
-    OwnerDockManager: TCoolDockManagerBase;
+    OwnerDockManager: TCDManagerBase;
     Splitter: TSplitter;
     ClientAreaPanel: TPanel;
-    Header: TCoolDockHeader;
+    Header: TCDHeader;
     procedure VisibleChange(Sender: TObject);
     constructor Create(TheOwner: TComponent); override;
     destructor Destroy; override;
@@ -67,23 +67,23 @@ type
 implementation
 
 uses
-  UCoolDockClient, UCoolDockStyle, UCoolDockManager;
+  UCDClient, UCDStyle, UCDManager;
 
-{ TCoolDockClientPanel }
+{ TCDClientPanel }
 
-procedure TCoolDockClientPanel.SetShowHeader(const AValue: Boolean);
+procedure TCDClientPanel.SetShowHeader(const AValue: Boolean);
 begin
   if FShowHeader = AValue then Exit;
   FShowHeader := AValue;
   DockPanelPaint(Self);
 end;
 
-procedure TCoolDockClientPanel.VisibleChange(Sender: TObject);
+procedure TCDClientPanel.VisibleChange(Sender: TObject);
 var
   ControlVisible: Boolean;
   Temp: TControl;
   Temp2: TControl;
-  Temp3: TCoolDockStyle;
+  Temp3: TCDStyle;
 begin
   Temp := TControl(Sender);
   if Assigned(Control) then
@@ -94,9 +94,9 @@ begin
     if Assigned(Splitter) then
       Splitter.Visible := ControlVisible;
       *)
-//    if Assigned(TCoolDockManager(OwnerDockManager).DockStyleHandler) then
+//    if Assigned(TCDManager(OwnerDockManager).DockStyleHandler) then
     if Assigned(OwnerDockManager) then
-    with TCoolDockManager(OwnerDockManager) do
+    with TCDManager(OwnerDockManager) do
     if Assigned(DockStyleHandler) then
     with DockStyleHandler do begin
       Temp3 := DockStyleHandler;
@@ -116,42 +116,42 @@ begin
   end;
 end;
 
-procedure TCoolDockClientPanel.SetAutoHide(const AValue: Boolean);
+procedure TCDClientPanel.SetAutoHide(const AValue: Boolean);
 begin
   if FAutoHide = AValue then Exit;
   FAutoHide := AValue;
 end;
 
-function TCoolDockClientPanel.GetAutoHideEnabled: Boolean;
+function TCDClientPanel.GetAutoHideEnabled: Boolean;
 begin
 end;
 
-function TCoolDockClientPanel.GetControl: TControl;
+function TCDClientPanel.GetControl: TControl;
 begin
   Result := FControl;
 end;
 
-procedure TCoolDockClientPanel.SetAutoHideEnabled(const AValue: Boolean);
+procedure TCDClientPanel.SetAutoHideEnabled(const AValue: Boolean);
 begin
 
 end;
 
-procedure TCoolDockClientPanel.SetControl(const AValue: TControl);
+procedure TCDClientPanel.SetControl(const AValue: TControl);
 begin
   FControl := AValue;
 end;
 
-procedure TCoolDockClientPanel.SetHeaderPos(const AValue: THeaderPos);
+procedure TCDClientPanel.SetHeaderPos(const AValue: THeaderPos);
 begin
   if FHeaderPos=AValue then exit;
   FHeaderPos:=AValue;
 end;
 
-constructor TCoolDockClientPanel.Create(TheOwner: TComponent);
+constructor TCDClientPanel.Create(TheOwner: TComponent);
 begin
   inherited;
   ShowHeader := True;
-  Header := TCoolDockHeader.Create(Self);
+  Header := TCDHeader.Create(Self);
   with Header do begin
     Parent := Self;
     Visible := ShowHeader;
@@ -184,7 +184,7 @@ begin
   HeaderPos := hpTop;
 end;
 
-destructor TCoolDockClientPanel.Destroy;
+destructor TCDClientPanel.Destroy;
 var
   Temp: TControl;
 begin
@@ -198,7 +198,7 @@ begin
   inherited Destroy;
 end;
 
-procedure TCoolDockClientPanel.ResizeExecute(Sender: TObject);
+procedure TCDClientPanel.ResizeExecute(Sender: TObject);
 begin
   if Assigned(Control) then begin
     Control.Top := GrabberSize;
@@ -210,7 +210,7 @@ begin
   end;
 end;
 
-procedure TCoolDockClientPanel.DockPanelPaint(Sender: TObject);
+procedure TCDClientPanel.DockPanelPaint(Sender: TObject);
 var
   I: Integer;
   R: TRect;
@@ -228,7 +228,7 @@ begin
   end;
 end;
 
-procedure TCoolDockClientPanel.DockPanelMouseDown(Sender: TObject;
+procedure TCDClientPanel.DockPanelMouseDown(Sender: TObject;
   Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
   if Control is TForm then begin
@@ -244,9 +244,9 @@ begin
 end;
 
 
-{ TCoolDockHeader }
+{ TCDHeader }
 
-constructor TCoolDockHeader.Create(TheOwner: TComponent);
+constructor TCDHeader.Create(TheOwner: TComponent);
 begin
   inherited Create(TheOwner);
   Shape := TShape.Create(Self);
@@ -290,12 +290,12 @@ begin
   end;
 end;
 
-destructor TCoolDockHeader.Destroy;
+destructor TCDHeader.Destroy;
 begin
   inherited Destroy;
 end;
 
-procedure TCoolDockHeader.DrawGrabber(Canvas: TCanvas; AControl: TControl);
+procedure TCDHeader.DrawGrabber(Canvas: TCanvas; AControl: TControl);
 begin
   with Canvas do begin
     Brush.Color := clBtnFace;
@@ -312,7 +312,7 @@ begin
   end;
 end;
 
-procedure TCoolDockHeader.CloseButtonClick(Sender: TObject);
+procedure TCDHeader.CloseButtonClick(Sender: TObject);
 begin
   ParentClientPanel.Control.Hide;
 end;

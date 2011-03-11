@@ -1,20 +1,20 @@
-unit UCoolDockLayout;
+unit UCDLayout;
 
 {$mode Delphi}{$H+}
 
 interface
 
 uses
-  Classes, SysUtils, FileUtil, Contnrs, URectangle, Forms, UCoolDockCommon,
+  Classes, SysUtils, FileUtil, Contnrs, URectangle, Forms, UCDCommon,
   DOM, XMLWrite, XMLRead, Controls, Dialogs;
 
 type
-  TCoolDockLayout = class;
+  TCDLayout = class;
 
-  { TCoolDockLayoutItem }
+  { TCDLayoutItem }
 
-  TCoolDockLayoutItem = class
-    Parent: TCoolDockLayout;
+  TCDLayoutItem = class
+    Parent: TCDLayout;
     Name: string;
     StoredClassName: string;
     ParentName: string;
@@ -25,7 +25,7 @@ type
     RestoredRect: TRectangle;
     WindowState: TWindowState;
     UndockSize: TPoint;
-    DockStyle: TDockStyle;
+    DockStyle: TCDStyleType;
     Processed: Boolean;
     procedure SaveToNode(Node: TDOMNode);
     procedure LoadFromNode(Node: TDOMNode);
@@ -35,31 +35,31 @@ type
     destructor Destroy; override;
   end;
 
-  { TCoolDockLayout }
+  { TCDLayout }
 
-  TCoolDockLayout = class
-    Items: TObjectList; // TList<TCoolDockLayoutItem>
+  TCDLayout = class
+    Items: TObjectList; // TList<TCDLayoutItem>
     Name: string;
     procedure SaveToNode(Node: TDOMNode);
     procedure LoadFromNode(Node: TDOMNode);
-    function FindByName(Name: string): TCoolDockLayoutItem;
+    function FindByName(Name: string): TCDLayoutItem;
     constructor Create;
     destructor Destroy; override;
     procedure Store;
     procedure Restore;
   end;
 
-  { TCoolDockLayoutList }
+  { TCDLayoutList }
 
-  TCoolDockLayoutList = class(TComponent)
+  TCDLayoutList = class(TComponent)
   public
-    Items: TObjectList; // TList<TCoolDockLayout>
+    Items: TObjectList; // TList<TCDLayout>
     procedure LoadFromStream(Stream: TStream);
     procedure SaveToStream(Stream: TStream);
     procedure LoadFromFile(FileName: string);
     procedure SaveToFile(FileName: string);
     procedure PopulateStringList(List: TStrings);
-    function FindByName(Name: string): TCoolDockLayout;
+    function FindByName(Name: string): TCDLayout;
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
   end;
@@ -69,11 +69,11 @@ procedure Register;
 implementation
 
 uses
-  UCoolDockClient, UCoolDockManager, UCoolDockConjoinForm;
+  UCDClient, UCDManager, UCDConjoinForm;
 
 procedure Register;
 begin
-  RegisterComponents('CoolDocking', [TCoolDockLayoutList]);
+  RegisterComponents('CoolDocking', [TCDLayoutList]);
 end;
 
 function FindGlobalComponentDeep(Name: string): TComponent;
@@ -90,26 +90,26 @@ begin
   end;
 end;
 
-{ TCoolDockLayoutList }
+{ TCDLayoutList }
 
 
-constructor TCoolDockLayoutList.Create(AOwner: TComponent);
+constructor TCDLayoutList.Create(AOwner: TComponent);
 begin
   inherited;
   Items := TObjectList.Create;
 end;
 
-destructor TCoolDockLayoutList.Destroy;
+destructor TCDLayoutList.Destroy;
 begin
   Items.Free;
   inherited Destroy;
 end;
 
-procedure TCoolDockLayoutList.LoadFromStream(Stream: TStream);
+procedure TCDLayoutList.LoadFromStream(Stream: TStream);
 var
   Doc: TXMLDocument;
   Child: TDOMNode;
-  NewItem: TCoolDockLayout;
+  NewItem: TCDLayout;
   NewNode: TDOMNode;
 begin
   try
@@ -121,7 +121,7 @@ begin
       with NewNode do begin
         Child := FirstChild;
         while Assigned(Child) do begin
-          NewItem := TCoolDockLayout.Create;
+          NewItem := TCDLayout.Create;
           NewItem.LoadFromNode(Child);
           Items.Add(NewItem);
           Child := Child.NextSibling;
@@ -133,7 +133,7 @@ begin
   end;
 end;
 
-procedure TCoolDockLayoutList.SaveToStream(Stream: TStream);
+procedure TCDLayoutList.SaveToStream(Stream: TStream);
 var
   Doc: TXMLDocument;
   RootNode: TDOMNode;
@@ -151,7 +151,7 @@ begin
         with NewNode do
         for I := 0 to Items.Count - 1 do begin
           NewNode2 := OwnerDocument.CreateElement('Layout');
-          TCoolDockLayout(Items[I]).SaveToNode(NewNode2);
+          TCDLayout(Items[I]).SaveToNode(NewNode2);
           AppendChild(NewNode2);
          end;
         AppendChild(NewNode);
@@ -163,7 +163,7 @@ begin
   end;
 end;
 
-procedure TCoolDockLayoutList.LoadFromFile(FileName: string);
+procedure TCDLayoutList.LoadFromFile(FileName: string);
 var
   Stream: TFileStream;
 begin
@@ -175,7 +175,7 @@ begin
   end;
 end;
 
-procedure TCoolDockLayoutList.SaveToFile(FileName: string);
+procedure TCDLayoutList.SaveToFile(FileName: string);
 var
   Stream: TFileStream;
 begin
@@ -189,28 +189,28 @@ begin
   end;
 end;
 
-procedure TCoolDockLayoutList.PopulateStringList(List: TStrings);
+procedure TCDLayoutList.PopulateStringList(List: TStrings);
 var
   I: Integer;
 begin
   List.Clear;
   for I := 0 to Items.Count - 1 do
-    List.AddObject(TCoolDockLayout(Items[I]).Name, TCoolDockLayout(Items[I]));
+    List.AddObject(TCDLayout(Items[I]).Name, TCDLayout(Items[I]));
 end;
 
-function TCoolDockLayoutList.FindByName(Name: string): TCoolDockLayout;
+function TCDLayoutList.FindByName(Name: string): TCDLayout;
 var
   I: Integer;
 begin
   I := 0;
-  while (I < Items.Count) and (TCoolDockLayout(Items[I]).Name <> Name) do Inc(I);
-  if I < Items.Count then Result := TCoolDockLayout(Items[I])
+  while (I < Items.Count) and (TCDLayout(Items[I]).Name <> Name) do Inc(I);
+  if I < Items.Count then Result := TCDLayout(Items[I])
     else Result := nil;
 end;
 
-{ TCoolDockLayoutItem }
+{ TCDLayoutItem }
 
-procedure TCoolDockLayoutItem.SaveToNode(Node: TDOMNode);
+procedure TCDLayoutItem.SaveToNode(Node: TDOMNode);
 var
   NewNode: TDOMNode;
 begin
@@ -272,7 +272,7 @@ begin
   end;
 end;
 
-procedure TCoolDockLayoutItem.LoadFromNode(Node: TDOMNode);
+procedure TCDLayoutItem.LoadFromNode(Node: TDOMNode);
 var
   NewNode: TDOMNode;
 begin
@@ -318,7 +318,7 @@ begin
       Visible := StrToBool(NewNode.TextContent);
     NewNode := FindNode('DockStyle');
     if Assigned(NewNode) then
-      DockStyle := TDockStyle(StrToInt(NewNode.TextContent));
+      DockStyle := TCDStyleType(StrToInt(NewNode.TextContent));
     NewNode := FindNode('RestoredTop');
     if Assigned(NewNode) then
       RestoredRect.Top := StrToInt(NewNode.TextContent);
@@ -334,9 +334,9 @@ begin
   end;
 end;
 
-procedure TCoolDockLayoutItem.Store(Form: TWinControl);
+procedure TCDLayoutItem.Store(Form: TWinControl);
 var
-  NewItem: TCoolDockLayoutItem;
+  NewItem: TCDLayoutItem;
 begin
   Name := Form.Name;
   StoredClassName := Form.ClassName;
@@ -363,9 +363,9 @@ begin
     begin
       HostDockSiteName := Form.HostDockSite.Name;
       if not Assigned(Parent.FindByName(HostDockSiteName)) then begin
-        NewItem := TCoolDockLayoutItem.Create;
+        NewItem := TCDLayoutItem.Create;
         NewItem.Parent := Parent;
-        NewItem.DockStyle := TCoolDockManager(Form.HostDockSite.DockManager).DockStyle;
+        NewItem.DockStyle := TCDManager(Form.HostDockSite.DockManager).DockStyle;
         Parent.Items.Add(NewItem);
         NewItem.Store(Form.HostDockSite);
       end;
@@ -373,10 +373,10 @@ begin
   end else HostDockSiteName := '';
 end;
 
-procedure TCoolDockLayoutItem.Restore(Form: TWinControl);
+procedure TCDLayoutItem.Restore(Form: TWinControl);
 var
   ParentComponent: TComponent;
-  ParentLayoutItem: TCoolDockLayoutItem;
+  ParentLayoutItem: TCDLayoutItem;
   FormClass: TFormClass;
 begin
   if Form is TForm then
@@ -404,9 +404,9 @@ begin
           //ParentComponent := TComponent(FindClass(ParentLayoutItem.StoredClassName).Create);
           if (ParentLayoutItem.StoredClassName = 'TCoolDockConjoinForm') then begin
             FormClass := TFormClass(FindClass('TCoolDockConjoinForm'));
-            if FormClass = TCoolDockConjoinForm then begin
-              ParentComponent := TCoolDockManager(Form.DockManager).CreateContainer(alNone);
-              TCoolDockManager(TCoolDockConjoinForm(ParentComponent).DockManager).DockStyle := ParentLayoutItem.DockStyle;
+            if FormClass = TCDConjoinForm then begin
+              ParentComponent := TCDManager(Form.DockManager).CreateContainer(alNone);
+              TCDManager(TCDConjoinForm(ParentComponent).DockManager).DockStyle := ParentLayoutItem.DockStyle;
               ParentLayoutItem.Restore(TWinControl(ParentComponent));
             end;
           end;
@@ -419,22 +419,22 @@ begin
   Processed := True;
 end;
 
-constructor TCoolDockLayoutItem.Create;
+constructor TCDLayoutItem.Create;
 begin
   Rect := TRectangle.Create;
   RestoredRect := TRectangle.Create;
 end;
 
-destructor TCoolDockLayoutItem.Destroy;
+destructor TCDLayoutItem.Destroy;
 begin
   Rect.Free;
   RestoredRect.Free;
   inherited Destroy;
 end;
 
-{ TCoolDockLayout }
+{ TCDLayout }
 
-procedure TCoolDockLayout.SaveToNode(Node: TDOMNode);
+procedure TCDLayout.SaveToNode(Node: TDOMNode);
 var
   NewNode: TDOMNode;
   NewNode2: TDOMNode;
@@ -448,18 +448,18 @@ begin
     with NewNode do
     for I := 0 to Items.Count - 1 do begin
       NewNode2 := OwnerDocument.CreateElement('Form');
-      TCoolDockLayoutItem(Items[I]).SaveToNode(NewNode2);
+      TCDLayoutItem(Items[I]).SaveToNode(NewNode2);
       AppendChild(NewNode2);
     end;
     AppendChild(NewNode);
   end;
 end;
 
-procedure TCoolDockLayout.LoadFromNode(Node: TDOMNode);
+procedure TCDLayout.LoadFromNode(Node: TDOMNode);
 var
   NewNode: TDOMNode;
   Child: TDOMNode;
-  NewItem: TCoolDockLayoutItem;
+  NewItem: TCDLayoutItem;
 begin
   with Node do begin
     NewNode := FindNode('Name');
@@ -470,7 +470,7 @@ begin
     with NewNode do begin
       Child := FirstChild;
       while Assigned(Child) do begin
-        NewItem := TCoolDockLayoutItem.Create;
+        NewItem := TCDLayoutItem.Create;
         NewItem.Parent := Self;
         NewItem.LoadFromNode(Child);
         Items.Add(NewItem);
@@ -480,45 +480,45 @@ begin
   end;
 end;
 
-function TCoolDockLayout.FindByName(Name: string): TCoolDockLayoutItem;
+function TCDLayout.FindByName(Name: string): TCDLayoutItem;
 var
   I: Integer;
 begin
   I := 0;
-  while (I < Items.Count) and (TCoolDockLayoutItem(Items[I]).Name <> Name) do Inc(I);
-  if I < Items.Count then Result := TCoolDockLayoutItem(Items[I])
+  while (I < Items.Count) and (TCDLayoutItem(Items[I]).Name <> Name) do Inc(I);
+  if I < Items.Count then Result := TCDLayoutItem(Items[I])
     else Result := nil;
 end;
 
-constructor TCoolDockLayout.Create;
+constructor TCDLayout.Create;
 begin
   Items := TObjectList.Create;
 end;
 
-destructor TCoolDockLayout.Destroy;
+destructor TCDLayout.Destroy;
 begin
   Items.Free;
   inherited Destroy;
 end;
 
-procedure TCoolDockLayout.Store;
+procedure TCDLayout.Store;
 var
   I: Integer;
   Form: TForm;
-  NewItem: TCoolDockLayoutItem;
+  NewItem: TCDLayoutItem;
 begin
   Items.Clear;
   for I := 0 to Application.ComponentCount - 1 do
   if (Application.Components[I] is TForm) then begin
     Form := (Application.Components[I] as TForm);
-    NewItem := TCoolDockLayoutItem.Create;
+    NewItem := TCDLayoutItem.Create;
     NewItem.Parent := Self;
     NewItem.Store(Form);
     Items.Add(NewItem);
   end;
 end;
 
-procedure TCoolDockLayout.Restore;
+procedure TCDLayout.Restore;
 var
   Form: TForm;
   I: Integer;
@@ -535,11 +535,11 @@ begin
   end;
 
   for I := 0 to Items.Count - 1 do
-  with TCoolDockLayoutItem(Items[I]) do
+  with TCDLayoutItem(Items[I]) do
     Processed := False;
 
   for I := 0 to Items.Count - 1 do
-  with TCoolDockLayoutItem(Items[I]) do begin
+  with TCDLayoutItem(Items[I]) do begin
     Form := TForm(Application.FindComponent(Name));
     if Assigned(Form) and (not Assigned(Form.HostDockSite)) and (not Processed) then Restore(Form);
   end;

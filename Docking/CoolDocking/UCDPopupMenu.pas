@@ -1,21 +1,21 @@
-unit UCoolDockPopupMenu;
+unit UCDPopupMenu;
 
 {$mode Delphi}{$H+}
 
 interface
 
 uses
-  Classes, SysUtils, Menus, Forms, Controls, Dialogs, UCoolDockClientPanel,
-  ExtCtrls, ComCtrls, UCoolDockCommon;
+  Classes, SysUtils, Menus, Forms, Controls, Dialogs, UCDClientPanel,
+  ExtCtrls, ComCtrls, UCDCommon;
 
 type
 
-  { TCoolDockPopupMenu }
+  { TCDPopupMenu }
 
-  TCoolDockPopupMenu = class(TPopupMenu)
+  TCDPopupMenu = class(TPopupMenu)
   public
-    Manager: TCoolDockManagerBase;
-    constructor Create(AManager: TCoolDockManagerBase);
+    Manager: TCDManagerBase;
+    constructor Create(AManager: TCDManagerBase);
     procedure PopupMenuListClick(Sender: TObject);
     procedure PopupMenuTabsClick(Sender: TObject);
     procedure PopupMenuPopupListClick(Sender: TObject);
@@ -34,7 +34,7 @@ type
 implementation
 
 uses
-  UCoolDockClient, UCoolDockStyleTabs, UCoolDockCustomize, UCoolDockManager;
+  UCDClient, UCDStyleTabs, UCDCustomize, UCDManager;
 
 resourcestring
   SDockStyle = 'Style';
@@ -56,9 +56,9 @@ resourcestring
   SRenameWindow = 'Rename window';
 
 
-{ TCoolDockPopupMenu }
+{ TCDPopupMenu }
 
-constructor TCoolDockPopupMenu.Create(AManager: TCoolDockManagerBase);
+constructor TCDPopupMenu.Create(AManager: TCDManagerBase);
 var
   NewMenuItem: TMenuItem;
   NewMenuItem2: TMenuItem;
@@ -67,7 +67,7 @@ begin
   inherited Create(nil);
   Manager := AManager;
 
-  Name := TCoolDockManager(AManager).DockSite.Name + '_' + 'PopupMenu';
+  Name := TCDManager(AManager).DockSite.Name + '_' + 'PopupMenu';
 
   NewMenuItem := TMenuItem.Create(Self);
   NewMenuItem.Caption := SDockStyle;
@@ -143,50 +143,50 @@ begin
   Items.Add(NewMenuItem);
 end;
 
-procedure TCoolDockPopupMenu.PopupMenuTabsClick(Sender: TObject);
+procedure TCDPopupMenu.PopupMenuTabsClick(Sender: TObject);
 begin
-  TCoolDockManager(Manager).DockStyle := dsTabs;
+  TCDManager(Manager).DockStyle := dsTabs;
 end;
 
-procedure TCoolDockPopupMenu.PopupMenuPopupListClick(Sender: TObject);
+procedure TCDPopupMenu.PopupMenuPopupListClick(Sender: TObject);
 begin
-  TCoolDockManager(Manager).DockStyle := dsPopupList;
+  TCDManager(Manager).DockStyle := dsPopupList;
 end;
 
-procedure TCoolDockPopupMenu.PopupMenuPopupTabsClick(Sender: TObject);
+procedure TCDPopupMenu.PopupMenuPopupTabsClick(Sender: TObject);
 begin
-  TCoolDockManager(Manager).DockStyle := dsPopupTabs;
+  TCDManager(Manager).DockStyle := dsPopupTabs;
 end;
 
-procedure TCoolDockPopupMenu.PopupMenuCloseClick(Sender: TObject);
+procedure TCDPopupMenu.PopupMenuCloseClick(Sender: TObject);
 var
   Control: TControl;
 begin
   if PopupComponent is TPageControl then
   with TPageControl(PopupComponent) do begin
-    TForm(TCoolDockClientPanel(TCoolDockManager(Manager).DockPanels[TabIndex]).Control).Close;
+    TForm(TCDClientPanel(TCDManager(Manager).DockPanels[TabIndex]).Control).Close;
   end;
-  if PopupComponent is TCoolDockHeader then
-  with TCoolDockHeader(PopupComponent) do begin
+  if PopupComponent is TCDHeader then
+  with TCDHeader(PopupComponent) do begin
     TForm(ParentClientPanel.Control).Close;
   end;
 end;
 
-procedure TCoolDockPopupMenu.PopupMenuRenameClick(Sender: TObject);
+procedure TCDPopupMenu.PopupMenuRenameClick(Sender: TObject);
 var
   Value: string;
 begin
   //ShowMessage(PopupComponent.ClassName);
   if PopupComponent is TPageControl then
   with TPageControl(PopupComponent) do begin
-    Value := TCoolDockClientPanel(TCoolDockManager(Manager).DockPanels[TabIndex]).Control.Caption;
+    Value := TCDClientPanel(TCDManager(Manager).DockPanels[TabIndex]).Control.Caption;
     if InputQuery(SRenameWindow, SEnterNewWindowName, False, Value) then begin
-      TCoolDockClientPanel(TCoolDockManager(Manager).DockPanels[TabIndex]).Control.Caption := Value;
+      TCDClientPanel(TCDManager(Manager).DockPanels[TabIndex]).Control.Caption := Value;
       Pages[TabIndex].Caption := Value;
     end;
   end;
-  if PopupComponent is TCoolDockHeader then
-  with TCoolDockHeader(PopupComponent) do begin
+  if PopupComponent is TCDHeader then
+  with TCDHeader(PopupComponent) do begin
     Value := ParentClientPanel.Control.Caption;
     if InputQuery(SRenameWindow, SEnterNewWindowName, False, Value) then begin
       ParentClientPanel.Control.Caption := Value;
@@ -195,93 +195,93 @@ begin
   end;
 end;
 
-procedure TCoolDockPopupMenu.PopupMenuPositionAutoClick(Sender: TObject);
+procedure TCDPopupMenu.PopupMenuPositionAutoClick(Sender: TObject);
 begin
   if PopupComponent is TPageControl then
   with TPageControl(PopupComponent) do begin
-    TCoolDockStyleTabs(TCoolDockManager(Manager).DockStyleHandler).TabsPos := hpAuto;
+    TCDStyleTabs(TCDManager(Manager).DockStyleHandler).TabsPos := hpAuto;
   end else
-  if PopupComponent is TCoolDockHeader then
-  with TCoolDockHeader(PopupComponent) do begin
-    TCoolDockManager(Manager).HeaderPos := hpAuto;
+  if PopupComponent is TCDHeader then
+  with TCDHeader(PopupComponent) do begin
+    TCDManager(Manager).HeaderPos := hpAuto;
   end;
 end;
 
-procedure TCoolDockPopupMenu.PopupMenuPositionLeftClick(Sender: TObject);
+procedure TCDPopupMenu.PopupMenuPositionLeftClick(Sender: TObject);
 begin
   if PopupComponent is TPageControl then
   with TPageControl(PopupComponent) do begin
-    TCoolDockStyleTabs(TCoolDockManager(Manager).DockStyleHandler).TabsPos := hpLeft;
+    TCDStyleTabs(TCDManager(Manager).DockStyleHandler).TabsPos := hpLeft;
   end else
-  if PopupComponent is TCoolDockHeader then
-  with TCoolDockHeader(PopupComponent) do begin
-    TCoolDockManager(Manager).HeaderPos := hpLeft;
+  if PopupComponent is TCDHeader then
+  with TCDHeader(PopupComponent) do begin
+    TCDManager(Manager).HeaderPos := hpLeft;
   end;
 end;
 
-procedure TCoolDockPopupMenu.PopupMenuPositionRightClick(Sender: TObject);
+procedure TCDPopupMenu.PopupMenuPositionRightClick(Sender: TObject);
 begin
   if PopupComponent is TPageControl then
   with TPageControl(PopupComponent) do begin
-    TCoolDockStyleTabs(TCoolDockManager(Manager).DockStyleHandler).TabsPos := hpRight;
+    TCDStyleTabs(TCDManager(Manager).DockStyleHandler).TabsPos := hpRight;
   end else
-  if PopupComponent is TCoolDockHeader then
-  with TCoolDockHeader(PopupComponent) do begin
-    TCoolDockManager(Manager).HeaderPos := hpRight;
+  if PopupComponent is TCDHeader then
+  with TCDHeader(PopupComponent) do begin
+    TCDManager(Manager).HeaderPos := hpRight;
   end;
 end;
 
-procedure TCoolDockPopupMenu.PopupMenuPositionTopClick(Sender: TObject);
+procedure TCDPopupMenu.PopupMenuPositionTopClick(Sender: TObject);
 begin
   if PopupComponent is TPageControl then
   with TPageControl(PopupComponent) do begin
-    TCoolDockStyleTabs(TCoolDockManager(Manager).DockStyleHandler).TabsPos := hpTop;
+    TCDStyleTabs(TCDManager(Manager).DockStyleHandler).TabsPos := hpTop;
   end else
-  if PopupComponent is TCoolDockHeader then
-  with TCoolDockHeader(PopupComponent) do begin
-    TCoolDockManager(Manager).HeaderPos := hpTop;
+  if PopupComponent is TCDHeader then
+  with TCDHeader(PopupComponent) do begin
+    TCDManager(Manager).HeaderPos := hpTop;
   end;
 end;
 
-procedure TCoolDockPopupMenu.PopupMenuPositionBottomClick(Sender: TObject);
+procedure TCDPopupMenu.PopupMenuPositionBottomClick(Sender: TObject);
 begin
   if PopupComponent is TPageControl then
   with TPageControl(PopupComponent) do begin
-    TCoolDockStyleTabs(TCoolDockManager(Manager).DockStyleHandler).TabsPos := hpBottom;
+    TCDStyleTabs(TCDManager(Manager).DockStyleHandler).TabsPos := hpBottom;
   end else
-  if PopupComponent is TCoolDockHeader then
-  with TCoolDockHeader(PopupComponent) do begin
-    TCoolDockManager(Manager).HeaderPos := hpBottom;
+  if PopupComponent is TCDHeader then
+  with TCDHeader(PopupComponent) do begin
+    TCDManager(Manager).HeaderPos := hpBottom;
   end;
 end;
 
-procedure TCoolDockPopupMenu.PopupMenuUndockClick(Sender: TObject);
+procedure TCDPopupMenu.PopupMenuUndockClick(Sender: TObject);
 var
   Control: TControl;
 begin
   if PopupComponent is TPageControl then
   with TPageControl(PopupComponent) do begin
-    Control := TCoolDockClientPanel(TCoolDockManager(Manager).DockPanels[TabIndex]).Control;
+    Control := TCDClientPanel(TCDManager(Manager).DockPanels[TabIndex]).Control;
   end else
-  if PopupComponent is TCoolDockHeader then
-  with TCoolDockHeader(PopupComponent) do begin
+  if PopupComponent is TCDHeader then
+  with TCDHeader(PopupComponent) do begin
     Control := ParentClientPanel.Control;
   end else Control := nil;
   if Assigned(Control) then
     Control.ManualFloat(Control.BoundsRect);
 end;
 
-procedure TCoolDockPopupMenu.PopupMenuCustomizeClick(Sender: TObject);
+procedure TCDPopupMenu.PopupMenuCustomizeClick(Sender: TObject);
 begin
-  with TCoolDockManager(Manager) do
+  with TCDManager(Manager) do
   if Assigned(Master) and
     Assigned(Master.Customize) then
-    TCoolDockCustomize(Master.Customize).Execute;
+    TCDCustomize(Master.Customize).Execute;
 end;
 
-procedure TCoolDockPopupMenu.PopupMenuListClick(Sender: TObject);
+procedure TCDPopupMenu.PopupMenuListClick(Sender: TObject);
 begin
-  TCoolDockManager(Manager).DockStyle := dsList;
+  TCDManager(Manager).DockStyle := dsList;
 end;
 
 

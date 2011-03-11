@@ -1,44 +1,44 @@
-unit UCoolDockManager;
+unit UCDManager;
 
 {$mode objfpc}{$H+}
 
 interface
 
 uses
-  Classes, SysUtils, UCoolDockCommon, Controls, Contnrs, UCoolDockClientPanel,
-  UCoolDockStyle, UCoolDockPopupMenu, LCLType, LMessages, Graphics,
-  UCoolDockConjoinForm, Menus, StdCtrls, ExtCtrls, Forms,
-  UCoolDockStyleRegions, UCoolDockStyleTabs, UCoolDockStylePopupRegions,
-  UCoolDockStylePopupTabs;
+  Classes, SysUtils, UCDCommon, Controls, Contnrs, UCDClientPanel,
+  UCDStyle, UCDPopupMenu, LCLType, LMessages, Graphics,
+  UCDConjoinForm, Menus, StdCtrls, ExtCtrls, Forms,
+  UCDStyleRegions, UCDStyleTabs, UCDStylePopupRegions,
+  UCDStylePopupTabs;
 
 type
   { TCoolDockPanels }
 
-  // TCoolDockPanels = TObjectList<TCoolDockClientPanel>
-  TCoolDockPanels = class(TObjectList)
+  // TCoolDockPanels = TObjectList<TCDClientPanel>
+  TCDPanels = class(TObjectList)
     destructor Destroy; override;
   end;
 
-  { TCoolDockManager }
+  { TCDManager }
 
-  TCoolDockManager = class(TCoolDockManagerBase)
+  TCDManager = class(TCDManagerBase)
   private
-    FDockStyle: TDockStyle;
+    FDockStyle: TCDStyleType;
     FDockSite: TWinControl;
-    FDockPanels: TCoolDockPanels;
+    FDockPanels: TCDPanels;
     function GetDockSite: TWinControl;
     function GetHeaderPos: THeaderPos;
     function GetMoveDuration: Integer;
     procedure InsertControlPanel(Control: TControl; InsertAt: TAlign;
       DropCtl: TControl);
-    procedure SetDockStyle(const AValue: TDockStyle);
+    procedure SetDockStyle(const AValue: TCDStyleType);
     procedure SetHeaderPos(const AValue: THeaderPos);
     procedure SetMoveDuration(const AValue: Integer);
     procedure SetVisible(const AValue: Boolean);
     procedure UpdateClientSize;
   public
-    DockStyleHandler: TCoolDockStyle;
-    PopupMenu: TCoolDockPopupMenu;
+    DockStyleHandler: TCDStyle;
+    PopupMenu: TCDPopupMenu;
     constructor Create(ADockSite: TWinControl); override;
     destructor Destroy; override;
 
@@ -63,10 +63,10 @@ type
     procedure SetReplacingControl(Control: TControl); override;
     function AutoFreeByControl: Boolean; override;
 
-    function FindControlInPanels(Control: TControl): TCoolDockClientPanel;
-    function CreateContainer(InsertAt: TAlign): TCoolDockConjoinForm;
-    property DockPanels: TCoolDockPanels read FDockPanels write FDockPanels;
-    property DockStyle: TDockStyle read FDockStyle write SetDockStyle;
+    function FindControlInPanels(Control: TControl): TCDClientPanel;
+    function CreateContainer(InsertAt: TAlign): TCDConjoinForm;
+    property DockPanels: TCDPanels read FDockPanels write FDockPanels;
+    property DockStyle: TCDStyleType read FDockStyle write SetDockStyle;
     property MoveDuration: Integer read GetMoveDuration write SetMoveDuration;
     property DockSite: TWinControl read GetDockSite;
     property HeaderPos: THeaderPos read GetHeaderPos write SetHeaderPos;
@@ -76,51 +76,51 @@ type
 
 implementation
 
-{ TCoolDockManager }
+{ TCDManager }
 
-function TCoolDockManager.FindControlInPanels(Control: TControl
-  ): TCoolDockClientPanel;
+function TCDManager.FindControlInPanels(Control: TControl
+  ): TCDClientPanel;
 var
   I: Integer;
 begin
   I := 0;
   while (I < FDockPanels.Count) and
-    (TCoolDockClientPanel(FDockPanels[I]).Control <> Control) do Inc(I);
-  if I < FDockPanels.Count then Result := TCoolDockClientPanel(FDockPanels[I])
+    (TCDClientPanel(FDockPanels[I]).Control <> Control) do Inc(I);
+  if I < FDockPanels.Count then Result := TCDClientPanel(FDockPanels[I])
     else Result := nil;
 end;
 
-function TCoolDockManager.GetDockSite: TWinControl;
+function TCDManager.GetDockSite: TWinControl;
 begin
   Result := FDockSite;
 end;
 
-function TCoolDockManager.GetHeaderPos: THeaderPos;
+function TCDManager.GetHeaderPos: THeaderPos;
 begin
 
 end;
 
-function TCoolDockManager.GetMoveDuration: Integer;
+function TCDManager.GetMoveDuration: Integer;
 begin
 
 end;
 
-constructor TCoolDockManager.Create(ADockSite: TWinControl);
+constructor TCDManager.Create(ADockSite: TWinControl);
 var
   NewMenuItem: TMenuItem;
   NewMenuItem2: TMenuItem;
 begin
   inherited Create(ADockSite);
   FDockSite := ADockSite;
-  FDockPanels := TCoolDockPanels.Create;
+  FDockPanels := TCDPanels.Create;
 
   FDockStyle := dsTabs; // To initialize style value have to be different
   DockStyle := dsList;
-  PopupMenu := TCoolDockPopupMenu.Create(Self);
+  PopupMenu := TCDPopupMenu.Create(Self);
   PopupMenu.Parent := ADockSite;
 end;
 
-destructor TCoolDockManager.Destroy;
+destructor TCDManager.Destroy;
 begin
   PopupMenu.Free;
   DockStyleHandler.Free;
@@ -128,49 +128,49 @@ begin
   inherited Destroy;
 end;
 
-procedure TCoolDockManager.BeginUpdate;
+procedure TCDManager.BeginUpdate;
 begin
   inherited BeginUpdate;
 end;
 
-procedure TCoolDockManager.EndUpdate;
+procedure TCDManager.EndUpdate;
 begin
   inherited EndUpdate;
 end;
 
-procedure TCoolDockManager.GetControlBounds(Control: TControl; out
+procedure TCDManager.GetControlBounds(Control: TControl; out
   AControlBounds: TRect);
 begin
 end;
 
-function TCoolDockManager.GetDockEdge(ADockObject: TDragDockObject): boolean;
+function TCDManager.GetDockEdge(ADockObject: TDragDockObject): boolean;
 begin
   Result := inherited GetDockEdge(ADockObject);
 end;
 
-procedure TCoolDockManager.InsertControl(ADockObject: TDragDockObject);
+procedure TCDManager.InsertControl(ADockObject: TDragDockObject);
 begin
   inherited InsertControl(ADockObject);
 end;
 
-procedure TCoolDockManager.InsertControlPanel(Control: TControl; InsertAt: TAlign;
+procedure TCDManager.InsertControlPanel(Control: TControl; InsertAt: TAlign;
   DropCtl: TControl);
 begin
   DockStyleHandler.InsertControl(Control, InsertAt);
 end;
 
-procedure TCoolDockManager.InsertControl(Control: TControl; InsertAt: TAlign;
+procedure TCDManager.InsertControl(Control: TControl; InsertAt: TAlign;
   DropCtl: TControl);
 var
   NewSplitter: TSplitter;
-  NewDockPanel: TCoolDockClientPanel;
+  NewDockPanel: TCDClientPanel;
   NewPanel: TPanel;
   I: Integer;
-  NewConjoinDockForm: TCoolDockConjoinForm;
+  NewConjoinDockForm: TCDConjoinForm;
   NewDockSite: TWinControl;
   NewForm: TForm;
 begin
-  if (FDockSite is TForm) and (not (FDockSite is TCoolDockConjoinForm)) then begin
+  if (FDockSite is TForm) and (not (FDockSite is TCDConjoinForm)) then begin
     if (not Assigned(FDockSite.Parent)) then begin
       // Create conjointed form
       NewConjoinDockForm := CreateContainer(InsertAt);
@@ -185,7 +185,7 @@ begin
       Control.ManualDock(NewConjoinDockForm, nil, InsertAt);
     end;
   end else
-  if (FDockSite is TCoolDockConjoinForm) or (FDockSite is TPanel) or (FDockSite is TCoolDockClientPanel) then begin
+  if (FDockSite is TCDConjoinForm) or (FDockSite is TPanel) or (FDockSite is TCDClientPanel) then begin
     InsertControlPanel(Control, InsertAt, DropCtl);
   end;
 
@@ -193,11 +193,11 @@ begin
   //inherited;
 end;
 
-procedure TCoolDockManager.LoadFromStream(Stream: TStream);
+procedure TCDManager.LoadFromStream(Stream: TStream);
 begin
 end;
 
-procedure TCoolDockManager.PaintSite(DC: HDC);
+procedure TCDManager.PaintSite(DC: HDC);
 var
   Canvas: TControlCanvas;
   Control: TControl;
@@ -205,23 +205,23 @@ var
   R: TRect;
 begin
   for I := 0 to FDockPanels.Count - 1 do
-    with TCoolDockClientPanel(FDockPanels[I]) do begin
+    with TCDClientPanel(FDockPanels[I]) do begin
       Invalidate;
     end;
 end;
 
-procedure TCoolDockManager.MessageHandler(Sender: TControl;
+procedure TCDManager.MessageHandler(Sender: TControl;
   var Message: TLMessage);
 begin
   inherited MessageHandler(Sender, Message);
 end;
 
-procedure TCoolDockManager.PositionDockRect(ADockObject: TDragDockObject);
+procedure TCDManager.PositionDockRect(ADockObject: TDragDockObject);
 begin
   inherited PositionDockRect(ADockObject);
 end;
 
-procedure TCoolDockManager.PositionDockRect(Client, DropCtl: TControl;
+procedure TCDManager.PositionDockRect(Client, DropCtl: TControl;
   DropAlign: TAlign; var DockRect: TRect);
 begin
   case DropAlign of
@@ -245,9 +245,9 @@ begin
   DockRect.BottomRight := FDockSite.ClientToScreen(DockRect.BottomRight);
 end;
 
-procedure TCoolDockManager.RemoveControl(Control: TControl);
+procedure TCDManager.RemoveControl(Control: TControl);
 var
-  ClientPanel: TCoolDockClientPanel;
+  ClientPanel: TCDClientPanel;
 begin
   DockStyleHandler.RemoveControl(Control);
   //inherited;
@@ -260,14 +260,14 @@ begin
     DockStyleHandler.RemoveControl(Control);
     UpdateClientSize;
     //FDockSite.Invalidate;
-    //if (FDockSite is TCoolDockConjoinForm) and (FDockSite.DockClientCount = 1) then
+    //if (FDockSite is TCDConjoinForm) and (FDockSite.DockClientCount = 1) then
     //  FDockSite.Free;
     DockStyle := DockStyle;
   end;
   *)
 end;
 
-procedure TCoolDockManager.ResetBounds(Force: Boolean);
+procedure TCDManager.ResetBounds(Force: Boolean);
 var
   I: Integer;
   Control: TControl;
@@ -275,26 +275,26 @@ var
 begin
 end;
 
-procedure TCoolDockManager.SaveToStream(Stream: TStream);
+procedure TCDManager.SaveToStream(Stream: TStream);
 begin
 end;
 
-procedure TCoolDockManager.SetReplacingControl(Control: TControl);
+procedure TCDManager.SetReplacingControl(Control: TControl);
 begin
   inherited SetReplacingControl(Control);
 end;
 
-function TCoolDockManager.AutoFreeByControl: Boolean;
+function TCDManager.AutoFreeByControl: Boolean;
 begin
   Result := inherited AutoFreeByControl;
 end;
 
-function TCoolDockManager.CreateContainer(InsertAt: TAlign): TCoolDockConjoinForm;
+function TCDManager.CreateContainer(InsertAt: TAlign): TCDConjoinForm;
 var
   NewDockSite: TWinControl;
-  NewConjoinDockForm: TCoolDockConjoinForm;
+  NewConjoinDockForm: TCDConjoinForm;
 begin
-  NewConjoinDockForm := TCoolDockConjoinForm.Create(Application);
+  NewConjoinDockForm := TCDConjoinForm.Create(Application);
   NewConjoinDockForm.Name := GetUniqueName('ConjoinForm');
   NewConjoinDockForm.Visible := True;
   NewConjoinDockForm.BoundsRect := FDockSite.BoundsRect;
@@ -305,7 +305,7 @@ begin
   Result := NewConjoinDockForm;
 end;
 
-procedure TCoolDockManager.SetDockStyle(const AValue: TDockStyle);
+procedure TCDManager.SetDockStyle(const AValue: TCDStyleType);
 var
   I: Integer;
 begin
@@ -313,48 +313,48 @@ begin
     FDockStyle := AValue;
     FreeAndNil(DockStyleHandler);
     if AValue = dsTabs then begin
-      DockStyleHandler := TCoolDockStyleTabs.Create(Self);
-      TCoolDockStyleTabs(DockStyleHandler).TabControlChange(Self);
+      DockStyleHandler := TCDStyleTabs.Create(Self);
+      TCDStyleTabs(DockStyleHandler).TabControlChange(Self);
     end else
     if AValue = dsList then begin
-      DockStyleHandler := TCoolDockStyleRegions.Create(Self);
+      DockStyleHandler := TCDStyleRegions.Create(Self);
     end else
     if AValue = dsPopupList then begin
-      DockStyleHandler := TCoolDockStylePopupRegions.Create(Self);
+      DockStyleHandler := TCDStylePopupRegions.Create(Self);
     end else
     if AValue = dsPopupTabs then begin
-      DockStyleHandler := TCoolDockStylePopupTabs.Create(Self);
+      DockStyleHandler := TCDStylePopupTabs.Create(Self);
     end;
   end;
   UpdateClientSize;
 end;
 
-procedure TCoolDockManager.SetHeaderPos(const AValue: THeaderPos);
+procedure TCDManager.SetHeaderPos(const AValue: THeaderPos);
 begin
 
 end;
 
-procedure TCoolDockManager.SetMoveDuration(const AValue: Integer);
+procedure TCDManager.SetMoveDuration(const AValue: Integer);
 begin
 end;
 
-procedure TCoolDockManager.SetVisible(const AValue: Boolean);
+procedure TCDManager.SetVisible(const AValue: Boolean);
 var
   I: Integer;
 begin
   DockStyleHandler.Visible := AValue;
 //  for I := 0 to DockPanels.Count - 1 do
-//    TCoolDockClientPanel(DockPanels[I]).Visible := AValue;
+//    TCDClientPanel(DockPanels[I]).Visible := AValue;
 end;
 
-procedure TCoolDockManager.UpdateClientSize;
+procedure TCDManager.UpdateClientSize;
 begin
   DockStyleHandler.UpdateClientSize;
 end;
 
-{ TCoolDockPanels }
+{ TCDPanels }
 
-destructor TCoolDockPanels.Destroy;
+destructor TCDPanels.Destroy;
 var
   Temp: Integer;
 begin

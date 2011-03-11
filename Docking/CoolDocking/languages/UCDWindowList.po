@@ -1,0 +1,19 @@
+msgid ""
+msgstr "Content-Type: text/plain; charset=UTF-8"
+
+#: ucdwindowlist.sstatedocked
+msgid "Docked"
+msgstr ""
+
+#: ucdwindowlist.sstatefloating
+msgid "Floating"
+msgstr ""
+
+#: ucdwindowlist.sstatehidden
+msgid "Hidden"
+msgstr ""
+
+#: ucdwindowlist.sstatevisible
+msgid "Visible"
+msgstr ""
+

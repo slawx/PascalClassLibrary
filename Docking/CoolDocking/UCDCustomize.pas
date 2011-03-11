@@ -1,4 +1,4 @@
-unit UCoolDockCustomize;
+unit UCDCustomize;
 
 {$mode Delphi}{$H+}
 
@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs,
-  ComCtrls, StdCtrls, Spin, UCoolDockLayout, UCoolDockCommon;
+  ComCtrls, StdCtrls, Spin, UCDLayout, UCDCommon;
 
 type
 
@@ -41,29 +41,29 @@ type
   private
     { private declarations }
   public
-    LayoutList: TCoolDockLayoutList;
+    LayoutList: TCDLayoutList;
   end;
 
-  { TCoolDockCustomize }
+  { TCDCustomize }
 
-  TCoolDockCustomize = class(TCoolDockCustomizeBase)
+  TCDCustomize = class(TCDCustomizeBase)
   private
-    FLayoutList: TCoolDockLayoutList;
+    FLayoutList: TCDLayoutList;
     Form: TCoolDockCustomizeForm;
-    procedure SetLayoutList(const AValue: TCoolDockLayoutList);
+    procedure SetLayoutList(const AValue: TCDLayoutList);
   public
     function Execute: Boolean;
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
   published
-    property LayoutList: TCoolDockLayoutList read FLayoutList write SetLayoutList;
+    property LayoutList: TCDLayoutList read FLayoutList write SetLayoutList;
   end;
 
 
 implementation
 
 uses
-  UCoolDockClient, UCoolDockMaster, UCoolDockClientPanel;
+  UCDClient, UCDMaster, UCDClientPanel;
 
 resourcestring
   SNewLayout = 'New Layout';
@@ -79,7 +79,7 @@ end;
 procedure TCoolDockCustomizeForm.ButtonLayoutApplyClick(Sender: TObject);
 begin
   if ListBox1.ItemIndex <> - 1 then
-    TCoolDockLayout(LayoutList.Items[ListBox1.ItemIndex]).Restore;
+    TCDLayout(LayoutList.Items[ListBox1.ItemIndex]).Restore;
 end;
 
 procedure TCoolDockCustomizeForm.ButtonLayoutDeleteClick(Sender: TObject);
@@ -92,13 +92,13 @@ end;
 
 procedure TCoolDockCustomizeForm.ButtonLayoutNewClick(Sender: TObject);
 var
-  NewLayout: TCoolDockLayout;
+  NewLayout: TCDLayout;
   NewName: string;
 begin
   NewName := SNewLayout;
   if InputQuery(SNewLayout, SEnterNewName, NewName) then
   if not Assigned(LayoutList.FindByName(NewName)) then begin
-    NewLayout := TCoolDockLayout.Create;
+    NewLayout := TCDLayout.Create;
     NewLayout.Name := NewName;
     NewLayout.Store;
     LayoutList.Items.Add(NewLayout);
@@ -110,9 +110,9 @@ procedure TCoolDockCustomizeForm.ButtonLayoutRenameClick(Sender: TObject);
 var
   NewName: string;
 begin
-  NewName := TCoolDockLayout(LayoutList.Items[ListBox1.ItemIndex]).Name;
+  NewName := TCDLayout(LayoutList.Items[ListBox1.ItemIndex]).Name;
   if InputQuery(SNewLayout, SEnterNewName, NewName) then begin
-    TCoolDockLayout(LayoutList.Items[ListBox1.ItemIndex]).Name := NewName;
+    TCDLayout(LayoutList.Items[ListBox1.ItemIndex]).Name := NewName;
     LayoutList.PopulateStringList(ListBox1.Items);
   end;
 end;
@@ -134,39 +134,39 @@ begin
 end;
 
 
-{ TCoolDockCustomize }
+{ TCDCustomize }
 
-procedure TCoolDockCustomize.SetLayoutList(const AValue: TCoolDockLayoutList);
+procedure TCDCustomize.SetLayoutList(const AValue: TCDLayoutList);
 begin
   if FLayoutList=AValue then exit;
   FLayoutList:=AValue;
 end;
 
-function TCoolDockCustomize.Execute: Boolean;
+function TCDCustomize.Execute: Boolean;
 begin
   Form := TCoolDockCustomizeForm.Create(Self);
   if Assigned(Master) then begin
-    Form.SpinEdit1.Value := TCoolDockMaster(Master).DefaultMoveSpeed;
-    Form.ComboBox1.ItemIndex := Integer(TCoolDockMaster(Master).DefaultTabsPos);
-    Form.ComboBox2.ItemIndex := Integer(TCoolDockMaster(Master).DefaultHeaderPos);
+    Form.SpinEdit1.Value := TCDMaster(Master).DefaultMoveSpeed;
+    Form.ComboBox1.ItemIndex := Integer(TCDMaster(Master).DefaultTabsPos);
+    Form.ComboBox2.ItemIndex := Integer(TCDMaster(Master).DefaultHeaderPos);
     Form.LayoutList := FLayoutList;
   end;
   Form.ShowModal;
   if Assigned(Master) then begin
-    TCoolDockMaster(Master).DefaultMoveSpeed := Form.SpinEdit1.Value;
-    TCoolDockMaster(Master).DefaultTabsPos := THeaderPos(Form.ComboBox1.ItemIndex);
-    TCoolDockMaster(Master).DefaultHeaderPos := THeaderPos(Form.ComboBox2.ItemIndex);
+    TCDMaster(Master).DefaultMoveSpeed := Form.SpinEdit1.Value;
+    TCDMaster(Master).DefaultTabsPos := THeaderPos(Form.ComboBox1.ItemIndex);
+    TCDMaster(Master).DefaultHeaderPos := THeaderPos(Form.ComboBox2.ItemIndex);
   end;
   Form.Free;
   Result := True;
 end;
 
-constructor TCoolDockCustomize.Create(AOwner: TComponent);
+constructor TCDCustomize.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
 end;
 
-destructor TCoolDockCustomize.Destroy;
+destructor TCDCustomize.Destroy;
 begin
   Master := nil;
   inherited Destroy;
@@ -174,7 +174,7 @@ end;
 
 
 initialization
-  {$I UCoolDockCustomize.lrs}
+  {$I UCDCustomize.lrs}
 
 end.
 

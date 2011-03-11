@@ -5,8 +5,8 @@ unit UWatchListForm;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  UCoolDockClient;
+  Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs,
+  StdCtrls, UCDClient;
 
 type
 
@@ -15,7 +15,7 @@ type
   TWatchListForm = class(TForm)
   published
     Memo1: TMemo;
-    CoolDockClient1: TCoolDockClient;
+    CoolDockClient1: TCDClient;
     { private declarations }
   public
     { public declarations }

@@ -1,16 +1,16 @@
-unit UCoolDockMaster;
+unit UCDMaster;
 
 {$mode objfpc}{$H+}
 
 interface
 
 uses
-  Classes, SysUtils, UCoolDockCommon, UCoolDockStyle, UCoolDockClientPanel;
+  Classes, SysUtils, UCDCommon, UCDStyle, UCDClientPanel;
 
 type
-  { TCoolDockMaster }
+  { TCDMaster }
 
-  TCoolDockMaster = class(TCoolDockMasterBase)
+  TCDMaster = class(TCDMasterBase)
   private
     FDefaultHeaderPos: THeaderPos;
     FDefaultMoveSpeed: Integer;
@@ -40,29 +40,29 @@ implementation
 
 procedure Register;
 begin
-  RegisterComponents('CoolDocking', [TCoolDockMaster]);
+  RegisterComponents('CoolDocking', [TCDMaster]);
 end;
 
-{ TCoolDockMaster }
+{ TCDMaster }
 
-procedure TCoolDockMaster.SetTabsEnabled(const AValue: Boolean);
+procedure TCDMaster.SetTabsEnabled(const AValue: Boolean);
 begin
   if FTabsEnabled = AValue then Exit;
   FTabsEnabled := AValue;
 end;
 
-procedure TCoolDockMaster.SetShowIcons(const AValue: Boolean);
+procedure TCDMaster.SetShowIcons(const AValue: Boolean);
 begin
   if FShowIcons = AValue then Exit;
   FShowIcons := AValue;
 end;
 
-constructor TCoolDockMaster.Create(AOwner: TComponent);
+constructor TCDMaster.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
 end;
 
-destructor TCoolDockMaster.Destroy;
+destructor TCDMaster.Destroy;
 var
   I: Integer;
 begin

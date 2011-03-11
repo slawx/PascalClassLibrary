@@ -1,22 +1,22 @@
-unit UCoolDockStyle;
+unit UCDStyle;
 
 {$mode Delphi}{$H+}
 
 interface
 
 uses
-  Classes, Controls, SysUtils, UCoolDockClientPanel, UCoolDockCommon;
+  Classes, Controls, SysUtils, UCDClientPanel, UCDCommon;
 
 type
-  { TCoolDockStyle }
+  { TCDStyle }
 
-  TCoolDockStyle = class
+  TCDStyle = class
   private
   public
-    Manager: TCoolDockManagerBase;
+    Manager: TCDManagerBase;
     function GetHeaderPos: THeaderPos; virtual;
     procedure SetHeaderPos(const AValue: THeaderPos); virtual;
-    constructor Create(AManager: TCoolDockManagerBase);
+    constructor Create(AManager: TCDManagerBase);
     procedure InsertControl(AControl: TControl;
       InsertAt: TAlign); virtual;
     procedure RemoveControl(Control: TControl); virtual;
@@ -31,51 +31,51 @@ type
 implementation
 
 uses
-  UCoolDockClient;
+  UCDClient;
 
-{ TCoolDockStyle }
+{ TCDStyle }
 
-procedure TCoolDockStyle.SetVisible(const AValue: Boolean);
+procedure TCDStyle.SetVisible(const AValue: Boolean);
 begin
 
 end;
 
-function TCoolDockStyle.GetHeaderPos: THeaderPos;
+function TCDStyle.GetHeaderPos: THeaderPos;
 begin
 
 end;
 
-procedure TCoolDockStyle.SetHeaderPos(const AValue: THeaderPos);
+procedure TCDStyle.SetHeaderPos(const AValue: THeaderPos);
 begin
 
 end;
 
-constructor TCoolDockStyle.Create(AManager: TCoolDockManagerBase);
+constructor TCDStyle.Create(AManager: TCDManagerBase);
 begin
   Manager := AManager;
 end;
 
-procedure TCoolDockStyle.InsertControl(AControl: TControl; InsertAt: TAlign);
+procedure TCDStyle.InsertControl(AControl: TControl; InsertAt: TAlign);
 begin
 
 end;
 
-procedure TCoolDockStyle.RemoveControl(Control: TControl);
+procedure TCDStyle.RemoveControl(Control: TControl);
 begin
 
 end;
 
-procedure TCoolDockStyle.UpdateClientSize;
+procedure TCDStyle.UpdateClientSize;
 begin
 
 end;
 
-procedure TCoolDockStyle.Switch(Index: Integer);
+procedure TCDStyle.Switch(Index: Integer);
 begin
 
 end;
 
-procedure TCoolDockStyle.ChangeVisible(Control: TWinControl; Visible: Boolean);
+procedure TCDStyle.ChangeVisible(Control: TWinControl; Visible: Boolean);
 begin
 
 end;

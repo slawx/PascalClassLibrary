@@ -1,4 +1,4 @@
-unit UCoolDockClient;
+unit UCDClient;
 
 {$mode delphi}{$H+}
 
@@ -9,16 +9,16 @@ interface
 uses
   Classes, SysUtils, Controls, LCLType, LMessages, Graphics, StdCtrls,
   Buttons, ExtCtrls, Contnrs, Forms, ComCtrls, Dialogs, Menus, FileUtil,
-  UCoolDockCustomize, DOM, XMLWrite, XMLRead, UCoolDockCommon,
-  DateUtils, UCoolDockStyleTabs, UCoolDockStyleRegions, UCoolDockStylePopupTabs,
-  UCoolDockStylePopupRegions, UCoolDockStyle, UCoolDockClientPanel,
-  UCoolDockPopupMenu, UCoolDockManager;
+  UCDCustomize, DOM, XMLWrite, XMLRead, UCDCommon,
+  DateUtils, UCDStyleTabs, UCDStyleRegions, UCDStylePopupTabs,
+  UCDStylePopupRegions, UCDStyle, UCDClientPanel,
+  UCDPopupMenu, UCDManager;
 
 const
   GrabberSize = 22;
 
 type
-  TCoolDockClient = class(TCoolDockClientBase)
+  TCDClient = class(TCDClientBase)
   private
     FDockable: Boolean;
     FFloatable: Boolean;
@@ -45,15 +45,15 @@ implementation
 
 procedure Register;
 begin
-  RegisterComponents('CoolDocking', [TCoolDockClient]);
-  RegisterComponents('CoolDocking', [TCoolDockCustomize]);
+  RegisterComponents('CoolDocking', [TCDClient]);
+  RegisterComponents('CoolDocking', [TCDCustomize]);
 end;
 
 
 
-{ TCoolDockClient }
+{ TCDClient }
 
-procedure TCoolDockClient.SetDockable(const AValue: Boolean);
+procedure TCDClient.SetDockable(const AValue: Boolean);
 begin
   if FDockable = AValue then Exit;
   FDockable := AValue;
@@ -70,13 +70,13 @@ begin
   end;
 end;
 
-procedure TCoolDockClient.SetFloatable(const AValue: Boolean);
+procedure TCDClient.SetFloatable(const AValue: Boolean);
 begin
   if FFloatable = AValue then Exit;
   FFloatable := AValue;
 end;
 
-constructor TCoolDockClient.Create(AOwner: TComponent);
+constructor TCDClient.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
   FDockable := True;
@@ -90,12 +90,12 @@ begin
         DockSite := True;
       end;
       UseDockManager := True;
-      DockManager := TCoolDockManager.Create(TWinControl(AOwner));
+      DockManager := TCDManager.Create(TWinControl(AOwner));
     end;
   end;
 end;
 
-destructor TCoolDockClient.Destroy;
+destructor TCDClient.Destroy;
 begin
   inherited Destroy;
   Master := nil;

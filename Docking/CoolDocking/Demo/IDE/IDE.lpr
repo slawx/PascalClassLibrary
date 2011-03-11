@@ -10,13 +10,12 @@ uses
   Forms, UMainForm, UObjectInspectorForm, CoolDocking, UStructureForm, 
 UToolPaletteForm, UProjectManagerForm, UMessagesForm, UCallStackForm, 
 ULocalVariablesForm, UToDoListForm, UWatchListForm, UThreadStatusForm, 
-USourceEditorForm, UComponentTree
-  { you can add units after this };
+USourceEditorForm, UComponentTree;
 
 {$R *.res}
 
 begin
-  RequireDerivedFormResource := True;
+//  RequireDerivedFormResource := True;
   Application.Initialize;
   Application.CreateForm(TMainForm, MainForm);
   Application.CreateForm(TObjectInspectorForm, ObjectInspectorForm);

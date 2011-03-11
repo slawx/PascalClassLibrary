@@ -1,4 +1,4 @@
-unit UCoolDockCommon;
+unit UCDCommon;
 
 {$mode objfpc}{$H+}
 
@@ -8,64 +8,64 @@ uses
   Classes, SysUtils, Forms, Controls, Contnrs, StdCtrls, ExtCtrls, ComCtrls;
 
 type
-  TDockStyle = (dsList, dsTabs, dsPopupTabs, dsPopupList);
-  TDockHideType = (dhtPermanent, dhtTemporal);
-  TDockDirection = (ddNone, ddHorizontal, ddVertical);
+  TCDStyleType = (dsList, dsTabs, dsPopupTabs, dsPopupList);
+  TCDHideType = (dhtPermanent, dhtTemporal);
+  TCDDirection = (ddNone, ddHorizontal, ddVertical);
 
-  TCoolDockMasterBase = class;
-  TCoolDockClientBase = class;
+  TCDMasterBase = class;
+  TCDClientBase = class;
 
-  { TCoolDockManagerBase }
+  { TCDManagerBase }
 
-  TCoolDockManagerBase = class(TDockManager)
+  TCDManagerBase = class(TDockManager)
   private
-    FMaster: TCoolDockMasterBase;
-    procedure SetMaster(const AValue: TCoolDockMasterBase);
+    FMaster: TCDMasterBase;
+    procedure SetMaster(const AValue: TCDMasterBase);
   public
-    property Master: TCoolDockMasterBase read FMaster write SetMaster;
+    property Master: TCDMasterBase read FMaster write SetMaster;
   end;
 
-  TCoolDockConjoinFormBase = class(TForm)
+  TCDConjoinFormBase = class(TForm)
     constructor Create(TheOwner: TComponent); override;
   end;
 
-  TCoolDockCustomizeBase = class(TComponent)
+  TCDCustomizeBase = class(TComponent)
   private
-    FMaster: TCoolDockMasterBase;
-    procedure SetMaster(const AValue: TCoolDockMasterBase);
+    FMaster: TCDMasterBase;
+    procedure SetMaster(const AValue: TCDMasterBase);
   published
-    property Master: TCoolDockMasterBase read FMaster write SetMaster;
+    property Master: TCDMasterBase read FMaster write SetMaster;
   end;
 
-  { TCoolDockMasterBase }
+  { TCDMasterBase }
 
-  TCoolDockMasterBase = class(TComponent)
+  TCDMasterBase = class(TComponent)
   private
-    FCoolDockCustomize: TCoolDockCustomizeBase;
+    FCoolDockCustomize: TCDCustomizeBase;
     FClients: TObjectList; // TList<TCoolDockClientBase>
-    function GetClient(Index: Integer): TCoolDockClientBase;
-    procedure SetCustomize(const AValue: TCoolDockCustomizeBase);
+    function GetClient(Index: Integer): TCDClientBase;
+    procedure SetCustomize(const AValue: TCDCustomizeBase);
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-    procedure RegisterClient(Client: TCoolDockClientBase);
-    procedure UnRegisterClient(Client: TCoolDockClientBase);
-    property Clients[Index: Integer]: TCoolDockClientBase read GetClient;
+    procedure RegisterClient(Client: TCDClientBase);
+    procedure UnRegisterClient(Client: TCDClientBase);
+    property Clients[Index: Integer]: TCDClientBase read GetClient;
   published
-    property Customize: TCoolDockCustomizeBase read FCoolDockCustomize
+    property Customize: TCDCustomizeBase read FCoolDockCustomize
       write SetCustomize;
   end;
 
-  { TCoolDockClientBase }
+  { TCDClientBase }
 
-  TCoolDockClientBase = class(TComponent)
+  TCDClientBase = class(TComponent)
   private
-    FMaster: TCoolDockMasterBase;
+    FMaster: TCDMasterBase;
     FPanel: TPanel;
-    procedure SetMaster(const AValue: TCoolDockMasterBase);
+    procedure SetMaster(const AValue: TCDMasterBase);
     procedure SetPanel(const AValue: TPanel);
   published
-    property Master: TCoolDockMasterBase read FMaster
+    property Master: TCDMasterBase read FMaster
       write SetMaster;
     property Panel: TPanel read FPanel
       write SetPanel;
@@ -85,19 +85,19 @@ begin
 end;
 
 
-{ TCoolDockManagerBase }
+{ TCDManagerBase }
 
-procedure TCoolDockManagerBase.SetMaster(const AValue: TCoolDockMasterBase);
+procedure TCDManagerBase.SetMaster(const AValue: TCDMasterBase);
 begin
   if FMaster = AValue then Exit;
   FMaster := AValue;
 end;
 
-{ TCoolDockClientBase }
+{ TCDClientBase }
 
-procedure TCoolDockClientBase.SetMaster(const AValue: TCoolDockMasterBase);
+procedure TCDClientBase.SetMaster(const AValue: TCDMasterBase);
 var
-  FOldMaster: TCoolDockMasterBase;
+  FOldMaster: TCDMasterBase;
 begin
   if FMaster = AValue then Exit;
   FOldMaster := FMaster;
@@ -108,14 +108,14 @@ begin
     FMaster.RegisterClient(Self);
     if not (csDesigning in ComponentState) then begin
       if Assigned(TWinControl(Owner).DockManager) then
-        TCoolDockManagerBase(TWinControl(Owner).DockManager).Master := FMaster;
+        TCDManagerBase(TWinControl(Owner).DockManager).Master := FMaster;
       if Assigned(FPanel) then
-        TCoolDockManagerBase(FPanel.DockManager).Master := FMaster;
+        TCDManagerBase(FPanel.DockManager).Master := FMaster;
     end;
   end;
 end;
 
-procedure TCoolDockClientBase.SetPanel(const AValue: TPanel);
+procedure TCDClientBase.SetPanel(const AValue: TPanel);
 var
   OldPanel: TPanel;
 begin
@@ -134,16 +134,16 @@ begin
   end;
 end;
 
-{ TCoolDockConjoinFormBase }
+{ TCDConjoinFormBase }
 
-constructor TCoolDockConjoinFormBase.Create(TheOwner: TComponent);
+constructor TCDConjoinFormBase.Create(TheOwner: TComponent);
 begin
   inherited Create(TheOwner);
 end;
 
-procedure TCoolDockCustomizeBase.SetMaster(const AValue: TCoolDockMasterBase);
+procedure TCDCustomizeBase.SetMaster(const AValue: TCDMasterBase);
 var
-  OldMaster: TCoolDockMasterBase;
+  OldMaster: TCDMasterBase;
 begin
   if FMaster = AValue then Exit;
   OldMaster := FMaster;
@@ -155,10 +155,10 @@ begin
   end;
 end;
 
-procedure TCoolDockMasterBase.SetCustomize(const AValue: TCoolDockCustomizeBase
+procedure TCDMasterBase.SetCustomize(const AValue: TCDCustomizeBase
   );
 var
-  OldCustomize: TCoolDockCustomizeBase;
+  OldCustomize: TCDCustomizeBase;
 begin
   if FCoolDockCustomize = AValue then Exit;
   OldCustomize := FCoolDockCustomize;
@@ -170,24 +170,24 @@ begin
   end;
 end;
 
-constructor TCoolDockMasterBase.Create(AOwner: TComponent);
+constructor TCDMasterBase.Create(AOwner: TComponent);
 begin
   inherited;
   FClients := TObjectList.Create;
   FClients.OwnsObjects := False;
 end;
 
-destructor TCoolDockMasterBase.Destroy;
+destructor TCDMasterBase.Destroy;
 var
   I: Integer;
 begin
   for I := FClients.Count - 1 downto 0 do
-    TCoolDockClientBase(FClients[I]).Master := nil;
+    TCDClientBase(FClients[I]).Master := nil;
   FClients.Free;
   inherited Destroy;
 end;
 
-procedure TCoolDockMasterBase.RegisterClient(Client: TCoolDockClientBase);
+procedure TCDMasterBase.RegisterClient(Client: TCDClientBase);
 begin
   if Assigned(Client) then
     if FClients.IndexOf(Client) = -1 then begin
@@ -196,7 +196,7 @@ begin
     end;
 end;
 
-procedure TCoolDockMasterBase.UnRegisterClient(Client: TCoolDockClientBase);
+procedure TCDMasterBase.UnRegisterClient(Client: TCDClientBase);
 begin
   if Assigned(Client) then begin
     Client.Master := nil;
@@ -204,9 +204,9 @@ begin
   end;
 end;
 
-function TCoolDockMasterBase.GetClient(Index: Integer): TCoolDockClientBase;
+function TCDMasterBase.GetClient(Index: Integer): TCDClientBase;
 begin
-  Result := TCoolDockClientBase(FClients[Index]);
+  Result := TCDClientBase(FClients[Index]);
 end;
 
 
