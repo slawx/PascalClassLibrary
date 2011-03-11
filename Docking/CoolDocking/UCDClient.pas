@@ -10,9 +10,7 @@ uses
   Classes, SysUtils, Controls, LCLType, LMessages, Graphics, StdCtrls,
   Buttons, ExtCtrls, Contnrs, Forms, ComCtrls, Dialogs, Menus, FileUtil,
   UCDCustomize, DOM, XMLWrite, XMLRead, UCDCommon,
-  DateUtils, UCDManagerTabs, UCDManagerRegions, UCDManagerTabsPopup,
-  UCDManagerRegionsPopup, UCDClientPanel,
-  UCDPopupMenu, UCDManager;
+  DateUtils, UCDClientPanel, UCDPopupMenu, UCDManager;
 
 const
   GrabberSize = 22;
@@ -42,6 +40,9 @@ resourcestring
 
 
 implementation
+
+uses
+  UCDManagerRegions;
 
 procedure Register;
 begin
@@ -90,7 +91,7 @@ begin
         DockSite := True;
       end;
       UseDockManager := True;
-      DockManager := TCDManager.Create(TWinControl(AOwner));
+      DockManager := TCDManagerRegions.Create(TWinControl(AOwner));
     end;
   end;
 end;

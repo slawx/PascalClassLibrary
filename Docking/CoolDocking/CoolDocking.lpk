@@ -8,6 +8,7 @@
       <Version Value="10"/>
       <PathDelim Value="\"/>
       <SearchPaths>
+        <OtherUnitFiles Value="Managers"/>
         <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
       </SearchPaths>
       <CodeGeneration>

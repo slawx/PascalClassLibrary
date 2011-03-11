@@ -39,7 +39,7 @@ type
 
   { TCDStylePopupTabs }
 
-  TCDStylePopupTabs = class(TCDStyleTabs)
+  TCDStylePopupTabs = class(TCDManagerTabs)
     TabControl: TTabControl;
     TabImageList: TImageList;
     AutoHide: TCDAutoHide;
@@ -122,6 +122,7 @@ end;
 
 constructor TCDAutoHide.Create;
 begin
+  inherited;
   Timer := TTimer.Create(nil);
   Timer.Enabled := False;
   Timer.OnTimer := TimerExecute;
@@ -185,6 +186,7 @@ var
   I: Integer;
 begin
   inherited;
+  FDockStyle := dsPopupTabs;
 
   AutoHide := TCDAutoHide.Create;
 end;

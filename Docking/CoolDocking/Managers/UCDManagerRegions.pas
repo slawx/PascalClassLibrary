@@ -13,9 +13,9 @@ type
 
   end;
 
-  { TCDStyleRegions }
+  { TCDManagerRegions }
 
-  TCDStyleRegions = class(TCDManager)
+  TCDManagerRegions = class(TCDManager)
   private
     function GetDirection(InsertAt: TAlign): TCDDirection;
   public
@@ -27,7 +27,7 @@ type
     constructor Create(ADockSite: TWinControl);
     destructor Destroy; override;
     procedure UpdateClientSize; override;
-    procedure DoSetVisible(const AValue: Boolean);
+    procedure DoSetVisible(const AValue: Boolean); override;
     procedure ChangeVisible(Control: TWinControl; Visible: Boolean);
     property DockDirection: TCDDirection read FDockDirection
       write FDockDirection;
@@ -39,9 +39,9 @@ uses
   UCDClient, UCDConjoinForm;
 
 
-{ TCDStyleRegions }
+{ TCDManagerRegions }
 
-function TCDStyleRegions.GetDirection(InsertAt: TAlign): TCDDirection;
+function TCDManagerRegions.GetDirection(InsertAt: TAlign): TCDDirection;
 begin
   Result := ddHorizontal;
   if (InsertAt = alTop) or (InsertAt = alBottom) then
@@ -52,7 +52,7 @@ begin
   else;
 end;
 
-procedure TCDStyleRegions.InsertControlPanel(Control: TControl; InsertAt: TAlign;
+procedure TCDManagerRegions.InsertControlPanel(Control: TControl; InsertAt: TAlign;
   DropCtl: TControl);
 var
   NewPanel: TCDClientPanel;
@@ -106,7 +106,7 @@ begin
   UpdateClientSize;
 end;
 
-procedure TCDStyleRegions.RemoveControl(Control: TControl);
+procedure TCDManagerRegions.RemoveControl(Control: TControl);
 var
   ClientPanel: TCDClientPanel;
   ClientCount: Integer;
@@ -133,11 +133,12 @@ begin
   if ClientCount > 1 then UpdateClientSize;
 end;
 
-constructor TCDStyleRegions.Create(ADockSite: TWinControl);
+constructor TCDManagerRegions.Create(ADockSite: TWinControl);
 var
   I: Integer;
 begin
   inherited;
+  FDockStyle := dsList;
   //Panels := TObjectList.Create;
 
   for I := 0 to DockPanels.Count - 1 do begin
@@ -150,13 +151,13 @@ begin
   end;
 end;
 
-destructor TCDStyleRegions.Destroy;
+destructor TCDManagerRegions.Destroy;
 begin
   //Panels.Free;
   inherited Destroy;
 end;
 
-procedure TCDStyleRegions.UpdateClientSize;
+procedure TCDManagerRegions.UpdateClientSize;
 var
   I: Integer;
   SplitterLeft: Integer;
@@ -199,11 +200,11 @@ begin
   end;
 end;
 
-procedure TCDStyleRegions.DoSetVisible(const AValue: Boolean);
+procedure TCDManagerRegions.DoSetVisible(const AValue: Boolean);
 var
   I: Integer;
 begin
-//  inherited SetVisible(AValue);
+  inherited;
   for I := 0 to DockPanels.Count - 1 do
 
         //Show;
@@ -221,7 +222,7 @@ begin
         //ClientAreaPanel.Show;
 end;
 
-procedure TCDStyleRegions.ChangeVisible(Control: TWinControl;
+procedure TCDManagerRegions.ChangeVisible(Control: TWinControl;
   Visible: Boolean);
 begin
   inherited;

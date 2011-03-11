@@ -199,7 +199,7 @@ procedure TCDPopupMenu.PopupMenuPositionAutoClick(Sender: TObject);
 begin
   if PopupComponent is TPageControl then
   with TPageControl(PopupComponent) do begin
-    TCDStyleTabs(Manager).TabsPos := hpAuto;
+    TCDManagerTabs(Manager).TabsPos := hpAuto;
   end else
   if PopupComponent is TCDHeader then
   with TCDHeader(PopupComponent) do begin
@@ -211,7 +211,7 @@ procedure TCDPopupMenu.PopupMenuPositionLeftClick(Sender: TObject);
 begin
   if PopupComponent is TPageControl then
   with TPageControl(PopupComponent) do begin
-    TCDStyleTabs(Manager).TabsPos := hpLeft;
+    TCDManagerTabs(Manager).TabsPos := hpLeft;
   end else
   if PopupComponent is TCDHeader then
   with TCDHeader(PopupComponent) do begin
@@ -223,7 +223,7 @@ procedure TCDPopupMenu.PopupMenuPositionRightClick(Sender: TObject);
 begin
   if PopupComponent is TPageControl then
   with TPageControl(PopupComponent) do begin
-    TCDStyleTabs(Manager).TabsPos := hpRight;
+    TCDManagerTabs(Manager).TabsPos := hpRight;
   end else
   if PopupComponent is TCDHeader then
   with TCDHeader(PopupComponent) do begin
@@ -235,7 +235,7 @@ procedure TCDPopupMenu.PopupMenuPositionTopClick(Sender: TObject);
 begin
   if PopupComponent is TPageControl then
   with TPageControl(PopupComponent) do begin
-    TCDStyleTabs(Manager).TabsPos := hpTop;
+    TCDManagerTabs(Manager).TabsPos := hpTop;
   end else
   if PopupComponent is TCDHeader then
   with TCDHeader(PopupComponent) do begin
@@ -247,7 +247,7 @@ procedure TCDPopupMenu.PopupMenuPositionBottomClick(Sender: TObject);
 begin
   if PopupComponent is TPageControl then
   with TPageControl(PopupComponent) do begin
-    TCDStyleTabs(Manager).TabsPos := hpBottom;
+    TCDManagerTabs(Manager).TabsPos := hpBottom;
   end else
   if PopupComponent is TCDHeader then
   with TCDHeader(PopupComponent) do begin

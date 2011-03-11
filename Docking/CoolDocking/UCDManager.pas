@@ -21,7 +21,6 @@ type
 
   TCDManager = class(TCDManagerBase)
   private
-    FDockStyle: TCDStyleType;
     FDockSite: TWinControl;
     FDockPanels: TCDPanels;
     function GetDockSite: TWinControl;
@@ -32,6 +31,7 @@ type
     procedure SetMoveDuration(const AValue: Integer);
     procedure SetVisible(const AValue: Boolean);
   public
+    FDockStyle: TCDStyleType;
     PopupMenu: TCDPopupMenu;
     constructor Create(ADockSite: TWinControl); override;
     destructor Destroy; override;
@@ -41,6 +41,7 @@ type
     procedure Assign(Source: TCDManager); virtual;
     procedure InsertControlPanel(Control: TControl; InsertAt: TAlign;
       DropCtl: TControl); virtual;
+    procedure DoSetVisible(const AValue: Boolean); virtual;
 
     // Inherited from TDockManager
     procedure BeginUpdate; override;
@@ -158,6 +159,11 @@ end;
 procedure TCDManager.InsertControlPanel(Control: TControl; InsertAt: TAlign;
   DropCtl: TControl);
 begin
+end;
+
+procedure TCDManager.DoSetVisible(const AValue: Boolean);
+begin
+
 end;
 
 procedure TCDManager.InsertControl(Control: TControl; InsertAt: TAlign;
@@ -314,11 +320,11 @@ begin
   if FDockStyle <> AValue then begin
     FDockStyle := AValue;
     if AValue = dsTabs then begin
-      NewManager := TCDStyleTabs.Create(FDockSite);
-      TCDStyleTabs(Self).TabControlChange(Self);
+      NewManager := TCDManagerTabs.Create(FDockSite);
+      TCDManagerTabs(Self).TabControlChange(Self);
     end else
     if AValue = dsList then begin
-      NewManager := TCDStyleRegions.Create(FDockSite);
+      NewManager := TCDManagerRegions.Create(FDockSite);
     end else
     if AValue = dsPopupList then begin
       NewManager := TCDStylePopupRegions.Create(FDockSite);
@@ -346,7 +352,8 @@ procedure TCDManager.SetVisible(const AValue: Boolean);
 var
   I: Integer;
 begin
-  Visible := AValue;
+  DoSetVisible(AValue);
+  //Visible := AValue;
 //  for I := 0 to DockPanels.Count - 1 do
 //    TCDClientPanel(DockPanels[I]).Visible := AValue;
 end;

@@ -10,9 +10,9 @@ uses
 
 type
 
-  { TCDStyleTabs }
+  { TCDManagerTabs }
 
-  TCDStyleTabs = class(TCDManager)
+  TCDManagerTabs = class(TCDManager)
   public
     MouseDown: Boolean;
     MouseButton: TMouseButton;
@@ -34,7 +34,7 @@ type
     procedure RemoveControl(Control: TControl); override;
   public
     constructor Create(ADockSite: TWinControl);
-    procedure DoSetVisible(const AValue: Boolean);
+    procedure DoSetVisible(const AValue: Boolean); override;
     destructor Destroy; override;
     procedure ChangeVisible(Control: TWinControl; Visible: Boolean); override;
     procedure Switch(Index: Integer); override;
@@ -48,15 +48,15 @@ implementation
 uses
   UCDClient;
 
-{ TCDStyleTabs }
+{ TCDManagerTabs }
 
-procedure TCDStyleTabs.PopupMenuTabCloseClick(Sender: TObject);
+procedure TCDManagerTabs.PopupMenuTabCloseClick(Sender: TObject);
 begin
   if Assigned(PageControl.ActivePage) then
     TCDClientPanel(DockPanels[PageControl.TabIndex]).Control.Hide;
 end;
 
-procedure TCDStyleTabs.TabControlMouseLeave(Sender: TObject);
+procedure TCDManagerTabs.TabControlMouseLeave(Sender: TObject);
 begin
   if MouseDown then
   if Assigned(PageControl.ActivePage) then begin
@@ -66,7 +66,7 @@ begin
   MouseDown := False;
 end;
 
-procedure TCDStyleTabs.TabControlChange(Sender: TObject);
+procedure TCDManagerTabs.TabControlChange(Sender: TObject);
 var
   I: Integer;
 begin
@@ -119,7 +119,7 @@ begin
   MouseDownSkip := True;
 end;
 
-procedure TCDStyleTabs.TabControlMouseDown(Sender: TObject;
+procedure TCDManagerTabs.TabControlMouseDown(Sender: TObject;
   Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
   if not MouseDownSkip then begin
@@ -129,13 +129,13 @@ begin
   MouseDownSkip := False;
 end;
 
-procedure TCDStyleTabs.TabControlMouseUp(Sender: TObject;
+procedure TCDManagerTabs.TabControlMouseUp(Sender: TObject;
   Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
   MouseDown := False;
 end;
 
-constructor TCDStyleTabs.Create(ADockSite: TWinControl);
+constructor TCDManagerTabs.Create(ADockSite: TWinControl);
 var
   NewMenuItem: TMenuItem;
   NewMenuItem2: TMenuItem;
@@ -143,6 +143,7 @@ var
   NewTabSheet: TTabSheet;
 begin
   inherited;
+  FDockStyle := dsTabs;
   TabImageList := TImageList.Create(ADockSite); //FDockSite);
   with TabImageList do begin
     Name := DockSite.Name + 'ImageList';
@@ -176,19 +177,19 @@ begin
   TabControlChange(Self);
 end;
 
-destructor TCDStyleTabs.Destroy;
+destructor TCDManagerTabs.Destroy;
 begin
   PageControl.Free;
   TabImageList.Free;
   inherited Destroy;
 end;
 
-procedure TCDStyleTabs.Switch(Index: Integer);
+procedure TCDManagerTabs.Switch(Index: Integer);
 begin
   PageControl.TabIndex := Index;
 end;
 
-procedure TCDStyleTabs.InsertControlNoUpdate(AControl: TControl; InsertAt: TAlign);
+procedure TCDManagerTabs.InsertControlNoUpdate(AControl: TControl; InsertAt: TAlign);
 var
   NewTabSheet: TTabSheet;
   NewPanel: TCDClientPanel;
@@ -231,12 +232,12 @@ begin
   end;
 end;
 
-procedure TCDStyleTabs.RemoveControl(Control: TControl);
+procedure TCDManagerTabs.RemoveControl(Control: TControl);
 begin
   inherited RemoveControl(Control);
 end;
 
-procedure TCDStyleTabs.InsertControlPanel(AControl: TControl; InsertAt: TAlign;
+procedure TCDManagerTabs.InsertControlPanel(AControl: TControl; InsertAt: TAlign;
   DropCtl: TControl);
 var
   NewTabSheet: TTabSheet;
@@ -246,7 +247,7 @@ begin
   TabControlChange(Self);
 end;
 
-procedure TCDStyleTabs.UpdateClientSize;
+procedure TCDManagerTabs.UpdateClientSize;
 var
   I: Integer;
 begin
@@ -258,8 +259,9 @@ begin
   end;
 end;
 
-procedure TCDStyleTabs.DoSetVisible(const AValue: Boolean);
+procedure TCDManagerTabs.DoSetVisible(const AValue: Boolean);
 begin
+  inherited;
     if (PageControl.TabIndex >= 0) and (PageControl.TabIndex < DockPanels.Count) then
       with TCDClientPanel(DockPanels[PageControl.TabIndex]) do begin
         //Show;
@@ -273,7 +275,7 @@ begin
       end;
 end;
 
-procedure TCDStyleTabs.ChangeVisible(Control: TWinControl; Visible: Boolean);
+procedure TCDManagerTabs.ChangeVisible(Control: TWinControl; Visible: Boolean);
 var
   I: Integer;
 begin
@@ -317,7 +319,7 @@ begin
   end;
 end;
 
-procedure TCDStyleTabs.SetTabsPos(const AValue: THeaderPos);
+procedure TCDManagerTabs.SetTabsPos(const AValue: THeaderPos);
 begin
   if FTabsPos = AValue then Exit;
   FTabsPos := AValue;
