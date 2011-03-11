@@ -18,8 +18,8 @@ object StructureForm: TStructureForm
     TabOrder = 0
   end
   object CoolDockClient1: TCoolDockClient
-    Floatable = False
     Master = MainForm.CoolDockMaster1
+    Floatable = False
     left = 87
     top = 162
   end

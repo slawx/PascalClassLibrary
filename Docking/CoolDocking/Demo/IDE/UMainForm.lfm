@@ -217,11 +217,11 @@ object MainForm: TMainForm
     end
   end
   object CoolDockMaster1: TCoolDockMaster
+    Customize = CoolDockCustomize1
     TabsEnabled = False
     DefaultTabsPos = hpAuto
     DefaultHeaderPos = hpAuto
     DefaultMoveSpeed = 0
-    Customize = CoolDockCustomize1
     ShowIcons = False
     left = 166
     top = 126
@@ -231,10 +231,10 @@ object MainForm: TMainForm
     top = 176
   end
   object CoolDockClient1: TCoolDockClient
-    Dockable = False
-    Floatable = False
     Master = CoolDockMaster1
     Panel = DockPanel
+    Dockable = False
+    Floatable = False
     left = 284
     top = 127
   end

@@ -63,7 +63,7 @@ type
 implementation
 
 uses
-  UCoolDocking, UCoolDockClientPanel;
+  UCoolDockClient, UCoolDockMaster, UCoolDockClientPanel;
 
 resourcestring
   SNewLayout = 'New Layout';

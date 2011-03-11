@@ -1,4 +1,4 @@
-unit UCoolDocking;
+unit UCoolDockClient;
 
 {$mode delphi}{$H+}
 
@@ -18,35 +18,6 @@ const
   GrabberSize = 22;
 
 type
-  TCoolDockClient = class;
-  TCoolDockMaster = class;
-
-  { TCoolDockMaster }
-
-  TCoolDockMaster = class(TCoolDockMasterBase)
-  private
-    FDefaultHeaderPos: THeaderPos;
-    FDefaultMoveSpeed: Integer;
-    FDefaultTabsPos: THeaderPos;
-    FShowIcons: Boolean;
-    FTabsEnabled: Boolean;
-    procedure SetShowIcons(const AValue: Boolean);
-    procedure SetTabsEnabled(const AValue: Boolean);
-  public
-    constructor Create(AOwner: TComponent); override;
-    destructor Destroy; override;
-  published
-    property TabsEnabled: Boolean read FTabsEnabled write SetTabsEnabled;
-    property DefaultTabsPos: THeaderPos read FDefaultTabsPos
-      write FDefaultTabsPos;
-    property DefaultHeaderPos: THeaderPos read FDefaultHeaderPos
-      write FDefaultHeaderPos;
-    property DefaultMoveSpeed: Integer read FDefaultMoveSpeed
-      write FDefaultMoveSpeed;
-    property ShowIcons: Boolean read FShowIcons
-      write SetShowIcons;
-  end;
-
   TCoolDockClient = class(TCoolDockClientBase)
   private
     FDockable: Boolean;
@@ -69,43 +40,15 @@ procedure Register;
 resourcestring
   SWrongOwner = 'Owner of TCoolDockClient have to be TForm';
 
+
 implementation
 
 procedure Register;
 begin
-  RegisterComponents('CoolDocking', [TCoolDockMaster]);
   RegisterComponents('CoolDocking', [TCoolDockClient]);
   RegisterComponents('CoolDocking', [TCoolDockCustomize]);
 end;
 
-
-{ TCoolDockMaster }
-
-procedure TCoolDockMaster.SetTabsEnabled(const AValue: Boolean);
-begin
-  if FTabsEnabled = AValue then Exit;
-  FTabsEnabled := AValue;
-end;
-
-procedure TCoolDockMaster.SetShowIcons(const AValue: Boolean);
-begin
-  if FShowIcons = AValue then Exit;
-  FShowIcons := AValue;
-end;
-
-constructor TCoolDockMaster.Create(AOwner: TComponent);
-begin
-  inherited Create(AOwner);
-end;
-
-destructor TCoolDockMaster.Destroy;
-var
-  I: Integer;
-begin
-  // Assigning nil to Client Master property cause unregistring client from list
-  Customize := nil;
-  inherited Destroy;
-end;
 
 
 { TCoolDockClient }

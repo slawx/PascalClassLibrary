@@ -58,7 +58,7 @@ type
 implementation
 
 uses
-  UCoolDocking;
+  UCoolDockClient;
 
 { TCoolDockAutoHide }
 

@@ -37,7 +37,7 @@ type
 implementation
 
 uses
-  UCoolDocking, UCoolDockConjoinForm, UCoolDockManager;
+  UCoolDockClient, UCoolDockConjoinForm, UCoolDockManager;
 
 
 { TCoolDockStyleRegions }

@@ -5,7 +5,7 @@ unit UCallStackForm;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, UCoolDocking;
+  Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, UCoolDockClient;
 
 type
 

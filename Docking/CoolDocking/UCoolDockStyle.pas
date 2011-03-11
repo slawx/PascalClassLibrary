@@ -31,7 +31,7 @@ type
 implementation
 
 uses
-  UCoolDocking;
+  UCoolDockClient;
 
 { TCoolDockStyle }
 

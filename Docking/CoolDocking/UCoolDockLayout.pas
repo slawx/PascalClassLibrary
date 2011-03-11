@@ -69,7 +69,7 @@ procedure Register;
 implementation
 
 uses
-  UCoolDocking, UCoolDockManager, UCoolDockConjoinForm;
+  UCoolDockClient, UCoolDockManager, UCoolDockConjoinForm;
 
 procedure Register;
 begin

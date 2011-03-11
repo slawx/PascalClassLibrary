@@ -44,7 +44,7 @@ type
 implementation
 
 uses
-  UCoolDocking, UCoolDockManager;
+  UCoolDockClient, UCoolDockManager;
 
 { TCoolDockStyleTabs }
 

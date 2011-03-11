@@ -34,7 +34,7 @@ type
 implementation
 
 uses
-  UCoolDocking, UCoolDockStyleTabs, UCoolDockCustomize, UCoolDockManager;
+  UCoolDockClient, UCoolDockStyleTabs, UCoolDockCustomize, UCoolDockManager;
 
 resourcestring
   SDockStyle = 'Style';

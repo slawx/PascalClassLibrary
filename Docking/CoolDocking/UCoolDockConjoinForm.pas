@@ -25,7 +25,7 @@ type
 implementation
 
 uses
-  UCoolDockManager, UCoolDocking;
+  UCoolDockManager, UCoolDockClient;
 
 { TCoolDockConjoinForm }
 

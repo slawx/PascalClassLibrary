@@ -6,11 +6,12 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, Menus,
-  ActnList, ExtCtrls, ComCtrls, StdCtrls, UCoolDocking, UCoolDockLayout,
+  ActnList, ExtCtrls, ComCtrls, StdCtrls, UCoolDockClient, UCoolDockLayout,
   UToolPaletteForm, UObjectInspectorForm, UProjectManagerForm, UStructureForm,
   UMessagesForm, UCallStackForm, ULocalVariablesForm, UToDoListForm,
   UWatchListForm, UThreadStatusForm, USourceEditorForm, UCoolDockWindowList,
-  UCoolDockCustomize, UComponentTree, UCoolDockConjoinForm, UCoolDockManager;
+  UCoolDockCustomize, UComponentTree, UCoolDockConjoinForm, UCoolDockManager,
+  UCoolDockMaster;
 
 const
   DockLayoutFileName = 'Layout.xml';

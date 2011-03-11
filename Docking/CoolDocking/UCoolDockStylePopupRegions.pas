@@ -16,7 +16,7 @@ type
 implementation
 
 uses
-  UCoolDocking;
+  UCoolDockClient;
 
 end.
 
