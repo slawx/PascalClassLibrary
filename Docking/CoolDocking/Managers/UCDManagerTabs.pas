@@ -1,4 +1,4 @@
-unit UCDStyleTabs;
+unit UCDManagerTabs;
 
 {$mode Delphi}{$H+}
 
@@ -25,7 +25,7 @@ type
       Shift: TShiftState; X, Y: Integer);
     procedure TabControlMouseUp(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
-    procedure InsertControl(AControl: TControl; InsertAt: TAlign;
+    procedure InsertControlPanel(AControl: TControl; InsertAt: TAlign;
       DropCtl: TControl); override;
     procedure UpdateClientSize; override;
   private
@@ -33,7 +33,7 @@ type
     procedure InsertControlNoUpdate(AControl: TControl; InsertAt: TAlign);
     procedure RemoveControl(Control: TControl); override;
   public
-    constructor Create(AManager: TCDManagerBase);
+    constructor Create(ADockSite: TWinControl);
     procedure DoSetVisible(const AValue: Boolean);
     destructor Destroy; override;
     procedure ChangeVisible(Control: TWinControl; Visible: Boolean); override;
@@ -135,22 +135,22 @@ begin
   MouseDown := False;
 end;
 
-constructor TCDStyleTabs.Create(AManager: TCDManagerBase);
+constructor TCDStyleTabs.Create(ADockSite: TWinControl);
 var
   NewMenuItem: TMenuItem;
   NewMenuItem2: TMenuItem;
   I: Integer;
   NewTabSheet: TTabSheet;
 begin
-
-  TabImageList := TImageList.Create(TCDManager(AManager).DockSite); //FDockSite);
+  inherited;
+  TabImageList := TImageList.Create(ADockSite); //FDockSite);
   with TabImageList do begin
-    Name := DockSite.Name + '_' + 'ImageList';
+    Name := DockSite.Name + 'ImageList';
   end;
-  PageControl := TPageControl.Create(TCDManager(AManager).DockSite); //FDockSite);
+  PageControl := TPageControl.Create(ADockSite); //FDockSite);
   with PageControl do begin
-    Parent := Self.DockSite;
-    Name := Self.DockSite.Name + '_' + 'TabControl';
+    Parent := ADockSite;
+    Name := Self.DockSite.Name + 'TabControl';
     Visible := False;
     Align := alTop;
     //Height := 24;
@@ -236,7 +236,7 @@ begin
   inherited RemoveControl(Control);
 end;
 
-procedure TCDStyleTabs.InsertControl(AControl: TControl; InsertAt: TAlign;
+procedure TCDStyleTabs.InsertControlPanel(AControl: TControl; InsertAt: TAlign;
   DropCtl: TControl);
 var
   NewTabSheet: TTabSheet;

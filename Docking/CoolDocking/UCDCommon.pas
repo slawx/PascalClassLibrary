@@ -209,8 +209,5 @@ begin
   Result := TCDClientBase(FClients[Index]);
 end;
 
-
-
-
 end.
 

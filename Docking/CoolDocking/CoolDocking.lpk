@@ -45,20 +45,20 @@
         <UnitName Value="UCDWindowList"/>
       </Item4>
       <Item5>
-        <Filename Value="UCDStyleTabs.pas"/>
-        <UnitName Value="UCDStyleTabs"/>
+        <Filename Value="Managers\UCDManagerTabs.pas"/>
+        <UnitName Value="UCDManagerTabs"/>
       </Item5>
       <Item6>
-        <Filename Value="UCDStyleRegions.pas"/>
-        <UnitName Value="UCDStyleRegions"/>
+        <Filename Value="Managers\UCDManagerRegions.pas"/>
+        <UnitName Value="UCDManagerRegions"/>
       </Item6>
       <Item7>
-        <Filename Value="UCDStylePopupTabs.pas"/>
-        <UnitName Value="UCDStylePopupTabs"/>
+        <Filename Value="Managers\UCDManagerTabsPopup.pas"/>
+        <UnitName Value="UCDManagerTabsPopup"/>
       </Item7>
       <Item8>
-        <Filename Value="UCDStylePopupRegions.pas"/>
-        <UnitName Value="UCDStylePopupRegions"/>
+        <Filename Value="Managers\UCDManagerRegionsPopup.pas"/>
+        <UnitName Value="UCDManagerRegionsPopup"/>
       </Item8>
       <Item9>
         <Filename Value="UCDClientPanel.pas"/>
@@ -110,7 +110,7 @@
       </Item2>
     </RequiredPkgs>
     <UsageOptions>
-      <UnitPath Value="$(PkgOutDir)"/>
+      <UnitPath Value="$(PkgOutDir);Managers"/>
     </UsageOptions>
     <PublishOptions>
       <Version Value="2"/>

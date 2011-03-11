@@ -1,4 +1,4 @@
-unit UCDStylePopupTabs;
+unit UCDManagerTabsPopup;
 
 {$mode Delphi}{$H+}
 
@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, Controls, SysUtils, ComCtrls, ExtCtrls, UCDCommon,
-  UCDStyleTabs, UCDClientPanel;
+  UCDManagerTabs, UCDClientPanel;
 
 type
   { TCDAutoHide }
@@ -49,7 +49,7 @@ type
       Shift: TShiftState; X, Y: Integer);
     procedure TabControlMouseUp(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
-    constructor Create(AManager: TCDManagerBase);
+    constructor Create(ADockSite: TWinControl);
     destructor Destroy; override;
   private
   end;
@@ -180,7 +180,7 @@ begin
 
 end;
 
-constructor TCDStylePopupTabs.Create(AManager: TCDManagerBase);
+constructor TCDStylePopupTabs.Create(ADockSite: TWinControl);
 var
   I: Integer;
 begin

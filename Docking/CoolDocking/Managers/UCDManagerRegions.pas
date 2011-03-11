@@ -1,4 +1,4 @@
-unit UCDStyleRegions;
+unit UCDManagerRegions;
 
 {$mode Delphi}{$H+}
 
@@ -21,10 +21,10 @@ type
   public
     FDockDirection: TCDDirection;
     //Panels: TObjectList; // TObjectList<TCDStyleRegionsPanel>
-    procedure InsertControl(Control: TControl; InsertAt: TAlign;
+    procedure InsertControlPanel(Control: TControl; InsertAt: TAlign;
       DropCtl: TControl); override;
     procedure RemoveControl(Control: TControl); override;
-    constructor Create(AManager: TCDManagerBase);
+    constructor Create(ADockSite: TWinControl);
     destructor Destroy; override;
     procedure UpdateClientSize; override;
     procedure DoSetVisible(const AValue: Boolean);
@@ -52,7 +52,7 @@ begin
   else;
 end;
 
-procedure TCDStyleRegions.InsertControl(Control: TControl; InsertAt: TAlign;
+procedure TCDStyleRegions.InsertControlPanel(Control: TControl; InsertAt: TAlign;
   DropCtl: TControl);
 var
   NewPanel: TCDClientPanel;
@@ -133,14 +133,13 @@ begin
   if ClientCount > 1 then UpdateClientSize;
 end;
 
-constructor TCDStyleRegions.Create(AManager: TCDManagerBase);
+constructor TCDStyleRegions.Create(ADockSite: TWinControl);
 var
   I: Integer;
 begin
- // inherited;
+  inherited;
   //Panels := TObjectList.Create;
 
-  with TCDManager(AManager) do
   for I := 0 to DockPanels.Count - 1 do begin
     if Assigned(TCDClientPanel(DockPanels[I]).Splitter) then
       TCDClientPanel(DockPanels[I]).Splitter.Visible := True;

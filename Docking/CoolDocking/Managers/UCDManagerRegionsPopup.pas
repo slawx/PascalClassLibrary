@@ -1,11 +1,11 @@
-unit UCDStylePopupRegions;
+unit UCDManagerRegionsPopup;
 
 {$mode Delphi}{$H+}
 
 interface
 
 uses
-  Classes, SysUtils, UCDStyleRegions;
+  Classes, SysUtils, UCDManagerRegions;
 
 type
   TCDStylePopupRegions = class(TCDStyleRegions)

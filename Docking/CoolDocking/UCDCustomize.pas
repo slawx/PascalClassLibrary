@@ -10,9 +10,9 @@ uses
 
 type
 
-  { TCoolDockCustomizeForm }
+  { TCDCustomizeForm }
 
-  TCoolDockCustomizeForm = class(TForm)
+  TCDCustomizeForm = class(TForm)
   published
     ButtonLayoutDelete: TButton;
     ButtonLayoutApply: TButton;
@@ -49,7 +49,7 @@ type
   TCDCustomize = class(TCDCustomizeBase)
   private
     FLayoutList: TCDLayoutList;
-    Form: TCoolDockCustomizeForm;
+    Form: TCDCustomizeForm;
     procedure SetLayoutList(const AValue: TCDLayoutList);
   public
     function Execute: Boolean;
@@ -69,20 +69,20 @@ resourcestring
   SNewLayout = 'New Layout';
   SEnterNewName = 'Enter new name';
 
-{ TCoolDockCustomizeForm }
+{ TCDCustomizeForm }
 
-procedure TCoolDockCustomizeForm.ButtonCloseClick(Sender: TObject);
+procedure TCDCustomizeForm.ButtonCloseClick(Sender: TObject);
 begin
   Close;
 end;
 
-procedure TCoolDockCustomizeForm.ButtonLayoutApplyClick(Sender: TObject);
+procedure TCDCustomizeForm.ButtonLayoutApplyClick(Sender: TObject);
 begin
   if ListBox1.ItemIndex <> - 1 then
     TCDLayout(LayoutList.Items[ListBox1.ItemIndex]).Restore;
 end;
 
-procedure TCoolDockCustomizeForm.ButtonLayoutDeleteClick(Sender: TObject);
+procedure TCDCustomizeForm.ButtonLayoutDeleteClick(Sender: TObject);
 begin
   if ListBox1.ItemIndex <> - 1 then begin
     LayoutList.Items.Delete(ListBox1.ItemIndex);
@@ -90,7 +90,7 @@ begin
   end;
 end;
 
-procedure TCoolDockCustomizeForm.ButtonLayoutNewClick(Sender: TObject);
+procedure TCDCustomizeForm.ButtonLayoutNewClick(Sender: TObject);
 var
   NewLayout: TCDLayout;
   NewName: string;
@@ -106,7 +106,7 @@ begin
   end;
 end;
 
-procedure TCoolDockCustomizeForm.ButtonLayoutRenameClick(Sender: TObject);
+procedure TCDCustomizeForm.ButtonLayoutRenameClick(Sender: TObject);
 var
   NewName: string;
 begin
@@ -117,14 +117,14 @@ begin
   end;
 end;
 
-procedure TCoolDockCustomizeForm.FormShow(Sender: TObject);
+procedure TCDCustomizeForm.FormShow(Sender: TObject);
 begin
   if Assigned(LayoutList) then begin
     LayoutList.PopulateStringList(ListBox1.Items);
   end;
 end;
 
-procedure TCoolDockCustomizeForm.ListBox1SelectionChange(Sender: TObject;
+procedure TCDCustomizeForm.ListBox1SelectionChange(Sender: TObject;
   User: boolean);
 begin
   ButtonLayoutRename.Enabled := ListBox1.ItemIndex <> -1;
@@ -144,7 +144,7 @@ end;
 
 function TCDCustomize.Execute: Boolean;
 begin
-  Form := TCoolDockCustomizeForm.Create(Self);
+  Form := TCDCustomizeForm.Create(Self);
   if Assigned(Master) then begin
     Form.SpinEdit1.Value := TCDMaster(Master).DefaultMoveSpeed;
     Form.ComboBox1.ItemIndex := Integer(TCDMaster(Master).DefaultTabsPos);

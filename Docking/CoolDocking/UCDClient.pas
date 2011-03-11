@@ -10,8 +10,8 @@ uses
   Classes, SysUtils, Controls, LCLType, LMessages, Graphics, StdCtrls,
   Buttons, ExtCtrls, Contnrs, Forms, ComCtrls, Dialogs, Menus, FileUtil,
   UCDCustomize, DOM, XMLWrite, XMLRead, UCDCommon,
-  DateUtils, UCDStyleTabs, UCDStyleRegions, UCDStylePopupTabs,
-  UCDStylePopupRegions, UCDClientPanel,
+  DateUtils, UCDManagerTabs, UCDManagerRegions, UCDManagerTabsPopup,
+  UCDManagerRegionsPopup, UCDClientPanel,
   UCDPopupMenu, UCDManager;
 
 const

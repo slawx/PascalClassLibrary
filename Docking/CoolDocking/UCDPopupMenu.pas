@@ -34,7 +34,7 @@ type
 implementation
 
 uses
-  UCDClient, UCDStyleTabs, UCDCustomize, UCDManager;
+  UCDClient, UCDManagerTabs, UCDCustomize, UCDManager;
 
 resourcestring
   SDockStyle = 'Style';
