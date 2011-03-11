@@ -32,26 +32,36 @@ type
     destructor Destroy; override;
   end;
 
+  { TCDPanelHeader }
+
+  TCDPanelHeader = class(TPanel)
+  private
+    FHeaderPos: THeaderPos;
+    FShowHeader: Boolean;
+    procedure SetHeaderPos(const AValue: THeaderPos);
+  public
+    Header: TCDHeader;
+    ControlPanel: TPanel;
+    property ShowHeader: Boolean read FShowHeader write FShowHeader;
+    property HeaderPos: THeaderPos read FHeaderPos write SetHeaderPos;
+    constructor Create(TheOwner: TComponent);
+    destructor Destroy; override;
+  end;
+
   { TCDManagerItem }
 
   TCDManagerItem = class
   private
-    FHeaderPos: THeaderPos;
-    FShowHeader: Boolean;
     procedure DockPanelMouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     procedure ResizeExecute(Sender: TObject);
-    procedure SetHeaderPos(const AValue: THeaderPos);
   public
-    Header: TCDHeader;
     Control: TControl;
     Manager: TCDManager;
     procedure Paint(Sender: TObject); virtual;
     procedure VisibleChange(Sender: TObject); virtual;
     constructor Create;
     destructor Destroy; override;
-    property ShowHeader: Boolean read FShowHeader write FShowHeader;
-    property HeaderPos: THeaderPos read FHeaderPos write SetHeaderPos;
   end;
 
   { TCDManager }
@@ -115,14 +125,54 @@ implementation
 uses
   UCDManagerRegions, UCDManagerTabs, UCDManagerRegionsPopup, UCDManagerTabsPopup;
 
-{ TCDManagerItem }
+{ TCDPanelHeader }
 
-procedure TCDManagerItem.SetHeaderPos(const AValue: THeaderPos);
+procedure TCDPanelHeader.SetHeaderPos(const AValue: THeaderPos);
 begin
   if FHeaderPos=AValue then exit;
   FHeaderPos:=AValue;
-  Paint(Self);
+  //Paint(Self);
 end;
+
+constructor TCDPanelHeader.Create(TheOwner: TComponent);
+begin
+  inherited;
+  //Paint.OnPaint := Paint;
+//  Header.Shape.OnMouseDown := DockPanelMouseDown;
+//  Header.Title.OnMouseDown := DockPanelMouseDown;
+  HeaderPos := hpTop;
+
+  ShowHeader := True;
+  ControlPanel := TPanel.Create(Self);
+  with ControlPanel do begin
+    Parent := Self;
+    Visible := True;
+    DockSite := True;
+    UseDockManager := True;
+    Align := alClient;
+    BevelInner := bvNone;
+    BevelOuter := bvNone;
+    //Color := clGreen;
+  end;
+  Header := TCDHeader.Create(Self);
+  with Header do begin
+    Parent := Self;
+    Visible := ShowHeader;
+    Align := alTop;
+    Height := GrabberSize;
+    //ManagerItem := Self;
+  end;
+  //OnResize := ResizeExecute;
+  BevelInner := bvNone;
+  BevelOuter := bvNone;
+end;
+
+destructor TCDPanelHeader.Destroy;
+begin
+  inherited Destroy;
+end;
+
+{ TCDManagerItem }
 
 procedure TCDManagerItem.Paint(Sender: TObject);
 var
@@ -144,23 +194,6 @@ end;
 
 constructor TCDManagerItem.Create;
 begin
-  //Paint.OnPaint := Paint;
-  Header.Shape.OnMouseDown := DockPanelMouseDown;
-  Header.Title.OnMouseDown := DockPanelMouseDown;
-  //OnResize := ResizeExecute;
-  //BevelInner := bvNone;
-  //BevelOuter := bvNone;
-  HeaderPos := hpTop;
-
-  ShowHeader := True;
-  Header := TCDHeader.Create(nil);
-  with Header do begin
-    Parent := nil;
-    Visible := ShowHeader;
-    Align := alTop;
-    Height := GrabberSize;
-    ManagerItem := Self;
-  end;
 end;
 
 procedure TCDManagerItem.ResizeExecute(Sender: TObject);
@@ -456,7 +489,6 @@ begin
     FDockStyle := AValue;
     if AValue = dsTabs then begin
       NewManager := TCDManagerTabs.Create(FDockSite);
-      //TCDManagerTabs(Self).TabControlChange(Self);
     end else
     if AValue = dsList then begin
       NewManager := TCDManagerRegions.Create(FDockSite);
