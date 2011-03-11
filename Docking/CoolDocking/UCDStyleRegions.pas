@@ -5,8 +5,8 @@ unit UCDStyleRegions;
 interface
 
 uses
-  Classes, SysUtils, Controls, ExtCtrls, StdCtrls, UCDStyle, Forms,
-  Graphics, Contnrs, Buttons, UCDClientPanel, UCDCommon;
+  Classes, SysUtils, Controls, ExtCtrls, StdCtrls, Forms,
+  Graphics, Contnrs, Buttons, UCDClientPanel, UCDCommon, UCDManager;
 
 type
   TCDStyleRegionsPanel = class(TPanel)
@@ -15,21 +15,20 @@ type
 
   { TCDStyleRegions }
 
-  TCDStyleRegions = class(TCDStyle)
+  TCDStyleRegions = class(TCDManager)
   private
     function GetDirection(InsertAt: TAlign): TCDDirection;
   public
     FDockDirection: TCDDirection;
     //Panels: TObjectList; // TObjectList<TCDStyleRegionsPanel>
-    procedure InsertControl(AControl: TControl; InsertAt: TAlign); override;
+    procedure InsertControl(Control: TControl; InsertAt: TAlign;
+      DropCtl: TControl); override;
     procedure RemoveControl(Control: TControl); override;
-    function GetHeaderPos: THeaderPos; override;
-    procedure SetHeaderPos(const AValue: THeaderPos); override;
     constructor Create(AManager: TCDManagerBase);
     destructor Destroy; override;
     procedure UpdateClientSize; override;
-    procedure SetVisible(const AValue: Boolean); override;
-    procedure ChangeVisible(Control: TWinControl; Visible: Boolean); override;
+    procedure DoSetVisible(const AValue: Boolean);
+    procedure ChangeVisible(Control: TWinControl; Visible: Boolean);
     property DockDirection: TCDDirection read FDockDirection
       write FDockDirection;
   end;
@@ -37,7 +36,7 @@ type
 implementation
 
 uses
-  UCDClient, UCDConjoinForm, UCDManager;
+  UCDClient, UCDConjoinForm;
 
 
 { TCDStyleRegions }
@@ -53,7 +52,8 @@ begin
   else;
 end;
 
-procedure TCDStyleRegions.InsertControl(AControl: TControl; InsertAt: TAlign);
+procedure TCDStyleRegions.InsertControl(Control: TControl; InsertAt: TAlign;
+  DropCtl: TControl);
 var
   NewPanel: TCDClientPanel;
   I: Integer;
@@ -62,7 +62,7 @@ var
   NewDockSite: TWinControl;
 begin
   inherited;
-  with TCDManager(Manager) do begin
+  begin
     if DockSite.DockClientCount <= 2 then FDockDirection := GetDirection(InsertAt)
     else
     if (DockSite.DockClientCount > 2) then begin
@@ -73,7 +73,7 @@ begin
         NewDockSite := DockSite.HostDockSite;
         // FDockSite.ManualFloat(FDockSite.BoundsRect);
         NewConjoinDockForm.ManualDock(NewDockSite);
-        AControl.ManualDock(NewConjoinDockForm, nil, InsertAt);
+        Control.ManualDock(NewConjoinDockForm, nil, InsertAt);
         if DockSite is TForm then
           DockSite.ManualDock(NewConjoinDockForm)
         else
@@ -86,19 +86,19 @@ begin
 
     NewPanel := TCDClientPanel.Create(nil);
     with NewPanel do begin
-      Parent := TCDManager(Manager).DockSite;
-      OwnerDockManager := Manager;
+      Parent := Self.DockSite;
+      OwnerDockManager := Self;
       if DockStyle = dsList then Visible := True;
-      Header.PopupMenu := TCDManager(Manager).PopupMenu;
+      Header.PopupMenu := Self.PopupMenu;
       //PopupMenu.Parent := Self.DockSite;
     end;
-    if (AControl is TForm) and Assigned((AControl as TForm).Icon) then
-      NewPanel.Header.Icon.Picture.Assign((AControl as TForm).Icon);
+    if (Control is TForm) and Assigned((Control as TForm).Icon) then
+      NewPanel.Header.Icon.Picture.Assign((Control as TForm).Icon);
 
-    NewPanel.Control := AControl;
-    AControl.AddHandlerOnVisibleChanged(NewPanel.VisibleChange);
-    AControl.Parent := NewPanel.ClientAreaPanel;
-    AControl.Align := alClient;
+    NewPanel.Control := Control;
+    Control.AddHandlerOnVisibleChanged(NewPanel.VisibleChange);
+    Control.Parent := NewPanel.ClientAreaPanel;
+    Control.Align := alClient;
     if (InsertAt = alTop) or (InsertAt = alLeft) then
       DockPanels.Insert(0, NewPanel)
       else DockPanels.Add(NewPanel);
@@ -111,20 +111,20 @@ var
   ClientPanel: TCDClientPanel;
   ClientCount: Integer;
 begin
-  ClientPanel := TCDManager(Manager).FindControlInPanels(Control);
+  ClientPanel := FindControlInPanels(Control);
   Control.RemoveHandlerOnVisibleChanged(ClientPanel.VisibleChange);
 
-  TCDManager(Manager).DockPanels.Remove(ClientPanel);
-  ClientCount := TCDManager(Manager).DockPanels.Count;
+  DockPanels.Remove(ClientPanel);
+  ClientCount := DockPanels.Count;
 
   //if TCDManager(Manager).DockSite.DockClientCount = 2 then FDockDirection := ddNone;
   if ClientCount = 1 then begin
     // Last removed control => Free parent if it is TCDConjoinForm
-    if TCDManager(Manager).DockSite is TCDConjoinForm then
-    with TCDConjoinForm(TCDManager(Manager).DockSite) do begin
+    if Self.DockSite is TCDConjoinForm then
+    with TCDConjoinForm(Self.DockSite) do begin
       if Assigned(Parent) then begin
-        TCDClientPanel(TCDManager(Manager).DockPanels[0]).Control.ManualDock(HostDockSite);
-      end else TCDClientPanel(TCDManager(Manager).DockPanels[0]).Control.ManualFloat(Rect(Left, Top, Left + Width, Top + Height));
+        TCDClientPanel(DockPanels[0]).Control.ManualDock(HostDockSite);
+      end else TCDClientPanel(DockPanels[0]).Control.ManualFloat(Rect(Left, Top, Left + Width, Top + Height));
       ManualFloat(Rect(Left, Top, Left + Width, Top + Height));
       Free;
     end;
@@ -133,21 +133,11 @@ begin
   if ClientCount > 1 then UpdateClientSize;
 end;
 
-function TCDStyleRegions.GetHeaderPos: THeaderPos;
-begin
-//  Result := TCDManager(Manager).;
-end;
-
-procedure TCDStyleRegions.SetHeaderPos(const AValue: THeaderPos);
-begin
-  inherited SetHeaderPos(AValue);
-end;
-
 constructor TCDStyleRegions.Create(AManager: TCDManagerBase);
 var
   I: Integer;
 begin
-  inherited;
+ // inherited;
   //Panels := TObjectList.Create;
 
   with TCDManager(AManager) do
@@ -180,15 +170,14 @@ begin
 
   SplitterLeft := 0;
   SplitterTop := 0;
-  with TCDManager(Manager) do
   for I := 0 to DockPanels.Count - 1 do
   with TCDClientPanel(DockPanels[I]) do begin
     Left := SplitterLeft;
     Top := SplitterTop;
-    Height := TCDManager(Manager).DockSite.Height div
-      TCDManager(Manager).DockSite.DockClientCount;
-    Width := TCDManager(Manager).DockSite.Width div
-      TCDManager(Manager).DockSite.DockClientCount;
+    Height := Self.DockSite.Height div
+      Self.DockSite.DockClientCount;
+    Width := Self.DockSite.Width div
+      SElf.DockSite.DockClientCount;
     //TCDClientPanel(FDockPanels[I]).DockPanelPaint(Self);
     if I < (DockPanels.Count - 1) then Align := BaseAlign
       else Align := alClient;
@@ -197,7 +186,7 @@ begin
     Inc(SplitterTop, Height);
     Splitter.Left := SplitterLeft;
     Splitter.Top := SplitterTop;
-    Splitter.Parent := TCDManager(Manager).DockSite;
+    Splitter.Parent := SElf.DockSite;
     Splitter.Align := BaseAlign;
     Splitter.Visible := I < (DockPanels.Count - 1);
     Inc(SplitterLeft, Splitter.Width);
@@ -211,12 +200,11 @@ begin
   end;
 end;
 
-procedure TCDStyleRegions.SetVisible(const AValue: Boolean);
+procedure TCDStyleRegions.DoSetVisible(const AValue: Boolean);
 var
   I: Integer;
 begin
-  inherited SetVisible(AValue);
-  with TCDManager(Manager) do
+//  inherited SetVisible(AValue);
   for I := 0 to DockPanels.Count - 1 do
 
         //Show;

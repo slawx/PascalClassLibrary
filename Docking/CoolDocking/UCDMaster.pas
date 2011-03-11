@@ -5,7 +5,7 @@ unit UCDMaster;
 interface
 
 uses
-  Classes, SysUtils, UCDCommon, UCDStyle, UCDClientPanel;
+  Classes, SysUtils, UCDCommon, UCDClientPanel;
 
 type
   { TCDMaster }

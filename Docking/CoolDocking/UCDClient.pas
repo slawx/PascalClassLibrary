@@ -11,7 +11,7 @@ uses
   Buttons, ExtCtrls, Contnrs, Forms, ComCtrls, Dialogs, Menus, FileUtil,
   UCDCustomize, DOM, XMLWrite, XMLRead, UCDCommon,
   DateUtils, UCDStyleTabs, UCDStyleRegions, UCDStylePopupTabs,
-  UCDStylePopupRegions, UCDStyle, UCDClientPanel,
+  UCDStylePopupRegions, UCDClientPanel,
   UCDPopupMenu, UCDManager;
 
 const

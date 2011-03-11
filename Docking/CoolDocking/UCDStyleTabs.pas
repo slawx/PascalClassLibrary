@@ -6,13 +6,14 @@ interface
 
 uses
   Classes, Controls, ExtCtrls, ComCtrls, SysUtils, Dialogs,
-  Menus, UCDStyle, Forms, UCDClientPanel, UCDCommon;
+  Menus, Forms, UCDClientPanel, UCDCommon, UCDManager;
 
 type
 
   { TCDStyleTabs }
 
-  TCDStyleTabs = class(TCDStyle)
+  TCDStyleTabs = class(TCDManager)
+  public
     MouseDown: Boolean;
     MouseButton: TMouseButton;
     MouseDownSkip: Boolean;
@@ -24,7 +25,8 @@ type
       Shift: TShiftState; X, Y: Integer);
     procedure TabControlMouseUp(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
-    procedure InsertControl(AControl: TControl; InsertAt: TAlign); override;
+    procedure InsertControl(AControl: TControl; InsertAt: TAlign;
+      DropCtl: TControl); override;
     procedure UpdateClientSize; override;
   private
     FTabsPos: THeaderPos;
@@ -32,7 +34,7 @@ type
     procedure RemoveControl(Control: TControl); override;
   public
     constructor Create(AManager: TCDManagerBase);
-    procedure SetVisible(const AValue: Boolean); override;
+    procedure DoSetVisible(const AValue: Boolean);
     destructor Destroy; override;
     procedure ChangeVisible(Control: TWinControl; Visible: Boolean); override;
     procedure Switch(Index: Integer); override;
@@ -44,20 +46,19 @@ type
 implementation
 
 uses
-  UCDClient, UCDManager;
+  UCDClient;
 
 { TCDStyleTabs }
 
 procedure TCDStyleTabs.PopupMenuTabCloseClick(Sender: TObject);
 begin
   if Assigned(PageControl.ActivePage) then
-    TCDClientPanel(TCDManager(Manager).DockPanels[PageControl.TabIndex]).Control.Hide;
+    TCDClientPanel(DockPanels[PageControl.TabIndex]).Control.Hide;
 end;
 
 procedure TCDStyleTabs.TabControlMouseLeave(Sender: TObject);
 begin
   if MouseDown then
-  with TCDManager(Manager) do
   if Assigned(PageControl.ActivePage) then begin
     TCDClientPanel(DockPanels[PageControl.TabIndex]).ClientAreaPanel.DockSite := False;
     DragManager.DragStart(TCDClientPanel(DockPanels[PageControl.TabIndex]).Control, False, 1);
@@ -70,7 +71,6 @@ var
   I: Integer;
 begin
   // Hide all clients
-  with TCDManager(Manager) do
   for I := 0 to DockPanels.Count - 1 do
     if TCDClientPanel(DockPanels[I]).Control.Visible
     //and (PageControl.TabIndex <> I)
@@ -92,7 +92,6 @@ begin
     end;
 
   // Show selected
-  with TCDManager(Manager) do
   if (PageControl.TabIndex <> -1) and (DockPanels.Count > PageControl.TabIndex)
 //  and not TCDClientPanel(DockPanels[PageControl.TabIndex]).Control.Visible
   then begin
@@ -143,23 +142,22 @@ var
   I: Integer;
   NewTabSheet: TTabSheet;
 begin
-  inherited;
 
   TabImageList := TImageList.Create(TCDManager(AManager).DockSite); //FDockSite);
   with TabImageList do begin
-    Name := TCDManager(Manager).DockSite.Name + '_' + 'ImageList';
+    Name := DockSite.Name + '_' + 'ImageList';
   end;
   PageControl := TPageControl.Create(TCDManager(AManager).DockSite); //FDockSite);
   with PageControl do begin
-    Parent := TCDManager(Manager).DockSite;
-    Name := TCDManager(Manager).DockSite.Name + '_' + 'TabControl';
+    Parent := Self.DockSite;
+    Name := Self.DockSite.Name + '_' + 'TabControl';
     Visible := False;
     Align := alTop;
     //Height := 24;
     Align := alClient;
     OnChange := TabControlChange;
     MultiLine := True;
-    PopupMenu := TCDManager(Manager).PopupMenu;
+    PopupMenu := Self.PopupMenu;
     OnMouseLeave := TabControlMouseLeave;
     OnMouseDown := TabControlMouseDown;
     //TTabControlNoteBookStrings(Tabs).NoteBook.OnMouseLeave := TabControlMouseLeave;
@@ -173,7 +171,6 @@ begin
 
   PageControl.Visible := True;
   //TabImageList.Clear;
-  with TCDManager(Manager) do
   for I := 0 to DockPanels.Count - 1 do
     Self.InsertControlNoUpdate(TCDClientPanel(DockPanels[I]).Control, alNone);
   TabControlChange(Self);
@@ -188,7 +185,6 @@ end;
 
 procedure TCDStyleTabs.Switch(Index: Integer);
 begin
-  inherited Switch(Index);
   PageControl.TabIndex := Index;
 end;
 
@@ -198,14 +194,14 @@ var
   NewPanel: TCDClientPanel;
 begin
   inherited;
-  with TCDManager(Manager) do begin
+  begin
     NewPanel := TCDClientPanel.Create(nil);
     with NewPanel do begin
-      Parent := TCDManager(Manager).DockSite;
-      OwnerDockManager := TCDManager(Manager);
+      Parent := Self.DockSite;
+      OwnerDockManager := Self;
       if DockStyle = dsList then Visible := True;
       Align := alClient;
-      Header.PopupMenu := TCDManager(Manager).PopupMenu;
+      Header.PopupMenu := Self.PopupMenu;
       //PopupMenu.Parent := Self.DockSite;
     end;
     if (AControl is TForm) and Assigned((AControl as TForm).Icon) then
@@ -240,7 +236,8 @@ begin
   inherited RemoveControl(Control);
 end;
 
-procedure TCDStyleTabs.InsertControl(AControl: TControl; InsertAt: TAlign);
+procedure TCDStyleTabs.InsertControl(AControl: TControl; InsertAt: TAlign;
+  DropCtl: TControl);
 var
   NewTabSheet: TTabSheet;
 begin
@@ -254,7 +251,6 @@ var
   I: Integer;
 begin
   inherited UpdateClientSize;
-  with TCDManager(Manager) do
   for I := 0 to DockPanels.Count - 1 do begin
     //TCDClientPanel(DockPanels[I]).ClientAreaPanel.Width := DockSite.Width;
     //TCDClientPanel(DockPanels[I]).ClientAreaPanel.Height := DockSite.Height - PageControl.Height;
@@ -262,10 +258,8 @@ begin
   end;
 end;
 
-procedure TCDStyleTabs.SetVisible(const AValue: Boolean);
+procedure TCDStyleTabs.DoSetVisible(const AValue: Boolean);
 begin
-  inherited SetVisible(AValue);
-  with TCDManager(Manager) do
     if (PageControl.TabIndex >= 0) and (PageControl.TabIndex < DockPanels.Count) then
       with TCDClientPanel(DockPanels[PageControl.TabIndex]) do begin
         //Show;
@@ -287,8 +281,6 @@ begin
   if not Visible then begin
     //if Assigned(TWinControl(Control).DockManager) then
     //with TCDManager(TWinControl(Control).DockManager) do
-    if Assigned(Manager) then
-    with TCDManager(Manager) do
     begin
 //    ShowMessage(IntToStr(TabControl.TabIndex) + ' ' + IntToStr(DockPanels.Count));
 //    TabControl.Tabs[0].;
@@ -311,8 +303,6 @@ begin
   begin
 //    if Assigned(TWinControl(Control).DockManager) then
 //    with TCDManager(TWinControl(Control).DockManager) do
-    if Assigned(Manager) then
-    with TCDManager(Manager) do
     begin
 //      if Control.Tag = 0 then begin
         I := DockPanels.IndexOf(FindControlInPanels(Control));

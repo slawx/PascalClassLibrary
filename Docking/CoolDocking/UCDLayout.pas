@@ -20,13 +20,13 @@ type
     ParentName: string;
     HostDockSiteName: string;
     Caption: string;
-    Visible: Boolean;
+    Visible: boolean;
     Rect: TRectangle;
     RestoredRect: TRectangle;
     WindowState: TWindowState;
     UndockSize: TPoint;
     DockStyle: TCDStyleType;
-    Processed: Boolean;
+    Processed: boolean;
     procedure SaveToNode(Node: TDOMNode);
     procedure LoadFromNode(Node: TDOMNode);
     procedure Store(Form: TWinControl);
@@ -78,15 +78,19 @@ end;
 
 function FindGlobalComponentDeep(Name: string): TComponent;
 var
-  I: Integer;
+  I: integer;
 begin
-  for I := 0 to Application.ComponentCount - 1 do begin
+  for I := 0 to Application.ComponentCount - 1 do
+  begin
     Result := Application.Components[I];
-    if Result.Name = Name then Exit
-      else begin
-        Result := Result.FindComponent(Name);
-        if Assigned(Result) and (Result.Name = Name) then Exit;
-      end;
+    if Result.Name = Name then
+      Exit
+    else
+    begin
+      Result := Result.FindComponent(Name);
+      if Assigned(Result) and (Result.Name = Name) then
+        Exit;
+    end;
   end;
 end;
 
@@ -115,18 +119,21 @@ begin
   try
     ReadXMLFile(Doc, Stream);
     Items.Clear;
-    with Doc.DocumentElement do begin
+    with Doc.DocumentElement do
+    begin
       NewNode := FindNode('Items');
       if Assigned(NewNode) then
-      with NewNode do begin
-        Child := FirstChild;
-        while Assigned(Child) do begin
-          NewItem := TCDLayout.Create;
-          NewItem.LoadFromNode(Child);
-          Items.Add(NewItem);
-          Child := Child.NextSibling;
+        with NewNode do
+        begin
+          Child := FirstChild;
+          while Assigned(Child) do
+          begin
+            NewItem := TCDLayout.Create;
+            NewItem.LoadFromNode(Child);
+            Items.Add(NewItem);
+            Child := Child.NextSibling;
+          end;
         end;
-      end;
     end;
   finally
     Doc.Free;
@@ -137,23 +144,26 @@ procedure TCDLayoutList.SaveToStream(Stream: TStream);
 var
   Doc: TXMLDocument;
   RootNode: TDOMNode;
-  I: Integer;
+  I: integer;
   NewNode: TDOMNode;
   NewNode2: TDOMNode;
 begin
   try
     Doc := TXMLDocument.Create;
-    with Doc do begin
+    with Doc do
+    begin
       RootNode := CreateElement('CoolDockLayout');
       AppendChild(RootNode);
-      with RootNode do begin
+      with RootNode do
+      begin
         NewNode := OwnerDocument.CreateElement('Items');
         with NewNode do
-        for I := 0 to Items.Count - 1 do begin
-          NewNode2 := OwnerDocument.CreateElement('Layout');
-          TCDLayout(Items[I]).SaveToNode(NewNode2);
-          AppendChild(NewNode2);
-         end;
+          for I := 0 to Items.Count - 1 do
+          begin
+            NewNode2 := OwnerDocument.CreateElement('Layout');
+            TCDLayout(Items[I]).SaveToNode(NewNode2);
+            AppendChild(NewNode2);
+          end;
         AppendChild(NewNode);
       end;
     end;
@@ -180,8 +190,10 @@ var
   Stream: TFileStream;
 begin
   try
-    if FileExistsUTF8(FileName) then Stream := TFileStream.Create(FileName, fmOpenReadWrite)
-      else Stream := TFileStream.Create(FileName, fmCreate);
+    if FileExistsUTF8(FileName) then
+      Stream := TFileStream.Create(FileName, fmOpenReadWrite)
+    else
+      Stream := TFileStream.Create(FileName, fmCreate);
     Stream.Size := 0;
     SaveToStream(Stream);
   finally
@@ -191,7 +203,7 @@ end;
 
 procedure TCDLayoutList.PopulateStringList(List: TStrings);
 var
-  I: Integer;
+  I: integer;
 begin
   List.Clear;
   for I := 0 to Items.Count - 1 do
@@ -200,12 +212,15 @@ end;
 
 function TCDLayoutList.FindByName(Name: string): TCDLayout;
 var
-  I: Integer;
+  I: integer;
 begin
   I := 0;
-  while (I < Items.Count) and (TCDLayout(Items[I]).Name <> Name) do Inc(I);
-  if I < Items.Count then Result := TCDLayout(Items[I])
-    else Result := nil;
+  while (I < Items.Count) and (TCDLayout(Items[I]).Name <> Name) do
+    Inc(I);
+  if I < Items.Count then
+    Result := TCDLayout(Items[I])
+  else
+    Result := nil;
 end;
 
 { TCDLayoutItem }
@@ -214,7 +229,8 @@ procedure TCDLayoutItem.SaveToNode(Node: TDOMNode);
 var
   NewNode: TDOMNode;
 begin
-  with Node do begin
+  with Node do
+  begin
     NewNode := OwnerDocument.CreateElement('Name');
     NewNode.TextContent := UTF8Decode(Name);
     AppendChild(NewNode);
@@ -231,7 +247,7 @@ begin
     NewNode.TextContent := UTF8Decode(Caption);
     AppendChild(NewNode);
     NewNode := OwnerDocument.CreateElement('WindowState');
-    NewNode.TextContent := IntToStr(Integer(WindowState));
+    NewNode.TextContent := IntToStr(integer(WindowState));
     AppendChild(NewNode);
     NewNode := OwnerDocument.CreateElement('UndockWidth');
     NewNode.TextContent := IntToStr(UndockSize.X);
@@ -255,7 +271,7 @@ begin
     NewNode.TextContent := BoolToStr(Visible);
     AppendChild(NewNode);
     NewNode := OwnerDocument.CreateElement('DockStyle');
-    NewNode.TextContent := IntToStr(Integer(DockStyle));
+    NewNode.TextContent := IntToStr(integer(DockStyle));
     AppendChild(NewNode);
     NewNode := OwnerDocument.CreateElement('RestoredWidth');
     NewNode.TextContent := IntToStr(RestoredRect.Width);
@@ -276,7 +292,8 @@ procedure TCDLayoutItem.LoadFromNode(Node: TDOMNode);
 var
   NewNode: TDOMNode;
 begin
-  with TDOMElement(Node) do begin
+  with TDOMElement(Node) do
+  begin
     NewNode := FindNode('Name');
     if Assigned(NewNode) then
       Name := UTF8Encode(NewNode.TextContent);
@@ -348,7 +365,8 @@ begin
   Rect.Top := Form.Top;
   Rect.Width := Form.Width;
   Rect.Height := Form.Height;
-  if Form is TForm then begin
+  if Form is TForm then
+  begin
     RestoredRect.Left := TForm(Form).RestoredLeft;
     RestoredRect.Top := TForm(Form).RestoredTop;
     RestoredRect.Width := TForm(Form).RestoredWidth;
@@ -357,12 +375,15 @@ begin
   end;
   if Assigned(Form.Parent) then
     ParentName := Form.Parent.Name
-    else ParentName := '';
-  if Assigned(Form.HostDockSite) then begin
+  else
+    ParentName := '';
+  if Assigned(Form.HostDockSite) then
+  begin
     if Assigned(Form.HostDockSite) then
     begin
       HostDockSiteName := Form.HostDockSite.Name;
-      if not Assigned(Parent.FindByName(HostDockSiteName)) then begin
+      if not Assigned(Parent.FindByName(HostDockSiteName)) then
+      begin
         NewItem := TCDLayoutItem.Create;
         NewItem.Parent := Parent;
         NewItem.DockStyle := TCDManager(Form.HostDockSite.DockManager).DockStyle;
@@ -370,7 +391,9 @@ begin
         NewItem.Store(Form.HostDockSite);
       end;
     end;
-  end else HostDockSiteName := '';
+  end
+  else
+    HostDockSiteName := '';
 end;
 
 procedure TCDLayoutItem.Restore(Form: TWinControl);
@@ -380,33 +403,43 @@ var
   FormClass: TFormClass;
 begin
   if Form is TForm then
-  if WindowState = wsMaximized then begin
-    TForm(Form).SetRestoredBounds(RestoredRect.Left, RestoredRect.Top,
-      RestoredRect.Width, RestoredRect.Height);
-    TForm(Form).WindowState := WindowState;
-  end else begin
-    TForm(Form).WindowState := WindowState;
-    TForm(Form).SetRestoredBounds(RestoredRect.Left, RestoredRect.Top,
-      RestoredRect.Width, RestoredRect.Height);
-  end;
+    if WindowState = wsMaximized then
+    begin
+      TForm(Form).SetRestoredBounds(RestoredRect.Left, RestoredRect.Top,
+        RestoredRect.Width, RestoredRect.Height);
+      TForm(Form).WindowState := WindowState;
+    end
+    else
+    begin
+      TForm(Form).WindowState := WindowState;
+      TForm(Form).SetRestoredBounds(RestoredRect.Left, RestoredRect.Top,
+        RestoredRect.Width, RestoredRect.Height);
+    end;
   Form.Name := Name;
   Form.Caption := Caption;
   Form.SetBounds(Rect.Left, Rect.Top, Rect.Width, Rect.Height);
   Form.UndockWidth := UndockSize.X;
   Form.UndockHeight := UndockSize.Y;
   Form.Visible := Visible;
-  if HostDockSiteName <> '' then begin
+  if HostDockSiteName <> '' then
+  begin
     ParentComponent := FindGlobalComponentDeep(HostDockSiteName);
-    if not Assigned(ParentComponent) then begin
+    if not Assigned(ParentComponent) then
+    begin
       ParentLayoutItem := Parent.FindByName(HostDockSiteName);
-      if Assigned(ParentLayoutItem) then begin
-        if ParentLayoutItem.StoredClassName <> '' then begin
+      if Assigned(ParentLayoutItem) then
+      begin
+        if ParentLayoutItem.StoredClassName <> '' then
+        begin
           //ParentComponent := TComponent(FindClass(ParentLayoutItem.StoredClassName).Create);
-          if (ParentLayoutItem.StoredClassName = 'TCoolDockConjoinForm') then begin
-            FormClass := TFormClass(FindClass('TCoolDockConjoinForm'));
-            if FormClass = TCDConjoinForm then begin
+          if (ParentLayoutItem.StoredClassName = 'TCDConjoinForm') then
+          begin
+            FormClass := TFormClass(FindClass('TCDConjoinForm'));
+            if FormClass = TCDConjoinForm then
+            begin
               ParentComponent := TCDManager(Form.DockManager).CreateContainer(alNone);
-              TCDManager(TCDConjoinForm(ParentComponent).DockManager).DockStyle := ParentLayoutItem.DockStyle;
+              TCDManager(TCDConjoinForm(ParentComponent).DockManager).DockStyle :=
+                ParentLayoutItem.DockStyle;
               ParentLayoutItem.Restore(TWinControl(ParentComponent));
             end;
           end;
@@ -438,19 +471,21 @@ procedure TCDLayout.SaveToNode(Node: TDOMNode);
 var
   NewNode: TDOMNode;
   NewNode2: TDOMNode;
-  I: Integer;
+  I: integer;
 begin
-  with Node do begin
+  with Node do
+  begin
     NewNode := OwnerDocument.CreateElement('Name');
     NewNode.TextContent := UTF8Decode(Name);
     AppendChild(NewNode);
     NewNode := OwnerDocument.CreateElement('Items');
     with NewNode do
-    for I := 0 to Items.Count - 1 do begin
-      NewNode2 := OwnerDocument.CreateElement('Form');
-      TCDLayoutItem(Items[I]).SaveToNode(NewNode2);
-      AppendChild(NewNode2);
-    end;
+      for I := 0 to Items.Count - 1 do
+      begin
+        NewNode2 := OwnerDocument.CreateElement('Form');
+        TCDLayoutItem(Items[I]).SaveToNode(NewNode2);
+        AppendChild(NewNode2);
+      end;
     AppendChild(NewNode);
   end;
 end;
@@ -461,33 +496,39 @@ var
   Child: TDOMNode;
   NewItem: TCDLayoutItem;
 begin
-  with Node do begin
+  with Node do
+  begin
     NewNode := FindNode('Name');
     if Assigned(NewNode) then
       Name := UTF8Encode(NewNode.TextContent);
     NewNode := FindNode('Items');
     if Assigned(NewNode) then
-    with NewNode do begin
-      Child := FirstChild;
-      while Assigned(Child) do begin
-        NewItem := TCDLayoutItem.Create;
-        NewItem.Parent := Self;
-        NewItem.LoadFromNode(Child);
-        Items.Add(NewItem);
-        Child := Child.NextSibling;
+      with NewNode do
+      begin
+        Child := FirstChild;
+        while Assigned(Child) do
+        begin
+          NewItem := TCDLayoutItem.Create;
+          NewItem.Parent := Self;
+          NewItem.LoadFromNode(Child);
+          Items.Add(NewItem);
+          Child := Child.NextSibling;
+        end;
       end;
-    end;
   end;
 end;
 
 function TCDLayout.FindByName(Name: string): TCDLayoutItem;
 var
-  I: Integer;
+  I: integer;
 begin
   I := 0;
-  while (I < Items.Count) and (TCDLayoutItem(Items[I]).Name <> Name) do Inc(I);
-  if I < Items.Count then Result := TCDLayoutItem(Items[I])
-    else Result := nil;
+  while (I < Items.Count) and (TCDLayoutItem(Items[I]).Name <> Name) do
+    Inc(I);
+  if I < Items.Count then
+    Result := TCDLayoutItem(Items[I])
+  else
+    Result := nil;
 end;
 
 constructor TCDLayout.Create;
@@ -503,46 +544,52 @@ end;
 
 procedure TCDLayout.Store;
 var
-  I: Integer;
+  I: integer;
   Form: TForm;
   NewItem: TCDLayoutItem;
 begin
   Items.Clear;
   for I := 0 to Application.ComponentCount - 1 do
-  if (Application.Components[I] is TForm) then begin
-    Form := (Application.Components[I] as TForm);
-    NewItem := TCDLayoutItem.Create;
-    NewItem.Parent := Self;
-    NewItem.Store(Form);
-    Items.Add(NewItem);
-  end;
+    if (Application.Components[I] is TForm) then
+    begin
+      Form := (Application.Components[I] as TForm);
+      NewItem := TCDLayoutItem.Create;
+      NewItem.Parent := Self;
+      NewItem.Store(Form);
+      Items.Add(NewItem);
+    end;
 end;
 
 procedure TCDLayout.Restore;
 var
   Form: TForm;
-  I: Integer;
+  I: integer;
 begin
   // Undock all forms
   I := 0;
-  while (I < Application.ComponentCount) do begin
-    if (Application.Components[I] is TForm) then begin
+  while (I < Application.ComponentCount) do
+  begin
+    if (Application.Components[I] is TForm) then
+    begin
       Form := (Application.Components[I] as TForm);
       if Assigned(Form.HostDockSite) then
-        Form.ManualFloat(Rect(Form.Left, Form.Top, Form.Left + Form.Width, Form.Top + Form.Height));
+        Form.ManualFloat(Rect(Form.Left, Form.Top, Form.Left +
+          Form.Width, Form.Top + Form.Height));
     end;
     Inc(I);
   end;
 
   for I := 0 to Items.Count - 1 do
-  with TCDLayoutItem(Items[I]) do
-    Processed := False;
+    with TCDLayoutItem(Items[I]) do
+      Processed := False;
 
   for I := 0 to Items.Count - 1 do
-  with TCDLayoutItem(Items[I]) do begin
-    Form := TForm(Application.FindComponent(Name));
-    if Assigned(Form) and (not Assigned(Form.HostDockSite)) and (not Processed) then Restore(Form);
-  end;
+    with TCDLayoutItem(Items[I]) do
+    begin
+      Form := TForm(Application.FindComponent(Name));
+      if Assigned(Form) and (not Assigned(Form.HostDockSite)) and (not Processed) then
+        Restore(Form);
+    end;
 end;
 
 end.

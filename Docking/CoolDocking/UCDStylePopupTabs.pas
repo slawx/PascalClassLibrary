@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, Controls, SysUtils, ComCtrls, ExtCtrls, UCDCommon,
-  UCDStyleTabs, UCDStyle, UCDClientPanel;
+  UCDStyleTabs, UCDClientPanel;
 
 type
   { TCDAutoHide }

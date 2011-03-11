@@ -5,7 +5,7 @@ unit UCDStylePopupRegions;
 interface
 
 uses
-  Classes, SysUtils, UCDStyleRegions, UCDStyle;
+  Classes, SysUtils, UCDStyleRegions;
 
 type
   TCDStylePopupRegions = class(TCDStyleRegions)

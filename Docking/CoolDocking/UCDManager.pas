@@ -6,10 +6,8 @@ interface
 
 uses
   Classes, SysUtils, UCDCommon, Controls, Contnrs, UCDClientPanel,
-  UCDStyle, UCDPopupMenu, LCLType, LMessages, Graphics,
-  UCDConjoinForm, Menus, StdCtrls, ExtCtrls, Forms,
-  UCDStyleRegions, UCDStyleTabs, UCDStylePopupRegions,
-  UCDStylePopupTabs;
+  UCDPopupMenu, LCLType, LMessages, Graphics,
+  UCDConjoinForm, Menus, StdCtrls, ExtCtrls, Forms;
 
 type
   { TCoolDockPanels }
@@ -27,6 +25,7 @@ type
     FDockSite: TWinControl;
     FDockPanels: TCDPanels;
     function GetDockSite: TWinControl;
+    function GetDockStyle: TCDStyleType;
     function GetHeaderPos: THeaderPos;
     function GetMoveDuration: Integer;
     procedure InsertControlPanel(Control: TControl; InsertAt: TAlign;
@@ -35,12 +34,14 @@ type
     procedure SetHeaderPos(const AValue: THeaderPos);
     procedure SetMoveDuration(const AValue: Integer);
     procedure SetVisible(const AValue: Boolean);
-    procedure UpdateClientSize;
   public
-    DockStyleHandler: TCDStyle;
     PopupMenu: TCDPopupMenu;
     constructor Create(ADockSite: TWinControl); override;
     destructor Destroy; override;
+    procedure UpdateClientSize; virtual;
+    procedure Switch(Index: Integer); virtual;
+    procedure ChangeVisible(Control: TWinControl; Visible: Boolean); virtual;
+    procedure Assign(Source: TCDManager); virtual;
 
     // Inherited from TDockManager
     procedure BeginUpdate; override;
@@ -66,7 +67,7 @@ type
     function FindControlInPanels(Control: TControl): TCDClientPanel;
     function CreateContainer(InsertAt: TAlign): TCDConjoinForm;
     property DockPanels: TCDPanels read FDockPanels write FDockPanels;
-    property DockStyle: TCDStyleType read FDockStyle write SetDockStyle;
+    property DockStyle: TCDStyleType read GetDockStyle write SetDockStyle;
     property MoveDuration: Integer read GetMoveDuration write SetMoveDuration;
     property DockSite: TWinControl read GetDockSite;
     property HeaderPos: THeaderPos read GetHeaderPos write SetHeaderPos;
@@ -75,6 +76,9 @@ type
 
 
 implementation
+
+uses
+  UCDStyleRegions, UCDStyleTabs, UCDStylePopupRegions, UCDStylePopupTabs;
 
 { TCDManager }
 
@@ -93,6 +97,14 @@ end;
 function TCDManager.GetDockSite: TWinControl;
 begin
   Result := FDockSite;
+end;
+
+function TCDManager.GetDockStyle: TCDStyleType;
+begin
+  if Self is TCDStyleRegions then Result := dsList
+  else if Self is TCDStyleTabs then Result := dsTabs
+  else if Self is TCDStylePopupRegions then Result := dsPopupList
+  else if Self is TCDStylePopupTabs then Result := dsPopupTabs;
 end;
 
 function TCDManager.GetHeaderPos: THeaderPos;
@@ -123,7 +135,6 @@ end;
 destructor TCDManager.Destroy;
 begin
   PopupMenu.Free;
-  DockStyleHandler.Free;
   FDockPanels.Free;
   inherited Destroy;
 end;
@@ -156,7 +167,7 @@ end;
 procedure TCDManager.InsertControlPanel(Control: TControl; InsertAt: TAlign;
   DropCtl: TControl);
 begin
-  DockStyleHandler.InsertControl(Control, InsertAt);
+  //DockStyleHandler.InsertControl(Control, InsertAt);
 end;
 
 procedure TCDManager.InsertControl(Control: TControl; InsertAt: TAlign;
@@ -249,7 +260,7 @@ procedure TCDManager.RemoveControl(Control: TControl);
 var
   ClientPanel: TCDClientPanel;
 begin
-  DockStyleHandler.RemoveControl(Control);
+  //DockStyleHandler.RemoveControl(Control);
   //inherited;
 (*  if Control.HostDockSite = Self.FDockSite then begin
     ClientPanel := FindControlInPanels(Control);
@@ -308,23 +319,26 @@ end;
 procedure TCDManager.SetDockStyle(const AValue: TCDStyleType);
 var
   I: Integer;
+  NewManager: TCDManager;
 begin
   if FDockStyle <> AValue then begin
     FDockStyle := AValue;
-    FreeAndNil(DockStyleHandler);
     if AValue = dsTabs then begin
-      DockStyleHandler := TCDStyleTabs.Create(Self);
-      TCDStyleTabs(DockStyleHandler).TabControlChange(Self);
+      NewManager := TCDStyleTabs.Create(Self);
+      TCDStyleTabs(Self).TabControlChange(Self);
     end else
     if AValue = dsList then begin
-      DockStyleHandler := TCDStyleRegions.Create(Self);
+      NewManager := TCDStyleRegions.Create(Self);
     end else
     if AValue = dsPopupList then begin
-      DockStyleHandler := TCDStylePopupRegions.Create(Self);
+      NewManager := TCDStylePopupRegions.Create(Self);
     end else
     if AValue = dsPopupTabs then begin
-      DockStyleHandler := TCDStylePopupTabs.Create(Self);
+      NewManager := TCDStylePopupTabs.Create(Self);
     end;
+    if DockSite.DockManager is TCDManager then
+      NewManager.Assign(TCDManager(DockSite.DockManager));
+    DockSite.DockManager := NewManager;
   end;
   UpdateClientSize;
 end;
@@ -342,14 +356,30 @@ procedure TCDManager.SetVisible(const AValue: Boolean);
 var
   I: Integer;
 begin
-  DockStyleHandler.Visible := AValue;
+  Visible := AValue;
 //  for I := 0 to DockPanels.Count - 1 do
 //    TCDClientPanel(DockPanels[I]).Visible := AValue;
 end;
 
 procedure TCDManager.UpdateClientSize;
 begin
-  DockStyleHandler.UpdateClientSize;
+//  DockStyleHandler.UpdateClientSize;
+end;
+
+procedure TCDManager.Switch(Index: Integer);
+begin
+
+end;
+
+procedure TCDManager.ChangeVisible(Control: TWinControl; Visible: Boolean);
+begin
+
+end;
+
+procedure TCDManager.Assign(Source: TCDManager);
+begin
+  FDockStyle := Source.FDockStyle;
+  FDockSite := Source.FDockSite;
 end;
 
 { TCDPanels }

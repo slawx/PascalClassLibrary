@@ -67,7 +67,7 @@ type
 implementation
 
 uses
-  UCDClient, UCDStyle, UCDManager;
+  UCDClient, UCDManager;
 
 { TCDClientPanel }
 
@@ -83,7 +83,6 @@ var
   ControlVisible: Boolean;
   Temp: TControl;
   Temp2: TControl;
-  Temp3: TCDStyle;
 begin
   Temp := TControl(Sender);
   if Assigned(Control) then
@@ -97,9 +96,7 @@ begin
 //    if Assigned(TCDManager(OwnerDockManager).DockStyleHandler) then
     if Assigned(OwnerDockManager) then
     with TCDManager(OwnerDockManager) do
-    if Assigned(DockStyleHandler) then
-    with DockStyleHandler do begin
-      Temp3 := DockStyleHandler;
+    begin
       //UpdateClientSize;
       if ControlVisible then
         Switch(DockPanels.IndexOf(FindControlInPanels(TControl(Sender))));
