@@ -24,7 +24,7 @@
     </CompilerOptions>
     <Description Value="Set of components for docking of windows."/>
     <Version Minor="2"/>
-    <Files Count="14">
+    <Files Count="16">
       <Item1>
         <Filename Value="UCoolDocking.pas"/>
         <HasRegisterProc Value="True"/>
@@ -84,6 +84,14 @@
         <Filename Value="UCoolDockCommon.pas"/>
         <UnitName Value="UCoolDockCommon"/>
       </Item14>
+      <Item15>
+        <Filename Value="UCoolDockManager.pas"/>
+        <UnitName Value="UCoolDockManager"/>
+      </Item15>
+      <Item16>
+        <Filename Value="UCoolDockConjoinForm.pas"/>
+        <UnitName Value="UCoolDockConjoinForm"/>
+      </Item16>
     </Files>
     <i18n>
       <EnableI18N Value="True"/>

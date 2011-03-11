@@ -10,7 +10,7 @@ uses
   UToolPaletteForm, UObjectInspectorForm, UProjectManagerForm, UStructureForm,
   UMessagesForm, UCallStackForm, ULocalVariablesForm, UToDoListForm,
   UWatchListForm, UThreadStatusForm, USourceEditorForm, UCoolDockWindowList,
-  UCoolDockCustomize, UComponentTree;
+  UCoolDockCustomize, UComponentTree, UCoolDockConjoinForm, UCoolDockManager;
 
 const
   DockLayoutFileName = 'Layout.xml';

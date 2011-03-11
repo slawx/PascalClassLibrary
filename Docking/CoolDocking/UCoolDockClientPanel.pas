@@ -67,7 +67,7 @@ type
 implementation
 
 uses
-  UCoolDocking, UCoolDockStyle;
+  UCoolDocking, UCoolDockStyle, UCoolDockManager;
 
 { TCoolDockClientPanel }
 

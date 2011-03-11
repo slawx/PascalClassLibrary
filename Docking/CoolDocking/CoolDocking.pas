@@ -10,7 +10,8 @@ uses
   UCoolDocking, UCoolDockCustomize, UCoolDockWindowList, UCoolDockStyleTabs, 
   UCoolDockStyleRegions, UCoolDockStylePopupTabs, UCoolDockStylePopupRegions, 
   UCoolDockStyle, UCoolDockClientPanel, UCoolDockPopupMenu, UCoolDockLayout, 
-  URectangle, UCoolDockCommon, LazarusPackageIntf;
+  URectangle, UCoolDockCommon, UCoolDockManager, UCoolDockConjoinForm, 
+  LazarusPackageIntf;
 
 implementation
 
