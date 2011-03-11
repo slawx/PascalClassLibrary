@@ -16,7 +16,7 @@ object MessagesForm: TMessagesForm
     BorderSpacing.Around = 4
     TabOrder = 0
   end
-  object CoolDockClient1: TCoolDockClient
+  object CoolDockClient1: TCDClient
     Floatable = False
     Master = MainForm.CoolDockMaster1
     left = 184

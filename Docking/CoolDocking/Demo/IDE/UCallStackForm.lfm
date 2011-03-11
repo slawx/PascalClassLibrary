@@ -5,7 +5,7 @@ object CallStackForm: TCallStackForm
   Width = 320
   Caption = 'Call Stack'
   LCLVersion = '0.9.31'
-  object CoolDockClient1: TCoolDockClient
+  object CoolDockClient1: TCDClient
     Floatable = False
     Master = MainForm.CoolDockMaster1
     left = 59

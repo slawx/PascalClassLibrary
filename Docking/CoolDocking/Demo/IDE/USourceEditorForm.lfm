@@ -724,7 +724,7 @@ object SourceEditorForm: TSourceEditorForm
       end
     end
   end
-  object CoolDockClient1: TCoolDockClient
+  object CoolDockClient1: TCDClient
     Master = MainForm.CoolDockMaster1
     Floatable = False
     left = 232

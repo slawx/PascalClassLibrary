@@ -216,7 +216,7 @@ object MainForm: TMainForm
       OnExecute = AViewComponentTreeExecute
     end
   end
-  object CoolDockMaster1: TCoolDockMaster
+  object CoolDockMaster1: TCDMaster
     Customize = CoolDockCustomize1
     TabsEnabled = False
     DefaultTabsPos = hpAuto
@@ -226,11 +226,11 @@ object MainForm: TMainForm
     left = 166
     top = 126
   end
-  object CoolDockWindowList1: TCoolDockWindowList
+  object CoolDockWindowList1: TCDWindowList
     left = 168
     top = 176
   end
-  object CoolDockClient1: TCoolDockClient
+  object CoolDockClient1: TCDClient
     Master = CoolDockMaster1
     Panel = DockPanel
     Dockable = False
@@ -277,13 +277,13 @@ object MainForm: TMainForm
       0000000000000000000000000000
     }
   end
-  object CoolDockCustomize1: TCoolDockCustomize
+  object CoolDockCustomize1: TCDCustomize
     Master = CoolDockMaster1
     LayoutList = CoolDockLayoutList1
     left = 284
     top = 179
   end
-  object CoolDockLayoutList1: TCoolDockLayoutList
+  object CoolDockLayoutList1: TCDLayoutList
     left = 284
     top = 232
   end

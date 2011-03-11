@@ -47,7 +47,7 @@
         <Filename Value="IDE.lpr"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="IDE"/>
-        <EditorIndex Value="29"/>
+        <EditorIndex Value="30"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
@@ -60,7 +60,7 @@
         <ComponentName Value="MainForm"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UMainForm"/>
-        <EditorIndex Value="30"/>
+        <EditorIndex Value="31"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="18" Y="3"/>
@@ -108,10 +108,13 @@
       </Unit4>
       <Unit5>
         <Filename Value="E:\Projekty2\FreePascalManager\trunk\Instance\1\Lazarus\lcl\include\control.inc"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="7"/>
         <WindowIndex Value="0"/>
         <TopLine Value="3176"/>
-        <CursorPos X="11" Y="3187"/>
+        <CursorPos X="1" Y="3189"/>
         <UsageCount Value="60"/>
+        <Loaded Value="True"/>
       </Unit5>
       <Unit6>
         <Filename Value="UProjectManagerForm.pas"/>
@@ -158,6 +161,7 @@
         <CursorPos X="37" Y="16"/>
         <UsageCount Value="128"/>
         <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
       </Unit9>
       <Unit10>
         <Filename Value="ULocalVariablesForm.pas"/>
@@ -165,7 +169,7 @@
         <ComponentName Value="LocalVariablesForm"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="ULocalVariablesForm"/>
-        <EditorIndex Value="7"/>
+        <EditorIndex Value="8"/>
         <WindowIndex Value="0"/>
         <TopLine Value="5"/>
         <CursorPos X="37" Y="18"/>
@@ -178,7 +182,7 @@
         <ComponentName Value="ToDoListForm"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UToDoListForm"/>
-        <EditorIndex Value="8"/>
+        <EditorIndex Value="9"/>
         <WindowIndex Value="0"/>
         <TopLine Value="4"/>
         <CursorPos X="26" Y="17"/>
@@ -191,7 +195,7 @@
         <ComponentName Value="WatchListForm"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UWatchListForm"/>
-        <EditorIndex Value="9"/>
+        <EditorIndex Value="10"/>
         <WindowIndex Value="0"/>
         <TopLine Value="5"/>
         <CursorPos X="37" Y="18"/>
@@ -204,7 +208,7 @@
         <ComponentName Value="ThreadStatusForm"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UThreadStatusForm"/>
-        <EditorIndex Value="10"/>
+        <EditorIndex Value="11"/>
         <WindowIndex Value="0"/>
         <TopLine Value="4"/>
         <CursorPos X="37" Y="17"/>
@@ -221,7 +225,6 @@
         <TopLine Value="6"/>
         <CursorPos X="75" Y="7"/>
         <UsageCount Value="126"/>
-        <LoadedDesigner Value="True"/>
       </Unit14>
       <Unit15>
         <Filename Value="..\..\UCDClient.pas"/>
@@ -236,10 +239,10 @@
       <Unit16>
         <Filename Value="..\..\UCDLayout.pas"/>
         <UnitName Value="UCDLayout"/>
-        <EditorIndex Value="22"/>
+        <EditorIndex Value="23"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="38"/>
-        <CursorPos X="11" Y="75"/>
+        <TopLine Value="130"/>
+        <CursorPos X="18" Y="131"/>
         <UsageCount Value="63"/>
         <Loaded Value="True"/>
       </Unit16>
@@ -268,7 +271,7 @@
       <Unit20>
         <Filename Value="..\..\URectangle.pas"/>
         <UnitName Value="URectangle"/>
-        <EditorIndex Value="23"/>
+        <EditorIndex Value="24"/>
         <WindowIndex Value="0"/>
         <TopLine Value="110"/>
         <CursorPos X="18" Y="126"/>
@@ -289,7 +292,7 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UCDWindowList"/>
-        <EditorIndex Value="20"/>
+        <EditorIndex Value="21"/>
         <WindowIndex Value="0"/>
         <TopLine Value="2"/>
         <CursorPos X="20" Y="15"/>
@@ -300,7 +303,7 @@
       <Unit23>
         <Filename Value="E:\Projekty2\FreePascalManager\trunk\Instance\1\Lazarus\lcl\forms.pp"/>
         <UnitName Value="Forms"/>
-        <EditorIndex Value="26"/>
+        <EditorIndex Value="27"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1623"/>
         <CursorPos X="24" Y="1636"/>
@@ -339,7 +342,7 @@
       <Unit28>
         <Filename Value="E:\Projekty2\FreePascalManager\trunk\Instance\1\Lazarus\lcl\controls.pp"/>
         <UnitName Value="Controls"/>
-        <EditorIndex Value="28"/>
+        <EditorIndex Value="29"/>
         <WindowIndex Value="0"/>
         <TopLine Value="497"/>
         <CursorPos X="3" Y="504"/>
@@ -366,7 +369,7 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UCDCustomize"/>
-        <EditorIndex Value="24"/>
+        <EditorIndex Value="25"/>
         <WindowIndex Value="0"/>
         <TopLine Value="36"/>
         <CursorPos X="35" Y="49"/>
@@ -376,7 +379,7 @@
       <Unit32>
         <Filename Value="..\..\UCDCommon.pas"/>
         <UnitName Value="UCDCommon"/>
-        <EditorIndex Value="21"/>
+        <EditorIndex Value="22"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="15" Y="11"/>
@@ -386,7 +389,7 @@
       <Unit33>
         <Filename Value="..\..\UCDPopupMenu.pas"/>
         <UnitName Value="UCDPopupMenu"/>
-        <EditorIndex Value="19"/>
+        <EditorIndex Value="20"/>
         <WindowIndex Value="0"/>
         <TopLine Value="20"/>
         <CursorPos X="15" Y="15"/>
@@ -440,7 +443,7 @@
       <Unit40>
         <Filename Value="..\..\UCDStyle.pas"/>
         <UnitName Value="UCDStyle"/>
-        <EditorIndex Value="16"/>
+        <EditorIndex Value="17"/>
         <WindowIndex Value="0"/>
         <TopLine Value="22"/>
         <CursorPos X="13" Y="14"/>
@@ -450,7 +453,7 @@
       <Unit41>
         <Filename Value="..\..\UCDClientPanel.pas"/>
         <UnitName Value="UCDClientPanel"/>
-        <EditorIndex Value="12"/>
+        <EditorIndex Value="13"/>
         <WindowIndex Value="0"/>
         <TopLine Value="14"/>
         <CursorPos X="27" Y="27"/>
@@ -468,8 +471,7 @@
       <Unit43>
         <Filename Value="..\..\UCDStyleTabs.pas"/>
         <UnitName Value="UCDStyleTabs"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="13"/>
+        <EditorIndex Value="14"/>
         <WindowIndex Value="0"/>
         <TopLine Value="336"/>
         <CursorPos X="18" Y="91"/>
@@ -502,7 +504,7 @@
       <Unit47>
         <Filename Value="..\..\UCDStyleRegions.pas"/>
         <UnitName Value="UCDStyleRegions"/>
-        <EditorIndex Value="11"/>
+        <EditorIndex Value="12"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="23" Y="12"/>
@@ -512,7 +514,7 @@
       <Unit48>
         <Filename Value="..\..\UCDStylePopupTabs.pas"/>
         <UnitName Value="UCDStylePopupTabs"/>
-        <EditorIndex Value="14"/>
+        <EditorIndex Value="15"/>
         <WindowIndex Value="0"/>
         <TopLine Value="41"/>
         <CursorPos X="20" Y="42"/>
@@ -570,7 +572,7 @@
       <Unit55>
         <Filename Value="..\..\UCDStylePopupRegions.pas"/>
         <UnitName Value="UCDStylePopupRegions"/>
-        <EditorIndex Value="15"/>
+        <EditorIndex Value="16"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="23" Y="11"/>
@@ -580,7 +582,7 @@
       <Unit56>
         <Filename Value="E:\Projekty2\FreePascalManager\trunk\Instance\1\FPC\packages\fcl-base\src\custapp.pp"/>
         <UnitName Value="CustApp"/>
-        <EditorIndex Value="27"/>
+        <EditorIndex Value="28"/>
         <WindowIndex Value="0"/>
         <TopLine Value="13"/>
         <CursorPos X="3" Y="26"/>
@@ -590,7 +592,7 @@
       <Unit57>
         <Filename Value="..\..\UCDManager.pas"/>
         <UnitName Value="UCDManager"/>
-        <EditorIndex Value="25"/>
+        <EditorIndex Value="26"/>
         <WindowIndex Value="0"/>
         <TopLine Value="59"/>
         <CursorPos X="12" Y="18"/>
@@ -600,7 +602,7 @@
       <Unit58>
         <Filename Value="..\..\UCDConjoinForm.pas"/>
         <UnitName Value="UCDConjoinForm"/>
-        <EditorIndex Value="18"/>
+        <EditorIndex Value="19"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="17" Y="13"/>
@@ -618,10 +620,10 @@
       <Unit60>
         <Filename Value="..\..\UCDMaster.pas"/>
         <UnitName Value="UCDMaster"/>
-        <EditorIndex Value="17"/>
+        <EditorIndex Value="18"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="46"/>
-        <CursorPos X="6" Y="53"/>
+        <TopLine Value="25"/>
+        <CursorPos X="9" Y="59"/>
         <UsageCount Value="10"/>
         <Loaded Value="True"/>
       </Unit60>
@@ -637,123 +639,123 @@
     <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
         <Filename Value="UObjectInspectorForm.pas"/>
-        <Caret Line="17" Column="37" TopLine="4"/>
+        <Caret Line="18" Column="5" TopLine="5"/>
       </Position1>
       <Position2>
-        <Filename Value="UObjectInspectorForm.pas"/>
-        <Caret Line="18" Column="5" TopLine="5"/>
-      </Position2>
-      <Position3>
         <Filename Value="UProjectManagerForm.pas"/>
         <Caret Line="9" Column="12" TopLine="1"/>
-      </Position3>
-      <Position4>
+      </Position2>
+      <Position3>
         <Filename Value="UStructureForm.pas"/>
         <Caret Line="9" Column="13" TopLine="1"/>
+      </Position3>
+      <Position4>
+        <Filename Value="UMessagesForm.pas"/>
+        <Caret Line="9" Column="12" TopLine="1"/>
       </Position4>
       <Position5>
         <Filename Value="UMessagesForm.pas"/>
-        <Caret Line="9" Column="12" TopLine="1"/>
+        <Caret Line="17" Column="25" TopLine="4"/>
       </Position5>
       <Position6>
-        <Filename Value="UMessagesForm.pas"/>
-        <Caret Line="17" Column="25" TopLine="4"/>
-      </Position6>
-      <Position7>
         <Filename Value="UCallStackForm.pas"/>
         <Caret Line="8" Column="77" TopLine="1"/>
-      </Position7>
-      <Position8>
+      </Position6>
+      <Position7>
         <Filename Value="ULocalVariablesForm.pas"/>
         <Caret Line="9" Column="5" TopLine="1"/>
+      </Position7>
+      <Position8>
+        <Filename Value="UToDoListForm.pas"/>
+        <Caret Line="9" Column="6" TopLine="1"/>
       </Position8>
       <Position9>
         <Filename Value="UToDoListForm.pas"/>
-        <Caret Line="9" Column="6" TopLine="1"/>
+        <Caret Line="17" Column="37" TopLine="4"/>
       </Position9>
       <Position10>
-        <Filename Value="UToDoListForm.pas"/>
-        <Caret Line="17" Column="37" TopLine="4"/>
-      </Position10>
-      <Position11>
         <Filename Value="UWatchListForm.pas"/>
         <Caret Line="9" Column="12" TopLine="1"/>
-      </Position11>
-      <Position12>
+      </Position10>
+      <Position11>
         <Filename Value="UThreadStatusForm.pas"/>
         <Caret Line="1" Column="1" TopLine="1"/>
-      </Position12>
-      <Position13>
+      </Position11>
+      <Position12>
         <Filename Value="..\..\UCDCustomize.pas"/>
         <Caret Line="49" Column="12" TopLine="46"/>
+      </Position12>
+      <Position13>
+        <Filename Value="..\..\UCDWindowList.pas"/>
+        <Caret Line="36" Column="12" TopLine="25"/>
       </Position13>
       <Position14>
         <Filename Value="..\..\UCDWindowList.pas"/>
-        <Caret Line="36" Column="12" TopLine="25"/>
+        <Caret Line="15" Column="16" TopLine="11"/>
       </Position14>
       <Position15>
-        <Filename Value="..\..\UCDWindowList.pas"/>
-        <Caret Line="15" Column="16" TopLine="11"/>
-      </Position15>
-      <Position16>
         <Filename Value="..\..\UCDStyleTabs.pas"/>
         <Caret Line="15" Column="11" TopLine="2"/>
-      </Position16>
-      <Position17>
+      </Position15>
+      <Position16>
         <Filename Value="..\..\UCDStyleRegions.pas"/>
         <Caret Line="12" Column="14" TopLine="5"/>
+      </Position16>
+      <Position17>
+        <Filename Value="..\..\UCDStylePopupTabs.pas"/>
+        <Caret Line="14" Column="10" TopLine="1"/>
       </Position17>
       <Position18>
         <Filename Value="..\..\UCDStylePopupTabs.pas"/>
-        <Caret Line="14" Column="10" TopLine="1"/>
+        <Caret Line="42" Column="14" TopLine="22"/>
       </Position18>
       <Position19>
-        <Filename Value="..\..\UCDStylePopupTabs.pas"/>
-        <Caret Line="42" Column="14" TopLine="22"/>
-      </Position19>
-      <Position20>
         <Filename Value="..\..\UCDStylePopupRegions.pas"/>
         <Caret Line="11" Column="8" TopLine="1"/>
+      </Position19>
+      <Position20>
+        <Filename Value="..\..\UCDClientPanel.pas"/>
+        <Caret Line="19" Column="7" TopLine="1"/>
       </Position20>
       <Position21>
         <Filename Value="..\..\UCDClientPanel.pas"/>
-        <Caret Line="19" Column="7" TopLine="1"/>
+        <Caret Line="35" Column="17" TopLine="22"/>
       </Position21>
       <Position22>
         <Filename Value="..\..\UCDClientPanel.pas"/>
-        <Caret Line="35" Column="17" TopLine="22"/>
+        <Caret Line="17" Column="6" TopLine="4"/>
       </Position22>
       <Position23>
-        <Filename Value="..\..\UCDClientPanel.pas"/>
-        <Caret Line="17" Column="6" TopLine="4"/>
-      </Position23>
-      <Position24>
         <Filename Value="..\..\UCDManager.pas"/>
         <Caret Line="308" Column="67" TopLine="295"/>
-      </Position24>
-      <Position25>
+      </Position23>
+      <Position24>
         <Filename Value="..\..\UCDStyleTabs.pas"/>
         <Caret Line="15" Column="15" TopLine="2"/>
-      </Position25>
-      <Position26>
+      </Position24>
+      <Position25>
         <Filename Value="..\..\UCDPopupMenu.pas"/>
         <Caret Line="15" Column="10" TopLine="1"/>
+      </Position25>
+      <Position26>
+        <Filename Value="..\..\UCDManager.pas"/>
+        <Caret Line="81" Column="20" TopLine="75"/>
       </Position26>
       <Position27>
         <Filename Value="..\..\UCDManager.pas"/>
-        <Caret Line="81" Column="20" TopLine="75"/>
+        <Caret Line="18" Column="15" TopLine="11"/>
       </Position27>
       <Position28>
-        <Filename Value="..\..\UCDManager.pas"/>
-        <Caret Line="18" Column="15" TopLine="11"/>
-      </Position28>
-      <Position29>
         <Filename Value="..\..\UCDConjoinForm.pas"/>
         <Caret Line="13" Column="6" TopLine="1"/>
-      </Position29>
-      <Position30>
+      </Position28>
+      <Position29>
         <Filename Value="..\..\UCDMaster.pas"/>
         <Caret Line="13" Column="9" TopLine="2"/>
+      </Position29>
+      <Position30>
+        <Filename Value="UCallStackForm.pas"/>
+        <Caret Line="16" Column="37" TopLine="3"/>
       </Position30>
     </JumpHistory>
   </ProjectOptions>
