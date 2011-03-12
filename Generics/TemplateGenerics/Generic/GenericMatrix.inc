@@ -18,16 +18,16 @@
   private
     FItems: array of array of TGMatrixItem;
     FCount: TGMatrixIndex;
-    function GetXY(Y: TGMatrixIndexY; X: TGMatrixIndexX): TGMatrixItem;
-    function Get(Index: TGMatrixIndex): TGMatrixItem;
+    function GetItemXY(X: TGMatrixIndexX; Y: TGMatrixIndexY): TGMatrixItem;
+    function GetItem(Index: TGMatrixIndex): TGMatrixItem;
     function GetCapacity: TGMatrixIndex;
     function GetLast: TGMatrixItem;
     function GetFirst: TGMatrixItem;
     procedure SetCapacity(const AValue: TGMatrixIndex);
     procedure SetLast(AValue: TGMatrixItem);
     procedure SetFirst(AValue: TGMatrixItem);
-    procedure PutXY(Y: TGMatrixIndexY; X: TGMatrixIndexX; const AValue: TGMatrixItem); virtual;
-    procedure Put(Index: TGMatrixIndex; const AValue: TGMatrixItem); virtual;
+    procedure PutItemXY(X: TGMatrixIndexX; Y: TGMatrixIndexY; const AValue: TGMatrixItem); virtual;
+    procedure PutItem(Index: TGMatrixIndex; const AValue: TGMatrixItem); virtual;
     procedure SetCount(const AValue: TGMatrixIndex);
   public
     function Add(Item: TGMatrixItem): TGMatrixIndex;
@@ -44,6 +44,7 @@
     function Extract(Item: TGMatrixItem): TGMatrixItem;
     procedure Exchange(Index1, Index2: TGMatrixIndex);
     property First: TGMatrixItem read GetFirst write SetFirst;
+    procedure FillAll(Value: TGMatrixItem);
     procedure Fill(Start, Count: TGMatrixIndex; Value: TGMatrixItem);
     function Implode(RowSeparator, ColSeparator: string; Converter: TGMatrixToStringConverter): string;
     procedure Explode(Text, Separator: string; Converter: TGMatrixFromStringConverter; SlicesCount: Integer = -1);
@@ -64,8 +65,10 @@
     procedure SetArray(Values: array of TGMatrixItem);
     property Count: TGMatrixIndex read FCount write SetCount;
     property Capacity: TGMatrixIndex read GetCapacity write SetCapacity;
-    property ItemsXY[Y: TGMatrixIndexY; X: TGMatrixIndexX]: TGMatrixItem read GetXY write PutXY; default;
-    property Items[Index: TGMatrixIndex]: TGMatrixItem read Get write Put;
+    property ItemsXY[X: TGMatrixIndexX; Y: TGMatrixIndexY]: TGMatrixItem
+      read GetItemXY write PutItemXY; default;
+    property Items[Index: TGMatrixIndex]: TGMatrixItem
+      read GetItem write PutItem;
     property Last: TGMatrixItem read GetLast write SetLast;
   end;
 
@@ -96,7 +99,7 @@ begin
   while Y < Source.Count.Y do begin
     X := 0;
     while X < Source.Count.X do begin
-      ItemsXY[Index.Y + Y, Index.X + X] := Source.ItemsXY[Y, X];
+      ItemsXY[Index.X + X, Index.Y + Y] := Source.ItemsXY[X, Y];
       X := X + 1;
     end;
     Y := Y + 1;
@@ -112,7 +115,7 @@ begin
   while Y < Source.Count.Y do begin
     X := 0;
     while X < Source.Count.X do begin
-      ItemsXY[Index.Y + Y, Index.X + X] := Proc(ItemsXY[Index.Y + Y, Index.X + X], Source.ItemsXY[Y, X]);
+      ItemsXY[Index.X + X, Index.Y + Y] := Proc(ItemsXY[Index.X + X, Index.Y + Y], Source.ItemsXY[X, Y]);
       X := X + 1;
     end;
     Y := Y + 1;
@@ -148,7 +151,7 @@ begin
   end;
 end;
 
-function TGMatrix.GetXY(Y: TGMatrixIndexY; X: TGMatrixIndexX): TGMatrixItem;
+function TGMatrix.GetItemXY(X: TGMatrixIndexX; Y: TGMatrixIndexY): TGMatrixItem;
 begin
   if (X < 0) or (X >= Count.X) or
     (Y < 0) or (Y >= Count.Y) then
@@ -156,7 +159,7 @@ begin
   Result := FItems[Y, X];
 end;
 
-function TGMatrix.Get(Index: TGMatrixIndex): TGMatrixItem;
+function TGMatrix.GetItem(Index: TGMatrixIndex): TGMatrixItem;
 begin
   if (Index.X < 0) or (Index.X >= Count.X) or
     (Index.Y < 0) or (Index.Y >= Count.Y) then
@@ -164,7 +167,7 @@ begin
   Result := FItems[Index.Y, Index.X];
 end;
 
-procedure TGMatrix.PutXY(Y: TGMatrixIndexY; X: TGMatrixIndexX; const AValue: TGMatrixItem);
+procedure TGMatrix.PutItemXY(X: TGMatrixIndexX; Y: TGMatrixIndexY; const AValue: TGMatrixItem);
 begin
   if (X < 0) or (X >= Count.X) or
     (Y < 0) or (Y >= Count.Y) then
@@ -172,7 +175,7 @@ begin
   FItems[Y, X] := AValue;
 end;
 
-procedure TGMatrix.Put(Index: TGMatrixIndex; const AValue: TGMatrixItem);
+procedure TGMatrix.PutItem(Index: TGMatrixIndex; const AValue: TGMatrixItem);
 begin
   if (Index.X < 0) or (Index.X >= Count.X) or
     (Index.Y < 0) or (Index.Y >= Count.Y) then
@@ -509,7 +512,7 @@ begin
   while Y < Count.Y do begin
     X := 0;
     while X < Count.X do begin
-      Result := Result + Converter(ItemsXY[Y, X]);
+      Result := Result + Converter(ItemsXY[X, Y]);
       if X < (Count.X - 1) then
         Result := Result + ColSeparator;
       X := X + 1;
@@ -588,11 +591,16 @@ begin
   while Y < Count.Y do begin
     X := Start.X;
     while X < Count.X do begin
-      ItemsXY[Y, X] := Value;
+      ItemsXY[X, Y] := Value;
       X := X + 1;
     end;
     Y := Y + 1;
   end;
+end;
+
+procedure TGMatrix.FillAll(Value: TGMatrixItem);
+begin
+  Fill(CreateIndex(0, 0), CreateIndex(Count.X - 1, Count.Y - 1), Value);
 end;
 
 procedure TGMatrix.Exchange(Index1, Index2: TGMatrixIndex);

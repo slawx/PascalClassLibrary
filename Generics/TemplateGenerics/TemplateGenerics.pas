@@ -7,9 +7,9 @@ unit TemplateGenerics;
 interface
 
 uses
-    SpecializedList, SpecializedDictionary, SpecializedStack, SpecializedTree, 
+  SpecializedList, SpecializedDictionary, SpecializedStack, SpecializedTree, 
   SpecializedQueue, SpecializedSet, SpecializedPoint, SpecializedMatrix, 
-  LazarusPackageIntf;
+  SpecializedBitmap, LazarusPackageIntf;
 
 implementation
 
