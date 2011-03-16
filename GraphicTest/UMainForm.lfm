@@ -1,0 +1,153 @@
+object MainForm: TMainForm
+  Left = 357
+  Height = 452
+  Top = 127
+  Width = 627
+  Caption = 'Graphic test'
+  ClientHeight = 452
+  ClientWidth = 627
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  LCLVersion = '0.9.31'
+  object PageControl1: TPageControl
+    Left = 248
+    Height = 432
+    Top = 16
+    Width = 376
+    ActivePage = TabSheet1
+    Anchors = [akTop, akLeft, akRight, akBottom]
+    TabIndex = 0
+    TabOrder = 0
+    object TabSheet1: TTabSheet
+      Caption = 'TImage'
+      ClientHeight = 405
+      ClientWidth = 372
+      object Image1: TImage
+        Left = 6
+        Height = 392
+        Top = 7
+        Width = 362
+        Anchors = [akTop, akLeft, akRight, akBottom]
+      end
+    end
+    object TabSheet2: TTabSheet
+      Caption = 'Direct Canvas'
+      ClientHeight = 405
+      ClientWidth = 372
+      object PaintBox1: TPaintBox
+        Left = 6
+        Height = 393
+        Top = 7
+        Width = 361
+        Anchors = [akTop, akLeft, akRight, akBottom]
+      end
+    end
+  end
+  object ButtonStart: TButton
+    Left = 7
+    Height = 25
+    Top = 9
+    Width = 75
+    Caption = 'Start'
+    OnClick = ButtonStartClick
+    TabOrder = 1
+  end
+  object Label1: TLabel
+    Left = 11
+    Height = 14
+    Top = 95
+    Width = 24
+    Caption = 'FPS:'
+    ParentColor = False
+  end
+  object Label2: TLabel
+    Left = 128
+    Height = 14
+    Top = 95
+    Width = 38
+    Caption = 'Label2'
+    ParentColor = False
+  end
+  object ButtonStop: TButton
+    Left = 95
+    Height = 25
+    Top = 9
+    Width = 75
+    Caption = 'Stop'
+    Enabled = False
+    OnClick = ButtonStopClick
+    TabOrder = 2
+  end
+  object Label3: TLabel
+    Left = 11
+    Height = 14
+    Top = 112
+    Width = 83
+    Caption = 'Frame duration'
+    ParentColor = False
+  end
+  object Label4: TLabel
+    Left = 128
+    Height = 14
+    Top = 112
+    Width = 38
+    Caption = 'Label4'
+    ParentColor = False
+  end
+  object ListView1: TListView
+    Left = 8
+    Height = 240
+    Top = 208
+    Width = 232
+    Columns = <    
+      item
+        Caption = 'Method'
+        Width = 100
+      end    
+      item
+        Caption = 'Duration'
+        Width = 111
+      end>
+    TabOrder = 3
+    ViewStyle = vsReport
+  end
+  object Button1: TButton
+    Left = 11
+    Height = 25
+    Top = 176
+    Width = 75
+    Caption = 'Benchmark'
+    OnClick = Button1Click
+    TabOrder = 4
+  end
+  object ComboBox1: TComboBox
+    Left = 7
+    Height = 25
+    Top = 64
+    Width = 233
+    ItemHeight = 0
+    Items.Strings = (
+      'TBitmap.Canvas.Pixels'
+      'TBitmap.Canvas.Pixels Update lock'
+      'TLazIntfImage copy from'
+      'TLazIntfImage create new'
+      'TBitmap.RawData on TImage'
+      'TBitmap.RawData on TPaintBox'
+    )
+    Style = csDropDownList
+    TabOrder = 5
+  end
+  object Label5: TLabel
+    Left = 9
+    Height = 14
+    Top = 47
+    Width = 46
+    Caption = 'Method:'
+    ParentColor = False
+  end
+  object Timer1: TTimer
+    OnTimer = Timer1Timer
+    left = 209
+    top = 37
+  end
+end
