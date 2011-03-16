@@ -15,6 +15,7 @@ type
   private
     FDuration: Real;
     FStepCount: Integer;
+    FTabPosition: TTabPosition;
     StartBounds: TRect;
     procedure SetDuration(const AValue: Real);
     procedure SetStepCount(const AValue: Integer);
@@ -23,7 +24,6 @@ type
   public
     Position: Real;
     Direction: Integer;
-    TabPosition: TTabPosition;
     Enable: Boolean;
     Timer: TTimer;
     Control: TControl;
@@ -33,6 +33,7 @@ type
     constructor Create;
     destructor Destroy; override;
     procedure TimerExecute(Sender: TObject);
+    property TabPosition: TTabPosition read FTabPosition write FTabPosition;
     property Duration: Real read FDuration write SetDuration;
     property StepCount: Integer read FStepCount write SetStepCount;
   end;
@@ -52,7 +53,7 @@ type
   public
     AutoHideEnabled: Boolean;
     AutoHide: TCDAutoHide;
-    PopupPanel: TPanel;
+    PopupForm: TForm;
     procedure SetHeaderPos(const AValue: THeaderPos); override;
     procedure PinShowButtonClick(Sender: TObject);
     procedure PinHideButtonClick(Sender: TObject);
@@ -86,10 +87,10 @@ begin
     tpTop: begin
       Control.Height := Round((StartBounds.Bottom - StartBounds.Top) * Position);
     end;
-    tpRight: begin
+    tpLeft: begin
       Control.Width := Round((StartBounds.Right - StartBounds.Left) * Position);
     end;
-    tpLeft: begin
+    tpRight: begin
       Control.Width := Round((StartBounds.Right - StartBounds.Left) * Position);
       Control.Left := StartBounds.Right - Control.Width;
     end;
@@ -118,6 +119,8 @@ end;
 procedure TCDAutoHide.Hide;
 begin
   StartBounds := Control.BoundsRect;
+  Control.Show;
+  Control.BringToFront;
   Direction := -1;
   Position := 1;
   Timer.Enabled := True;
@@ -127,8 +130,10 @@ end;
 procedure TCDAutoHide.Show;
 begin
   StartBounds := Control.BoundsRect;
+  //StartBounds := Bounds(0, 0, Control.UndockWidth, Control.UndockHeight);
   Control.Show;
-  Control.Align := alCustom;
+  Control.BringToFront;
+  Control.Align := alClient;
   Direction := 1;
   Position := 0;
   Timer.Enabled := True;
@@ -142,7 +147,7 @@ begin
   Timer.Enabled := False;
   Timer.OnTimer := TimerExecute;
   StepCount := 10;
-  Duration := 0.5;
+  Duration := 0.05;
 end;
 
 destructor TCDAutoHide.Destroy;
@@ -163,7 +168,7 @@ begin
   end else
   if Direction = -1 then begin
     Position := Position - 1 / StepCount;
-    if Position < 1 then begin
+    if Position < 0 then begin
       Position := 0;
       Timer.Enabled := False;
       ControlVisible := False;
@@ -185,25 +190,45 @@ begin
 end;
 
 procedure TCDManagerTabsPopup.TabControlChange(Sender: TObject);
+var
+  Pos: TPoint;
+  C: TControl;
 begin
   inherited TabControlChange(Sender);
-  if PopupPanel.ControlCount > 0 then
-    PopupPanel.Controls[0].Parent := nil;
+  MouseDownSkip := True;
+  if PopupForm.ControlCount > 0 then
+    PopupForm.Controls[0].Parent := nil;
   AutoHide.Hide;
+  while AutoHide.Position > 0 do begin
+    Application.ProcessMessages;
+    Sleep(1);
+  end;
   if PageControl.TabIndex >= 0 then begin
-    TCDManagerTabsPopupItem(DockItems[PageControl.TabIndex]).Control.Parent := PopupPanel;
-    AutoHide.Control.Align := alCustom;
+    C := TCDManagerTabsPopupItem(DockItems[PageControl.TabIndex]).Control;
+    C.Parent := PopupForm;
+    //AutoHide.Control.Align := alCustom;
+    Pos := Point(PageControl.Left, PageControl.Top);
+    Pos := DockSite.ClientToScreen(Pos);
     with AutoHide.Control do
     case AutoHide.TabPosition of
-      tpTop: SetBounds(PageControl.Left, PageControl.Top + PageControl.Height,
-        PageControl.Width, Height);
-      tpLeft: SetBounds(PageControl.Left + PageControl.Width, PageControl.Top,
-        Width, PageControl.Height);
-      tpBottom: SetBounds(PageControl.Left, PageControl.Top - Height,
-        PageControl.Width, Height);
-      tpRight: SetBounds(PageControl.Left - Width, PageControl.Top,
-        Width, PageControl.Height);
+      tpTop: begin
+        SetBounds(Pos.X, Pos.Y + PageControl.Height,
+          PageControl.Width, C.TBDockHeight);
+      end;
+      tpLeft: begin
+        SetBounds(Pos.X + PageControl.Width, Pos.Y,
+          C.LRDockWidth, PageControl.Height);
+      end;
+      tpBottom: begin
+        SetBounds(Pos.X, Pos.Y - C.TBDockHeight,
+          PageControl.Width, C.TBDockHeight);
+      end;
+      tpRight: begin
+        SetBounds(Pos.X - C.LRDockWidth, Pos.Y,
+          C.LRDockWidth, PageControl.Height);
+      end;
     end;
+    //AutoHide.Control.SetBounds(0, 0, 100, 100);
     AutoHide.Show;
   end;
 end;
@@ -214,22 +239,25 @@ var
 begin
   inherited;
   FDockStyle := dsPopupTabs;
-  PopupPanel := TPanel.Create(nil);
-  PopupPanel.DockManager := TCDManagerRegions.Create(PopupPanel);
-  PopupPanel.Visible := True;
+  PopupForm := TForm.Create(nil);
+  PopupForm.DockManager := TCDManagerRegions.Create(PopupForm);
+  PopupForm.Visible := True;
+  //PopupForm.Parent := ADockSite;
+  PopupForm.BorderStyle := bsNone;
   AutoHide := TCDAutoHide.Create;
-  AutoHide.Control := PopupPanel;
+  AutoHide.Control := PopupForm;
 
   for I := 0 to DockItems.Count - 1 do begin
 //    if TCDManagerTabsPopupItem(DockItems[I]).Hidden then
 //      if
   end;
+  HeaderPos := HeaderPos; // Reset position
 end;
 
 destructor TCDManagerTabsPopup.Destroy;
 begin
   AutoHide.Free;
-  PopupPanel.Free;
+  PopupForm.Free;
   inherited Destroy;
 end;
 
@@ -280,6 +308,25 @@ procedure TCDManagerTabsPopup.SetHeaderPos(const AValue: THeaderPos);
 begin
   inherited SetHeaderPos(AValue);
   AutoHide.TabPosition := HeaderPosToTabPos(AValue);
+  with PageControl do
+  case AValue of
+    hpTop, hpAuto: begin
+      Align := alTop;
+      Height := 24;
+    end;
+    hpBottom: begin
+      Align := alBottom;
+      Height := 24;
+    end;
+    hpLeft: begin
+      Align := alLeft;
+      Width := 24;
+    end;
+    hpRight: begin
+      Align := alRight;
+      Width := 24;
+    end;
+  end;
 end;
 
 end.

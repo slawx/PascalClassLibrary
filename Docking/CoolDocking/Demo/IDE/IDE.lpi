@@ -46,7 +46,7 @@
         <PackageName Value="LCL"/>
       </Item4>
     </RequiredPackages>
-    <Units Count="56">
+    <Units Count="57">
       <Unit0>
         <Filename Value="IDE.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -62,12 +62,13 @@
         <ComponentName Value="MainForm"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UMainForm"/>
-        <EditorIndex Value="5"/>
+        <EditorIndex Value="4"/>
         <WindowIndex Value="0"/>
         <TopLine Value="158"/>
-        <CursorPos X="1" Y="165"/>
+        <CursorPos X="23" Y="166"/>
         <UsageCount Value="314"/>
         <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
       </Unit1>
       <Unit2>
         <Filename Value="UObjectInspectorForm.pas"/>
@@ -104,10 +105,12 @@
       </Unit4>
       <Unit5>
         <Filename Value="E:\Projekty2\FreePascalManager\trunk\Instance\1\Lazarus\lcl\include\control.inc"/>
+        <EditorIndex Value="3"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="1296"/>
-        <CursorPos X="1" Y="1309"/>
+        <TopLine Value="579"/>
+        <CursorPos X="3" Y="584"/>
         <UsageCount Value="60"/>
+        <Loaded Value="True"/>
       </Unit5>
       <Unit6>
         <Filename Value="UProjectManagerForm.pas"/>
@@ -218,13 +221,13 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="22" Y="16"/>
-        <UsageCount Value="67"/>
+        <UsageCount Value="66"/>
       </Unit16>
       <Unit17>
         <Filename Value="E:\Projekty2\FreePascalManager\trunk\Instance\1\FPC\rtl\objpas\classes\classesh.inc"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="1524"/>
-        <CursorPos X="5" Y="1537"/>
+        <TopLine Value="19"/>
+        <CursorPos X="4" Y="32"/>
         <UsageCount Value="16"/>
       </Unit17>
       <Unit18>
@@ -233,15 +236,15 @@
         <WindowIndex Value="0"/>
         <TopLine Value="110"/>
         <CursorPos X="18" Y="126"/>
-        <UsageCount Value="32"/>
+        <UsageCount Value="31"/>
       </Unit18>
       <Unit19>
         <Filename Value="E:\Projekty2\FreePascalManager\trunk\Instance\1\Lazarus\lcl\forms.pp"/>
         <UnitName Value="Forms"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="770"/>
-        <CursorPos X="22" Y="783"/>
-        <UsageCount Value="11"/>
+        <TopLine Value="702"/>
+        <CursorPos X="22" Y="715"/>
+        <UsageCount Value="12"/>
       </Unit19>
       <Unit20>
         <Filename Value="E:\Projekty2\FreePascalManager\trunk\Instance\1\Lazarus\lcl\include\customcombobox.inc"/>
@@ -255,19 +258,17 @@
         <UnitName Value="Controls"/>
         <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="1270"/>
-        <CursorPos X="15" Y="1283"/>
-        <UsageCount Value="37"/>
+        <TopLine Value="1416"/>
+        <CursorPos X="14" Y="1429"/>
+        <UsageCount Value="39"/>
         <Loaded Value="True"/>
       </Unit21>
       <Unit22>
         <Filename Value="E:\Projekty2\FreePascalManager\trunk\Instance\1\Lazarus\lcl\include\wincontrol.inc"/>
-        <EditorIndex Value="4"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="7225"/>
-        <CursorPos X="31" Y="7250"/>
+        <TopLine Value="7779"/>
+        <CursorPos X="1" Y="7812"/>
         <UsageCount Value="115"/>
-        <Loaded Value="True"/>
       </Unit22>
       <Unit23>
         <Filename Value="E:\Projekty2\FreePascalManager\trunk\Instance\1\Lazarus\lcl\include\toolbutton.inc"/>
@@ -290,17 +291,15 @@
       <Unit25>
         <Filename Value="..\..\UCDCommon.pas"/>
         <UnitName Value="UCDCommon"/>
-        <EditorIndex Value="8"/>
         <WindowIndex Value="0"/>
         <TopLine Value="3"/>
         <CursorPos X="44" Y="11"/>
         <UsageCount Value="61"/>
-        <Loaded Value="True"/>
       </Unit25>
       <Unit26>
         <Filename Value="..\..\UCDPopupMenu.pas"/>
         <UnitName Value="UCDPopupMenu"/>
-        <EditorIndex Value="10"/>
+        <EditorIndex Value="8"/>
         <WindowIndex Value="0"/>
         <TopLine Value="159"/>
         <CursorPos X="25" Y="173"/>
@@ -310,12 +309,10 @@
       <Unit27>
         <Filename Value="E:\Projekty2\FreePascalManager\trunk\Instance\1\Lazarus\lcl\lclclasses.pp"/>
         <UnitName Value="LCLClasses"/>
-        <EditorIndex Value="11"/>
         <WindowIndex Value="0"/>
         <TopLine Value="81"/>
         <CursorPos X="20" Y="94"/>
-        <UsageCount Value="10"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="11"/>
       </Unit27>
       <Unit28>
         <Filename Value="..\..\UCDStyle.pas"/>
@@ -336,18 +333,17 @@
       <Unit30>
         <Filename Value="..\..\Managers\UCDManagerTabs.pas"/>
         <UnitName Value="UCDManagerTabs"/>
-        <EditorIndex Value="9"/>
+        <EditorIndex Value="7"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="95"/>
-        <CursorPos X="54" Y="98"/>
+        <TopLine Value="284"/>
+        <CursorPos X="1" Y="297"/>
         <UsageCount Value="130"/>
         <Loaded Value="True"/>
       </Unit30>
       <Unit31>
         <Filename Value="..\..\Managers\UCDManagerRegions.pas"/>
         <UnitName Value="UCDManagerRegions"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="7"/>
+        <EditorIndex Value="6"/>
         <WindowIndex Value="0"/>
         <TopLine Value="61"/>
         <CursorPos X="27" Y="84"/>
@@ -357,10 +353,11 @@
       <Unit32>
         <Filename Value="..\..\Managers\UCDManagerTabsPopup.pas"/>
         <UnitName Value="UCDManagerTabsPopup"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="36"/>
-        <CursorPos X="40" Y="49"/>
+        <TopLine Value="80"/>
+        <CursorPos X="9" Y="90"/>
         <UsageCount Value="120"/>
         <Loaded Value="True"/>
       </Unit32>
@@ -395,9 +392,9 @@
       <Unit37>
         <Filename Value="..\..\ReadMe.txt"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="2"/>
-        <CursorPos X="40" Y="3"/>
-        <UsageCount Value="2"/>
+        <TopLine Value="1"/>
+        <CursorPos X="22" Y="16"/>
+        <UsageCount Value="10"/>
         <DefaultSyntaxHighlighter Value="None"/>
       </Unit37>
       <Unit38>
@@ -415,10 +412,10 @@
       <Unit39>
         <Filename Value="..\..\UCDManager.pas"/>
         <UnitName Value="UCDManager"/>
-        <EditorIndex Value="6"/>
+        <EditorIndex Value="5"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="40"/>
-        <CursorPos X="27" Y="57"/>
+        <TopLine Value="529"/>
+        <CursorPos X="1" Y="543"/>
         <UsageCount Value="105"/>
         <Loaded Value="True"/>
       </Unit39>
@@ -433,17 +430,15 @@
       <Unit41>
         <Filename Value="E:\Projekty2\FreePascalManager\trunk\Instance\1\Lazarus\lcl\extctrls.pp"/>
         <UnitName Value="ExtCtrls"/>
-        <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
         <TopLine Value="111"/>
         <CursorPos X="3" Y="124"/>
         <UsageCount Value="100"/>
-        <Loaded Value="True"/>
       </Unit41>
       <Unit42>
         <Filename Value="..\..\UCDMaster.pas"/>
         <UnitName Value="UCDMaster"/>
-        <EditorIndex Value="12"/>
+        <EditorIndex Value="9"/>
         <WindowIndex Value="0"/>
         <TopLine Value="11"/>
         <CursorPos X="18" Y="19"/>
@@ -482,7 +477,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="33"/>
         <CursorPos X="1" Y="47"/>
-        <UsageCount Value="30"/>
+        <UsageCount Value="29"/>
       </Unit46>
       <Unit47>
         <Filename Value="E:\Projekty2\FreePascalManager\trunk\Instance\1\Lazarus\lcl\graphics.pp"/>
@@ -507,7 +502,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="13"/>
         <CursorPos X="40" Y="31"/>
-        <UsageCount Value="27"/>
+        <UsageCount Value="26"/>
       </Unit49>
       <Unit50>
         <Filename Value="E:\Projekty2\FreePascalManager\trunk\Instance\1\Lazarus\lcl\imglist.pp"/>
@@ -515,14 +510,14 @@
         <WindowIndex Value="0"/>
         <TopLine Value="165"/>
         <CursorPos X="15" Y="178"/>
-        <UsageCount Value="27"/>
+        <UsageCount Value="26"/>
       </Unit50>
       <Unit51>
         <Filename Value="E:\Projekty2\FreePascalManager\trunk\Instance\1\Lazarus\lcl\include\imglist.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="554"/>
         <CursorPos X="9" Y="564"/>
-        <UsageCount Value="27"/>
+        <UsageCount Value="26"/>
       </Unit51>
       <Unit52>
         <Filename Value="E:\Projekty2\FreePascalManager\trunk\Instance\1\FPC\rtl\inc\objpash.inc"/>
@@ -534,12 +529,10 @@
       <Unit53>
         <Filename Value="E:\Projekty2\FreePascalManager\trunk\Instance\1\Lazarus\lcl\customtimer.pas"/>
         <UnitName Value="CustomTimer"/>
-        <EditorIndex Value="3"/>
         <WindowIndex Value="0"/>
         <TopLine Value="169"/>
         <CursorPos X="1" Y="182"/>
-        <UsageCount Value="11"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="12"/>
       </Unit53>
       <Unit54>
         <Filename Value="E:\Projekty2\FreePascalManager\trunk\Instance\1\Lazarus\lcl\menus.pp"/>
@@ -556,116 +549,138 @@
         <CursorPos X="1" Y="454"/>
         <UsageCount Value="10"/>
       </Unit55>
+      <Unit56>
+        <Filename Value="E:\Projekty2\FreePascalManager\trunk\Instance\1\Lazarus\lcl\lcltype.pp"/>
+        <UnitName Value="LCLType"/>
+        <EditorIndex Value="2"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="70"/>
+        <CursorPos X="3" Y="83"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+      </Unit56>
     </Units>
-    <JumpHistory Count="27" HistoryIndex="26">
+    <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
-        <Filename Value="..\..\UCDPopupMenu.pas"/>
-        <Caret Line="22" Column="11" TopLine="9"/>
+        <Filename Value="..\..\Managers\UCDManagerTabsPopup.pas"/>
+        <Caret Line="197" Column="13" TopLine="184"/>
       </Position1>
       <Position2>
-        <Filename Value="..\..\UCDPopupMenu.pas"/>
-        <Caret Line="82" Column="30" TopLine="76"/>
+        <Filename Value="..\..\Managers\UCDManagerTabsPopup.pas"/>
+        <Caret Line="227" Column="14" TopLine="207"/>
       </Position2>
       <Position3>
-        <Filename Value="..\..\UCDPopupMenu.pas"/>
-        <Caret Line="38" Column="30" TopLine="25"/>
+        <Filename Value="..\..\Managers\UCDManagerTabsPopup.pas"/>
+        <Caret Line="223" Column="68" TopLine="201"/>
       </Position3>
       <Position4>
-        <Filename Value="..\..\UCDPopupMenu.pas"/>
-        <Caret Line="25" Column="15" TopLine="12"/>
+        <Filename Value="..\..\Managers\UCDManagerTabsPopup.pas"/>
+        <Caret Line="211" Column="99" TopLine="198"/>
       </Position4>
       <Position5>
-        <Filename Value="..\..\UCDManager.pas"/>
-        <Caret Line="251" Column="1" TopLine="240"/>
+        <Filename Value="E:\Projekty2\FreePascalManager\trunk\Instance\1\Lazarus\lcl\controls.pp"/>
+        <Caret Line="1413" Column="54" TopLine="1400"/>
       </Position5>
       <Position6>
-        <Filename Value="..\..\UCDManager.pas"/>
-        <Caret Line="243" Column="1" TopLine="238"/>
+        <Filename Value="E:\Projekty2\FreePascalManager\trunk\Instance\1\Lazarus\lcl\controls.pp"/>
+        <Caret Line="1430" Column="30" TopLine="1412"/>
       </Position6>
       <Position7>
-        <Filename Value="..\..\UCDManager.pas"/>
-        <Caret Line="244" Column="1" TopLine="238"/>
+        <Filename Value="E:\Projekty2\FreePascalManager\trunk\Instance\1\Lazarus\lcl\controls.pp"/>
+        <Caret Line="1411" Column="45" TopLine="1403"/>
       </Position7>
       <Position8>
-        <Filename Value="..\..\UCDManager.pas"/>
-        <Caret Line="245" Column="1" TopLine="238"/>
+        <Filename Value="..\..\Managers\UCDManagerTabsPopup.pas"/>
+        <Caret Line="227" Column="17" TopLine="210"/>
       </Position8>
       <Position9>
-        <Filename Value="..\..\Managers\UCDManagerRegions.pas"/>
-        <Caret Line="63" Column="1" TopLine="50"/>
+        <Filename Value="..\..\Managers\UCDManagerTabsPopup.pas"/>
+        <Caret Line="215" Column="101" TopLine="200"/>
       </Position9>
       <Position10>
-        <Filename Value="..\..\Managers\UCDManagerRegions.pas"/>
-        <Caret Line="64" Column="1" TopLine="50"/>
+        <Filename Value="..\..\Managers\UCDManagerTabsPopup.pas"/>
+        <Caret Line="221" Column="31" TopLine="205"/>
       </Position10>
       <Position11>
-        <Filename Value="..\..\Managers\UCDManagerRegions.pas"/>
-        <Caret Line="65" Column="1" TopLine="50"/>
+        <Filename Value="..\..\Managers\UCDManagerTabsPopup.pas"/>
+        <Caret Line="220" Column="44" TopLine="205"/>
       </Position11>
       <Position12>
-        <Filename Value="..\..\Managers\UCDManagerRegions.pas"/>
-        <Caret Line="66" Column="1" TopLine="50"/>
+        <Filename Value="..\..\Managers\UCDManagerTabsPopup.pas"/>
+        <Caret Line="224" Column="40" TopLine="205"/>
       </Position12>
       <Position13>
-        <Filename Value="..\..\Managers\UCDManagerRegions.pas"/>
-        <Caret Line="69" Column="1" TopLine="50"/>
+        <Filename Value="..\..\Managers\UCDManagerTabsPopup.pas"/>
+        <Caret Line="229" Column="17" TopLine="211"/>
       </Position13>
       <Position14>
-        <Filename Value="..\..\Managers\UCDManagerRegions.pas"/>
-        <Caret Line="70" Column="1" TopLine="50"/>
+        <Filename Value="..\..\Managers\UCDManagerTabsPopup.pas"/>
+        <Caret Line="238" Column="1" TopLine="202"/>
       </Position14>
       <Position15>
-        <Filename Value="..\..\Managers\UCDManagerRegions.pas"/>
-        <Caret Line="71" Column="1" TopLine="50"/>
+        <Filename Value="..\..\Managers\UCDManagerTabsPopup.pas"/>
+        <Caret Line="229" Column="15" TopLine="208"/>
       </Position15>
       <Position16>
-        <Filename Value="..\..\Managers\UCDManagerRegions.pas"/>
-        <Caret Line="72" Column="1" TopLine="51"/>
+        <Filename Value="..\..\Managers\UCDManagerTabsPopup.pas"/>
+        <Caret Line="309" Column="1" TopLine="301"/>
       </Position16>
       <Position17>
-        <Filename Value="..\..\UCDManager.pas"/>
-        <Caret Line="641" Column="1" TopLine="628"/>
+        <Filename Value="..\..\Managers\UCDManagerTabsPopup.pas"/>
+        <Caret Line="307" Column="24" TopLine="301"/>
       </Position17>
       <Position18>
-        <Filename Value="..\..\UCDManager.pas"/>
-        <Caret Line="642" Column="1" TopLine="628"/>
+        <Filename Value="..\..\Managers\UCDManagerTabsPopup.pas"/>
+        <Caret Line="50" Column="36" TopLine="37"/>
       </Position18>
       <Position19>
-        <Filename Value="..\..\UCDManager.pas"/>
-        <Caret Line="643" Column="1" TopLine="628"/>
+        <Filename Value="..\..\Managers\UCDManagerTabs.pas"/>
+        <Caret Line="40" Column="23" TopLine="35"/>
       </Position19>
       <Position20>
-        <Filename Value="..\..\UCDManager.pas"/>
-        <Caret Line="644" Column="1" TopLine="628"/>
+        <Filename Value="..\..\Managers\UCDManagerTabsPopup.pas"/>
+        <Caret Line="57" Column="25" TopLine="46"/>
       </Position20>
       <Position21>
-        <Filename Value="..\..\UCDManager.pas"/>
-        <Caret Line="647" Column="35" TopLine="628"/>
+        <Filename Value="..\..\Managers\UCDManagerTabs.pas"/>
+        <Caret Line="297" Column="3" TopLine="295"/>
       </Position21>
       <Position22>
-        <Filename Value="..\..\UCDManager.pas"/>
-        <Caret Line="2" Column="73" TopLine="1"/>
+        <Filename Value="..\..\Managers\UCDManagerTabsPopup.pas"/>
+        <Caret Line="309" Column="1" TopLine="296"/>
       </Position22>
       <Position23>
         <Filename Value="..\..\UCDManager.pas"/>
-        <Caret Line="69" Column="33" TopLine="48"/>
+        <Caret Line="542" Column="1" TopLine="529"/>
       </Position23>
       <Position24>
         <Filename Value="..\..\UCDManager.pas"/>
-        <Caret Line="181" Column="51" TopLine="160"/>
+        <Caret Line="543" Column="1" TopLine="529"/>
       </Position24>
       <Position25>
-        <Filename Value="..\..\UCDManager.pas"/>
-        <Caret Line="182" Column="51" TopLine="161"/>
+        <Filename Value="..\..\Managers\UCDManagerTabsPopup.pas"/>
+        <Caret Line="309" Column="15" TopLine="296"/>
       </Position25>
       <Position26>
-        <Filename Value="..\..\Managers\UCDManagerRegions.pas"/>
-        <Caret Line="37" Column="43" TopLine="30"/>
+        <Filename Value="..\..\Managers\UCDManagerTabsPopup.pas"/>
+        <Caret Line="57" Column="49" TopLine="44"/>
       </Position26>
       <Position27>
-        <Filename Value="..\..\Managers\UCDManagerRegions.pas"/>
-        <Caret Line="5" Column="66" TopLine="1"/>
+        <Filename Value="..\..\Managers\UCDManagerTabsPopup.pas"/>
+        <Caret Line="309" Column="1" TopLine="296"/>
       </Position27>
+      <Position28>
+        <Filename Value="..\..\Managers\UCDManagerTabs.pas"/>
+        <Caret Line="297" Column="1" TopLine="284"/>
+      </Position28>
+      <Position29>
+        <Filename Value="..\..\Managers\UCDManagerTabsPopup.pas"/>
+        <Caret Line="227" Column="26" TopLine="206"/>
+      </Position29>
+      <Position30>
+        <Filename Value="..\..\Managers\UCDManagerTabsPopup.pas"/>
+        <Caret Line="140" Column="12" TopLine="130"/>
+      </Position30>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>

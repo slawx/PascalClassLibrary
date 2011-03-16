@@ -147,7 +147,7 @@ begin
     hpLeft: Result := tpLeft;
     hpTop: Result := tpTop;
     hpRight: Result := tpRight;
-    hpAuto: Result := tpLeft;
+    hpAuto: Result := tpTop;
   end;
 end;
 

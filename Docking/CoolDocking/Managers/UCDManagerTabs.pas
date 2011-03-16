@@ -25,7 +25,6 @@ type
   private
     MouseDown: Boolean;
     MouseButton: TMouseButton;
-    MouseDownSkip: Boolean;
     FDockItems: TObjectList; // TList<TCDManagerRegionsItem>
     procedure TabControlMouseLeave(Sender: TObject);
     procedure TabControlMouseDown(Sender: TObject; Button: TMouseButton;
@@ -38,10 +37,11 @@ type
     function FindControlInPanels(Control: TControl): TCDManagerItem; override;
     procedure RemoveControl(Control: TControl); override;
     function GetHeaderPos: THeaderPos; override;
-    procedure SetHeaderPos(const AValue: THeaderPos); override;
   public
+    MouseDownSkip: Boolean;
     TabImageList: TImageList;
     PageControl: TPageControl;
+    procedure SetHeaderPos(const AValue: THeaderPos); override;
     procedure InsertControlNoUpdate(Control: TControl; InsertAt: TAlign); virtual;
     procedure TabControlChange(Sender: TObject); virtual;
     constructor Create(ADockSite: TWinControl); override;
@@ -194,6 +194,7 @@ begin
     Visible := True;
     //Align := alTop;
     //Height := 24;
+    Color := clBlue;
     Align := alClient;
     OnChange := TabControlChange;
     MultiLine := True;

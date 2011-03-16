@@ -23,7 +23,7 @@
         <CompilerPath Value="$(CompPath)"/>
       </Other>
     </CompilerOptions>
-    <Description Value="Set of components for docking of windows."/>
+    <Description Value="Set of components for forms docking for Lazarus."/>
     <License Value="GNU/GPL"/>
     <Version Minor="3"/>
     <Files Count="16">
