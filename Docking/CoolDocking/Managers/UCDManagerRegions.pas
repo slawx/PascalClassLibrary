@@ -16,6 +16,7 @@ type
   TCDManagerRegionsItem = class(TCDManagerItem)
     PanelHeader: TCDPanelHeader;
     Splitter: TSplitter;
+    procedure Paint(Sender: TObject); override;
     constructor Create;
     destructor Destroy; override;
   end;
@@ -25,6 +26,8 @@ type
   TCDManagerRegions = class(TCDManager)
   private
     FDockItems: TObjectList; // TList<TCDManagerRegionsItem>
+    function GetHeaderPos: THeaderPos; override;
+    procedure SetHeaderPos(const AValue: THeaderPos); override;
     function GetDirection(InsertAt: TAlign): TCDDirection;
   public
     FDockDirection: TCDDirection;
@@ -52,12 +55,33 @@ uses
 
 { TCDManagerRegionsItem }
 
+procedure TCDManagerRegionsItem.Paint(Sender: TObject);
+var
+  I: Integer;
+  R: TRect;
+begin
+  inherited Paint(Sender);
+  with PanelHeader do
+  if not (csDesigning in ComponentState) then
+  if Assigned(Control) then begin
+    //R := Control.ClientRect;
+    //Canvas.FillRect(R);
+    Header.Visible := ShowHeader;
+    if ShowHeader then begin
+      if ControlPanel.DockClientCount = 0 then
+        Header.DrawGrabber(Canvas, Control) else
+      Header.DrawGrabber(Canvas, ControlPanel);
+    end;
+  end;
+end;
+
 constructor TCDManagerRegionsItem.Create;
 begin
   PanelHeader := TCDPanelHeader.Create(nil);
   PanelHeader.Header.ManagerItem := Self;
   PanelHeader.Header.OnMouseDown := DockPanelMouseDown;
   PanelHeader.Header.Title.OnMouseDown := DockPanelMouseDown;
+  PanelHeader.Header.Icon.OnMouseDown := DockPanelMouseDown;
 
   Splitter := TSplitter.Create(nil);
   with Splitter do begin
@@ -80,6 +104,20 @@ end;
 
 
 { TCDManagerRegions }
+
+function TCDManagerRegions.GetHeaderPos: THeaderPos;
+begin
+  Result := inherited;
+end;
+
+procedure TCDManagerRegions.SetHeaderPos(const AValue: THeaderPos);
+begin
+  inherited SetHeaderPos(AValue);
+  case AValue of
+    hpBottom, hpTop: FDockDirection := ddVertical;
+    hpLeft, hpRight: FDockDirection := ddHorizontal;
+  end;
+end;
 
 function TCDManagerRegions.GetDirection(InsertAt: TAlign): TCDDirection;
 begin
@@ -116,19 +154,23 @@ begin
     if DockStyle = dsList then Visible := True;
     PanelHeader.Header.PopupMenu := Self.PopupMenu;
   end;
-  if (Control is TForm) and Assigned((Control as TForm).Icon) then
+  if (Control is TForm) and Assigned((Control as TForm).Icon) then begin
     NewItem.PanelHeader.Header.Icon.Picture.Assign((Control as TForm).Icon);
-    NewItem.PanelHeader.Parent := DockSite;
-    NewItem.PanelHeader.Header.Title.Caption := TForm(Control).Caption;
-
-    NewItem.Control := Control;
-    Control.AddHandlerOnVisibleChanged(NewItem.VisibleChange);
-    Control.Parent := NewItem.PanelHeader.ControlPanel;
-    Control.Align := alClient;
-    if (InsertAt = alTop) or (InsertAt = alLeft) then
-      DockItems.Insert(0, NewItem)
-      else DockItems.Add(NewItem);
+    NewItem.PanelHeader.Header.Icon.Width := NewItem.PanelHeader.Header.Icon.Picture.Bitmap.Width;
+    NewItem.PanelHeader.Header.Icon.Height := NewItem.PanelHeader.Header.Icon.Picture.Bitmap.Height;
   end;
+
+  NewItem.PanelHeader.Parent := DockSite;
+  NewItem.PanelHeader.Header.Title.Caption := TForm(Control).Caption;
+
+  NewItem.Control := Control;
+  Control.AddHandlerOnVisibleChanged(NewItem.VisibleChange);
+  Control.Parent := NewItem.PanelHeader.ControlPanel;
+  Control.Align := alClient;
+  if (InsertAt = alTop) or (InsertAt = alLeft) then
+    DockItems.Insert(0, NewItem)
+    else DockItems.Add(NewItem);
+end;
 
 procedure TCDManagerRegions.InsertControlPanel(Control: TControl; InsertAt: TAlign;
   DropCtl: TControl);
@@ -247,7 +289,7 @@ begin
       Self.DockSite.DockClientCount;
     PanelHeader.Width := Self.DockSite.Width div
       Self.DockSite.DockClientCount;
-    //TCDClientPanel(FDockPanels[I]).DockPanelPaint(Self);
+    Paint(Self);
     if I < (DockItems.Count - 1) then PanelHeader.Align := BaseAlign
       else PanelHeader.Align := alClient;
 

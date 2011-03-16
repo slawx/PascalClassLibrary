@@ -15,22 +15,19 @@ type
 
   TCDManagerTabsItem = class(TCDManagerItem)
     Icon: TImage;
-    constructor Create;
+    constructor Create; override;
     destructor Destroy; override;
   end;
 
   { TCDManagerTabs }
 
   TCDManagerTabs = class(TCDManager)
-  public
+  private
     MouseDown: Boolean;
     MouseButton: TMouseButton;
     MouseDownSkip: Boolean;
-    PageControl: TPageControl;
-    TabImageList: TImageList;
     FDockItems: TObjectList; // TList<TCDManagerRegionsItem>
     procedure TabControlMouseLeave(Sender: TObject);
-    procedure TabControlChange(Sender: TObject);
     procedure TabControlMouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     procedure TabControlMouseUp(Sender: TObject; Button: TMouseButton;
@@ -38,21 +35,22 @@ type
     procedure InsertControlPanel(AControl: TControl; InsertAt: TAlign;
       DropCtl: TControl); override;
     procedure UpdateClientSize; override;
-  private
-    FTabsPos: THeaderPos;
     function FindControlInPanels(Control: TControl): TCDManagerItem; override;
-    procedure InsertControlNoUpdate(Control: TControl; InsertAt: TAlign);
     procedure RemoveControl(Control: TControl); override;
+    function GetHeaderPos: THeaderPos; override;
+    procedure SetHeaderPos(const AValue: THeaderPos); override;
   public
-    constructor Create(ADockSite: TWinControl);
+    TabImageList: TImageList;
+    PageControl: TPageControl;
+    procedure InsertControlNoUpdate(Control: TControl; InsertAt: TAlign); virtual;
+    procedure TabControlChange(Sender: TObject); virtual;
+    constructor Create(ADockSite: TWinControl); override;
     destructor Destroy; override;
     procedure PaintSite(DC: HDC); override;
     procedure DoSetVisible(const AValue: Boolean); override;
     procedure ChangeVisible(Control: TWinControl; Visible: Boolean); override;
     procedure Switch(Index: Integer); override;
-    procedure SetTabsPos(const AValue: THeaderPos);
     procedure PopupMenuTabCloseClick(Sender: TObject);
-    property TabsPos: THeaderPos read FTabsPos write SetTabsPos;
     property DockItems: TObjectList read FDockItems write FDockItems;
   end;
 
@@ -97,7 +95,7 @@ end;
 procedure TCDManagerTabs.TabControlMouseLeave(Sender: TObject);
 begin
   if MouseDown then
-  if Assigned(PageControl.ActivePage) then begin
+  if Assigned(PageControl.ActivePage) and not Locked then begin
     //TCDManagerItem(DockItems[PageControl.TabIndex]).ClientAreaPanel.DockSite := False;
     DragManager.DragStart(TCDManagerItem(DockItems[PageControl.TabIndex]).Control, False, 1);
   end;
@@ -187,12 +185,12 @@ begin
 
   TabImageList := TImageList.Create(ADockSite); //FDockSite);
   with TabImageList do begin
-    Name := DockSite.Name + 'ImageList';
+    Name := GetUniqueName(DockSite.Name + 'ImageList');
   end;
   PageControl := TPageControl.Create(ADockSite); //FDockSite);
   with PageControl do begin
     Parent := ADockSite;
-    Name := Self.DockSite.Name + 'TabControl';
+    Name := GetUniqueName(Self.DockSite.Name + 'TabControl');
     Visible := True;
     //Align := alTop;
     //Height := 24;
@@ -215,7 +213,7 @@ begin
   //TabImageList.Clear;
   for I := 0 to ADockSite.DockClientCount - 1 do
     InsertControlNoUpdate(ADockSite.DockClients[I], alNone);
-  TabControlChange(Self);
+  //TabControlChange(Self);
   //TCDManagerTabs(Self).TabControlChange(Self);
 end;
 
@@ -286,6 +284,39 @@ end;
 procedure TCDManagerTabs.RemoveControl(Control: TControl);
 begin
   inherited RemoveControl(Control);
+end;
+
+function TCDManagerTabs.GetHeaderPos: THeaderPos;
+begin
+  Result := inherited;
+end;
+
+procedure TCDManagerTabs.SetHeaderPos(const AValue: THeaderPos);
+begin
+  inherited SetHeaderPos(AValue);
+  with PageControl do
+  case AValue of
+    hpAuto, hpTop: begin
+      //Align := alTop;
+      TabPosition := tpTop;
+      Height := GrabberSize;
+    end;
+    hpLeft: begin
+      //Align := alLeft;
+      TabPosition := tpLeft;
+      Width := GrabberSize;
+    end;
+    hpRight: begin
+      //Align := alRight;
+      TabPosition := tpRight;
+      Width := GrabberSize;
+    end;
+    hpBottom: begin
+      //Align := alBottom;
+      TabPosition := tpBottom;
+      Height := GrabberSize;
+    end;
+  end;
 end;
 
 procedure TCDManagerTabs.InsertControlPanel(AControl: TControl; InsertAt: TAlign;
@@ -374,36 +405,6 @@ begin
     end;
   end;
 end;
-
-procedure TCDManagerTabs.SetTabsPos(const AValue: THeaderPos);
-begin
-  if FTabsPos = AValue then Exit;
-  FTabsPos := AValue;
-  with PageControl do
-  case AValue of
-    hpAuto, hpTop: begin
-      Align := alTop;
-      TabPosition := tpTop;
-      Height := GrabberSize;
-    end;
-    hpLeft: begin
-      Align := alLeft;
-      TabPosition := tpLeft;
-      Width := GrabberSize;
-    end;
-    hpRight: begin
-      Align := alRight;
-      TabPosition := tpRight;
-      Width := GrabberSize;
-    end;
-    hpBottom: begin
-      Align := alBottom;
-      TabPosition := tpBottom;
-      Height := GrabberSize;
-    end;
-  end;
-end;
-
 
 end.
 

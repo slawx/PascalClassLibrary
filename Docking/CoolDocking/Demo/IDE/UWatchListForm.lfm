@@ -8,12 +8,12 @@ object WatchListForm: TWatchListForm
   ClientWidth = 320
   LCLVersion = '0.9.31'
   object Memo1: TMemo
-    Left = 4
-    Height = 232
-    Top = 4
-    Width = 312
+    Left = 2
+    Height = 236
+    Top = 2
+    Width = 316
     Align = alClient
-    BorderSpacing.Around = 4
+    BorderSpacing.Around = 2
     TabOrder = 0
   end
   object CoolDockClient1: TCDClient

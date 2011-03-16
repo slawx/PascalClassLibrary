@@ -13,9 +13,15 @@ type
   { TCDPopupMenu }
 
   TCDPopupMenu = class(TPopupMenu)
+  private
+    procedure PopupExecute(Sender: TObject);
   public
     Manager: TCDManagerBase;
+    PositionMenu: TMenuItem;
+    StyleMenu: TMenuItem;
+    LockedMenu: TMenuItem;
     constructor Create(AManager: TCDManagerBase);
+    procedure UncheckMenuGroup(Item: TMenuItem);
     procedure PopupMenuListClick(Sender: TObject);
     procedure PopupMenuTabsClick(Sender: TObject);
     procedure PopupMenuPopupListClick(Sender: TObject);
@@ -29,6 +35,7 @@ type
     procedure PopupMenuPositionBottomClick(Sender: TObject);
     procedure PopupMenuUndockClick(Sender: TObject);
     procedure PopupMenuCustomizeClick(Sender: TObject);
+    procedure PopupMenuLockedClick(Sender: TObject);
   end;
 
 implementation
@@ -54,9 +61,27 @@ resourcestring
   SCustomize = 'Customize...';
   SEnterNewWindowName = 'Enter new window name';
   SRenameWindow = 'Rename window';
+  SLocked = 'Locked';
 
 
 { TCDPopupMenu }
+
+procedure TCDPopupMenu.UncheckMenuGroup(Item: TMenuItem);
+var
+  I: Integer;
+begin
+  for I := 0 to Item.Count - 1 do
+    Item.Items[I].Checked := False;
+end;
+
+procedure TCDPopupMenu.PopupExecute(Sender: TObject);
+begin
+  UncheckMenuGroup(StyleMenu);
+  StyleMenu.Items[Integer(TCDManager(Manager).DockStyle)].Checked := True;
+  UncheckMenuGroup(PositionMenu);
+  PositionMenu.Items[Integer(TCDManager(Manager).HeaderPos)].Checked := True;;
+  LockedMenu.Checked := TCDManager(Manager).Locked;
+end;
 
 constructor TCDPopupMenu.Create(AManager: TCDManagerBase);
 var
@@ -67,60 +92,61 @@ begin
   inherited Create(nil);
   Manager := AManager;
 
-  Name := TCDManager(AManager).DockSite.Name + '_' + 'PopupMenu';
+  Name := GetUniqueName(TCDManager(AManager).DockSite.Name + 'PopupMenu');
+  OnPopup := PopupExecute;
 
-  NewMenuItem := TMenuItem.Create(Self);
-  NewMenuItem.Caption := SDockStyle;
-  Items.Add(NewMenuItem);
+  StyleMenu := TMenuItem.Create(Self);
+  StyleMenu.Caption := SDockStyle;
+  Items.Add(StyleMenu);
 
-  NewMenuItem2 := TMenuItem.Create(NewMenuItem);
+  NewMenuItem2 := TMenuItem.Create(StyleMenu);
   NewMenuItem2.Caption := SDockList;
   NewMenuItem2.OnClick := PopupMenuListClick;
-  NewMenuItem.Add(NewMenuItem2);
+  StyleMenu.Add(NewMenuItem2);
 
-  NewMenuItem2 := TMenuItem.Create(NewMenuItem);
+  NewMenuItem2 := TMenuItem.Create(StyleMenu);
   NewMenuItem2.Caption := SDockTabs;
   NewMenuItem2.OnClick := PopupMenuTabsClick;
-  NewMenuItem.Add(NewMenuItem2);
+  StyleMenu.Add(NewMenuItem2);
 
-  NewMenuItem2 := TMenuItem.Create(NewMenuItem);
-  NewMenuItem2.Caption := SDockPopupList;
-  NewMenuItem2.OnClick := PopupMenuPopupListClick;
-  NewMenuItem.Add(NewMenuItem2);
-
-  NewMenuItem2 := TMenuItem.Create(NewMenuItem);
+  NewMenuItem2 := TMenuItem.Create(StyleMenu);
   NewMenuItem2.Caption := SDockPopupTabs;
   NewMenuItem2.OnClick := PopupMenuPopupTabsClick;
-  NewMenuItem.Add(NewMenuItem2);
+  StyleMenu.Add(NewMenuItem2);
 
-  NewMenuItem := TMenuItem.Create(Self);
-  NewMenuItem.Caption := SPosition;
-  Items.Add(NewMenuItem);
+  NewMenuItem2 := TMenuItem.Create(StyleMenu);
+  NewMenuItem2.Caption := SDockPopupList;
+  NewMenuItem2.OnClick := PopupMenuPopupListClick;
+  StyleMenu.Add(NewMenuItem2);
 
-  NewMenuItem2 := TMenuItem.Create(NewMenuItem);
+  PositionMenu := TMenuItem.Create(Self);
+  PositionMenu.Caption := SPosition;
+  Items.Add(PositionMenu);
+
+  NewMenuItem2 := TMenuItem.Create(PositionMenu);
   NewMenuItem2.Caption := SPositionAuto;
   NewMenuItem2.OnClick := PopupMenuPositionAutoClick;
-  NewMenuItem.Add(NewMenuItem2);
+  PositionMenu.Add(NewMenuItem2);
 
-  NewMenuItem2 := TMenuItem.Create(NewMenuItem);
-  NewMenuItem2.Caption := SPositionTop;
-  NewMenuItem2.OnClick := PopupMenuPositionTopClick;
-  NewMenuItem.Add(NewMenuItem2);
-
-  NewMenuItem2 := TMenuItem.Create(NewMenuItem);
+  NewMenuItem2 := TMenuItem.Create(PositionMenu);
   NewMenuItem2.Caption := SPositionLeft;
   NewMenuItem2.OnClick := PopupMenuPositionLeftClick;
-  NewMenuItem.Add(NewMenuItem2);
+  PositionMenu.Add(NewMenuItem2);
 
-  NewMenuItem2 := TMenuItem.Create(NewMenuItem);
-  NewMenuItem2.Caption := SPositionBottom;
-  NewMenuItem2.OnClick := PopupMenuPositionBottomClick;
-  NewMenuItem.Add(NewMenuItem2);
+  NewMenuItem2 := TMenuItem.Create(PositionMenu);
+  NewMenuItem2.Caption := SPositionTop;
+  NewMenuItem2.OnClick := PopupMenuPositionTopClick;
+  PositionMenu.Add(NewMenuItem2);
 
-  NewMenuItem2 := TMenuItem.Create(NewMenuItem);
+  NewMenuItem2 := TMenuItem.Create(PositionMenu);
   NewMenuItem2.Caption := SPositionRight;
   NewMenuItem2.OnClick := PopupMenuPositionRightClick;
-  NewMenuItem.Add(NewMenuItem2);
+  PositionMenu.Add(NewMenuItem2);
+
+  NewMenuItem2 := TMenuItem.Create(PositionMenu);
+  NewMenuItem2.Caption := SPositionBottom;
+  NewMenuItem2.OnClick := PopupMenuPositionBottomClick;
+  PositionMenu.Add(NewMenuItem2);
 
   NewMenuItem := TMenuItem.Create(Self);
   NewMenuItem.Caption := SCloseForm;
@@ -141,6 +167,11 @@ begin
   NewMenuItem.Caption := SCustomize;
   NewMenuItem.OnClick := PopupMenuCustomizeClick;
   Items.Add(NewMenuItem);
+
+  LockedMenu := TMenuItem.Create(Self);
+  LockedMenu.Caption := SLocked;
+  LockedMenu.OnClick := PopupMenuLockedClick;
+  Items.Add(LockedMenu);
 end;
 
 procedure TCDPopupMenu.PopupMenuTabsClick(Sender: TObject);
@@ -199,7 +230,7 @@ procedure TCDPopupMenu.PopupMenuPositionAutoClick(Sender: TObject);
 begin
   if PopupComponent is TPageControl then
   with TPageControl(PopupComponent) do begin
-    TCDManagerTabs(Manager).TabsPos := hpAuto;
+    TCDManagerTabs(Manager).HeaderPos := hpAuto;
   end else
   if PopupComponent is TCDHeader then
   with TCDHeader(PopupComponent) do begin
@@ -211,7 +242,7 @@ procedure TCDPopupMenu.PopupMenuPositionLeftClick(Sender: TObject);
 begin
   if PopupComponent is TPageControl then
   with TPageControl(PopupComponent) do begin
-    TCDManagerTabs(Manager).TabsPos := hpLeft;
+    TCDManagerTabs(Manager).HeaderPos := hpLeft;
   end else
   if PopupComponent is TCDHeader then
   with TCDHeader(PopupComponent) do begin
@@ -223,7 +254,7 @@ procedure TCDPopupMenu.PopupMenuPositionRightClick(Sender: TObject);
 begin
   if PopupComponent is TPageControl then
   with TPageControl(PopupComponent) do begin
-    TCDManagerTabs(Manager).TabsPos := hpRight;
+    TCDManagerTabs(Manager).HeaderPos := hpRight;
   end else
   if PopupComponent is TCDHeader then
   with TCDHeader(PopupComponent) do begin
@@ -235,7 +266,7 @@ procedure TCDPopupMenu.PopupMenuPositionTopClick(Sender: TObject);
 begin
   if PopupComponent is TPageControl then
   with TPageControl(PopupComponent) do begin
-    TCDManagerTabs(Manager).TabsPos := hpTop;
+    TCDManagerTabs(Manager).HeaderPos := hpTop;
   end else
   if PopupComponent is TCDHeader then
   with TCDHeader(PopupComponent) do begin
@@ -247,7 +278,7 @@ procedure TCDPopupMenu.PopupMenuPositionBottomClick(Sender: TObject);
 begin
   if PopupComponent is TPageControl then
   with TPageControl(PopupComponent) do begin
-    TCDManagerTabs(Manager).TabsPos := hpBottom;
+    TCDManagerTabs(Manager).HeaderPos := hpBottom;
   end else
   if PopupComponent is TCDHeader then
   with TCDHeader(PopupComponent) do begin
@@ -277,6 +308,18 @@ begin
   if Assigned(Master) and
     Assigned(Master.Customize) then
     TCDCustomize(Master.Customize).Execute;
+end;
+
+procedure TCDPopupMenu.PopupMenuLockedClick(Sender: TObject);
+begin
+  if PopupComponent is TPageControl then
+  with TPageControl(PopupComponent) do begin
+    TCDManagerTabs(Manager).Locked := not TCDManagerTabs(Manager).Locked;
+  end else
+  if PopupComponent is TCDHeader then
+  with TCDHeader(PopupComponent) do begin
+    TCDManagerTabs(Manager).Locked := not TCDManagerTabs(Manager).Locked;
+  end;
 end;
 
 procedure TCDPopupMenu.PopupMenuListClick(Sender: TObject);

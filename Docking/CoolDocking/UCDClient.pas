@@ -16,12 +16,16 @@ const
   GrabberSize = 22;
 
 type
+
+  { TCDClient }
+
   TCDClient = class(TCDClientBase)
   private
     FDockable: Boolean;
     FFloatable: Boolean;
     procedure SetDockable(const AValue: Boolean);
     procedure SetFloatable(const AValue: Boolean);
+    procedure SetPanel(const AValue: TPanel); override;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -75,6 +79,19 @@ procedure TCDClient.SetFloatable(const AValue: Boolean);
 begin
   if FFloatable = AValue then Exit;
   FFloatable := AValue;
+end;
+
+procedure TCDClient.SetPanel(const AValue: TPanel);
+begin
+  inherited SetPanel(AValue);
+  if not (csDesigning in ComponentState) then begin
+    if Assigned(Panel) then
+    with Panel do begin
+      DockSite := True;
+      UseDockManager := True;
+      DockManager := TCDManagerRegions.Create(Panel);
+    end;
+  end;
 end;
 
 constructor TCDClient.Create(AOwner: TComponent);

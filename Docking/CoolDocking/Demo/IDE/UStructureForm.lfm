@@ -8,12 +8,12 @@ object StructureForm: TStructureForm
   ClientWidth = 230
   LCLVersion = '0.9.31'
   object TreeView1: TTreeView
-    Left = 4
-    Height = 330
-    Top = 4
-    Width = 222
+    Left = 2
+    Height = 334
+    Top = 2
+    Width = 226
     Align = alClient
-    BorderSpacing.Around = 4
+    BorderSpacing.Around = 2
     DefaultItemHeight = 15
     TabOrder = 0
   end

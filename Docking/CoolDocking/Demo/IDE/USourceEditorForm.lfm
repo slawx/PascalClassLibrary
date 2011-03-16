@@ -8,11 +8,12 @@ object SourceEditorForm: TSourceEditorForm
   ClientWidth = 448
   LCLVersion = '0.9.31'
   inline SynEdit1: TSynEdit
-    Left = 0
-    Height = 349
-    Top = 0
-    Width = 448
+    Left = 2
+    Height = 345
+    Top = 2
+    Width = 444
     Align = alClient
+    BorderSpacing.Around = 2
     Font.Height = -13
     Font.Name = 'Courier New'
     Font.Pitch = fpFixed

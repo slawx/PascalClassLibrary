@@ -5,8 +5,8 @@ unit UCDManagerTabsPopup;
 interface
 
 uses
-  Classes, Controls, SysUtils, ComCtrls, ExtCtrls, UCDCommon,
-  UCDManagerTabs;
+  Classes, Controls, SysUtils, ComCtrls, ExtCtrls, UCDCommon, UCDManager,
+  UCDManagerTabs, Forms;
 
 type
   { TCDAutoHide }
@@ -39,32 +39,39 @@ type
 
   { TCDManagerTabsPopupItem }
 
-  TCDManagerTabsPopupItem = class
-    constructor Create;
+  TCDManagerTabsPopupItem = class(TCDManagerTabsItem)
+    Hidden: Boolean;
+    constructor Create; override;
   end;
 
-  { TCDStylePopupTabs }
+  { TCDManagerTabsPopup }
 
-  TCDStylePopupTabs = class(TCDManagerTabs)
+  TCDManagerTabsPopup = class(TCDManagerTabs)
+  private
+    procedure InsertControlNoUpdate(Control: TControl; InsertAt: TAlign); override;
   public
     AutoHideEnabled: Boolean;
     AutoHide: TCDAutoHide;
     PopupPanel: TPanel;
-    constructor Create(ADockSite: TWinControl);
+    procedure SetHeaderPos(const AValue: THeaderPos); override;
+    procedure PinShowButtonClick(Sender: TObject);
+    procedure PinHideButtonClick(Sender: TObject);
+    procedure TabControlChange(Sender: TObject); override;
+    constructor Create(ADockSite: TWinControl); override;
     destructor Destroy; override;
-  private
   end;
 
 
 implementation
 
 uses
-  UCDClient;
+  UCDClient, UCDManagerRegions;
 
 { TCDManagerTabsPopupItem }
 
 constructor TCDManagerTabsPopupItem.Create;
 begin
+  inherited;
 end;
 
 { TCDAutoHide }
@@ -120,6 +127,7 @@ end;
 procedure TCDAutoHide.Show;
 begin
   StartBounds := Control.BoundsRect;
+  Control.Show;
   Control.Align := alCustom;
   Direction := 1;
   Position := 0;
@@ -164,24 +172,114 @@ begin
   UpdateBounds;
 end;
 
-{ TCDStylePopupTabs }
+{ TCDManagerTabsPopup }
 
+procedure TCDManagerTabsPopup.PinShowButtonClick(Sender: TObject);
+begin
 
-constructor TCDStylePopupTabs.Create(ADockSite: TWinControl);
+end;
+
+procedure TCDManagerTabsPopup.PinHideButtonClick(Sender: TObject);
+begin
+
+end;
+
+procedure TCDManagerTabsPopup.TabControlChange(Sender: TObject);
+begin
+  inherited TabControlChange(Sender);
+  if PopupPanel.ControlCount > 0 then
+    PopupPanel.Controls[0].Parent := nil;
+  AutoHide.Hide;
+  if PageControl.TabIndex >= 0 then begin
+    TCDManagerTabsPopupItem(DockItems[PageControl.TabIndex]).Control.Parent := PopupPanel;
+    AutoHide.Control.Align := alCustom;
+    with AutoHide.Control do
+    case AutoHide.TabPosition of
+      tpTop: SetBounds(PageControl.Left, PageControl.Top + PageControl.Height,
+        PageControl.Width, Height);
+      tpLeft: SetBounds(PageControl.Left + PageControl.Width, PageControl.Top,
+        Width, PageControl.Height);
+      tpBottom: SetBounds(PageControl.Left, PageControl.Top - Height,
+        PageControl.Width, Height);
+      tpRight: SetBounds(PageControl.Left - Width, PageControl.Top,
+        Width, PageControl.Height);
+    end;
+    AutoHide.Show;
+  end;
+end;
+
+constructor TCDManagerTabsPopup.Create(ADockSite: TWinControl);
 var
   I: Integer;
 begin
   inherited;
   FDockStyle := dsPopupTabs;
-  AutoHide := TCDAutoHide.Create;
   PopupPanel := TPanel.Create(nil);
+  PopupPanel.DockManager := TCDManagerRegions.Create(PopupPanel);
+  PopupPanel.Visible := True;
+  AutoHide := TCDAutoHide.Create;
+  AutoHide.Control := PopupPanel;
+
+  for I := 0 to DockItems.Count - 1 do begin
+//    if TCDManagerTabsPopupItem(DockItems[I]).Hidden then
+//      if
+  end;
 end;
 
-destructor TCDStylePopupTabs.Destroy;
+destructor TCDManagerTabsPopup.Destroy;
 begin
   AutoHide.Free;
   PopupPanel.Free;
   inherited Destroy;
+end;
+
+procedure TCDManagerTabsPopup.InsertControlNoUpdate(Control: TControl; InsertAt: TAlign);
+var
+  NewTabSheet: TTabSheet;
+  NewItem: TCDManagerTabsItem;
+begin
+  //inherited;
+  begin
+    NewItem := TCDManagerTabsPopupItem.Create;
+    with NewItem do begin
+      //Panel.Parent := Self.DockSite;
+      Manager := Self;
+      //if DockStyle = dsList then Visible := True;
+      //Align := alClient;
+      //Header.PopupMenu := Self.PopupMenu;
+      //PopupMenu.Parent := Self.DockSite;
+    end;
+    if (Control is TForm) and Assigned((Control as TForm).Icon) then
+      NewItem.Icon.Picture.Assign((Control as TForm).Icon);
+
+    NewItem.Control := Control;
+    Control.AddHandlerOnVisibleChanged(NewItem.VisibleChange);
+    //AControl.Parent := NewItem.ClientAreaPanel;
+    Control.Align := alClient;
+    if (InsertAt = alTop) or (InsertAt = alLeft) then
+      DockItems.Insert(0, NewItem)
+      else DockItems.Add(NewItem);
+
+  end;
+
+    NewTabSheet := TTabSheet.Create(PageControl);
+    NewTabSheet.PageControl := PageControl;
+    NewTabSheet.Caption := Control.Caption;
+    NewTabSheet.ImageIndex := TabImageList.Count;
+    NewTabSheet.TabVisible := Control.Visible;
+    Control.Parent := NewTabSheet;
+    TabImageList.Add(NewItem.Icon.Picture.Bitmap, nil);
+//    if Assigned(NewItem.Splitter) then
+//      NewItem.Splitter.Visible := False;
+//    NewItem.ClientAreaPanel.Visible := False;
+//    NewItem.Visible := False;
+    //NewItem.Parent := NewTabSheet;
+end;
+
+procedure TCDManagerTabsPopup.SetHeaderPos(const AValue: THeaderPos);
+begin
+  inherited SetHeaderPos(AValue);
+  AutoHide.TabPosition := HeaderPosToTabPos(AValue);
 end;
 
 end.

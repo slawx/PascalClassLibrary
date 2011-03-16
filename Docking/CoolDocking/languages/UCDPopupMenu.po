@@ -33,6 +33,10 @@ msgstr ""
 msgid "Enter new window name"
 msgstr ""
 
+#: ucdpopupmenu.slocked
+msgid "Locked"
+msgstr ""
+
 #: ucdpopupmenu.sposition
 msgid "Position"
 msgstr ""

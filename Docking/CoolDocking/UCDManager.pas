@@ -13,8 +13,6 @@ const
   GrabberSize = 22;
 
 type
-  THeaderPos = (hpAuto, hpLeft, hpTop, hpRight, hpBottom);
-
   TCDManager = class;
   TCDManagerItem = class;
 
@@ -22,6 +20,7 @@ type
 
   TCDHeaderButton = class
     Icon: TImage;
+    Visible: Boolean;
     constructor Create;
     destructor Destroy; override;
   end;
@@ -31,7 +30,6 @@ type
   TCDHeader = class(TPanel)
   private
     procedure CloseButtonClick(Sender: TObject);
-    procedure DrawGrabber(Canvas: TCanvas; AControl: TControl);
     procedure PaintExecute(Sender: TObject);
     procedure RearrangeButtons;
   public
@@ -39,6 +37,7 @@ type
     Title: TLabel;
     Icon: TImage;
     ManagerItem: TCDManagerItem;
+    procedure DrawGrabber(Canvas: TCanvas; AControl: TControl);
     constructor Create(TheOwner: TComponent); override;
     destructor Destroy; override;
   end;
@@ -71,7 +70,7 @@ type
       Shift: TShiftState; X, Y: Integer);
     procedure Paint(Sender: TObject); virtual;
     procedure VisibleChange(Sender: TObject); virtual;
-    constructor Create;
+    constructor Create; virtual;
     destructor Destroy; override;
   end;
 
@@ -80,16 +79,16 @@ type
   TCDManager = class(TCDManagerBase)
   private
     FDockSite: TWinControl;
+    FHeaderPos: THeaderPos;
     function GetDockSite: TWinControl;
-    function GetHeaderPos: THeaderPos;
     function GetMoveDuration: Integer;
     procedure SetDockStyle(const AValue: TCDStyleType);
-    procedure SetHeaderPos(const AValue: THeaderPos);
     procedure SetMoveDuration(const AValue: Integer);
     procedure SetVisible(const AValue: Boolean);
   public
-    FDockStyle: TCDStyleType;
+    Locked: Boolean;
     PopupMenu: TCDPopupMenu;
+    FDockStyle: TCDStyleType;
     constructor Create(ADockSite: TWinControl); override;
     destructor Destroy; override;
     procedure UpdateClientSize; virtual;
@@ -99,6 +98,8 @@ type
     procedure InsertControlPanel(Control: TControl; InsertAt: TAlign;
       DropCtl: TControl); virtual;
     procedure DoSetVisible(const AValue: Boolean); virtual;
+    procedure SetHeaderPos(const AValue: THeaderPos); virtual;
+    function GetHeaderPos: THeaderPos; virtual;
 
     // Inherited from TDockManager
     procedure BeginUpdate; override;
@@ -130,12 +131,25 @@ type
     property Visible: Boolean write SetVisible;
   end;
 
+function HeaderPosToTabPos(HeaderPos: THeaderPos): TTabPosition;
+
 
 implementation
 
 uses
   UCDManagerRegions, UCDManagerTabs, UCDManagerRegionsPopup, UCDManagerTabsPopup,
   UCDResource;
+
+function HeaderPosToTabPos(HeaderPos: THeaderPos): TTabPosition;
+begin
+  case HeaderPos of
+    hpBottom: Result := tpBottom;
+    hpLeft: Result := tpLeft;
+    hpTop: Result := tpTop;
+    hpRight: Result := tpRight;
+    hpAuto: Result := tpLeft;
+  end;
+end;
 
 { TCDHeaderButton }
 
@@ -203,21 +217,7 @@ end;
 { TCDManagerItem }
 
 procedure TCDManagerItem.Paint(Sender: TObject);
-var
-  I: Integer;
-  R: TRect;
 begin
-(*  if not (csDesigning in ComponentState) then
-  if Assigned(Control) then begin
-    R := Control.ClientRect;
-    Canvas.FillRect(R);
-    Header.Visible := ShowHeader;
-    if ShowHeader then begin
-      if ClientAreaPanel.DockClientCount = 0 then
-        Header.DrawGrabber(Canvas, Control) else
-      Header.DrawGrabber(Canvas, ClientAreaPanel);
-    end;
-  end;*)
 end;
 
 constructor TCDManagerItem.Create;
@@ -247,8 +247,10 @@ begin
   if (Button = mbLeft) then begin
     //(Control as TWinControl).DockSite := False;
     //ClientAreaPanel.DockSite := False;
-    (Control as TWinControl).BeginDrag(False, 10);
-    DragManager.DragStart(Control, False, 1);
+    if not Manager.Locked then begin
+      (Control as TWinControl).BeginDrag(False, 10);
+      DragManager.DragStart(Control, False, 1);
+    end;
   end;
 end;
 
@@ -309,7 +311,7 @@ end;
 
 function TCDManager.GetHeaderPos: THeaderPos;
 begin
-
+  Result := FHeaderPos;
 end;
 
 function TCDManager.GetMoveDuration: Integer;
@@ -526,7 +528,7 @@ begin
       NewManager := TCDManagerPopupRegions.Create(FDockSite);
     end else
     if AValue = dsPopupTabs then begin
-      NewManager := TCDStylePopupTabs.Create(FDockSite);
+      NewManager := TCDManagerTabsPopup.Create(FDockSite);
     end;
     if DockSite.DockManager is TCDManager then
       NewManager.Assign(TCDManager(DockSite.DockManager));
@@ -537,7 +539,7 @@ end;
 
 procedure TCDManager.SetHeaderPos(const AValue: THeaderPos);
 begin
-
+  FHeaderPos := AValue;
 end;
 
 procedure TCDManager.SetMoveDuration(const AValue: Integer);
@@ -599,13 +601,23 @@ begin
     DataModule2.ImageList1.GetBitmap(0, Icon.Picture.Bitmap);
     Icon.Parent := Self;
     Icon.OnClick := CloseButtonClick;
+    Visible := True;
   end;
   Buttons.Add(NewButton);
   NewButton := TCDHeaderButton.Create;
   with NewButton do begin
     DataModule2.ImageList1.GetBitmap(1, Icon.Picture.Bitmap);
     Icon.Parent := Self;
-    Icon.OnClick := CloseButtonClick;
+    Icon.OnClick := nil;
+    Visible := False;
+  end;
+  Buttons.Add(NewButton);
+  NewButton := TCDHeaderButton.Create;
+  with NewButton do begin
+    DataModule2.ImageList1.GetBitmap(2, Icon.Picture.Bitmap);
+    Icon.Parent := Self;
+    Icon.OnClick := nil;
+    Visible := False;
   end;
   Buttons.Add(NewButton);
   RearrangeButtons;
@@ -639,6 +651,7 @@ begin
     if Icon.Picture.Width > 0 then Title.Left := 8 + Icon.Picture.Width
       else Title.Left := 6;
     Title.Caption := AControl.Caption;
+    RearrangeButtons;
   end;
 end;
 
@@ -701,8 +714,9 @@ var
 begin
   LeftPos := Self.Width;
   for I := 0 to Buttons.Count - 1 do
-  with TCDHeaderButton(Buttons[I]), Icon do begin
-    Anchors := [akRight, akTop];
+  with TCDHeaderButton(Buttons[I]) do
+  if Visible then begin
+    Icon.Anchors := [akRight, akTop];
     //Icon.Picture.Bitmap.SetSize(16, 16);
     Icon.Width := Icon.Picture.Bitmap.Width;
     Icon.Height := Icon.Picture.Bitmap.Height;
@@ -711,8 +725,8 @@ begin
     Icon.Top := (GrabberSize - Icon.Height) div 2;
 
     //ShowMessage(IntToStr(Icon.Width) + ' ' +  InttoStr(Icon.Height));
-    Visible := True;
-  end;
+    Icon.Visible := True;
+  end else Icon.Visible := False;
 end;
 
 procedure TCDHeader.CloseButtonClick(Sender: TObject);

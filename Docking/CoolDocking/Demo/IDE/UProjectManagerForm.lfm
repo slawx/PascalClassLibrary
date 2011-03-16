@@ -8,18 +8,18 @@ object ProjectManagerForm: TProjectManagerForm
   ClientWidth = 214
   LCLVersion = '0.9.31'
   object TreeView1: TTreeView
-    Left = 4
-    Height = 379
-    Top = 4
-    Width = 206
+    Left = 2
+    Height = 383
+    Top = 2
+    Width = 210
     Align = alClient
-    BorderSpacing.Around = 4
+    BorderSpacing.Around = 2
     DefaultItemHeight = 15
     TabOrder = 0
   end
   object CoolDockClient1: TCDClient
-    Floatable = False
     Master = MainForm.CoolDockMaster1
+    Floatable = False
     left = 108
     top = 64
   end

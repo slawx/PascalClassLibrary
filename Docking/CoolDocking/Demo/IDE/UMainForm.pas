@@ -11,7 +11,7 @@ uses
   UMessagesForm, UCallStackForm, ULocalVariablesForm, UToDoListForm,
   UWatchListForm, UThreadStatusForm, USourceEditorForm, UCDWindowList,
   UCDCustomize, UComponentTree, UCDConjoinForm, UCDManager,
-  UCDMaster;
+  UCDMaster, UCDCommon;
 
 const
   DefaultLayoutName = 'Default Layout';
@@ -159,7 +159,8 @@ begin
   DefaultLayout := CoolDockLayoutList1.FindByName(DefaultLayoutName);
   if not Assigned(DefaultLayout) then begin
     NewContainer1 := TCDManager(DockPanel.DockManager).CreateContainer(alRight);
-    NewContainer1.Show;
+    TCDManager(NewContainer1.DockManager).DockStyle := dsPopupTabs;
+    TCDManager(NewContainer1.DockManager).HeaderPos := hpLeft;
 
     StructureForm.ManualDock(NewContainer1, nil, alTop);
     StructureForm.Show;
@@ -167,16 +168,19 @@ begin
     ObjectInspectorForm.Show;
 
     NewContainer2 := TCDManager(DockPanel.DockManager).CreateContainer(alRight);
-    NewContainer2.Show;
+    TCDManager(NewContainer2.DockManager).DockStyle := dsPopupTabs;
+    TCDManager(NewContainer2.DockManager).HeaderPos := hpRight;
     ProjectManagerForm.ManualDock(NewContainer2, nil, alTop);
     ProjectManagerForm.Show;
     ToolPaletteForm.ManualDock(NewContainer2, nil, alTop);
     ToolPaletteForm.Show;
 
     NewContainer1.ManualDock(DockPanel);
+    NewContainer1.Show;
     SourceEditorForm.ManualDock(DockPanel);
     SourceEditorForm.Show;
     NewContainer2.ManualDock(DockPanel);
+    NewContainer2.Show;
 
     DefaultLayout := TCDLayout.Create;
     DefaultLayout.Name := DefaultLayoutName;

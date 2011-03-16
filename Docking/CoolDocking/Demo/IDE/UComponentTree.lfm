@@ -7,13 +7,14 @@ object ComponentTree: TComponentTree
   ClientHeight = 499
   ClientWidth = 411
   OnShow = FormShow
-  LCLVersion = '0.9.29'
+  LCLVersion = '0.9.31'
   object TreeView1: TTreeView
-    Left = 8
-    Height = 488
-    Top = 8
-    Width = 395
-    Anchors = [akTop, akLeft, akRight, akBottom]
+    Left = 2
+    Height = 495
+    Top = 2
+    Width = 407
+    Align = alClient
+    BorderSpacing.Around = 2
     DefaultItemHeight = 15
     TabOrder = 0
   end

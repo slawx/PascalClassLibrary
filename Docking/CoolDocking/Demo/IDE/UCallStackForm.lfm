@@ -1,13 +1,34 @@
 object CallStackForm: TCallStackForm
-  Left = 446
-  Height = 240
-  Top = 152
-  Width = 320
+  Left = 329
+  Height = 255
+  Top = 148
+  Width = 433
   Caption = 'Call Stack'
+  ClientHeight = 255
+  ClientWidth = 433
   LCLVersion = '0.9.31'
+  object ListView1: TListView
+    Left = 2
+    Height = 251
+    Top = 2
+    Width = 429
+    Align = alClient
+    BorderSpacing.Around = 2
+    Columns = <    
+      item
+      end    
+      item
+      end    
+      item
+      end    
+      item
+      end>
+    TabOrder = 0
+    ViewStyle = vsReport
+  end
   object CoolDockClient1: TCDClient
-    Floatable = False
     Master = MainForm.CoolDockMaster1
+    Floatable = False
     left = 59
     top = 52
   end

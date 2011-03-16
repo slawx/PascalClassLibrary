@@ -11,6 +11,7 @@ type
   TCDStyleType = (dsList, dsTabs, dsPopupTabs, dsPopupList);
   TCDHideType = (dhtPermanent, dhtTemporal);
   TCDDirection = (ddNone, ddHorizontal, ddVertical);
+  THeaderPos = (hpAuto, hpLeft, hpTop, hpRight, hpBottom);
 
   TCDMasterBase = class;
   TCDClientBase = class;
@@ -63,7 +64,8 @@ type
     FMaster: TCDMasterBase;
     FPanel: TPanel;
     procedure SetMaster(const AValue: TCDMasterBase);
-    procedure SetPanel(const AValue: TPanel);
+  public
+    procedure SetPanel(const AValue: TPanel); virtual;
   published
     property Master: TCDMasterBase read FMaster
       write SetMaster;
@@ -116,22 +118,10 @@ begin
 end;
 
 procedure TCDClientBase.SetPanel(const AValue: TPanel);
-var
-  OldPanel: TPanel;
 begin
   if FPanel = AValue then exit;
-  OldPanel := FPanel;
+  if Assigned(FPanel) then FPanel.DockSite := False;
   FPanel := AValue;
-  if not (csDesigning in ComponentState) then begin
-    if Assigned(FPanel) then
-    with FPanel do begin
-      DockSite := True;
-      UseDockManager := True;
-      //DockManager := TCoolDockManager.Create(FPanel);
-    end else begin
-      OldPanel.DockSite := False;
-    end;
-  end;
 end;
 
 { TCDConjoinFormBase }

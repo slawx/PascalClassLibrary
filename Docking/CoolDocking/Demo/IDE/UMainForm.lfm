@@ -1,20 +1,20 @@
 object MainForm: TMainForm
   Left = 217
-  Height = 457
+  Height = 419
   Top = 123
-  Width = 643
+  Width = 536
   Caption = 'CoolDocking Demo IDE'
-  ClientHeight = 438
-  ClientWidth = 643
+  ClientHeight = 400
+  ClientWidth = 536
   Menu = MainMenu1
   OnClose = FormClose
   OnShow = FormShow
   LCLVersion = '0.9.31'
   object DockPanel: TPanel
     Left = 0
-    Height = 412
+    Height = 374
     Top = 26
-    Width = 643
+    Width = 536
     Align = alClient
     BevelOuter = bvNone
     TabOrder = 0
@@ -23,7 +23,7 @@ object MainForm: TMainForm
     Left = 0
     Height = 26
     Top = 0
-    Width = 643
+    Width = 536
     Caption = 'ToolBar1'
     Images = ImageList1
     ParentShowHint = False
