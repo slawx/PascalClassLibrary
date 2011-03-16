@@ -14,6 +14,7 @@ uses
   UCDMaster;
 
 const
+  DefaultLayoutName = 'Default Layout';
   DockLayoutFileName = 'Layout.xml';
 
 type
@@ -22,6 +23,7 @@ type
 
   TMainForm = class(TForm)
   published
+    AResetDefaultLayout: TAction;
     AViewComponentTree: TAction;
     AExit: TAction;
     ANewFile: TAction;
@@ -64,6 +66,7 @@ type
     MenuItem25: TMenuItem;
     MenuItem26: TMenuItem;
     MenuItem27: TMenuItem;
+    MenuItem28: TMenuItem;
     MenuItem9: TMenuItem;
     MenuItem8: TMenuItem;
     MenuItem7: TMenuItem;
@@ -82,6 +85,7 @@ type
     procedure ADesktopSaveExecute(Sender: TObject);
     procedure AExitExecute(Sender: TObject);
     procedure ANewFileExecute(Sender: TObject);
+    procedure AResetDefaultLayoutExecute(Sender: TObject);
     procedure AViewComponentTreeExecute(Sender: TObject);
     procedure AViewThreadStatusExecute(Sender: TObject);
     procedure AViewCallStackExecute(Sender: TObject);
@@ -147,8 +151,6 @@ begin
 end;
 
 procedure TMainForm.InitDefaultDockLayout;
-const
-  DefaultLayoutName = 'Default Layout';
 var
   NewContainer1: TCDConjoinForm;
   NewContainer2: TCDConjoinForm;
@@ -238,6 +240,16 @@ end;
 procedure TMainForm.ANewFileExecute(Sender: TObject);
 begin
   SourceEditorForm.Show;
+end;
+
+procedure TMainForm.AResetDefaultLayoutExecute(Sender: TObject);
+var
+  DefaultLayout: TCDLayout;
+begin
+  DefaultLayout := CoolDockLayoutList1.FindByName(DefaultLayoutName);
+  if Assigned(DefaultLayout) then
+    CoolDockLayoutList1.Items.Remove(DefaultLayout);
+  InitDefaultDockLayout;
 end;
 
 procedure TMainForm.AViewComponentTreeExecute(Sender: TObject);

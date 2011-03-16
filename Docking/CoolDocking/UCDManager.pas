@@ -5,7 +5,7 @@ unit UCDManager;
 interface
 
 uses
-  Classes, SysUtils, UCDCommon, Controls, Contnrs,
+  Classes, SysUtils, UCDCommon, Controls, Contnrs, Dialogs,
   UCDPopupMenu, LCLType, LMessages, Graphics, Buttons,
   UCDConjoinForm, Menus, StdCtrls, ExtCtrls, Forms;
 
@@ -18,16 +18,27 @@ type
   TCDManager = class;
   TCDManagerItem = class;
 
+  { TCDHeaderButton }
+
+  TCDHeaderButton = class
+    Icon: TImage;
+    constructor Create;
+    destructor Destroy; override;
+  end;
+
+  { TCDHeader }
+
   TCDHeader = class(TPanel)
   private
     procedure CloseButtonClick(Sender: TObject);
     procedure DrawGrabber(Canvas: TCanvas; AControl: TControl);
+    procedure PaintExecute(Sender: TObject);
+    procedure RearrangeButtons;
   public
-    CloseButton: TSpeedButton;
+    Buttons: TObjectList; // TList<TCDHeaderButton>
     Title: TLabel;
     Icon: TImage;
     ManagerItem: TCDManagerItem;
-    Shape: TShape;
     constructor Create(TheOwner: TComponent); override;
     destructor Destroy; override;
   end;
@@ -52,12 +63,12 @@ type
 
   TCDManagerItem = class
   private
-    procedure DockPanelMouseDown(Sender: TObject; Button: TMouseButton;
-      Shift: TShiftState; X, Y: Integer);
     procedure ResizeExecute(Sender: TObject);
   public
     Control: TControl;
     Manager: TCDManager;
+    procedure DockPanelMouseDown(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
     procedure Paint(Sender: TObject); virtual;
     procedure VisibleChange(Sender: TObject); virtual;
     constructor Create;
@@ -123,7 +134,22 @@ type
 implementation
 
 uses
-  UCDManagerRegions, UCDManagerTabs, UCDManagerRegionsPopup, UCDManagerTabsPopup;
+  UCDManagerRegions, UCDManagerTabs, UCDManagerRegionsPopup, UCDManagerTabsPopup,
+  UCDResource;
+
+{ TCDHeaderButton }
+
+constructor TCDHeaderButton.Create;
+begin
+  inherited;
+  Icon := TImage.Create(nil);
+end;
+
+destructor TCDHeaderButton.Destroy;
+begin
+  Icon.Free;
+  inherited Destroy;
+end;
 
 { TCDPanelHeader }
 
@@ -141,6 +167,8 @@ begin
 //  Header.Shape.OnMouseDown := DockPanelMouseDown;
 //  Header.Title.OnMouseDown := DockPanelMouseDown;
   HeaderPos := hpTop;
+  Constraints.MinHeight := GrabberSize;
+  Align := alClient;
 
   ShowHeader := True;
   ControlPanel := TPanel.Create(Self);
@@ -163,8 +191,8 @@ begin
     //ManagerItem := Self;
   end;
   //OnResize := ResizeExecute;
-  BevelInner := bvNone;
-  BevelOuter := bvNone;
+  //BevelInner := bvNone;
+  //BevelOuter := bvNone;
 end;
 
 destructor TCDPanelHeader.Destroy;
@@ -194,6 +222,7 @@ end;
 
 constructor TCDManagerItem.Create;
 begin
+
 end;
 
 procedure TCDManagerItem.ResizeExecute(Sender: TObject);
@@ -212,14 +241,14 @@ procedure TCDManagerItem.DockPanelMouseDown(Sender: TObject;
   Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
   if Control is TForm then begin
-    //TForm(Control).SetFocus;
+    TForm(Control).SetFocus;
     Paint(Self);
   end;
   if (Button = mbLeft) then begin
     //(Control as TWinControl).DockSite := False;
     //ClientAreaPanel.DockSite := False;
-    //(Control as TWinControl).BeginDrag(False, 10);
-    //DragManager.DragStart(Control, False, 1);
+    (Control as TWinControl).BeginDrag(False, 10);
+    DragManager.DragStart(Control, False, 1);
   end;
 end;
 
@@ -548,18 +577,12 @@ end;
 { TCDHeader }
 
 constructor TCDHeader.Create(TheOwner: TComponent);
+var
+  NewButton: TCDHeaderButton;
 begin
   inherited Create(TheOwner);
-  Shape := TShape.Create(Self);
-  with Shape do begin
-    Parent := Self;
-    Anchors := [akRight, akBottom, akLeft, akTop];
-    Left := 1;
-    Top := 1;
-    Width := Self.Width - 2;
-    Height := Self.Height - 2;
-    Brush.Style := bsClear;
-  end;
+  OnPaint := PaintExecute;
+
   Title := TLabel.Create(Self);
   with Title do begin
     Parent := Self;
@@ -569,19 +592,24 @@ begin
     BevelInner := bvNone;
     BevelOuter := bvNone;
   end;
-  CloseButton := TSpeedButton.Create(Self);
-  with CloseButton do begin
-    Parent := Self;
-    Caption := 'X';
-    Font.Size := 6;
-    Width := GrabberSize - 8;
-    Height := GrabberSize - 8;
-    Anchors := [akRight, akTop];
-    Left := Self.Width - Width - 4;
-    Top := 4;
-    Visible := True;
-    OnClick := CloseButtonClick;
+  Buttons := TObjectList.Create;
+
+  NewButton := TCDHeaderButton.Create;
+  with NewButton do begin
+    DataModule2.ImageList1.GetBitmap(0, Icon.Picture.Bitmap);
+    Icon.Parent := Self;
+    Icon.OnClick := CloseButtonClick;
   end;
+  Buttons.Add(NewButton);
+  NewButton := TCDHeaderButton.Create;
+  with NewButton do begin
+    DataModule2.ImageList1.GetBitmap(1, Icon.Picture.Bitmap);
+    Icon.Parent := Self;
+    Icon.OnClick := CloseButtonClick;
+  end;
+  Buttons.Add(NewButton);
+  RearrangeButtons;
+
   Icon := TImage.Create(Self);
   with Icon do begin
     Parent := Self;
@@ -593,6 +621,7 @@ end;
 
 destructor TCDHeader.Destroy;
 begin
+  Buttons.Free;
   inherited Destroy;
 end;
 
@@ -610,6 +639,79 @@ begin
     if Icon.Picture.Width > 0 then Title.Left := 8 + Icon.Picture.Width
       else Title.Left := 6;
     Title.Caption := AControl.Caption;
+  end;
+end;
+
+procedure TCDHeader.PaintExecute(Sender: TObject);
+const
+  Corner: Integer = 2;
+  Border: Integer = 1;
+  BorderColor: TColor = $B9C3C6;
+  TopColor: TColor = $CFD6D9;
+  BottomColor: TColor = $DAE0E1;
+var
+  Points: array of TPoint;
+begin
+  with Canvas do begin
+    GradientFill(Rect(Border, Border, Width - Border,
+      Height - Border), TopColor, BottomColor, gdVertical);
+    Brush.Color := clBtnFace;
+    Brush.Style := bsSolid;
+    Pen.Color := clBtnFace;
+    Pen.Style := psSolid;
+    SetLength(Points, 3);
+    Points[0] := Point(Border, Border);
+    Points[1] := Point(Border, Border + Corner);
+    Points[2] := Point(Border + Corner, Border);
+    Polygon(Points);
+    Points[0] := Point(Width - 1 - Border, Border);
+    Points[1] := Point(Width - 1 - Border, Border + Corner);
+    Points[2] := Point(Width - 1 - Border - Corner, Border);
+    Polygon(Points);
+    Points[0] := Point(Border, Height - 1 - Border);
+    Points[1] := Point(Border, Height - 1 - Border - Corner);
+    Points[2] := Point(Border + Corner, Height - 1 - Border);
+    Polygon(Points);
+    Points[0] := Point(Width - 1 - Border, Height - 1 - Border);
+    Points[1] := Point(Width - 1 - Border, Height - 1 - Border - Corner);
+    Points[2] := Point(Width - 1 - Border - Corner, Height - 1 - Border);
+    Polygon(Points);
+
+    SetLength(Points, 9);
+    Points[0] := Point(Border, Border + Corner);
+    Points[1] := Point(Border + Corner, Border);
+    Points[2] := Point(Width - 1 - Border - Corner, Border);
+    Points[3] := Point(Width - 1 - Border, Border + Corner);
+    Points[4] := Point(Width - 1 - Border, Height - 1 - Border - Corner);
+    Points[5] := Point(Width - 1 - Border - Corner, Height - 1 - Border);
+    Points[6] := Point(Border + Corner, Height - 1 - Border);
+    Points[7] := Point(Border, Height - 1 - Border - Corner);
+    Points[8] := Point(Border, Border + Corner);
+    Pen.Color := BorderColor;
+    Polyline(Points);
+  end;
+end;
+
+procedure TCDHeader.RearrangeButtons;
+const
+  Separation: Integer = 4;
+var
+  LeftPos: Integer;
+  I: Integer;
+begin
+  LeftPos := Self.Width;
+  for I := 0 to Buttons.Count - 1 do
+  with TCDHeaderButton(Buttons[I]), Icon do begin
+    Anchors := [akRight, akTop];
+    //Icon.Picture.Bitmap.SetSize(16, 16);
+    Icon.Width := Icon.Picture.Bitmap.Width;
+    Icon.Height := Icon.Picture.Bitmap.Height;
+    LeftPos := LeftPos - Icon.Width - Separation;
+    Icon.Left := LeftPos;
+    Icon.Top := (GrabberSize - Icon.Height) div 2;
+
+    //ShowMessage(IntToStr(Icon.Width) + ' ' +  InttoStr(Icon.Height));
+    Visible := True;
   end;
 end;
 

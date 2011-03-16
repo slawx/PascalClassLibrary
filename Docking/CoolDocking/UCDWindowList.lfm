@@ -1,4 +1,4 @@
-object CoolDockWindowListForm: TCoolDockWindowListForm
+object CDWindowListForm: TCDWindowListForm
   Left = 361
   Height = 256
   Top = 142

@@ -8,8 +8,8 @@ interface
 
 uses
   UCDClient, UCDCustomize, UCDWindowList, UCDManagerTabs, UCDManagerRegions, 
-  UCDManagerTabsPopup, UCDManagerRegionsPopup, UCDPopupMenu, UCDLayout, 
-  URectangle, UCDCommon, UCDManager, UCDConjoinForm, UCDMaster, 
+  UCDManagerTabsPopup, UCDManagerRegionsPopup, URectangle, UCDPopupMenu, 
+  UCDLayout, UCDCommon, UCDManager, UCDConjoinForm, UCDMaster, UCDResource, 
   LazarusPackageIntf;
 
 implementation

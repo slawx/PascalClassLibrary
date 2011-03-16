@@ -56,9 +56,13 @@ constructor TCDManagerRegionsItem.Create;
 begin
   PanelHeader := TCDPanelHeader.Create(nil);
   PanelHeader.Header.ManagerItem := Self;
+  PanelHeader.Header.OnMouseDown := DockPanelMouseDown;
+  PanelHeader.Header.Title.OnMouseDown := DockPanelMouseDown;
 
   Splitter := TSplitter.Create(nil);
   with Splitter do begin
+    Width := 3;
+    Height := 3;
     //Parent := Panel;
     //Color := clRed;
   end;
@@ -66,6 +70,11 @@ end;
 
 destructor TCDManagerRegionsItem.Destroy;
 begin
+  PanelHeader.Parent := nil;
+  PanelHeader.Free;
+  Splitter.Parent := nil;
+  Splitter.Free;
+  Control.Parent := nil;
   inherited Destroy;
 end;
 
@@ -110,6 +119,7 @@ begin
   if (Control is TForm) and Assigned((Control as TForm).Icon) then
     NewItem.PanelHeader.Header.Icon.Picture.Assign((Control as TForm).Icon);
     NewItem.PanelHeader.Parent := DockSite;
+    NewItem.PanelHeader.Header.Title.Caption := TForm(Control).Caption;
 
     NewItem.Control := Control;
     Control.AddHandlerOnVisibleChanged(NewItem.VisibleChange);
@@ -162,8 +172,9 @@ var
   ClientCount: Integer;
 begin
   ManagerItem := FindControlInPanels(Control);
-  if Assigned(ManagerItem) then
+  if Assigned(ManagerItem) then begin
     Control.RemoveHandlerOnVisibleChanged(ManagerItem.VisibleChange);
+  end;
 
   DockItems.Remove(ManagerItem);
   ClientCount := DockItems.Count;

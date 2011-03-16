@@ -47,16 +47,9 @@ type
 
   TCDStylePopupTabs = class(TCDManagerTabs)
   public
-    TabControl: TTabControl;
-    TabImageList: TImageList;
     AutoHideEnabled: Boolean;
     AutoHide: TCDAutoHide;
-    procedure TabControlMouseLeave(Sender: TObject);
-    procedure TabControlChange(Sender: TObject);
-    procedure TabControlMouseDown(Sender: TObject; Button: TMouseButton;
-      Shift: TShiftState; X, Y: Integer);
-    procedure TabControlMouseUp(Sender: TObject; Button: TMouseButton;
-      Shift: TShiftState; X, Y: Integer);
+    PopupPanel: TPanel;
     constructor Create(ADockSite: TWinControl);
     destructor Destroy; override;
   private
@@ -173,27 +166,6 @@ end;
 
 { TCDStylePopupTabs }
 
-procedure TCDStylePopupTabs.TabControlMouseLeave(Sender: TObject);
-begin
-
-end;
-
-procedure TCDStylePopupTabs.TabControlChange(Sender: TObject);
-begin
-
-end;
-
-procedure TCDStylePopupTabs.TabControlMouseDown(Sender: TObject;
-  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
-begin
-
-end;
-
-procedure TCDStylePopupTabs.TabControlMouseUp(Sender: TObject;
-  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
-begin
-
-end;
 
 constructor TCDStylePopupTabs.Create(ADockSite: TWinControl);
 var
@@ -201,13 +173,14 @@ var
 begin
   inherited;
   FDockStyle := dsPopupTabs;
-
   AutoHide := TCDAutoHide.Create;
+  PopupPanel := TPanel.Create(nil);
 end;
 
 destructor TCDStylePopupTabs.Destroy;
 begin
   AutoHide.Free;
+  PopupPanel.Free;
   inherited Destroy;
 end;
 

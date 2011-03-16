@@ -1,4 +1,4 @@
-object CoolDockCustomizeForm: TCoolDockCustomizeForm
+object CDCustomizeForm: TCDCustomizeForm
   Left = 431
   Height = 321
   Top = 139
@@ -100,7 +100,7 @@ object CoolDockCustomizeForm: TCoolDockCustomizeForm
       ClientHeight = 250
       ClientWidth = 375
       object ListBox1: TListBox
-        Left = 10
+        Left = 12
         Height = 229
         Top = 11
         Width = 258

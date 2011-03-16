@@ -1,20 +1,20 @@
 object MainForm: TMainForm
-  Left = 263
-  Height = 445
-  Top = 130
-  Width = 626
+  Left = 217
+  Height = 457
+  Top = 123
+  Width = 643
   Caption = 'CoolDocking Demo IDE'
-  ClientHeight = 426
-  ClientWidth = 626
+  ClientHeight = 438
+  ClientWidth = 643
   Menu = MainMenu1
   OnClose = FormClose
   OnShow = FormShow
   LCLVersion = '0.9.31'
   object DockPanel: TPanel
     Left = 0
-    Height = 400
+    Height = 412
     Top = 26
-    Width = 626
+    Width = 643
     Align = alClient
     BevelOuter = bvNone
     TabOrder = 0
@@ -23,7 +23,7 @@ object MainForm: TMainForm
     Left = 0
     Height = 26
     Top = 0
-    Width = 626
+    Width = 643
     Caption = 'ToolBar1'
     Images = ImageList1
     ParentShowHint = False
@@ -129,6 +129,9 @@ object MainForm: TMainForm
       object MenuItem22: TMenuItem
         Action = AViewComponentTree
       end
+      object MenuItem28: TMenuItem
+        Action = AResetDefaultLayout
+      end
     end
     object MenuItem11: TMenuItem
       Caption = 'Tools'
@@ -214,6 +217,10 @@ object MainForm: TMainForm
     object AViewComponentTree: TAction
       Caption = 'Component Tree'
       OnExecute = AViewComponentTreeExecute
+    end
+    object AResetDefaultLayout: TAction
+      Caption = 'Reset default layout'
+      OnExecute = AResetDefaultLayoutExecute
     end
   end
   object CoolDockMaster1: TCDMaster
