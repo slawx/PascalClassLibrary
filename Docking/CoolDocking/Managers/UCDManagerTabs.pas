@@ -194,7 +194,7 @@ begin
     Visible := True;
     //Align := alTop;
     //Height := 24;
-    Color := clBlue;
+    //Color := clBlue;
     Align := alClient;
     OnChange := TabControlChange;
     MultiLine := True;

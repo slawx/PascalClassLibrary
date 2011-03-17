@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, Controls, SysUtils, ComCtrls, ExtCtrls, UCDCommon, UCDManager,
-  UCDManagerTabs, Forms, URectangle;
+  UCDManagerTabs, Forms, URectangle, UCDConjoinForm;
 
 type
   { TCDAutoHide }
@@ -52,11 +52,21 @@ type
 
   TCDManagerTabsPopup = class(TCDManagerTabs)
   private
+    SplitterMouseDrag: Boolean;
+    SplitterMousePos: TPoint;
     procedure InsertControlNoUpdate(Control: TControl; InsertAt: TAlign); override;
+    procedure SplitterMouseDown(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
+    procedure SplitterMouseMove(Sender: TObject; Shift: TShiftState;
+                              X, Y: Integer);
+    procedure SplitterMouseUp(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
   public
     AutoHideEnabled: Boolean;
     AutoHide: TCDAutoHide;
     PopupForm: TForm;
+    HeaderPanel: TCDPanelHeader;
+    Splitter: TPanel;
     procedure SetHeaderPos(const AValue: THeaderPos); override;
     procedure PinShowButtonClick(Sender: TObject);
     procedure PinHideButtonClick(Sender: TObject);
@@ -187,7 +197,7 @@ begin
       Timer.Enabled := False;
       ControlVisible := True;
       DoShow := False;
-      HideBounds := ShowBounds;
+      HideBounds.Assign(ShowBounds);
     end;
   end else
   if Direction = -1 then begin
@@ -230,7 +240,8 @@ begin
   if PageControl.TabIndex >= 0 then begin
     C := TCDManagerTabsPopupItem(DockItems[PageControl.TabIndex]).Control;
     C.Align := alClient;
-    C.Parent := PopupForm;
+    C.Parent := HeaderPanel.ControlPanel;
+    HeaderPanel.Header.Title.Caption := C.Caption;
     Pos := Point(PageControl.Left, PageControl.Top);
 
     TopParent := DockSite;
@@ -278,6 +289,16 @@ begin
   PopupForm.DockManager := TCDManagerRegions.Create(PopupForm);
   PopupForm.Visible := True;
   PopupForm.BorderStyle := bsNone;
+  HeaderPanel := TCDPanelHeader.Create(nil);
+  HeaderPanel.Parent := PopupForm;
+  HeaderPanel.Align := alClient;
+  HeaderPanel.Visible := True;
+  Splitter := TPanel.Create(nil);
+  Splitter.Visible := True;
+  Splitter.Parent := PopupForm;
+  Splitter.OnMouseDown := SplitterMouseDown;
+  Splitter.OnMouseMove := SplitterMouseMove;
+  Splitter.OnMouseUp := SplitterMouseUp;
   AutoHide := TCDAutoHide.Create;
   AutoHide.Control := PopupForm;
 
@@ -292,6 +313,7 @@ destructor TCDManagerTabsPopup.Destroy;
 begin
   AutoHide.Free;
   PopupForm.Free;
+  HeaderPanel.Free;
   inherited Destroy;
 end;
 
@@ -338,7 +360,50 @@ begin
     //NewItem.Parent := NewTabSheet;
 end;
 
+procedure TCDManagerTabsPopup.SplitterMouseDown(Sender: TObject;
+  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+begin
+  if Button = mbLeft then begin
+    SplitterMousePos := Point(X, Y);
+    SplitterMouseDrag := True;
+  end;
+end;
+
+procedure TCDManagerTabsPopup.SplitterMouseMove(Sender: TObject; Shift: TShiftState;
+  X, Y: Integer);
+begin
+  if SplitterMouseDrag then begin
+    case Splitter.Align of
+      alLeft: begin
+        PopupForm.SetBounds(PopupForm.Left - (X - SplitterMousePos.X),
+          PopupForm.Top, PopupForm.Width - (X - SplitterMousePos.X),
+          PopupForm.Height);
+      end;
+      alRight: begin
+        PopupForm.SetBounds(PopupForm.Left, PopupForm.Top,
+          PopupForm.Width + (X - SplitterMousePos.X), PopupForm.Height);
+      end;
+      alTop: begin
+        PopupForm.SetBounds(PopupForm.Left,PopupForm.Top + (Y - SplitterMousePos.Y),
+          PopupForm.Width, PopupForm.Height + (Y - SplitterMousePos.Y));
+      end;
+      alBottom: begin
+        PopupForm.SetBounds(PopupForm.Left, PopupForm.Top,
+          PopupForm.Width, PopupForm.Height + (Y - SplitterMousePos.Y));
+      end;
+    end;
+  end;
+end;
+
+procedure TCDManagerTabsPopup.SplitterMouseUp(Sender: TObject;
+  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+begin
+  SplitterMouseDrag := False;
+end;
+
 procedure TCDManagerTabsPopup.SetHeaderPos(const AValue: THeaderPos);
+const
+  SplitterSize: Integer = 4;
 begin
   inherited SetHeaderPos(AValue);
   AutoHide.TabPosition := HeaderPosToTabPos(AValue);
@@ -347,18 +412,30 @@ begin
     hpTop, hpAuto: begin
       Align := alTop;
       Height := 24;
+      Splitter.Align := alBottom;
+      Splitter.Height := SplitterSize;
+      Splitter.Cursor := crSizeNS;
     end;
     hpBottom: begin
       Align := alBottom;
       Height := 24;
+      Splitter.Align := alTop;
+      Splitter.Height := SplitterSize;
+      Splitter.Cursor := crSizeNS;
     end;
     hpLeft: begin
       Align := alLeft;
       Width := 24;
+      Splitter.Align := alRight;
+      Splitter.Width := SplitterSize;
+      Splitter.Cursor := crSizeWE;
     end;
     hpRight: begin
       Align := alRight;
       Width := 24;
+      Splitter.Align := alLeft;
+      Splitter.Width := SplitterSize;
+      Splitter.Cursor := crSizeWE;
     end;
   end;
 end;

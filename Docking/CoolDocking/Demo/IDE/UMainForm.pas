@@ -102,6 +102,8 @@ type
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormShow(Sender: TObject);
   public
+    NewFileIndex: Integer;
+    SourceCodeContainer: TCDConjoinForm;
     procedure InitDefaultDockLayout;
   end;
 
@@ -175,10 +177,14 @@ begin
     ToolPaletteForm.ManualDock(NewContainer2, nil, alTop);
     ToolPaletteForm.Show;
 
+    SourceCodeContainer := TCDManager(DockPanel.DockManager).CreateContainer(alRight);
+    TCDManager(SourceCodeContainer.DockManager).DockStyle := dsTabs;
+    TCDManager(SourceCodeContainer.DockManager).HeaderPos := hpTop;
+
     NewContainer1.ManualDock(DockPanel);
     NewContainer1.Show;
-    SourceEditorForm.ManualDock(DockPanel);
-    SourceEditorForm.Show;
+//    SourceCodeContainer.ManualDock(DockPanel);
+//    SourceCodeContainer.Show;
     NewContainer2.ManualDock(DockPanel);
     NewContainer2.Show;
 
@@ -242,8 +248,15 @@ begin
 end;
 
 procedure TMainForm.ANewFileExecute(Sender: TObject);
+var
+  NewFile: TSourceEditorForm;
 begin
-  SourceEditorForm.Show;
+  Application.CreateForm(TSourceEditorForm, NewFile);
+  //NewFile := TSourceEditorForm.Create(nil);
+  Inc(NewFileIndex);
+  NewFile.Caption := 'Unit ' + IntToStr(NewFileIndex);
+  NewFile.ManualDock(SourceCodeContainer);
+  NewFile.Show;
 end;
 
 procedure TMainForm.AResetDefaultLayoutExecute(Sender: TObject);
