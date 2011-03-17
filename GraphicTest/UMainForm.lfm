@@ -1,7 +1,7 @@
 object MainForm: TMainForm
-  Left = 291
+  Left = 214
   Height = 452
-  Top = 127
+  Top = 106
   Width = 731
   Caption = 'Graphic test'
   ClientHeight = 452
@@ -54,7 +54,7 @@ object MainForm: TMainForm
     TabOrder = 1
   end
   object Label1: TLabel
-    Left = 11
+    Left = 9
     Height = 14
     Top = 95
     Width = 23
@@ -80,7 +80,7 @@ object MainForm: TMainForm
     TabOrder = 2
   end
   object Label3: TLabel
-    Left = 11
+    Left = 9
     Height = 14
     Top = 112
     Width = 74
@@ -130,16 +130,8 @@ object MainForm: TMainForm
     Left = 7
     Height = 21
     Top = 64
-    Width = 233
+    Width = 297
     ItemHeight = 13
-    Items.Strings = (
-      'TBitmap.Canvas.Pixels'
-      'TBitmap.Canvas.Pixels Update lock'
-      'TLazIntfImage copy from'
-      'TLazIntfImage create new'
-      'TBitmap.RawData on TImage'
-      'TBitmap.RawData on TPaintBox'
-    )
     Style = csDropDownList
     TabOrder = 5
   end

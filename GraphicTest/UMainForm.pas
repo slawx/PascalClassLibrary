@@ -43,7 +43,7 @@ type
     procedure Timer1Timer(Sender: TObject);
   private
   public
-    DrawMethod: TDrawMethod;
+    DrawMethods: TObjectList; // TObjectList<TDrawMethod>
     Bitmap: TBitmap;
     Scenes: TObjectList; // TObjectList<TFastBitmap>
     SceneIndex: Integer;
@@ -61,6 +61,7 @@ implementation
 procedure TMainForm.FormCreate(Sender: TObject);
 var
   NewScene: TFastBitmap;
+  NewDrawMethod: TDrawMethod;
   I: Integer;
 begin
   TabSheet1.DoubleBuffered := True;
@@ -76,6 +77,16 @@ begin
   Bitmap.PixelFormat := pf24bit;
   Image1.Picture.Bitmap.SetSize(TFastBitmap(Scenes[0]).Size.X, TFastBitmap(Scenes[0]).Size.Y);
   Bitmap.SetSize(TFastBitmap(Scenes[0]).Size.X, TFastBitmap(Scenes[0]).Size.Y);
+
+  DrawMethods := TObjectList.Create;
+  ComboBox1.Clear;
+  for I := 0 to High(DrawMethodClasses) do begin
+    NewDrawMethod := DrawMethodClasses[I].Create;
+    NewDrawMethod.Bitmap := Image1.Picture.Bitmap;
+    NewDrawMethod.PaintBox := PaintBox1;
+    DrawMethods.Add(NewDrawMethod);
+    ComboBox1.Items.Add(NewDrawMethod.Caption);
+  end;
   ComboBox1.ItemIndex := 0;
 end;
 
@@ -84,13 +95,10 @@ begin
   ButtonStop.Enabled := True;
   ButtonStart.Enabled := False;
   Timer1.Enabled := True;
-  DrawMethod.Free;
-  if ComboBox1.ItemIndex >= 0 then begin
-    DrawMethod := DrawMethodClasses[ComboBox1.ItemIndex].Create;
-    DrawMethod.Bitmap := Image1.Picture.Bitmap;
-    DrawMethod.Bitmap.SetSize(Image1.Picture.Bitmap.Width, Image1.Picture.Bitmap.Height);
+  if ComboBox1.ItemIndex >= 0 then
+  with TDrawMethod(DrawMethods[ComboBox1.ItemIndex]) do begin
     repeat
-      DrawMethod.DrawFrameTiming(TFastBitmap(Scenes[SceneIndex]));
+      DrawFrameTiming(TFastBitmap(Scenes[SceneIndex]));
       SceneIndex := (SceneIndex + 1) mod Scenes.Count;
       Application.ProcessMessages;
     until not ButtonStop.Enabled;
@@ -107,16 +115,14 @@ begin
   try
     BeginUpdate;
     Clear;
-    for I := 0 to High(DrawMethodClasses) do begin
-      DrawMethod.Free;
-      DrawMethod := DrawMethodClasses[I].Create;
-      DrawMethod.Bitmap := Image1.Picture.Bitmap;
-      DrawMethod.Bitmap.SetSize(Image1.Picture.Bitmap.Width, Image1.Picture.Bitmap.Height);
-      DrawMethod.DrawFrameTiming(TFastBitmap(Scenes[0]));
+    for I := 0 to DrawMethods.Count - 1 do
+    with TDrawMethod(DrawMethods[I]) do begin
+      DrawFrameTiming(TFastBitmap(Scenes[0]));
+      DrawFrameTiming(TFastBitmap(Scenes[0]));
       NewItem := Add;
-      NewItem.Caption := DrawMethod.Caption;
-      NewItem.SubItems.Add(FloatToStr(RoundTo(DrawMethod.FrameDuration / OneMillisecond, -3)));
-      NewItem.SubItems.Add(FloatToStr(RoundTo(1 / (DrawMethod.FrameDuration / OneSecond), -3)));
+      NewItem.Caption := Caption;
+      NewItem.SubItems.Add(FloatToStr(RoundTo(FrameDuration / OneMillisecond, -3)));
+      NewItem.SubItems.Add(FloatToStr(RoundTo(1 / (FrameDuration / OneSecond), -3)));
     end;
   finally
     EndUpdate;
@@ -136,17 +142,19 @@ end;
 
 procedure TMainForm.FormDestroy(Sender: TObject);
 begin
+  DrawMethods.Free;
   Scenes.Free;
   Bitmap.Free;
 end;
 
 procedure TMainForm.Timer1Timer(Sender: TObject);
 begin
-  if Assigned(DrawMethod) then begin
-    if (DrawMethod.FrameDuration > 0) then
-      Label2.Caption := FloatToStr(RoundTo(1 / (DrawMethod.FrameDuration / OneSecond), -3))
+  if (ComboBox1.ItemIndex >= 0) then
+  with TDrawMethod(DrawMethods[ComboBox1.ItemIndex]) do begin
+    if (FrameDuration > 0) then
+      Label2.Caption := FloatToStr(RoundTo(1 / (FrameDuration / OneSecond), -3))
       else Label2.Caption := '0';
-    Label4.Caption := FloatToStr(RoundTo(DrawMethod.FrameDuration / OneMillisecond, -3)) + ' ms';
+    Label4.Caption := FloatToStr(RoundTo(FrameDuration / OneMillisecond, -3)) + ' ms';
   end;
 end;
 
