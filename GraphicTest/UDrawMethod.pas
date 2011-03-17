@@ -192,22 +192,28 @@ procedure TBitmapRawImageData.DrawFrame(FastBitmap: TFastBitmap);
 var
   Y, X: Integer;
   PixelPtr: PInteger;
+  RowPtr: PInteger;
   P: TPixelFormat;
   RawImage: TRawImage;
   BytePerPixel: Integer;
+  BytePerRow: Integer;
 begin
   P := Bitmap.PixelFormat;
     with FastBitmap do
     try
       Bitmap.BeginUpdate(False);
       RawImage := Bitmap.RawImage;
-      PixelPtr := PInteger(RawImage.Data);
+      RowPtr := PInteger(RawImage.Data);
       BytePerPixel := RawImage.Description.BitsPerPixel div 8;
-      for X := 0 to Size.X - 1 do
-        for Y := 0 to Size.Y - 1 do begin
+      BytePerRow := RawImage.Description.BytesPerLine;
+      for Y := 0 to Size.Y - 1 do begin
+        PixelPtr := RowPtr;
+        for X := 0 to Size.X - 1 do begin
           PixelPtr^ := Pixels[X, Y] * $010101;
           Inc(PByte(PixelPtr), BytePerPixel);
         end;
+        Inc(PByte(RowPtr), BytePerRow);
+      end;
     finally
       Bitmap.EndUpdate(False);
     end;
