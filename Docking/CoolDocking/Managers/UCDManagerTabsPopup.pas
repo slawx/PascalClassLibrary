@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, Controls, SysUtils, ComCtrls, ExtCtrls, UCDCommon, UCDManager,
-  UCDManagerTabs, Forms;
+  UCDManagerTabs, Forms, URectangle;
 
 type
   { TCDAutoHide }
@@ -16,7 +16,9 @@ type
     FDuration: Real;
     FStepCount: Integer;
     FTabPosition: TTabPosition;
-    StartBounds: TRect;
+    ControlBounds: TRectangle;
+    HideBounds: TRectangle;
+    ShowBounds: TRectangle;
     procedure SetDuration(const AValue: Real);
     procedure SetStepCount(const AValue: Integer);
     procedure UpdateBounds;
@@ -28,6 +30,7 @@ type
     Timer: TTimer;
     Control: TControl;
     ControlVisible: Boolean;
+    DoShow: Boolean;
     procedure Hide;
     procedure Show;
     constructor Create;
@@ -80,19 +83,23 @@ end;
 procedure TCDAutoHide.UpdateBounds;
 begin
   case TabPosition of
-    tpBottom: begin
-      Control.Height := Round((StartBounds.Bottom - StartBounds.Top) * Position);
-      Control.Top := StartBounds.Bottom - Control.Height;
-    end;
     tpTop: begin
-      Control.Height := Round((StartBounds.Bottom - StartBounds.Top) * Position);
+      Control.SetBounds(ControlBounds.Left, ControlBounds.Top,
+        ControlBounds.Width, Round(ControlBounds.Height * Position));
     end;
     tpLeft: begin
-      Control.Width := Round((StartBounds.Right - StartBounds.Left) * Position);
+      Control.SetBounds(ControlBounds.Left, ControlBounds.Top,
+        Round(ControlBounds.Width * Position), ControlBounds.Height);
     end;
     tpRight: begin
-      Control.Width := Round((StartBounds.Right - StartBounds.Left) * Position);
-      Control.Left := StartBounds.Right - Control.Width;
+      Control.SetBounds(ControlBounds.Right -
+        Round(ControlBounds.Width * Position), ControlBounds.Top,
+        Round(ControlBounds.Width * Position), ControlBounds.Height);
+    end;
+    tpBottom: begin
+      Control.SetBounds(ControlBounds.Left,
+        ControlBounds.Bottom - Round(ControlBounds.Height * Position),
+        ControlBounds.Width, Round(ControlBounds.Height * Position));
     end;
   end;
 end;
@@ -118,9 +125,11 @@ end;
 
 procedure TCDAutoHide.Hide;
 begin
-  StartBounds := Control.BoundsRect;
+  HideBounds.AsTRect := Control.BoundsRect;
+  ControlBounds.Assign(HideBounds);
   Control.Show;
   Control.BringToFront;
+  Application.ProcessMessages;
   Direction := -1;
   Position := 1;
   Timer.Enabled := True;
@@ -129,29 +138,42 @@ end;
 
 procedure TCDAutoHide.Show;
 begin
-  StartBounds := Control.BoundsRect;
-  //StartBounds := Bounds(0, 0, Control.UndockWidth, Control.UndockHeight);
-  Control.Show;
-  Control.BringToFront;
-  Control.Align := alClient;
-  Direction := 1;
-  Position := 0;
-  Timer.Enabled := True;
-  UpdateBounds;
+  ShowBounds.AsTRect := Control.BoundsRect;
+  ControlBounds.Assign(HideBounds);
+  if Position > 0 then begin
+    DoShow := True;
+    Hide;
+  end else begin
+    //StartBounds := Bounds(0, 0, Control.UndockWidth, Control.UndockHeight);
+    Control.Show;
+    Control.BringToFront;
+    //Control.Align := alClient;
+    Direction := 1;
+    Position := 0;
+    Timer.Enabled := True;
+    UpdateBounds;
+  end;
 end;
 
 constructor TCDAutoHide.Create;
 begin
   inherited;
+  ShowBounds := TRectangle.Create;
+  HideBounds := TRectangle.Create;
+  ControlBounds := TRectangle.Create;
   Timer := TTimer.Create(nil);
   Timer.Enabled := False;
   Timer.OnTimer := TimerExecute;
   StepCount := 10;
   Duration := 0.05;
+  ShowBounds := TRectangle.Create;
 end;
 
 destructor TCDAutoHide.Destroy;
 begin
+  ShowBounds.Free;
+  HideBounds.Free;
+  ControlBounds.Free;
   Timer.Free;
   inherited Destroy;
 end;
@@ -164,14 +186,21 @@ begin
       Position := 1;
       Timer.Enabled := False;
       ControlVisible := True;
+      DoShow := False;
+      HideBounds := ShowBounds;
     end;
   end else
   if Direction = -1 then begin
     Position := Position - 1 / StepCount;
     if Position < 0 then begin
       Position := 0;
-      Timer.Enabled := False;
-      ControlVisible := False;
+      if DoShow then begin
+        Direction := 1;
+        ControlBounds.Assign(ShowBounds);
+      end else begin
+        Timer.Enabled := False;
+        ControlVisible := False;
+      end;
     end;
   end;
   UpdateBounds;
@@ -193,22 +222,28 @@ procedure TCDManagerTabsPopup.TabControlChange(Sender: TObject);
 var
   Pos: TPoint;
   C: TControl;
+  TopParent: TWinControl;
 begin
   inherited TabControlChange(Sender);
   MouseDownSkip := True;
-  if PopupForm.ControlCount > 0 then
-    PopupForm.Controls[0].Parent := nil;
-  AutoHide.Hide;
-  while AutoHide.Position > 0 do begin
-    Application.ProcessMessages;
-    Sleep(1);
-  end;
+
   if PageControl.TabIndex >= 0 then begin
     C := TCDManagerTabsPopupItem(DockItems[PageControl.TabIndex]).Control;
+    C.Align := alClient;
     C.Parent := PopupForm;
-    //AutoHide.Control.Align := alCustom;
     Pos := Point(PageControl.Left, PageControl.Top);
-    Pos := DockSite.ClientToScreen(Pos);
+
+    TopParent := DockSite;
+    while Assigned(TopParent.Parent) do begin
+      Pos.X := Pos.X + TopParent.Left;;
+      Pos.Y := Pos.Y + TopParent.Top;
+      TopParent := TopParent.Parent;
+    end;
+    PopupForm.Parent := TopParent;
+    //AutoHide.Control.Align := alCustom;
+    //Pos := DockSite.ClientToScreen(Pos);
+    C.TBDockHeight := 100;
+    C.LRDockWidth := 100;
     with AutoHide.Control do
     case AutoHide.TabPosition of
       tpTop: begin
@@ -242,7 +277,6 @@ begin
   PopupForm := TForm.Create(nil);
   PopupForm.DockManager := TCDManagerRegions.Create(PopupForm);
   PopupForm.Visible := True;
-  //PopupForm.Parent := ADockSite;
   PopupForm.BorderStyle := bsNone;
   AutoHide := TCDAutoHide.Create;
   AutoHide.Control := PopupForm;

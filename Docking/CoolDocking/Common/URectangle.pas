@@ -32,6 +32,8 @@ type
     Right: Integer;
     Bottom: Integer;
 
+    procedure Assign(Source: TRectangle);
+
     property Width: Integer read GetWidth write SetWidth;
     property Height: Integer read GetHeight write SetHeight;
 
@@ -129,6 +131,14 @@ end;
 procedure TRectangle.SetWidth(const AValue: Integer);
 begin
   Right := Left + AValue;
+end;
+
+procedure TRectangle.Assign(Source: TRectangle);
+begin
+  Left := Source.Left;
+  Top := Source.Top;
+  Right := Source.Right;
+  Bottom := Source.Bottom;
 end;
 
 end.
