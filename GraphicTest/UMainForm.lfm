@@ -1,45 +1,45 @@
 object MainForm: TMainForm
   Left = 214
-  Height = 452
+  Height = 338
   Top = 106
-  Width = 731
+  Width = 680
   Caption = 'Graphic test'
-  ClientHeight = 452
-  ClientWidth = 731
+  ClientHeight = 338
+  ClientWidth = 680
   OnClose = FormClose
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   LCLVersion = '0.9.31'
   object PageControl1: TPageControl
     Left = 312
-    Height = 432
+    Height = 318
     Top = 16
-    Width = 416
+    Width = 365
     ActivePage = TabSheet1
     Anchors = [akTop, akLeft, akRight, akBottom]
     TabIndex = 0
     TabOrder = 0
     object TabSheet1: TTabSheet
       Caption = 'TImage'
-      ClientHeight = 406
-      ClientWidth = 408
+      ClientHeight = 292
+      ClientWidth = 357
       object Image1: TImage
         Left = 6
-        Height = 393
+        Height = 279
         Top = 7
-        Width = 398
+        Width = 347
         Anchors = [akTop, akLeft, akRight, akBottom]
       end
     end
     object TabSheet2: TTabSheet
-      Caption = 'Direct Canvas'
-      ClientHeight = 405
-      ClientWidth = 372
+      Caption = 'TPaintBox'
+      ClientHeight = 406
+      ClientWidth = 408
       object PaintBox1: TPaintBox
         Left = 6
-        Height = 393
+        Height = 394
         Top = 7
-        Width = 361
+        Width = 397
         Anchors = [akTop, akLeft, akRight, akBottom]
       end
     end
@@ -97,14 +97,14 @@ object MainForm: TMainForm
   end
   object ListView1: TListView
     Left = 8
-    Height = 240
-    Top = 208
+    Height = 166
+    Top = 168
     Width = 296
     Anchors = [akTop, akLeft, akBottom]
     Columns = <    
       item
         Caption = 'Method'
-        Width = 100
+        Width = 140
       end    
       item
         Caption = 'Duration'
@@ -118,9 +118,9 @@ object MainForm: TMainForm
     ViewStyle = vsReport
   end
   object ButtonBenchmark: TButton
-    Left = 11
+    Left = 9
     Height = 25
-    Top = 176
+    Top = 136
     Width = 75
     Caption = 'Benchmark'
     OnClick = ButtonBenchmarkClick

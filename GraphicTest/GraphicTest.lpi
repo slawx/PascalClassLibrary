@@ -38,7 +38,7 @@
         <PackageName Value="LCL"/>
       </Item2>
     </RequiredPackages>
-    <Units Count="27">
+    <Units Count="36">
       <Unit0>
         <Filename Value="GraphicTest.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -46,7 +46,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="17" Y="3"/>
-        <UsageCount Value="32"/>
+        <UsageCount Value="37"/>
       </Unit0>
       <Unit1>
         <Filename Value="UMainForm.pas"/>
@@ -56,9 +56,9 @@
         <UnitName Value="UMainForm"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="1"/>
-        <CursorPos X="27" Y="38"/>
-        <UsageCount Value="32"/>
+        <TopLine Value="109"/>
+        <CursorPos X="23" Y="126"/>
+        <UsageCount Value="37"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit1>
@@ -68,17 +68,17 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="42" Y="22"/>
-        <UsageCount Value="18"/>
+        <UsageCount Value="17"/>
       </Unit2>
       <Unit3>
         <Filename Value="UPlatform.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="UPlatform"/>
-        <EditorIndex Value="11"/>
+        <EditorIndex Value="16"/>
         <WindowIndex Value="0"/>
         <TopLine Value="43"/>
         <CursorPos X="1" Y="1"/>
-        <UsageCount Value="32"/>
+        <UsageCount Value="37"/>
         <Loaded Value="True"/>
       </Unit3>
       <Unit4>
@@ -87,7 +87,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="244"/>
         <CursorPos X="49" Y="262"/>
-        <UsageCount Value="12"/>
+        <UsageCount Value="11"/>
       </Unit4>
       <Unit5>
         <Filename Value="/usr/share/fpcsrc/2.4.0/packages/fcl-image/src/fpimage.pp"/>
@@ -95,21 +95,21 @@
         <WindowIndex Value="0"/>
         <TopLine Value="121"/>
         <CursorPos X="57" Y="142"/>
-        <UsageCount Value="12"/>
+        <UsageCount Value="11"/>
       </Unit5>
       <Unit6>
         <Filename Value="../../lazarus/lcl/include/lclintfh.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="85"/>
         <CursorPos X="10" Y="102"/>
-        <UsageCount Value="12"/>
+        <UsageCount Value="11"/>
       </Unit6>
       <Unit7>
         <Filename Value="../../lazarus/lcl/include/lclintf.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="153"/>
         <CursorPos X="1" Y="160"/>
-        <UsageCount Value="12"/>
+        <UsageCount Value="11"/>
       </Unit7>
       <Unit8>
         <Filename Value="../../lazarus/lcl/graphics.pp"/>
@@ -117,49 +117,49 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1282"/>
         <CursorPos X="15" Y="1299"/>
-        <UsageCount Value="12"/>
+        <UsageCount Value="11"/>
       </Unit8>
       <Unit9>
         <Filename Value="../../lazarus/lcl/include/rasterimage.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="546"/>
         <CursorPos X="11" Y="553"/>
-        <UsageCount Value="12"/>
+        <UsageCount Value="11"/>
       </Unit9>
       <Unit10>
         <Filename Value="../../lazarus/lcl/include/picture.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="389"/>
         <CursorPos X="1" Y="411"/>
-        <UsageCount Value="9"/>
+        <UsageCount Value="8"/>
       </Unit10>
       <Unit11>
         <Filename Value="../../lazarus/lcl/interfaces/gtk2/gtk2lclintf.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="444"/>
         <CursorPos X="1" Y="461"/>
-        <UsageCount Value="12"/>
+        <UsageCount Value="11"/>
       </Unit11>
       <Unit12>
         <Filename Value="/usr/share/fpcsrc/2.4.0/packages/gtk2/src/gtk+/gdk/gdkimage.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="14"/>
         <CursorPos X="24" Y="21"/>
-        <UsageCount Value="12"/>
+        <UsageCount Value="11"/>
       </Unit12>
       <Unit13>
         <Filename Value="/usr/share/fpcsrc/2.4.0/packages/fcl-image/src/fpimage.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="313"/>
         <CursorPos X="24" Y="316"/>
-        <UsageCount Value="12"/>
+        <UsageCount Value="11"/>
       </Unit13>
       <Unit14>
         <Filename Value="/usr/share/fpcsrc/2.4.0/packages/fcl-image/src/fppalette.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="149"/>
         <CursorPos X="3" Y="151"/>
-        <UsageCount Value="12"/>
+        <UsageCount Value="11"/>
       </Unit14>
       <Unit15>
         <Filename Value="../../lazarus/lcl/graphtype.pp"/>
@@ -167,45 +167,45 @@
         <WindowIndex Value="0"/>
         <TopLine Value="171"/>
         <CursorPos X="3" Y="188"/>
-        <UsageCount Value="11"/>
+        <UsageCount Value="10"/>
       </Unit15>
       <Unit16>
         <Filename Value="/usr/share/fpcsrc/2.4.0/rtl/inc/systemh.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="300"/>
         <CursorPos X="3" Y="317"/>
-        <UsageCount Value="9"/>
+        <UsageCount Value="8"/>
       </Unit16>
       <Unit17>
         <Filename Value="UDrawMethod.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="UDrawMethod"/>
         <IsVisibleTab Value="True"/>
-        <EditorIndex Value="6"/>
+        <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="196"/>
-        <CursorPos X="10" Y="206"/>
-        <UsageCount Value="26"/>
+        <TopLine Value="121"/>
+        <CursorPos X="3" Y="145"/>
+        <UsageCount Value="31"/>
         <Loaded Value="True"/>
       </Unit17>
       <Unit18>
         <Filename Value="UFastBitmap.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="UFastBitmap"/>
-        <EditorIndex Value="5"/>
+        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="1"/>
-        <CursorPos X="20" Y="20"/>
-        <UsageCount Value="26"/>
+        <TopLine Value="32"/>
+        <CursorPos X="41" Y="18"/>
+        <UsageCount Value="31"/>
         <Loaded Value="True"/>
       </Unit18>
       <Unit19>
         <Filename Value="../../../Projekty2/FreePascalManager/trunk/Instance/1/Lazarus/lcl/include/rasterimage.inc"/>
-        <EditorIndex Value="2"/>
+        <EditorIndex Value="8"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="504"/>
-        <CursorPos X="1" Y="521"/>
-        <UsageCount Value="12"/>
+        <TopLine Value="292"/>
+        <CursorPos X="1" Y="308"/>
+        <UsageCount Value="14"/>
         <Loaded Value="True"/>
       </Unit19>
       <Unit20>
@@ -213,186 +213,268 @@
         <UnitName Value="BGRADefaultBitmap"/>
         <EditorIndex Value="3"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="224"/>
-        <CursorPos X="15" Y="237"/>
-        <UsageCount Value="11"/>
+        <TopLine Value="279"/>
+        <CursorPos X="57" Y="292"/>
+        <UsageCount Value="12"/>
         <Loaded Value="True"/>
       </Unit20>
       <Unit21>
         <Filename Value="bgrabitmap/bgrawinbitmap.pas"/>
         <UnitName Value="BGRAWinBitmap"/>
-        <EditorIndex Value="4"/>
+        <EditorIndex Value="5"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="169"/>
-        <CursorPos X="1" Y="190"/>
-        <UsageCount Value="11"/>
+        <TopLine Value="133"/>
+        <CursorPos X="1" Y="146"/>
+        <UsageCount Value="12"/>
         <Loaded Value="True"/>
       </Unit21>
       <Unit22>
         <Filename Value="../../../Projekty2/FreePascalManager/trunk/Instance/1/Lazarus/lcl/extctrls.pp"/>
         <UnitName Value="ExtCtrls"/>
-        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
         <TopLine Value="584"/>
         <CursorPos X="3" Y="597"/>
         <UsageCount Value="11"/>
-        <Loaded Value="True"/>
       </Unit22>
       <Unit23>
         <Filename Value="../../../Projekty2/FreePascalManager/trunk/Instance/1/Lazarus/lcl/include/winapih.inc"/>
-        <EditorIndex Value="9"/>
+        <EditorIndex Value="14"/>
         <WindowIndex Value="0"/>
         <TopLine Value="32"/>
         <CursorPos X="10" Y="45"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="13"/>
         <Loaded Value="True"/>
       </Unit23>
       <Unit24>
         <Filename Value="../../../Projekty2/FreePascalManager/trunk/Instance/1/Lazarus/lcl/include/winapi.inc"/>
-        <EditorIndex Value="10"/>
+        <EditorIndex Value="15"/>
         <WindowIndex Value="0"/>
         <TopLine Value="51"/>
         <CursorPos X="3" Y="53"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="13"/>
         <Loaded Value="True"/>
       </Unit24>
       <Unit25>
         <Filename Value="../../../Projekty2/FreePascalManager/trunk/Instance/1/Lazarus/lcl/graphics.pp"/>
         <UnitName Value="Graphics"/>
-        <EditorIndex Value="8"/>
+        <EditorIndex Value="11"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="1081"/>
-        <CursorPos X="15" Y="1094"/>
-        <UsageCount Value="10"/>
+        <TopLine Value="1314"/>
+        <CursorPos X="31" Y="1327"/>
+        <UsageCount Value="13"/>
         <Loaded Value="True"/>
       </Unit25>
       <Unit26>
         <Filename Value="../../../Projekty2/FreePascalManager/trunk/Instance/1/FPC/rtl/objpas/classes/classesh.inc"/>
-        <EditorIndex Value="7"/>
+        <EditorIndex Value="10"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1883"/>
         <CursorPos X="10" Y="1896"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="13"/>
         <Loaded Value="True"/>
       </Unit26>
+      <Unit27>
+        <Filename Value="../../../Projekty2/FreePascalManager/trunk/Instance/1/FPC/rtl/inc/heaph.inc"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="75"/>
+        <CursorPos X="31" Y="88"/>
+        <UsageCount Value="11"/>
+      </Unit27>
+      <Unit28>
+        <Filename Value="../../../Projekty2/FreePascalManager/trunk/Instance/1/FPC/rtl/inc/heap.inc"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="309"/>
+        <CursorPos X="3" Y="311"/>
+        <UsageCount Value="10"/>
+      </Unit28>
+      <Unit29>
+        <Filename Value="bgrabitmap/bgrabitmaptypes.pas"/>
+        <UnitName Value="BGRABitmapTypes"/>
+        <EditorIndex Value="9"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="24"/>
+        <CursorPos X="3" Y="37"/>
+        <UsageCount Value="12"/>
+        <Loaded Value="True"/>
+      </Unit29>
+      <Unit30>
+        <Filename Value="../../../Projekty2/FreePascalManager/trunk/Instance/1/Lazarus/lcl/graphtype.pp"/>
+        <UnitName Value="GraphType"/>
+        <EditorIndex Value="7"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="271"/>
+        <CursorPos X="23" Y="292"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+      </Unit30>
+      <Unit31>
+        <Filename Value="UBitmaps.pas"/>
+        <UnitName Value="UBitmaps"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="41" Y="62"/>
+        <UsageCount Value="20"/>
+      </Unit31>
+      <Unit32>
+        <Filename Value="../../../Projekty2/FreePascalManager/trunk/Instance/1/FPC/packages/fcl-image/src/fpimage.pp"/>
+        <UnitName Value="FPimage"/>
+        <EditorIndex Value="13"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="23"/>
+        <CursorPos X="4" Y="35"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit32>
+      <Unit33>
+        <Filename Value="../../../Projekty2/FreePascalManager/trunk/Instance/1/Lazarus/lcl/include/canvas.inc"/>
+        <EditorIndex Value="12"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1456"/>
+        <CursorPos X="1" Y="1471"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit33>
+      <Unit34>
+        <Filename Value="../../../Projekty2/FreePascalManager/trunk/Instance/1/FPC/rtl/win/wininc/func.inc"/>
+        <EditorIndex Value="6"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="780"/>
+        <CursorPos X="10" Y="793"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit34>
+      <Unit35>
+        <Filename Value="bgrabitmap/bgrablend.pas"/>
+        <UnitName Value="BGRABlend"/>
+        <EditorIndex Value="4"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="217"/>
+        <CursorPos X="3" Y="219"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit35>
     </Units>
-    <JumpHistory Count="29" HistoryIndex="28">
+    <JumpHistory Count="30" HistoryIndex="26">
       <Position1>
-        <Filename Value="bgrabitmap/bgrawinbitmap.pas"/>
-        <Caret Line="177" Column="1" TopLine="165"/>
+        <Filename Value="bgrabitmap/bgradefaultbitmap.pas"/>
+        <Caret Line="3492" Column="1" TopLine="3479"/>
       </Position1>
       <Position2>
-        <Filename Value="bgrabitmap/bgrawinbitmap.pas"/>
-        <Caret Line="179" Column="1" TopLine="165"/>
+        <Filename Value="bgrabitmap/bgradefaultbitmap.pas"/>
+        <Caret Line="3493" Column="1" TopLine="3479"/>
       </Position2>
       <Position3>
-        <Filename Value="bgrabitmap/bgrawinbitmap.pas"/>
-        <Caret Line="180" Column="1" TopLine="165"/>
+        <Filename Value="bgrabitmap/bgradefaultbitmap.pas"/>
+        <Caret Line="1061" Column="1" TopLine="1048"/>
       </Position3>
       <Position4>
         <Filename Value="bgrabitmap/bgrawinbitmap.pas"/>
-        <Caret Line="181" Column="1" TopLine="168"/>
+        <Caret Line="135" Column="20" TopLine="119"/>
       </Position4>
       <Position5>
         <Filename Value="bgrabitmap/bgrawinbitmap.pas"/>
-        <Caret Line="183" Column="1" TopLine="168"/>
+        <Caret Line="127" Column="1" TopLine="119"/>
       </Position5>
       <Position6>
         <Filename Value="bgrabitmap/bgrawinbitmap.pas"/>
-        <Caret Line="187" Column="1" TopLine="168"/>
+        <Caret Line="128" Column="1" TopLine="119"/>
       </Position6>
       <Position7>
         <Filename Value="bgrabitmap/bgrawinbitmap.pas"/>
-        <Caret Line="189" Column="1" TopLine="168"/>
+        <Caret Line="135" Column="1" TopLine="119"/>
       </Position7>
       <Position8>
-        <Filename Value="bgrabitmap/bgradefaultbitmap.pas"/>
-        <Caret Line="809" Column="1" TopLine="796"/>
+        <Filename Value="bgrabitmap/bgrawinbitmap.pas"/>
+        <Caret Line="136" Column="1" TopLine="128"/>
       </Position8>
       <Position9>
-        <Filename Value="bgrabitmap/bgradefaultbitmap.pas"/>
-        <Caret Line="810" Column="1" TopLine="796"/>
+        <Filename Value="bgrabitmap/bgrawinbitmap.pas"/>
+        <Caret Line="137" Column="1" TopLine="128"/>
       </Position9>
       <Position10>
-        <Filename Value="bgrabitmap/bgrawinbitmap.pas"/>
-        <Caret Line="190" Column="1" TopLine="169"/>
+        <Filename Value="../../../Projekty2/FreePascalManager/trunk/Instance/1/Lazarus/lcl/include/canvas.inc"/>
+        <Caret Line="1469" Column="1" TopLine="1456"/>
       </Position10>
       <Position11>
-        <Filename Value="bgrabitmap/bgradefaultbitmap.pas"/>
-        <Caret Line="503" Column="1" TopLine="490"/>
+        <Filename Value="../../../Projekty2/FreePascalManager/trunk/Instance/1/Lazarus/lcl/include/canvas.inc"/>
+        <Caret Line="1470" Column="1" TopLine="1456"/>
       </Position11>
       <Position12>
-        <Filename Value="UDrawMethod.pas"/>
-        <Caret Line="102" Column="1" TopLine="96"/>
+        <Filename Value="../../../Projekty2/FreePascalManager/trunk/Instance/1/Lazarus/lcl/include/canvas.inc"/>
+        <Caret Line="1471" Column="1" TopLine="1456"/>
       </Position12>
       <Position13>
-        <Filename Value="UDrawMethod.pas"/>
-        <Caret Line="133" Column="25" TopLine="111"/>
+        <Filename Value="bgrabitmap/bgrawinbitmap.pas"/>
+        <Caret Line="136" Column="12" TopLine="128"/>
       </Position13>
       <Position14>
-        <Filename Value="UDrawMethod.pas"/>
-        <Caret Line="134" Column="16" TopLine="111"/>
+        <Filename Value="bgrabitmap/bgrawinbitmap.pas"/>
+        <Caret Line="137" Column="7" TopLine="113"/>
       </Position14>
       <Position15>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="78" Column="50" TopLine="67"/>
+        <Filename Value="bgrabitmap/bgrawinbitmap.pas"/>
+        <Caret Line="146" Column="1" TopLine="133"/>
       </Position15>
       <Position16>
-        <Filename Value="UDrawMethod.pas"/>
-        <Caret Line="8" Column="32" TopLine="3"/>
+        <Filename Value="bgrabitmap/bgradefaultbitmap.pas"/>
+        <Caret Line="1069" Column="1" TopLine="1048"/>
       </Position16>
       <Position17>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="8" Column="20" TopLine="1"/>
+        <Filename Value="bgrabitmap/bgradefaultbitmap.pas"/>
+        <Caret Line="1055" Column="25" TopLine="1048"/>
       </Position17>
       <Position18>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="33" Column="19" TopLine="12"/>
+        <Filename Value="bgrabitmap/bgradefaultbitmap.pas"/>
+        <Caret Line="215" Column="27" TopLine="202"/>
       </Position18>
       <Position19>
-        <Filename Value="UDrawMethod.pas"/>
-        <Caret Line="8" Column="42" TopLine="1"/>
+        <Filename Value="bgrabitmap/bgradefaultbitmap.pas"/>
+        <Caret Line="299" Column="31" TopLine="281"/>
       </Position19>
       <Position20>
-        <Filename Value="UDrawMethod.pas"/>
-        <Caret Line="29" Column="39" TopLine="14"/>
+        <Filename Value="bgrabitmap/bgradefaultbitmap.pas"/>
+        <Caret Line="290" Column="39" TopLine="287"/>
       </Position20>
       <Position21>
         <Filename Value="UDrawMethod.pas"/>
-        <Caret Line="138" Column="5" TopLine="120"/>
+        <Caret Line="146" Column="19" TopLine="133"/>
       </Position21>
       <Position22>
-        <Filename Value="UDrawMethod.pas"/>
-        <Caret Line="173" Column="23" TopLine="157"/>
+        <Filename Value="../../../Projekty2/FreePascalManager/trunk/Instance/1/Lazarus/lcl/graphics.pp"/>
+        <Caret Line="1327" Column="31" TopLine="1314"/>
       </Position22>
       <Position23>
-        <Filename Value="UDrawMethod.pas"/>
-        <Caret Line="158" Column="12" TopLine="155"/>
+        <Filename Value="../../../Projekty2/FreePascalManager/trunk/Instance/1/Lazarus/lcl/graphtype.pp"/>
+        <Caret Line="189" Column="25" TopLine="187"/>
       </Position23>
       <Position24>
-        <Filename Value="UDrawMethod.pas"/>
-        <Caret Line="28" Column="34" TopLine="14"/>
+        <Filename Value="../../../Projekty2/FreePascalManager/trunk/Instance/1/Lazarus/lcl/graphtype.pp"/>
+        <Caret Line="5" Column="65" TopLine="1"/>
       </Position24>
       <Position25>
-        <Filename Value="UDrawMethod.pas"/>
-        <Caret Line="177" Column="48" TopLine="155"/>
+        <Filename Value="../../../Projekty2/FreePascalManager/trunk/Instance/1/Lazarus/lcl/graphtype.pp"/>
+        <Caret Line="274" Column="23" TopLine="253"/>
       </Position25>
       <Position26>
-        <Filename Value="UDrawMethod.pas"/>
-        <Caret Line="316" Column="26" TopLine="305"/>
+        <Filename Value="../../../Projekty2/FreePascalManager/trunk/Instance/1/Lazarus/lcl/graphtype.pp"/>
+        <Caret Line="289" Column="26" TopLine="268"/>
       </Position26>
       <Position27>
         <Filename Value="UDrawMethod.pas"/>
-        <Caret Line="329" Column="3" TopLine="327"/>
+        <Caret Line="133" Column="33" TopLine="121"/>
       </Position27>
       <Position28>
-        <Filename Value="UDrawMethod.pas"/>
-        <Caret Line="178" Column="29" TopLine="164"/>
+        <Filename Value="bgrabitmap/bgradefaultbitmap.pas"/>
+        <Caret Line="292" Column="57" TopLine="279"/>
       </Position28>
       <Position29>
-        <Filename Value="UDrawMethod.pas"/>
-        <Caret Line="211" Column="28" TopLine="196"/>
+        <Filename Value="bgrabitmap/bgradefaultbitmap.pas"/>
+        <Caret Line="420" Column="26" TopLine="413"/>
       </Position29>
+      <Position30>
+        <Filename Value="bgrabitmap/bgradefaultbitmap.pas"/>
+        <Caret Line="407" Column="3" TopLine="405"/>
+      </Position30>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>

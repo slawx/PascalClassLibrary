@@ -97,6 +97,8 @@ begin
   Timer1.Enabled := True;
   if ComboBox1.ItemIndex >= 0 then
   with TDrawMethod(DrawMethods[ComboBox1.ItemIndex]) do begin
+    PageControl1.TabIndex := Integer(PaintObject);
+    Application.ProcessMessages;
     repeat
       DrawFrameTiming(TFastBitmap(Scenes[SceneIndex]));
       SceneIndex := (SceneIndex + 1) mod Scenes.Count;
@@ -117,7 +119,10 @@ begin
     Clear;
     for I := 0 to DrawMethods.Count - 1 do
     with TDrawMethod(DrawMethods[I]) do begin
+      PageControl1.TabIndex := Integer(PaintObject);
+      Application.ProcessMessages;
       DrawFrameTiming(TFastBitmap(Scenes[0]));
+      Application.ProcessMessages;
       DrawFrameTiming(TFastBitmap(Scenes[0]));
       NewItem := Add;
       NewItem.Caption := Caption;
