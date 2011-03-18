@@ -26,6 +26,7 @@ type
     WindowState: TWindowState;
     UndockSize: TPoint;
     DockStyle: TCDStyleType;
+    HeaderPos: THeaderPos;
     Processed: boolean;
     procedure SaveToNode(Node: TDOMNode);
     procedure LoadFromNode(Node: TDOMNode);
@@ -285,6 +286,9 @@ begin
     NewNode := OwnerDocument.CreateElement('RestoredLeft');
     NewNode.TextContent := IntToStr(RestoredRect.Left);
     AppendChild(NewNode);
+    NewNode := OwnerDocument.CreateElement('HeaderPos');
+    NewNode.TextContent := IntToStr(Integer(HeaderPos));
+    AppendChild(NewNode);
   end;
 end;
 
@@ -348,6 +352,9 @@ begin
     NewNode := FindNode('RestoredHeight');
     if Assigned(NewNode) then
       RestoredRect.Height := StrToInt(NewNode.TextContent);
+    NewNode := FindNode('HeaderPos');
+    if Assigned(NewNode) then
+      HeaderPos := THeaderPos(StrToInt(NewNode.TextContent));
   end;
 end;
 
@@ -365,6 +372,8 @@ begin
   Rect.Top := Form.Top;
   Rect.Width := Form.Width;
   Rect.Height := Form.Height;
+  if Assigned(Form.DockManager) then
+    HeaderPos := TCDManager(Form.DockManager).HeaderPos;
   if Form is TForm then
   begin
     RestoredRect.Left := TForm(Form).RestoredLeft;
@@ -421,6 +430,8 @@ begin
   Form.UndockWidth := UndockSize.X;
   Form.UndockHeight := UndockSize.Y;
   Form.Visible := Visible;
+  if Assigned(Form.DockManager) then
+    TCDManager(Form.DockManager).HeaderPos := HeaderPos;
   if HostDockSiteName <> '' then
   begin
     ParentComponent := FindGlobalComponentDeep(HostDockSiteName);

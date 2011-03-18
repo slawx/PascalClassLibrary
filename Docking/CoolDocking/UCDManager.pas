@@ -218,8 +218,8 @@ begin
     //ManagerItem := Self;
   end;
   //OnResize := ResizeExecute;
-  //BevelInner := bvNone;
-  //BevelOuter := bvNone;
+  BevelInner := bvNone;
+  BevelOuter := bvNone;
   HeaderVisible := True;
 end;
 
@@ -467,25 +467,7 @@ begin
 end;
 
 procedure TCDManager.RemoveControl(Control: TControl);
-//var
-//  ClientPanel: TCDClientPanel;
 begin
-  //DockStyleHandler.RemoveControl(Control);
-  //inherited;
-(*  if Control.HostDockSite = Self.FDockSite then begin
-    ClientPanel := FindControlInPanels(Control);
-
-    //if Assigned(ClientPanel) then ClientPanel.Splitter.Free;
-    //Control.RemoveHandlerOnVisibleChanged(ClientPanel.VisibleChange);
-    FDockPanels.Remove(ClientPanel);
-    DockStyleHandler.RemoveControl(Control);
-    UpdateClientSize;
-    //FDockSite.Invalidate;
-    //if (FDockSite is TCDConjoinForm) and (FDockSite.DockClientCount = 1) then
-    //  FDockSite.Free;
-    DockStyle := DockStyle;
-  end;
-  *)
 end;
 
 procedure TCDManager.ResetBounds(Force: Boolean);

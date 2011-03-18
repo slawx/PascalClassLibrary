@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, Controls, ExtCtrls, ComCtrls, SysUtils, Dialogs, Contnrs,
-  Menus, Forms, UCDCommon, UCDManager,
+  Menus, Forms, UCDCommon, UCDManager, UCDConjoinForm,
   LCLType, LMessages, Graphics;
 
 type
@@ -14,7 +14,7 @@ type
   { TCDManagerTabsItem }
 
   TCDManagerTabsItem = class(TCDManagerItem)
-    Icon: TImage;
+    IconImage: TImage;
     constructor Create; override;
     destructor Destroy; override;
   end;
@@ -35,7 +35,6 @@ type
       DropCtl: TControl); override;
     procedure UpdateClientSize; override;
     function FindControlInPanels(Control: TControl): TCDManagerItem; override;
-    procedure RemoveControl(Control: TControl); override;
     function GetHeaderPos: THeaderPos; override;
   public
     MouseDownSkip: Boolean;
@@ -43,9 +42,10 @@ type
     PageControl: TPageControl;
     procedure SetHeaderPos(const AValue: THeaderPos); override;
     procedure InsertControlNoUpdate(Control: TControl; InsertAt: TAlign); virtual;
-    procedure TabControlChange(Sender: TObject); virtual;
+    procedure RemoveControl(Control: TControl); override;
     constructor Create(ADockSite: TWinControl); override;
     destructor Destroy; override;
+    procedure TabControlChange(Sender: TObject); virtual;
     procedure PaintSite(DC: HDC); override;
     procedure DoSetVisible(const AValue: Boolean); override;
     procedure ChangeVisible(Control: TWinControl; Visible: Boolean); override;
@@ -63,12 +63,12 @@ uses
 
 constructor TCDManagerTabsItem.Create;
 begin
-  Icon := TImage.Create(nil);
+  IconImage := TImage.Create(nil);
 end;
 
 destructor TCDManagerTabsItem.Destroy;
 begin
-  Icon.Free;
+  IconImage.Free;
   inherited Destroy;
 end;
 
@@ -106,7 +106,7 @@ procedure TCDManagerTabs.TabControlChange(Sender: TObject);
 var
   I: Integer;
 begin
-  UpdateClientSize;
+  //UpdateClientSize;
 {  // Hide all clients
   for I := 0 to DockItems.Count - 1 do
     if TCDManagerItem(DockItems[I]).Control.Visible
@@ -248,15 +248,10 @@ begin
   begin
     NewItem := TCDManagerTabsItem.Create;
     with NewItem do begin
-      //Panel.Parent := Self.DockSite;
       Manager := Self;
-      //if DockStyle = dsList then Visible := True;
-      //Align := alClient;
-      //Header.PopupMenu := Self.PopupMenu;
-      //PopupMenu.Parent := Self.DockSite;
     end;
     if (Control is TForm) and Assigned((Control as TForm).Icon) then
-      NewItem.Icon.Picture.Assign((Control as TForm).Icon);
+      NewItem.IconImage.Picture.Assign((Control as TForm).Icon);
 
     NewItem.Control := Control;
     Control.AddHandlerOnVisibleChanged(NewItem.VisibleChange);
@@ -265,26 +260,36 @@ begin
     if (InsertAt = alTop) or (InsertAt = alLeft) then
       DockItems.Insert(0, NewItem)
       else DockItems.Add(NewItem);
-
   end;
-
-    NewTabSheet := TTabSheet.Create(PageControl);
-    NewTabSheet.PageControl := PageControl;
-    NewTabSheet.Caption := Control.Caption;
-    NewTabSheet.ImageIndex := TabImageList.Count;
-    NewTabSheet.TabVisible := Control.Visible;
-    Control.Parent := NewTabSheet;
-    TabImageList.Add(NewItem.Icon.Picture.Bitmap, nil);
-//    if Assigned(NewItem.Splitter) then
-//      NewItem.Splitter.Visible := False;
-//    NewItem.ClientAreaPanel.Visible := False;
-//    NewItem.Visible := False;
-    //NewItem.Parent := NewTabSheet;
 end;
 
 procedure TCDManagerTabs.RemoveControl(Control: TControl);
+var
+  ManagerItem: TCDManagerItem;
+  ClientCount: Integer;
 begin
+  ManagerItem := FindControlInPanels(Control);
+  if Assigned(ManagerItem) then begin
+    Control.RemoveHandlerOnVisibleChanged(ManagerItem.VisibleChange);
+  end;
+
+  DockItems.Remove(ManagerItem);
+  ClientCount := DockItems.Count;
+
+  //if TCDManager(Manager).DockSite.DockClientCount = 2 then FDockDirection := ddNone;
+  if ClientCount = 1 then begin
+    // Last removed control => Free parent if it is TCDConjoinForm
+    if Self.DockSite is TCDConjoinForm then
+    with TCDConjoinForm(Self.DockSite) do begin
+      if Assigned(Parent) then begin
+        TCDManagerItem(DockItems[0]).Control.ManualDock(HostDockSite);
+      end else TCDManagerItem(DockItems[0]).Control.ManualFloat(Rect(Left, Top, Left + Width, Top + Height));
+      ManualFloat(Rect(Left, Top, Left + Width, Top + Height));
+      Free;
+    end;
+  end;
   inherited RemoveControl(Control);
+  if ClientCount > 1 then UpdateClientSize;
 end;
 
 function TCDManagerTabs.GetHeaderPos: THeaderPos;
@@ -327,7 +332,7 @@ var
 begin
   inherited;
   InsertControlNoUpdate(AControl, InsertAt);
-  TabControlChange(Self);
+  UpdateClientSize;
 end;
 
 procedure TCDManagerTabs.UpdateClientSize;
@@ -335,16 +340,37 @@ var
   I: Integer;
   NewTabSheet: TTabSheet;
 begin
-  inherited UpdateClientSize;
   for I := 0 to DockItems.Count - 1 do
   with TCDManagerTabsItem(DockItems[I]) do begin
+    Control.Visible := False;
+    Control.Parent := nil;
+  end;
+
+  while PageControl.PageList.Count > DockItems.Count do begin
+    PageControl.Pages[PageControl.PageCount - 1].Parent := nil;
+    PageControl.Pages[PageControl.PageCount - 1].Free;
+    TabImageList.Delete(TabImageList.Count - 1);
+  end;
+  while PageControl.PageList.Count < DockItems.Count do begin
+    NewTabSheet := TTabSheet.Create(PageControl);
+    NewTabSheet.PageControl := PageControl;
+    TabImageList.Add(TCDManagerTabsItem(DockItems[PageControl.PageList.Count - 1]).IconImage.Picture.Bitmap, nil);
+  end;
+
+  for I := 0 to DockItems.Count - 1 do
+  with TCDManagerTabsItem(DockItems[I]) do begin
+    PageControl.Pages[I].Caption := Control.Caption;
+    PageControl.Pages[I].ImageIndex := TabImageList.Count;
+    TabImageList.Replace(I, IconImage.Picture.Bitmap, nil);
     Control.Parent := PageControl.Pages[I];
     Control.Align := alClient;
-
+    Control.Visible := True;
+    PageControl.Pages[I].TabVisible := Control.Visible;
     //TCDClientPanel(DockPanels[I]).ClientAreaPanel.Width := DockSite.Width;
     //TCDClientPanel(DockPanels[I]).ClientAreaPanel.Height := DockSite.Height - PageControl.Height;
     //TCDClientPanel(FDockPanels[I]).DockPanelPaint(Self);
   end;
+  inherited UpdateClientSize;
 end;
 
 procedure TCDManagerTabs.DoSetVisible(const AValue: Boolean);

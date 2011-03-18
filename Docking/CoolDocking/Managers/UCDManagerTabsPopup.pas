@@ -64,12 +64,14 @@ type
       Shift: TShiftState; X, Y: Integer);
     procedure UpdatePopupFormBounds;
     procedure TabControlChange(Sender: TObject); override;
+    procedure PopupFormMouseLeave(Sender: TObject);
   public
     AutoHideEnabled: Boolean;
     AutoHide: TCDAutoHide;
     PopupForm: TForm;
     HeaderPanel: TCDPanelHeader;
     Splitter: TPanel;
+    procedure RemoveControl(Control: TControl); override;
     procedure SetHeaderPos(const AValue: THeaderPos); override;
     procedure PinShowButtonClick(Sender: TObject);
     procedure PinHideButtonClick(Sender: TObject);
@@ -252,6 +254,18 @@ begin
   end;
 end;
 
+procedure TCDManagerTabsPopup.PopupFormMouseLeave(Sender: TObject);
+begin
+  if PopupForm.Visible then AutoHide.Hide;
+end;
+
+procedure TCDManagerTabsPopup.RemoveControl(Control: TControl);
+begin
+  if DockItems.Count <= 2 then
+    PageControl.OnResize := nil;
+  inherited;
+end;
+
 constructor TCDManagerTabsPopup.Create(ADockSite: TWinControl);
 var
   I: Integer;
@@ -262,6 +276,7 @@ begin
   PopupForm.DockManager := TCDManagerRegions.Create(PopupForm);
   PopupForm.Visible := True;
   PopupForm.BorderStyle := bsNone;
+  PopupForm.OnMouseLeave := PopupFormMouseLeave;
   HeaderPanel := TCDPanelHeader.Create(nil);
   HeaderPanel.Parent := PopupForm;
   HeaderPanel.Align := alClient;
@@ -275,6 +290,7 @@ begin
   AutoHide := TCDAutoHide.Create;
   AutoHide.Control := PopupForm;
   PageControl.OnResize := PageControlResize;
+  HeaderVisible := False;
 
   for I := 0 to DockItems.Count - 1 do begin
 //    if TCDManagerTabsPopupItem(DockItems[I]).Hidden then
@@ -287,6 +303,7 @@ destructor TCDManagerTabsPopup.Destroy;
 begin
   AutoHide.Free;
   PopupForm.Free;
+  Splitter.Free;
   HeaderPanel.Free;
   inherited Destroy;
 end;
@@ -305,15 +322,10 @@ begin
   begin
     NewItem := TCDManagerTabsPopupItem.Create;
     with NewItem do begin
-      //Panel.Parent := Self.DockSite;
       Manager := Self;
-      //if DockStyle = dsList then Visible := True;
-      //Align := alClient;
-      //Header.PopupMenu := Self.PopupMenu;
-      //PopupMenu.Parent := Self.DockSite;
     end;
     if (Control is TForm) and Assigned((Control as TForm).Icon) then
-      NewItem.Icon.Picture.Assign((Control as TForm).Icon);
+      NewItem.IconImage.Picture.Assign((Control as TForm).Icon);
 
     NewItem.Control := Control;
     Control.AddHandlerOnVisibleChanged(NewItem.VisibleChange);
@@ -322,21 +334,7 @@ begin
     if (InsertAt = alTop) or (InsertAt = alLeft) then
       DockItems.Insert(0, NewItem)
       else DockItems.Add(NewItem);
-
   end;
-
-    NewTabSheet := TTabSheet.Create(PageControl);
-    NewTabSheet.PageControl := PageControl;
-    NewTabSheet.Caption := Control.Caption;
-    NewTabSheet.ImageIndex := TabImageList.Count;
-    NewTabSheet.TabVisible := Control.Visible;
-    Control.Parent := NewTabSheet;
-    TabImageList.Add(NewItem.Icon.Picture.Bitmap, nil);
-//    if Assigned(NewItem.Splitter) then
-//      NewItem.Splitter.Visible := False;
-//    NewItem.ClientAreaPanel.Visible := False;
-//    NewItem.Visible := False;
-    //NewItem.Parent := NewTabSheet;
 end;
 
 procedure TCDManagerTabsPopup.SplitterMouseDown(Sender: TObject;
