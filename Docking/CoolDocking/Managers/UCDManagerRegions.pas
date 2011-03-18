@@ -66,8 +66,7 @@ begin
   if Assigned(Control) then begin
     //R := Control.ClientRect;
     //Canvas.FillRect(R);
-    Header.Visible := ShowHeader;
-    if ShowHeader then begin
+    if Visible then begin
       if ControlPanel.DockClientCount = 0 then
         Header.DrawGrabber(Canvas, Control) else
       Header.DrawGrabber(Canvas, ControlPanel);
@@ -161,7 +160,6 @@ begin
   end;
 
   NewItem.PanelHeader.Parent := DockSite;
-  NewItem.PanelHeader.Header.Title.Caption := TForm(Control).Caption;
 
   NewItem.Control := Control;
   Control.AddHandlerOnVisibleChanged(NewItem.VisibleChange);
@@ -289,6 +287,8 @@ begin
       Self.DockSite.DockClientCount;
     PanelHeader.Width := Self.DockSite.Width div
       Self.DockSite.DockClientCount;
+    PanelHeader.Header.Visible := TCDManager(TWinControl(Control).DockManager).HeaderVisible;
+    PanelHeader.Header.Title.Caption := TForm(Control).Caption;
     Paint(Self);
     if I < (DockItems.Count - 1) then PanelHeader.Align := BaseAlign
       else PanelHeader.Align := alClient;

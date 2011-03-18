@@ -54,6 +54,7 @@ type
   private
     SplitterMouseDrag: Boolean;
     SplitterMousePos: TPoint;
+    procedure PageControlResize(Sender: TObject);
     procedure InsertControlNoUpdate(Control: TControl; InsertAt: TAlign); override;
     procedure SplitterMouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
@@ -61,6 +62,8 @@ type
                               X, Y: Integer);
     procedure SplitterMouseUp(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
+    procedure UpdatePopupFormBounds;
+    procedure TabControlChange(Sender: TObject); override;
   public
     AutoHideEnabled: Boolean;
     AutoHide: TCDAutoHide;
@@ -70,7 +73,6 @@ type
     procedure SetHeaderPos(const AValue: THeaderPos); override;
     procedure PinShowButtonClick(Sender: TObject);
     procedure PinHideButtonClick(Sender: TObject);
-    procedure TabControlChange(Sender: TObject); override;
     constructor Create(ADockSite: TWinControl); override;
     destructor Destroy; override;
   end;
@@ -242,39 +244,10 @@ begin
     C.Align := alClient;
     C.Parent := HeaderPanel.ControlPanel;
     HeaderPanel.Header.Title.Caption := C.Caption;
-    Pos := Point(PageControl.Left, PageControl.Top);
-
-    TopParent := DockSite;
-    while Assigned(TopParent.Parent) do begin
-      Pos.X := Pos.X + TopParent.Left;;
-      Pos.Y := Pos.Y + TopParent.Top;
-      TopParent := TopParent.Parent;
-    end;
-    PopupForm.Parent := TopParent;
     //AutoHide.Control.Align := alCustom;
     //Pos := DockSite.ClientToScreen(Pos);
-    C.TBDockHeight := 100;
-    C.LRDockWidth := 100;
-    with AutoHide.Control do
-    case AutoHide.TabPosition of
-      tpTop: begin
-        SetBounds(Pos.X, Pos.Y + PageControl.Height,
-          PageControl.Width, C.TBDockHeight);
-      end;
-      tpLeft: begin
-        SetBounds(Pos.X + PageControl.Width, Pos.Y,
-          C.LRDockWidth, PageControl.Height);
-      end;
-      tpBottom: begin
-        SetBounds(Pos.X, Pos.Y - C.TBDockHeight,
-          PageControl.Width, C.TBDockHeight);
-      end;
-      tpRight: begin
-        SetBounds(Pos.X - C.LRDockWidth, Pos.Y,
-          C.LRDockWidth, PageControl.Height);
-      end;
-    end;
     //AutoHide.Control.SetBounds(0, 0, 100, 100);
+    UpdatePopupFormBounds;
     AutoHide.Show;
   end;
 end;
@@ -301,6 +274,7 @@ begin
   Splitter.OnMouseUp := SplitterMouseUp;
   AutoHide := TCDAutoHide.Create;
   AutoHide.Control := PopupForm;
+  PageControl.OnResize := PageControlResize;
 
   for I := 0 to DockItems.Count - 1 do begin
 //    if TCDManagerTabsPopupItem(DockItems[I]).Hidden then
@@ -315,6 +289,11 @@ begin
   PopupForm.Free;
   HeaderPanel.Free;
   inherited Destroy;
+end;
+
+procedure TCDManagerTabsPopup.PageControlResize(Sender: TObject);
+begin
+  UpdatePopupFormBounds;
 end;
 
 procedure TCDManagerTabsPopup.InsertControlNoUpdate(Control: TControl; InsertAt: TAlign);
@@ -375,7 +354,7 @@ begin
   if SplitterMouseDrag then begin
     case Splitter.Align of
       alLeft: begin
-        PopupForm.SetBounds(PopupForm.Left - (X - SplitterMousePos.X),
+        PopupForm.SetBounds(PopupForm.Left + (X - SplitterMousePos.X),
           PopupForm.Top, PopupForm.Width - (X - SplitterMousePos.X),
           PopupForm.Height);
       end;
@@ -384,8 +363,8 @@ begin
           PopupForm.Width + (X - SplitterMousePos.X), PopupForm.Height);
       end;
       alTop: begin
-        PopupForm.SetBounds(PopupForm.Left,PopupForm.Top + (Y - SplitterMousePos.Y),
-          PopupForm.Width, PopupForm.Height + (Y - SplitterMousePos.Y));
+        PopupForm.SetBounds(PopupForm.Left, PopupForm.Top + (Y - SplitterMousePos.Y),
+          PopupForm.Width, PopupForm.Height - (Y - SplitterMousePos.Y));
       end;
       alBottom: begin
         PopupForm.SetBounds(PopupForm.Left, PopupForm.Top,
@@ -401,6 +380,47 @@ begin
   SplitterMouseDrag := False;
 end;
 
+procedure TCDManagerTabsPopup.UpdatePopupFormBounds;
+var
+  Pos: TPoint;
+  C: TControl;
+  TopParent: TWinControl;
+begin
+  if PageControl.TabIndex <> - 1 then begin
+    Pos := Point(PageControl.Left, PageControl.Top);
+    TopParent := DockSite;
+    while Assigned(TopParent.Parent) do begin
+      Pos.X := Pos.X + TopParent.Left;;
+      Pos.Y := Pos.Y + TopParent.Top;
+      TopParent := TopParent.Parent;
+    end;
+    PopupForm.Parent := TopParent;
+
+    C := TCDManagerTabsPopupItem(DockItems[PageControl.TabIndex]).Control;
+    C.TBDockHeight := 100;
+    C.LRDockWidth := 100;
+    with AutoHide.Control do
+    case AutoHide.TabPosition of
+      tpTop: begin
+        SetBounds(Pos.X, Pos.Y + PageControl.Height,
+          PageControl.Width, C.TBDockHeight);
+      end;
+      tpLeft: begin
+        SetBounds(Pos.X + PageControl.Width, Pos.Y,
+          C.LRDockWidth, PageControl.Height);
+      end;
+      tpBottom: begin
+        SetBounds(Pos.X, Pos.Y - C.TBDockHeight,
+          PageControl.Width, C.TBDockHeight);
+      end;
+      tpRight: begin
+        SetBounds(Pos.X - C.LRDockWidth, Pos.Y,
+          C.LRDockWidth, PageControl.Height);
+      end;
+    end;
+  end;
+end;
+
 procedure TCDManagerTabsPopup.SetHeaderPos(const AValue: THeaderPos);
 const
   SplitterSize: Integer = 4;
@@ -410,29 +430,29 @@ begin
   with PageControl do
   case AValue of
     hpTop, hpAuto: begin
-      Align := alTop;
-      Height := 24;
+      //Align := alTop;
+      //Height := 24;
       Splitter.Align := alBottom;
       Splitter.Height := SplitterSize;
       Splitter.Cursor := crSizeNS;
     end;
     hpBottom: begin
-      Align := alBottom;
-      Height := 24;
+      //Align := alBottom;
+      //Height := 24;
       Splitter.Align := alTop;
       Splitter.Height := SplitterSize;
       Splitter.Cursor := crSizeNS;
     end;
     hpLeft: begin
-      Align := alLeft;
-      Width := 24;
+      //Align := alLeft;
+      //Width := 24;
       Splitter.Align := alRight;
       Splitter.Width := SplitterSize;
       Splitter.Cursor := crSizeWE;
     end;
     hpRight: begin
-      Align := alRight;
-      Width := 24;
+      //Align := alRight;
+      //Width := 24;
       Splitter.Align := alLeft;
       Splitter.Width := SplitterSize;
       Splitter.Cursor := crSizeWE;

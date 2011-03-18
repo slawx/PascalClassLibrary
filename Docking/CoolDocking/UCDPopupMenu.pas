@@ -15,11 +15,13 @@ type
   TCDPopupMenu = class(TPopupMenu)
   private
     procedure PopupExecute(Sender: TObject);
+    procedure PopupMenuHeaderVisibleClick(Sender: TObject);
   public
     Manager: TCDManagerBase;
     PositionMenu: TMenuItem;
     StyleMenu: TMenuItem;
     LockedMenu: TMenuItem;
+    HeaderVisibleMenu: TMenuItem;
     constructor Create(AManager: TCDManagerBase);
     procedure UncheckMenuGroup(Item: TMenuItem);
     procedure PopupMenuListClick(Sender: TObject);
@@ -62,7 +64,7 @@ resourcestring
   SEnterNewWindowName = 'Enter new window name';
   SRenameWindow = 'Rename window';
   SLocked = 'Locked';
-
+  SHeaderVisible = 'Header visible';
 
 { TCDPopupMenu }
 
@@ -81,6 +83,7 @@ begin
   UncheckMenuGroup(PositionMenu);
   PositionMenu.Items[Integer(TCDManager(Manager).HeaderPos)].Checked := True;;
   LockedMenu.Checked := TCDManager(Manager).Locked;
+  HeaderVisibleMenu.Checked := TCDManager(Manager).HeaderVisible;
 end;
 
 constructor TCDPopupMenu.Create(AManager: TCDManagerBase);
@@ -172,6 +175,11 @@ begin
   LockedMenu.Caption := SLocked;
   LockedMenu.OnClick := PopupMenuLockedClick;
   Items.Add(LockedMenu);
+
+  HeaderVisibleMenu := TMenuItem.Create(Self);
+  HeaderVisibleMenu.Caption := SHeaderVisible;
+  HeaderVisibleMenu.OnClick := PopupMenuHeaderVisibleClick;
+  Items.Add(HeaderVisibleMenu);
 end;
 
 procedure TCDPopupMenu.PopupMenuTabsClick(Sender: TObject);
@@ -319,6 +327,18 @@ begin
   if PopupComponent is TCDHeader then
   with TCDHeader(PopupComponent) do begin
     TCDManagerTabs(Manager).Locked := not TCDManagerTabs(Manager).Locked;
+  end;
+end;
+
+procedure TCDPopupMenu.PopupMenuHeaderVisibleClick(Sender: TObject);
+begin
+  if PopupComponent is TPageControl then
+  with TPageControl(PopupComponent) do begin
+    TCDManagerTabs(Manager).HeaderVisible := not TCDManagerTabs(Manager).HeaderVisible;
+  end else
+  if PopupComponent is TCDHeader then
+  with TCDHeader(PopupComponent) do begin
+    TCDManagerTabs(Manager).HeaderVisible := not TCDManagerTabs(Manager).HeaderVisible;
   end;
 end;
 

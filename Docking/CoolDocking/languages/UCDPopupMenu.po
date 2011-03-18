@@ -33,6 +33,10 @@ msgstr ""
 msgid "Enter new window name"
 msgstr ""
 
+#: ucdpopupmenu.sheadervisible
+msgid "Header visible"
+msgstr ""
+
 #: ucdpopupmenu.slocked
 msgid "Locked"
 msgstr ""

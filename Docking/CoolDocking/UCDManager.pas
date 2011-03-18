@@ -47,13 +47,14 @@ type
   TCDPanelHeader = class(TPanel)
   private
     FHeaderPos: THeaderPos;
-    FShowHeader: Boolean;
+    function GetHeaderVisible: Boolean;
     procedure SetHeaderPos(const AValue: THeaderPos);
+    procedure SetHeaderVisible(const AValue: Boolean);
   public
     Header: TCDHeader;
     ControlPanel: TPanel;
-    property ShowHeader: Boolean read FShowHeader write FShowHeader;
     property HeaderPos: THeaderPos read FHeaderPos write SetHeaderPos;
+    property HeaderVisible: Boolean read GetHeaderVisible write SetHeaderVisible;
     constructor Create(TheOwner: TComponent);
     destructor Destroy; override;
   end;
@@ -80,9 +81,11 @@ type
   private
     FDockSite: TWinControl;
     FHeaderPos: THeaderPos;
+    FHeaderVisible: Boolean;
     function GetDockSite: TWinControl;
     function GetMoveDuration: Integer;
     procedure SetDockStyle(const AValue: TCDStyleType);
+    procedure SetHeaderVisible(const AValue: Boolean);
     procedure SetMoveDuration(const AValue: Integer);
     procedure SetVisible(const AValue: Boolean);
   public
@@ -128,6 +131,7 @@ type
     property MoveDuration: Integer read GetMoveDuration write SetMoveDuration;
     property DockSite: TWinControl read GetDockSite;
     property HeaderPos: THeaderPos read GetHeaderPos write SetHeaderPos;
+    property HeaderVisible: Boolean read FHeaderVisible write SetHeaderVisible;
     property Visible: Boolean write SetVisible;
   end;
 
@@ -174,6 +178,16 @@ begin
   //Paint(Self);
 end;
 
+function TCDPanelHeader.GetHeaderVisible: Boolean;
+begin
+  Result := Header.Visible;
+end;
+
+procedure TCDPanelHeader.SetHeaderVisible(const AValue: Boolean);
+begin
+  Header.Visible := AValue;
+end;
+
 constructor TCDPanelHeader.Create(TheOwner: TComponent);
 begin
   inherited;
@@ -184,7 +198,6 @@ begin
   Constraints.MinHeight := GrabberSize;
   Align := alClient;
 
-  ShowHeader := True;
   ControlPanel := TPanel.Create(Self);
   with ControlPanel do begin
     Parent := Self;
@@ -199,7 +212,7 @@ begin
   Header := TCDHeader.Create(Self);
   with Header do begin
     Parent := Self;
-    Visible := ShowHeader;
+    Visible := True;
     Align := alTop;
     Height := GrabberSize;
     //ManagerItem := Self;
@@ -207,6 +220,7 @@ begin
   //OnResize := ResizeExecute;
   //BevelInner := bvNone;
   //BevelOuter := bvNone;
+  HeaderVisible := True;
 end;
 
 destructor TCDPanelHeader.Destroy;
@@ -329,6 +343,7 @@ begin
   FDockSite := ADockSite;
 
   FDockStyle := dsList; // dsNone
+  FHeaderVisible := True;
   PopupMenu := TCDPopupMenu.Create(Self);
   PopupMenu.Parent := ADockSite;
 end;
@@ -535,6 +550,14 @@ begin
     DockSite.DockManager := NewManager;
     NewManager.UpdateClientSize;
   end;
+end;
+
+procedure TCDManager.SetHeaderVisible(const AValue: Boolean);
+begin
+  if FHeaderVisible = AValue then Exit;
+  FHeaderVisible := AValue;
+  if Assigned(DockSite.HostDockSite) then
+    TCDManager(DockSite.HostDockSite.DockManager).UpdateClientSize;
 end;
 
 procedure TCDManager.SetHeaderPos(const AValue: THeaderPos);
