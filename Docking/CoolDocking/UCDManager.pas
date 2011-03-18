@@ -281,6 +281,7 @@ var
   Temp: TControl;
   Temp2: TControl;
 begin
+
 {  Temp := TControl(Sender);
   if Assigned(Control) then
   begin

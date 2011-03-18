@@ -16,6 +16,7 @@ type
   TCDManagerRegionsItem = class(TCDManagerItem)
     PanelHeader: TCDPanelHeader;
     Splitter: TSplitter;
+    procedure VisibleChange(Sender: TObject); override;
     procedure Paint(Sender: TObject); override;
     constructor Create;
     destructor Destroy; override;
@@ -54,6 +55,13 @@ uses
   UCDClient, UCDConjoinForm;
 
 { TCDManagerRegionsItem }
+
+procedure TCDManagerRegionsItem.VisibleChange(Sender: TObject);
+begin
+  inherited VisibleChange(Sender);
+  PanelHeader.Visible := Control.Visible;
+  Manager.UpdateClientSize;
+end;
 
 procedure TCDManagerRegionsItem.Paint(Sender: TObject);
 var
@@ -272,6 +280,7 @@ var
   SplitterLeft: Integer;
   SplitterTop: Integer;
   BaseAlign: TAlign;
+  VisibleControlsCount: Integer;
 begin
   inherited UpdateClientSize;
   if FDockDirection = ddHorizontal then
@@ -279,15 +288,21 @@ begin
 
   SplitterLeft := 0;
   SplitterTop := 0;
+  VisibleControlsCount := DockSite.VisibleDockClientCount;
+  DockSite.Visible := VisibleControlsCount > 0;
+  if VisibleControlsCount = 0 then VisibleControlsCount := 1;
+
   for I := 0 to DockItems.Count - 1 do
-  with TCDManagerRegionsItem(DockItems[I]) do begin
+  with TCDManagerRegionsItem(DockItems[I]) do
+  begin
     PanelHeader.Left := SplitterLeft;
     PanelHeader.Top := SplitterTop;
     PanelHeader.Height := Self.DockSite.Height div
-      Self.DockSite.DockClientCount;
+      VisibleControlsCount;
     PanelHeader.Width := Self.DockSite.Width div
-      Self.DockSite.DockClientCount;
-    PanelHeader.Header.Visible := TCDManager(TWinControl(Control).DockManager).HeaderVisible;
+      VisibleControlsCount;
+    if Assigned(TWinControl(Control).DockManager) then
+      PanelHeader.Header.Visible := TCDManager(TWinControl(Control).DockManager).HeaderVisible;
     PanelHeader.Header.Title.Caption := TForm(Control).Caption;
     Paint(Self);
     if I < (DockItems.Count - 1) then PanelHeader.Align := BaseAlign

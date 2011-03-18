@@ -33,13 +33,13 @@ type
       Shift: TShiftState; X, Y: Integer);
     procedure InsertControlPanel(AControl: TControl; InsertAt: TAlign;
       DropCtl: TControl); override;
-    procedure UpdateClientSize; override;
     function FindControlInPanels(Control: TControl): TCDManagerItem; override;
     function GetHeaderPos: THeaderPos; override;
   public
     MouseDownSkip: Boolean;
     TabImageList: TImageList;
     PageControl: TPageControl;
+    procedure UpdateClientSize; override;
     procedure SetHeaderPos(const AValue: THeaderPos); override;
     procedure InsertControlNoUpdate(Control: TControl; InsertAt: TAlign); virtual;
     procedure RemoveControl(Control: TControl); override;
@@ -289,7 +289,8 @@ begin
     end;
   end;
   inherited RemoveControl(Control);
-  if ClientCount > 1 then UpdateClientSize;
+  //if ClientCount > 0 then
+  UpdateClientSize;
 end;
 
 function TCDManagerTabs.GetHeaderPos: THeaderPos;
@@ -347,7 +348,7 @@ begin
   end;
 
   while PageControl.PageList.Count > DockItems.Count do begin
-    PageControl.Pages[PageControl.PageCount - 1].Parent := nil;
+    //PageControl.Pages[PageControl.PageCount - 1].Parent := nil;
     PageControl.Pages[PageControl.PageCount - 1].Free;
     TabImageList.Delete(TabImageList.Count - 1);
   end;
