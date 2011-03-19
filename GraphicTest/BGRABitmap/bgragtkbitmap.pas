@@ -130,7 +130,7 @@ begin
     exit;
   end;
 
-  SwapRedBlue;
+  //SwapRedBlue;
   gdk_pixbuf_render_to_drawable(FPixBuf,
     TGtkDeviceContext(ACanvas.Handle).Drawable,
     TGtkDeviceContext(ACanvas.Handle).GC,
@@ -139,7 +139,7 @@ begin
     TGtkDeviceContext(ACanvas.Handle).Offset.Y+Rect.Top,
     Width,Height,
     GDK_RGB_DITHER_NORMAL,0,0);
-  SwapRedBlue;
+  //SwapRedBlue;
 end;
 
 procedure TBGRAGtkBitmap.DataDrawTransparent(ACanvas: TCanvas; Rect: TRect;

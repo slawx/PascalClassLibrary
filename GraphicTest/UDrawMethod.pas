@@ -132,7 +132,7 @@ begin
   for Y := 0 to Size.Y - 1 do begin
     P := PInteger(BGRABitmap.ScanLine[Y]);
     for X := 0 to Size.X - 1 do begin
-      P^ := NoSwapBRComponent(Pixels[X, Y]);
+      P^ := NoSwapBRComponent(Pixels[X, Y]) or $ff000000;
       (*P^.red := Pixels[X, Y];
       P^.green := Pixels[X, Y];
       P^.blue := Pixels[X, Y];
@@ -140,7 +140,7 @@ begin
       Inc(P);
     end;
   end;
-  //BGRABitmap.InvalidateBitmap; // changed by direct access
+  BGRABitmap.InvalidateBitmap; // changed by direct access
   //BGRABitmap.Draw(Bitmap.Canvas, 0, 0, True);
   BGRABitmap.Draw(PaintBox.Canvas, 0, 0, True);
 //  Bitmap.RawImage.Ass
@@ -379,4 +379,4 @@ begin
 end;
 
 end.
-
+
