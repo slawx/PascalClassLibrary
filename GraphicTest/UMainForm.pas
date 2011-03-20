@@ -7,7 +7,8 @@ interface
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, ComCtrls,
   ExtCtrls, StdCtrls, DateUtils, UPlatform, LCLType, IntfGraphics, fpImage,
-  Math, GraphType, Contnrs, LclIntf, UFastBitmap, UDrawMethod, GL, OpenGLContext;
+  Math, GraphType, Contnrs, LclIntf, Spin, UFastBitmap, UDrawMethod, GL,
+  OpenGLContext;
 
 const
   SceneFrameCount = 100;
@@ -22,6 +23,7 @@ type
     ButtonStart: TButton;
     ButtonStop: TButton;
     ComboBox1: TComboBox;
+    FloatSpinEdit1: TFloatSpinEdit;
     Image1: TImage;
     Label1: TLabel;
     Label2: TLabel;
@@ -46,6 +48,7 @@ type
     OpenGLControl1: TOpenGLControl;
     TextureId: GLuint;
     TextureData: Pointer;
+    MethodIndex: Integer;
     procedure OpenGLControl1Resize(Sender: TObject);
     procedure InitGL;
   public
@@ -103,6 +106,7 @@ begin
     NewDrawMethod.PaintBox := PaintBox1;
     NewDrawMethod.OpenGLBitmap := TextureData;
     NewDrawMethod.OpenGLControl := OpenGLControl1;
+    NewDrawMethod.Init;
     DrawMethods.Add(NewDrawMethod);
     ComboBox1.Items.Add(NewDrawMethod.Caption);
   end;
@@ -111,11 +115,12 @@ end;
 
 procedure TMainForm.ButtonStartClick(Sender: TObject);
 begin
+  MethodIndex := ComboBox1.ItemIndex;
   ButtonStop.Enabled := True;
   ButtonStart.Enabled := False;
   Timer1.Enabled := True;
-  if ComboBox1.ItemIndex >= 0 then
-  with TDrawMethod(DrawMethods[ComboBox1.ItemIndex]) do begin
+  if MethodIndex >= 0 then
+  with TDrawMethod(DrawMethods[MethodIndex]) do begin
     PageControl1.TabIndex := Integer(PaintObject);
     Application.ProcessMessages;
     repeat
@@ -131,25 +136,31 @@ procedure TMainForm.ButtonBenchmarkClick(Sender: TObject);
 var
   NewItem: TListItem;
   I: Integer;
+  C: Integer;
+  StartTime: TDateTime;
 begin
+  Timer1.Enabled := True;
   with ListView1, Items do
   try
-    BeginUpdate;
+    //BeginUpdate;
     Clear;
     for I := 0 to DrawMethods.Count - 1 do
     with TDrawMethod(DrawMethods[I]) do begin
+      MethodIndex := I;
       PageControl1.TabIndex := Integer(PaintObject);
-      Application.ProcessMessages;
-      DrawFrameTiming(TFastBitmap(Scenes[0]));
-      Application.ProcessMessages;
-      DrawFrameTiming(TFastBitmap(Scenes[0]));
+      StartTime := NowPrecise;
+      repeat
+        DrawFrameTiming(TFastBitmap(Scenes[SceneIndex]));
+        SceneIndex := (SceneIndex + 1) mod Scenes.Count;
+        Application.ProcessMessages;
+      until (NowPrecise - StartTime) > OneSecond * FloatSpinEdit1.Value;
       NewItem := Add;
       NewItem.Caption := Caption;
       NewItem.SubItems.Add(FloatToStr(RoundTo(FrameDuration / OneMillisecond, -3)));
       NewItem.SubItems.Add(FloatToStr(RoundTo(1 / (FrameDuration / OneSecond), -3)));
     end;
   finally
-    EndUpdate;
+    //EndUpdate;
   end;
 end;
 
@@ -174,8 +185,8 @@ end;
 
 procedure TMainForm.Timer1Timer(Sender: TObject);
 begin
-  if (ComboBox1.ItemIndex >= 0) then
-  with TDrawMethod(DrawMethods[ComboBox1.ItemIndex]) do begin
+  if (MethodIndex >= 0) then
+  with TDrawMethod(DrawMethods[MethodIndex]) do begin
     if (FrameDuration > 0) then
       Label2.Caption := FloatToStr(RoundTo(1 / (FrameDuration / OneSecond), -3))
       else Label2.Caption := '0';
@@ -193,6 +204,7 @@ begin
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity;
   glOrtho(0, OpenGLControl1.Width, OpenGLControl1.Height, 0, 0, 1);
+//  glOrtho(0, 1, 1, 0, 0, 1);
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
   glDisable(GL_DEPTH_TEST);

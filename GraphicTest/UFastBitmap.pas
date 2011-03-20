@@ -32,6 +32,22 @@ type
     property Pixels[X, Y: Integer]: TFastBitmapPixel read GetPixel write SetPixel;
   end;
 
+  { TFastBitmap3 }
+
+  TFastBitmap3 = class
+  private
+    FPixelsData: PByte;
+    FSize: TPoint;
+    procedure SetSize(const AValue: TPoint);
+  public
+    constructor Create;
+    destructor Destroy; override;
+    procedure RandomImage;
+    property Size: TPoint read FSize write SetSize;
+    function GetPixelAddress(X, Y: Integer): PFastBitmapPixel; inline;
+    function GetPixelSize: Integer; inline;
+  end;
+
   TFastBitmap2 = class
   private
     function GetSize: TPoint;
@@ -61,6 +77,64 @@ begin
   Result := Value;
   TFastBitmapPixelComponents(Result).B := TFastBitmapPixelComponents(Value).B;
   TFastBitmapPixelComponents(Result).R := TFastBitmapPixelComponents(Value).R;
+end;
+
+{ TFastBitmap3 }
+
+procedure TFastBitmap3.SetSize(const AValue: TPoint);
+begin
+  if (FSize.X = AValue.X) and (FSize.Y = AValue.X) then Exit;
+  FSize := AValue;
+  FPixelsData := ReAllocMem(FPixelsData, FSize.X * FSize.Y * SizeOf(TFastBitmapPixel));
+end;
+
+constructor TFastBitmap3.Create;
+begin
+
+end;
+
+destructor TFastBitmap3.Destroy;
+begin
+  inherited Destroy;
+end;
+
+procedure TFastBitmap3.RandomImage;
+var
+  I, X, Y: Integer;
+  PRow: PFastBitmapPixel;
+  PPixel: PFastBitmapPixel;
+begin
+  for I := 0 to 2 do begin
+    PRow := GetPixelAddress(I * (Size.X div 3), 0);
+    for Y := 0 to (Size.Y div 2) - 1 do begin
+      PPixel := PRow;
+      for X := 0 to (Size.X div 3) - 1 do begin
+        PPixel^ := 255 shl (I * 8);
+        Inc(PPixel);
+      end;
+      Inc(PRow, Size.X);
+    end;
+  end;
+
+  PRow := GetPixelAddress(0, Size.Y div 2);
+  for Y := (Size.Y div 2) to Size.Y - 1 do begin
+    PPixel := PRow;
+    for X := 0 to Size.X - 1 do begin
+      PPixel^ := Random(256) or (Random(256) shl 16) or (Random(256) shl 8);
+      Inc(PPixel);
+    end;
+    Inc(PRow, Size.X);
+  end;
+end;
+
+function TFastBitmap3.GetPixelAddress(X, Y: Integer): PFastBitmapPixel;
+begin
+  Result := PFastBitmapPixel(FPixelsData) + Y * FSize.X + X;
+end;
+
+function TFastBitmap3.GetPixelSize: Integer;
+begin
+  Result := SizeOf(TFastBitmapPixel);
 end;
 
 { TFastBitmap2 }
@@ -132,4 +206,4 @@ end;
 
 
 end.
-
+
