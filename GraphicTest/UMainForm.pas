@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, ComCtrls,
   ExtCtrls, StdCtrls, DateUtils, UPlatform, LCLType, IntfGraphics, fpImage,
-  Math, GraphType, Contnrs, LclIntf, UFastBitmap, UDrawMethod;
+  Math, GraphType, Contnrs, LclIntf, UFastBitmap, UDrawMethod, GL, OpenGLContext;
 
 const
   SceneFrameCount = 100;
@@ -33,6 +33,7 @@ type
     PaintBox1: TPaintBox;
     TabSheet1: TTabSheet;
     TabSheet2: TTabSheet;
+    TabSheet3: TTabSheet;
     Timer1: TTimer;
     procedure ButtonBenchmarkClick(Sender: TObject);
     procedure ButtonStartClick(Sender: TObject);
@@ -42,6 +43,11 @@ type
     procedure FormDestroy(Sender: TObject);
     procedure Timer1Timer(Sender: TObject);
   private
+    OpenGLControl1: TOpenGLControl;
+    TextureId: GLuint;
+    TextureData: Pointer;
+    procedure OpenGLControl1Resize(Sender: TObject);
+    procedure InitGL;
   public
     DrawMethods: TObjectList; // TObjectList<TDrawMethod>
     Bitmap: TBitmap;
@@ -78,16 +84,29 @@ begin
   Image1.Picture.Bitmap.SetSize(TFastBitmap(Scenes[0]).Size.X, TFastBitmap(Scenes[0]).Size.Y);
   Bitmap.SetSize(TFastBitmap(Scenes[0]).Size.X, TFastBitmap(Scenes[0]).Size.Y);
 
+  OpenGLControl1 := TOpenGLControl.Create(Self);
+  with OpenGLControl1 do begin
+    Name := 'OpenGLControl1';
+    Parent := TabSheet3;
+    SetBounds(0, 0, 320, 240);
+    InitGL;
+    //OnPaint := OpenGLControl1Paint;
+    OnResize := OpenGLControl1Resize;
+  end;
+  GetMem(TextureData, OpenGLControl1.Width * OpenGLControl1.Height * SizeOf(Integer));
+
   DrawMethods := TObjectList.Create;
   ComboBox1.Clear;
   for I := 0 to High(DrawMethodClasses) do begin
     NewDrawMethod := DrawMethodClasses[I].Create;
     NewDrawMethod.Bitmap := Image1.Picture.Bitmap;
     NewDrawMethod.PaintBox := PaintBox1;
+    NewDrawMethod.OpenGLBitmap := TextureData;
+    NewDrawMethod.OpenGLControl := OpenGLControl1;
     DrawMethods.Add(NewDrawMethod);
     ComboBox1.Items.Add(NewDrawMethod.Caption);
   end;
-  ComboBox1.ItemIndex := 0;
+  ComboBox1.ItemIndex := DrawMethods.Count - 1;
 end;
 
 procedure TMainForm.ButtonStartClick(Sender: TObject);
@@ -147,6 +166,7 @@ end;
 
 procedure TMainForm.FormDestroy(Sender: TObject);
 begin
+  FreeMem(TextureData, OpenGLControl1.Width * OpenGLControl1.Height);
   DrawMethods.Free;
   Scenes.Free;
   Bitmap.Free;
@@ -161,6 +181,30 @@ begin
       else Label2.Caption := '0';
     Label4.Caption := FloatToStr(RoundTo(FrameDuration / OneMillisecond, -3)) + ' ms';
   end;
+end;
+
+procedure TMainForm.OpenGLControl1Resize(Sender: TObject);
+begin
+  glViewport(0, 0, OpenGLControl1.Width, OpenGLControl1.Height);
+end;
+
+procedure TMainForm.InitGL;
+begin
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity;
+  glOrtho(0, OpenGLControl1.Width, OpenGLControl1.Height, 0, 0, 1);
+  glMatrixMode(GL_MODELVIEW);
+  glLoadIdentity();
+  glDisable(GL_DEPTH_TEST);
+  glViewport(0, 0, OpenGLControl1.Width, OpenGLControl1.Height);
+  //gluPerspective( 45.0, (GLfloat)(OpenGLControl1.Width)/(GLfloat)(OpenGLControl1.Height), 0.1f, 500.0 );
+
+    //glFrustum (-1.0, 1.0, -1.0, 1.0, 1.5, 20.0);
+    //glTranslatef (0.0, 0.0,-3.0);
+  //  glClearColor(0.0, 0.0, 0.0, 1.0);
+
+  glGenTextures(1, @TextureId);
+  glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 end;
 
 end.

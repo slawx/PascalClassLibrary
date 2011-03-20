@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, StdCtrls, ExtCtrls, UPlatform, UFastBitmap, Graphics,
   LCLType, IntfGraphics, fpImage, GraphType, BGRABitmap, BGRABitmapTypes,
-  LclIntf;
+  LclIntf, GL, OpenGLContext;
 
 type
   TPaintObject = (poImage, poPaintBox, poOpenGL);
@@ -26,6 +26,9 @@ type
     Terminated: Boolean;
     FrameDuration: TDateTime;
     PaintObject: TPaintObject;
+    OpenGLBitmap: Pointer;
+    OpenGLControl: TOpenGLControl;
+    TextureId: GLuint;
     constructor Create; virtual;
     destructor Destroy; override;
     procedure DrawFrame(FastBitmap: TFastBitmap); virtual;
@@ -93,13 +96,115 @@ type
     procedure DrawFrame(FastBitmap: TFastBitmap); override;
   end;
 
+  { TOpenGLMethod }
+
+  TOpenGLMethod = class(TDrawMethod)
+    procedure SetBitmap(const AValue: TBitmap); override;
+    constructor Create; override;
+    destructor Destroy; override;
+    procedure DrawFrame(FastBitmap: TFastBitmap); override;
+  end;
+
+
 const
-  DrawMethodClasses: array[0..6] of TDrawMethodClass = (
+  DrawMethodClasses: array[0..7] of TDrawMethodClass = (
     TCanvasPixels, TCanvasPixelsUpdateLock, TLazIntfImageColorsCopy,
     TLazIntfImageColorsNoCopy, TBitmapRawImageData, TBitmapRawImageDataPaintBox,
-    TBGRABitmapPaintBox);
+    TBGRABitmapPaintBox, TOpenGLMethod);
 
 implementation
+
+{ TOpenGLMethod }
+
+procedure TOpenGLMethod.SetBitmap(const AValue: TBitmap);
+begin
+  inherited SetBitmap(AValue);
+end;
+
+constructor TOpenGLMethod.Create;
+begin
+  inherited Create;
+  Caption := 'OpenGL';
+  PaintObject := poOpenGL;
+end;
+
+destructor TOpenGLMethod.Destroy;
+begin
+  inherited Destroy;
+end;
+
+procedure TOpenGLMethod.DrawFrame(FastBitmap: TFastBitmap);
+var
+  X, Y: Integer;
+  P: PInteger;
+  R: PInteger;
+const
+  GL_CLAMP_TO_EDGE = $812F;
+begin
+(*  glEnable(GL_TEXTURE_2D);          // enables 2d textures
+    glClearColor(0.0,0.0,0.0,1.0);    // sets background color
+    glClearDepth(1.0);
+    glDepthFunc(GL_LEQUAL);           // the type of depth test to do
+    glEnable(GL_DEPTH_TEST);          // enables depth testing
+    glShadeModel(GL_SMOOTH);          // enables smooth color shading
+    {blending}
+    glColor4f(1.0,1.0,1.0,0.5);       // Full Brightness, 50% Alpha ( NEW )
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+    glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, GL_TRUE);
+*)
+
+  glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
+  //glLoadIdentity;             { clear the matrix }
+  //glTranslatef(0.0, 0.0, -3.0);  // -2.5); { viewing transformation }
+
+  //glLoadIdentity;             { clear the matrix }
+
+  P := OpenGLBitmap;
+  with FastBitmap do
+  for Y := 0 to Size.Y - 1 do begin
+    R := P;
+    for X := 0 to Size.X - 1 do begin
+      //R^ := Round($ff * (Y / Size.Y)) or $ff000000;
+      R^  := NoSwapBRComponent(Pixels[X, Y]) or $ff000000;
+      Inc(R);
+    end;
+    Inc(P, Size.X);
+  end;
+
+    glLoadIdentity;
+    //glRotatef(30.0, 0, 0, 1.0);
+    glTranslatef(-OpenGLControl.Width div 2, -OpenGLControl.Height div 2, 0.0);
+
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, TextureId);
+      //glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+      //glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+      glTexImage2D(GL_TEXTURE_2D, 0, 4, OpenGLControl.Width, OpenGLControl.Height,
+        0, GL_RGBA, GL_UNSIGNED_BYTE, OpenGLBitmap);
+      //glTexImage2D(GL_TEXTURE_2D, 0, 4, 512, 256,
+      //0, GL_RGBA, GL_UNSIGNED_BYTE, OpenGLBitmap);
+
+    //Define how alpha blending will work and enable alpha blending.
+    //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    //glEnable(GL_BLEND);
+
+    glBegin(GL_QUADS);
+    //glBegin(GL_POLYGON);
+      glColor3ub(255, 255, 255);
+      glTexCoord2f(0, 0);
+      glVertex3f(0, 0, 0);
+      glTexCoord2f(OpenGLControl.Width div 2, 0);
+      glVertex3f(OpenGLControl.Width, 0, 0);
+      glTexCoord2f(OpenGLControl.Width div 2, OpenGLControl.Height div 2);
+      glVertex3f(OpenGLControl.Width, OpenGLControl.Height, 0);
+      glTexCoord2f(0, OpenGLControl.Height div 2);
+      glVertex3f(0, OpenGLControl.Height, 0);
+    glEnd();
+
+  OpenGLControl.SwapBuffers;
+end;
 
 { TBGRABitmapPaintBox }
 
