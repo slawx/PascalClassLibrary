@@ -28,7 +28,7 @@
     </CompilerOptions>
     <Description Value="Set of components for forms docking for Lazarus."/>
     <License Value="GNU/GPL"/>
-    <Version Minor="3"/>
+    <Version Minor="4"/>
     <Files Count="16">
       <Item1>
         <Filename Value="UCDClient.pas"/>
