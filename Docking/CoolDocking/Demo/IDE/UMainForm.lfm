@@ -17,7 +17,6 @@ object MainForm: TMainForm
     Width = 536
     Align = alClient
     BevelOuter = bvNone
-    Color = clWindow
     ParentColor = False
     TabOrder = 0
   end

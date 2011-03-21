@@ -287,10 +287,8 @@ begin
       ManualFloat(Rect(Left, Top, Left + Width, Top + Height));
       Free;
     end;
-  end;
+  end else UpdateClientSize;
   inherited RemoveControl(Control);
-  //if ClientCount > 0 then
-  UpdateClientSize;
 end;
 
 function TCDManagerTabs.GetHeaderPos: THeaderPos;
@@ -361,7 +359,7 @@ begin
   for I := 0 to DockItems.Count - 1 do
   with TCDManagerTabsItem(DockItems[I]) do begin
     PageControl.Pages[I].Caption := Control.Caption;
-    PageControl.Pages[I].ImageIndex := TabImageList.Count;
+    PageControl.Pages[I].ImageIndex := I;
     TabImageList.Replace(I, IconImage.Picture.Bitmap, nil);
     Control.Parent := PageControl.Pages[I];
     Control.Align := alClient;

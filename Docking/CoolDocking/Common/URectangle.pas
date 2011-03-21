@@ -1,6 +1,8 @@
 unit URectangle;
 
-{$mode objfpc}{$H+}
+// Date: 2011-03-20
+
+{$mode Delphi}{$H+}
 
 interface
 
@@ -33,6 +35,7 @@ type
     Bottom: Integer;
 
     procedure Assign(Source: TRectangle);
+    function IsInside(Pos: TPoint): Boolean;
 
     property Width: Integer read GetWidth write SetWidth;
     property Height: Integer read GetHeight write SetHeight;
@@ -139,6 +142,12 @@ begin
   Top := Source.Top;
   Right := Source.Right;
   Bottom := Source.Bottom;
+end;
+
+function TRectangle.IsInside(Pos: TPoint): Boolean;
+begin
+  Result := (Pos.X >= Left) and (Pos.Y >= Top) and
+    (Pos.X <= Right) and (Pos.Y <= Bottom);
 end;
 
 end.

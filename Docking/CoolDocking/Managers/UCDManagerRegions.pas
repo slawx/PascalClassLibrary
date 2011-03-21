@@ -289,7 +289,8 @@ begin
   SplitterLeft := 0;
   SplitterTop := 0;
   VisibleControlsCount := DockSite.VisibleDockClientCount;
-  DockSite.Visible := VisibleControlsCount > 0;
+  if DockSite is TForm then
+    DockSite.Visible := VisibleControlsCount > 0;
   if VisibleControlsCount = 0 then VisibleControlsCount := 1;
 
   for I := 0 to DockItems.Count - 1 do
