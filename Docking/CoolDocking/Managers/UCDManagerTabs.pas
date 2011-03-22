@@ -89,7 +89,8 @@ begin
 
   // Show current dock clients in parent dock sites
   if TControl(Sender).Visible then
-    TControl(Sender).HostDockSite.Visible := True;
+    if Assigned(TControl(Sender).HostDockSite) then
+      TControl(Sender).HostDockSite.Visible := True;
 
   {Temp := TControl(Sender);
   if Assigned(Control) then
@@ -270,7 +271,7 @@ begin
   ManagerItem := FindControlInPanels(Control);
   if Assigned(ManagerItem) then begin
     Control.RemoveHandlerOnVisibleChanged(ManagerItem.VisibleChange);
-  end;
+  end else raise Exception.Create(Format('Control %s not found in DockItems', [Control.Name]));
 
   DockItems.Remove(ManagerItem);
   ClientCount := DockItems.Count;
@@ -284,9 +285,14 @@ begin
         TCDManagerItem(DockItems[0]).Control.ManualDock(HostDockSite);
       end else TCDManagerItem(DockItems[0]).Control.ManualFloat(Rect(Left, Top, Left + Width, Top + Height));
       ManualFloat(Rect(Left, Top, Left + Width, Top + Height));
+      //UpdateClientSize;
+      inherited RemoveControl(Control);
       Free;
+      Exit;
     end;
-  end else UpdateClientSize;
+  end;
+  //if ClientCount > 0 then
+  UpdateClientSize;
   inherited RemoveControl(Control);
 end;
 
@@ -345,8 +351,9 @@ begin
   end;
 
   while PageControl.PageList.Count > DockItems.Count do begin
-    TCDManagerTabsItem(DockItems[I]).Control.Parent := nil;
-    PageControl.Pages[PageControl.PageCount - 1].Parent := nil;
+//    TCDManagerTabsItem(DockItems[DockItems.Count - 1]).Control.Visible := False;
+//    TCDManagerTabsItem(DockItems[DockItems.Count - 1]).Control.Parent := nil;
+    //PageControl.Pages[PageControl.PageCount - 1].Parent := nil;
     PageControl.Pages[PageControl.PageCount - 1].Free;
     TabImageList.Delete(TabImageList.Count - 1);
   end;

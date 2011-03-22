@@ -37,7 +37,6 @@ type
     Title: TLabel;
     Icon: TImage;
     ManagerItem: TCDManagerItem;
-    procedure DrawGrabber(Canvas: TCanvas; AControl: TControl);
     constructor Create(TheOwner: TComponent); override;
     destructor Destroy; override;
   end;
@@ -95,6 +94,7 @@ type
     Locked: Boolean;
     PopupMenu: TCDPopupMenu;
     FDockStyle: TCDStyleType;
+    FreeParentIfEmpty: Boolean; // Free or not parent conjoin forms
     constructor Create(ADockSite: TWinControl); override;
     destructor Destroy; override;
     procedure UpdateClientSize; virtual;
@@ -324,6 +324,8 @@ begin
 
   FDockSite := ADockSite;
 
+  FreeParentIfEmpty := True;
+
   FDockStyle := dsList; // dsNone
   FHeaderVisible := True;
   PopupMenu := TCDPopupMenu.Create(Self);
@@ -388,6 +390,7 @@ begin
       NewConjoinDockForm := CreateContainer(InsertAt);
       FDockSite.ManualDock(NewConjoinDockForm);
       Control.ManualDock(NewConjoinDockForm, nil, InsertAt);
+      NewConjoinDockForm.UpdateCaption;
     end else begin
       NewConjoinDockForm := CreateContainer(InsertAt);
       NewDockSite := FDockSite.HostDockSite;
@@ -395,11 +398,14 @@ begin
       NewConjoinDockForm.ManualDock(NewDockSite, nil, InsertAt);
       FDockSite.ManualDock(NewConjoinDockForm);
       Control.ManualDock(NewConjoinDockForm, nil, InsertAt);
+      NewConjoinDockForm.UpdateCaption;
     end;
   end else
   if (FDockSite is TCDConjoinForm) or (FDockSite is TPanel)  then begin
     InsertControlPanel(Control, InsertAt, DropCtl);
   end;
+  if FDockSite is TCDConjoinForm then
+    TCDConjoinForm(FDockSite).UpdateCaption;
 
 //  FDockPanel.Invalidate;
   //inherited;
@@ -450,6 +456,8 @@ end;
 
 procedure TCDManager.RemoveControl(Control: TControl);
 begin
+  if FDockSite is TCDConjoinForm then
+    TCDConjoinForm(FDockSite).UpdateCaption;
 end;
 
 procedure TCDManager.ResetBounds(Force: Boolean);
@@ -624,24 +632,6 @@ begin
   inherited Destroy;
 end;
 
-procedure TCDHeader.DrawGrabber(Canvas: TCanvas; AControl: TControl);
-begin
-  with Canvas do begin
-    Brush.Color := clBtnFace;
-    Pen.Color := clBlack;
-    //FillRect(0, 0, AControl.Width, GrabberSize);
-
-    if (AControl as TWinControl).Focused then
-      Title.Font.Style := Font.Style + [fsBold]
-      else Title.Font.Style := Font.Style - [fsBold];
-    Rectangle(1, 1, AControl.Width - 1, GrabberSize - 1);
-    if Icon.Picture.Width > 0 then Title.Left := 8 + Icon.Picture.Width
-      else Title.Left := 6;
-    Title.Caption := AControl.Caption;
-    RearrangeButtons;
-  end;
-end;
-
 procedure TCDHeader.PaintExecute(Sender: TObject);
 const
   Corner: Integer = 2;
@@ -652,6 +642,15 @@ const
 var
   Points: array of TPoint;
 begin
+  if (ManagerItem.Control as TWinControl).Focused then
+  Title.Font.Style := Font.Style + [fsBold]
+  else Title.Font.Style := Font.Style - [fsBold];
+
+  if Icon.Picture.Width > 0 then Title.Left := 8 + Icon.Picture.Width
+    else Title.Left := 6;
+  Title.Caption := ManagerItem.Control.Caption;
+  RearrangeButtons;
+
   with Canvas do begin
     GradientFill(Rect(Border, Border, Width - Border,
       Height - Border), TopColor, BottomColor, gdVertical);

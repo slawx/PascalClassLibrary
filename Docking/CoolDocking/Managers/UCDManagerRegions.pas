@@ -79,9 +79,7 @@ begin
     //R := Control.ClientRect;
     //Canvas.FillRect(R);
     if Visible then begin
-      if ControlPanel.DockClientCount = 0 then
-        Header.DrawGrabber(Canvas, Control) else
-      Header.DrawGrabber(Canvas, ControlPanel);
+      Header.Invalidate;
     end;
   end;
 end;
@@ -200,15 +198,14 @@ begin
       if (NewDirection <> FDockDirection) then begin
         // Direction change, create conjoin form
         NewConjoinDockForm := CreateContainer(InsertAt);
-        NewDockSite := DockSite.HostDockSite;
-        // FDockSite.ManualFloat(FDockSite.BoundsRect);
-        NewConjoinDockForm.ManualDock(NewDockSite);
-        Control.ManualDock(NewConjoinDockForm, nil, InsertAt);
-        if DockSite is TForm then
-          DockSite.ManualDock(NewConjoinDockForm)
-        else
-        if DockSite is TPanel then
-          DockSite.Parent.ManualDock(NewConjoinDockForm);
+        FreeParentIfEmpty := False;
+        for I := DockSite.DockClientCount - 1 downto 0 do begin
+          DockSite.DockClients[I].ManualDock(NewConjoinDockForm);
+        end;
+        FreeParentIfEmpty := True;
+        NewConjoinDockForm.ManualDock(DockSite);
+        Control.ManualDock(DockSite, nil, InsertAt);
+        NewConjoinDockForm.UpdateCaption;
         UpdateClientSize;
         Exit;
       end;
@@ -232,7 +229,7 @@ begin
   ClientCount := DockItems.Count;
 
   //if TCDManager(Manager).DockSite.DockClientCount = 2 then FDockDirection := ddNone;
-  if ClientCount = 1 then begin
+  if FreeParentIfEmpty and (ClientCount = 1) then begin
     // Last removed control => Free parent if it is TCDConjoinForm
     if Self.DockSite is TCDConjoinForm then
     with TCDConjoinForm(Self.DockSite) do begin
@@ -240,7 +237,9 @@ begin
         TCDManagerItem(DockItems[0]).Control.ManualDock(HostDockSite);
       end else TCDManagerItem(DockItems[0]).Control.ManualFloat(Rect(Left, Top, Left + Width, Top + Height));
       ManualFloat(Rect(Left, Top, Left + Width, Top + Height));
+      inherited RemoveControl(Control);
       Free;
+      Exit;
     end;
   end;
   inherited RemoveControl(Control);

@@ -13,6 +13,7 @@ type
   TCDConjoinForm = class(TCDConjoinFormBase)
   public
     CoolDockClient: TCDClientBase;
+    procedure UpdateCaption;
     procedure FormShow(Sender : TObject);
     procedure FormHide(Sender : TObject);
     constructor Create(TheOwner: TComponent); override;
@@ -28,6 +29,23 @@ uses
   UCDManager, UCDClient;
 
 { TCDConjoinForm }
+
+procedure TCDConjoinForm.UpdateCaption;
+var
+  NewCaption: string;
+  I: Integer;
+begin
+  NewCaption := '';
+  for I := 0 to DockClientCount - 1 do begin
+    //if DockClients[I] is TCDConjoinForm then
+    //  TCDConjoinForm(DockClients[I]).UpdateCaption;
+    NewCaption := NewCaption + DockClients[I].Caption + ', ';
+  end;
+  Caption := Copy(NewCaption, 1, Length(NewCaption) - 2);
+
+  if Assigned(HostDockSite) and (HostDockSite is TCDConjoinForm) then
+    TCDConjoinForm(HostDockSite).UpdateCaption;
+end;
 
 procedure TCDConjoinForm.FormShow(Sender: TObject);
 begin

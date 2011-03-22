@@ -367,7 +367,7 @@ begin
   Caption := Form.Caption;
   UndockSize.X := Form.UndockWidth;
   UndockSize.Y := Form.UndockHeight;
-  Visible := Form.Visible;
+  Visible := Form.Visible or (TCDHideType(Form.Tag) = dhtTemporal);
   Rect.Left := Form.Left;
   Rect.Top := Form.Top;
   Rect.Width := Form.Width;
