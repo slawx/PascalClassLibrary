@@ -253,7 +253,7 @@ begin
     if (Control is TForm) and Assigned((Control as TForm).Icon) then
       NewItem.IconImage.Picture.Assign((Control as TForm).Icon);
 
-    NewItem.Control := Control;
+    NewItem.Control := TWinControl(Control);
     Control.AddHandlerOnVisibleChanged(NewItem.VisibleChange);
     //AControl.Parent := NewItem.ClientAreaPanel;
     Control.Align := alClient;
@@ -271,7 +271,7 @@ begin
   ManagerItem := FindControlInPanels(Control);
   if Assigned(ManagerItem) then begin
     Control.RemoveHandlerOnVisibleChanged(ManagerItem.VisibleChange);
-  end else raise Exception.Create(Format('Control %s not found in DockItems', [Control.Name]));
+  end; //else raise Exception.Create(Format('Control %s not found in DockItems', [Control.Name]));
 
   DockItems.Remove(ManagerItem);
   ClientCount := DockItems.Count;

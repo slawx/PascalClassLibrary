@@ -89,7 +89,6 @@ begin
   PanelHeader := TCDPanelHeader.Create(nil);
   PanelHeader.Header.ManagerItem := Self;
   PanelHeader.Header.OnMouseDown := DockPanelMouseDown;
-  PanelHeader.Header.Title.OnMouseDown := DockPanelMouseDown;
   PanelHeader.Header.Icon.OnMouseDown := DockPanelMouseDown;
 
   Splitter := TSplitter.Create(nil);
@@ -122,10 +121,12 @@ end;
 procedure TCDManagerRegions.SetHeaderPos(const AValue: THeaderPos);
 begin
   inherited SetHeaderPos(AValue);
-  case AValue of
+  if Assigned(DockSite.Parent) then
+    TCDManager(DockSite.Parent.DockManager).UpdateClientSize;
+(*  case AValue of
     hpBottom, hpTop: FDockDirection := ddVertical;
     hpLeft, hpRight: FDockDirection := ddHorizontal;
-  end;
+  end;*)
 end;
 
 function TCDManagerRegions.GetDirection(InsertAt: TAlign): TCDDirection;
@@ -171,7 +172,7 @@ begin
 
   NewItem.PanelHeader.Parent := DockSite;
 
-  NewItem.Control := Control;
+  NewItem.Control := TWinControl(Control);
   Control.AddHandlerOnVisibleChanged(NewItem.VisibleChange);
   Control.Parent := NewItem.PanelHeader.ControlPanel;
   Control.Align := alClient;
@@ -198,11 +199,14 @@ begin
       if (NewDirection <> FDockDirection) then begin
         // Direction change, create conjoin form
         NewConjoinDockForm := CreateContainer(InsertAt);
-        FreeParentIfEmpty := False;
-        for I := DockSite.DockClientCount - 1 downto 0 do begin
-          DockSite.DockClients[I].ManualDock(NewConjoinDockForm);
+        try
+          FreeParentIfEmpty := False;
+          for I := DockSite.DockClientCount - 1 downto 0 do begin
+            DockSite.DockClients[I].ManualDock(NewConjoinDockForm);
+          end;
+        finally
+          FreeParentIfEmpty := True;
         end;
-        FreeParentIfEmpty := True;
         NewConjoinDockForm.ManualDock(DockSite);
         Control.ManualDock(DockSite, nil, InsertAt);
         NewConjoinDockForm.UpdateCaption;
@@ -307,7 +311,6 @@ begin
       VisibleControlsCount;
     if Assigned(TWinControl(Control).DockManager) then
       PanelHeader.Header.Visible := TCDManager(TWinControl(Control).DockManager).HeaderVisible;
-    PanelHeader.Header.Title.Caption := TForm(Control).Caption;
     PanelHeader.Visible := Control.Visible;
     Paint(Self);
     if I < (DockItems.Count - 1) then PanelHeader.Align := BaseAlign

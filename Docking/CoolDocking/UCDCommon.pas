@@ -74,6 +74,7 @@ type
   end;
 
 function GetUniqueName(BaseName: string): string;
+function HeaderPosToTabPos(HeaderPos: THeaderPos): TTabPosition;
 
 implementation
 
@@ -86,6 +87,16 @@ begin
   Result := BaseName + IntToStr(I);
 end;
 
+function HeaderPosToTabPos(HeaderPos: THeaderPos): TTabPosition;
+begin
+  case HeaderPos of
+    hpBottom: Result := tpBottom;
+    hpLeft: Result := tpLeft;
+    hpTop: Result := tpTop;
+    hpRight: Result := tpRight;
+    hpAuto: Result := tpTop;
+  end;
+end;
 
 { TCDManagerBase }
 

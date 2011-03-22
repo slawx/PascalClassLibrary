@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, UCDCommon, Controls, Contnrs, Dialogs,
-  UCDPopupMenu, LCLType, LMessages, Graphics, Buttons,
+  UCDPopupMenu, LCLType, LCLIntf, LMessages, Graphics, Buttons,
   UCDConjoinForm, Menus, StdCtrls, ExtCtrls, Forms;
 
 const
@@ -29,12 +29,12 @@ type
 
   TCDHeader = class(TPanel)
   private
+    MyFont: hFont;
     procedure CloseButtonClick(Sender: TObject);
     procedure PaintExecute(Sender: TObject);
     procedure RearrangeButtons;
   public
     Buttons: TObjectList; // TList<TCDHeaderButton>
-    Title: TLabel;
     Icon: TImage;
     ManagerItem: TCDManagerItem;
     constructor Create(TheOwner: TComponent); override;
@@ -66,7 +66,7 @@ type
     procedure ResizeExecute(Sender: TObject);
     procedure SetHideType(const AValue: TCDHideType);
   public
-    Control: TControl;
+    Control: TWinControl;
     Manager: TCDManager;
     procedure DockPanelMouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
@@ -138,8 +138,6 @@ type
     property Visible: Boolean write SetVisible;
   end;
 
-function HeaderPosToTabPos(HeaderPos: THeaderPos): TTabPosition;
-
 
 implementation
 
@@ -147,15 +145,37 @@ uses
   UCDManagerRegions, UCDManagerTabs, UCDManagerRegionsPopup, UCDManagerTabsPopup,
   UCDResource;
 
-function HeaderPosToTabPos(HeaderPos: THeaderPos): TTabPosition;
+function CreateRotatedFont(F: TFont; Angle: Integer): Integer;
+var
+  LF: TLogFont;
 begin
-  case HeaderPos of
-    hpBottom: Result := tpBottom;
-    hpLeft: Result := tpLeft;
-    hpTop: Result := tpTop;
-    hpRight: Result := tpRight;
-    hpAuto: Result := tpTop;
+  FillChar(LF, SizeOf(LF), #0);
+  with LF do begin
+    lfHeight := F.Height;
+    lfWidth := 0;
+    lfEscapement := Angle * 10;
+    lfOrientation := 0;
+    if fsBold in F.Style then
+      lfWeight := FW_BOLD
+    else
+      lfWeight := FW_NORMAL;
+    lfItalic := Byte(fsItalic in F.Style);
+    lfUnderline := Byte(fsUnderline in F.Style);
+    lfStrikeOut := Byte(fsStrikeOut in F.Style);
+    lfCharSet := DEFAULT_CHARSET;
+    StrPCopy(lfFaceName, F.Name);
+    lfQuality := DEFAULT_QUALITY;
+    {everything else as default}
+    lfOutPrecision := OUT_DEFAULT_PRECIS;
+    lfClipPrecision := CLIP_DEFAULT_PRECIS;
+    case F.Pitch of
+      fpVariable: lfPitchAndFamily := VARIABLE_PITCH;
+      fpFixed: lfPitchAndFamily := FIXED_PITCH;
+    else
+      lfPitchAndFamily := DEFAULT_PITCH;
+    end;
   end;
+  Result := CreateFontIndirect(LF);
 end;
 
 { TCDHeaderButton }
@@ -178,6 +198,7 @@ procedure TCDPanelHeader.SetHeaderPos(const AValue: THeaderPos);
 begin
   if FHeaderPos=AValue then exit;
   FHeaderPos:=AValue;
+
   //Paint(Self);
 end;
 
@@ -579,16 +600,8 @@ var
 begin
   inherited Create(TheOwner);
   OnPaint := PaintExecute;
+  //MyFont := CreateRotatedFont(Canvas.Font, 90);
 
-  Title := TLabel.Create(Self);
-  with Title do begin
-    Parent := Self;
-    Visible := True;
-    Top := 4;
-    Left := 6;
-    BevelInner := bvNone;
-    BevelOuter := bvNone;
-  end;
   Buttons := TObjectList.Create;
 
   NewButton := TCDHeaderButton.Create;
@@ -641,14 +654,37 @@ const
   BottomColor: TColor = $DAE0E1;
 var
   Points: array of TPoint;
+  TitleLeft: Integer;
+  TitleWidth: Integer;
+  TitleMaxWidth: Integer;
+  I: Integer;
+  Title: string;
+  R: TRect;
 begin
-  if (ManagerItem.Control as TWinControl).Focused then
-  Title.Font.Style := Font.Style + [fsBold]
-  else Title.Font.Style := Font.Style - [fsBold];
+  with TCDManager(TWinControl(ManagerItem.Control).DockManager) do
+  case HeaderPos of
+    hpLeft: begin
+      Align := alLeft;
+      Width := GrabberSize;
+    end;
+    hpTop, hpAuto: begin
+      Align := alTop;
+      Height := GrabberSize;
+    end;
+    hpRight: begin
+      Align := alRight;
+      Width := GrabberSize;
+    end;
+    hpBottom: begin
+      Align := alBottom;
+      Height := GrabberSize;
+    end;
+  end;
 
-  if Icon.Picture.Width > 0 then Title.Left := 8 + Icon.Picture.Width
-    else Title.Left := 6;
-  Title.Caption := ManagerItem.Control.Caption;
+  if (ManagerItem.Control as TWinControl).Focused then
+  Canvas.Font.Style := Canvas.Font.Style + [fsBold]
+  else Canvas.Font.Style := Canvas.Font.Style - [fsBold];
+
   RearrangeButtons;
 
   with Canvas do begin
@@ -688,6 +724,28 @@ begin
     Points[8] := Point(Border, Border + Corner);
     Pen.Color := BorderColor;
     Polyline(Points);
+
+    Canvas.Brush.Style := bsClear;
+    TitleMaxWidth := Self.Width - 6;
+    for I := 0 to Buttons.Count - 1 do
+      if TCDHeaderButton(Buttons[I]).Visible then
+        Dec(TitleMaxWidth, TCDHeaderButton(Buttons[I]).Icon.Width + 2);
+    if Icon.Picture.Width > 0 then begin
+      TitleLeft := 8 + Icon.Picture.Width;
+      Dec(TitleMaxWidth, Icon.Picture.Width + 2)
+    end else TitleLeft := 6;
+
+    //SelectObject(Canvas.Handle, MyFont);
+    Title := ManagerItem.Control.Caption;
+    if (TextWidth(Title) > TitleMaxWidth) then begin
+      while (Length(Title) > 0) and (TextWidth(Title + '...') > TitleMaxWidth) do begin
+        Delete(Title, Length(Title), 1);
+      end;
+      Title := Title + '...';
+    end;
+
+    R := Rect(TitleLeft, 4, TitleLeft + TitleMaxWidth, 4 + TextHeight(Title));
+    TextRect(R, TitleLeft, 4, Title);
   end;
 end;
 

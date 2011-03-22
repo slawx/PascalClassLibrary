@@ -245,7 +245,6 @@ begin
     C := TCDManagerTabsPopupItem(DockItems[PageControl.TabIndex]).Control;
     C.Align := alClient;
     C.Parent := HeaderPanel.ControlPanel;
-    HeaderPanel.Header.Title.Caption := C.Caption;
     //AutoHide.Control.Align := alCustom;
     //Pos := DockSite.ClientToScreen(Pos);
     //AutoHide.Control.SetBounds(0, 0, 100, 100);
@@ -327,7 +326,7 @@ begin
     if (Control is TForm) and Assigned((Control as TForm).Icon) then
       NewItem.IconImage.Picture.Assign((Control as TForm).Icon);
 
-    NewItem.Control := Control;
+    NewItem.Control := TWinControl(Control);
     Control.AddHandlerOnVisibleChanged(NewItem.VisibleChange);
     //AControl.Parent := NewItem.ClientAreaPanel;
     Control.Align := alClient;

@@ -229,7 +229,7 @@ begin
     Value := ManagerItem.Control.Caption;
     if InputQuery(SRenameWindow, SEnterNewWindowName, False, Value) then begin
       ManagerItem.Control.Caption := Value;
-      Title.Caption := Value;
+      Invalidate;
     end;
   end;
 end;
@@ -242,7 +242,8 @@ begin
   end else
   if PopupComponent is TCDHeader then
   with TCDHeader(PopupComponent) do begin
-    TCDManager(Manager).HeaderPos := hpAuto;
+    TCDManager(TWinControl(ManagerItem.Control).DockManager).HeaderPos := hpTop;
+    Invalidate;
   end;
 end;
 
@@ -254,7 +255,8 @@ begin
   end else
   if PopupComponent is TCDHeader then
   with TCDHeader(PopupComponent) do begin
-    TCDManager(Manager).HeaderPos := hpLeft;
+    TCDManager(TWinControl(ManagerItem.Control).DockManager).HeaderPos := hpLeft;
+    Invalidate;
   end;
 end;
 
@@ -266,7 +268,8 @@ begin
   end else
   if PopupComponent is TCDHeader then
   with TCDHeader(PopupComponent) do begin
-    TCDManager(Manager).HeaderPos := hpRight;
+    TCDManager(TWinControl(ManagerItem.Control).DockManager).HeaderPos := hpRight;
+    Invalidate;
   end;
 end;
 
@@ -278,7 +281,8 @@ begin
   end else
   if PopupComponent is TCDHeader then
   with TCDHeader(PopupComponent) do begin
-    TCDManager(Manager).HeaderPos := hpTop;
+    TCDManager(TWinControl(ManagerItem.Control).DockManager).HeaderPos := hpTop;
+    Invalidate;
   end;
 end;
 
@@ -290,7 +294,8 @@ begin
   end else
   if PopupComponent is TCDHeader then
   with TCDHeader(PopupComponent) do begin
-    TCDManager(Manager).HeaderPos := hpBottom;
+    TCDManager(TWinControl(ManagerItem.Control).DockManager).HeaderPos := hpBottom;
+    Invalidate;
   end;
 end;
 
