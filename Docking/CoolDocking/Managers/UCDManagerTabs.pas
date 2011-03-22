@@ -17,6 +17,7 @@ type
     IconImage: TImage;
     constructor Create; override;
     destructor Destroy; override;
+    procedure VisibleChange(Sender: TObject); override;
   end;
 
   { TCDManagerTabs }
@@ -72,6 +73,54 @@ begin
   inherited Destroy;
 end;
 
+procedure TCDManagerTabsItem.VisibleChange(Sender: TObject);
+var
+  ControlVisible: Boolean;
+  Temp: TControl;
+  Temp2: TControl;
+begin
+  with TCDManagerTabs(Manager) do begin
+    if TControl(Sender).Visible then begin
+      Switch(DockItems.IndexOf(FindControlInPanels(TControl(Sender))));
+      TCDManagerTabsItem(DockItems[DockItems.IndexOf(FindControlInPanels(TControl(Sender)))]).HideType := dhtPermanent;
+    end;
+    UpdateClientSize;
+  end;
+
+  // Show current dock clients in parent dock sites
+  if TControl(Sender).Visible then
+    TControl(Sender).HostDockSite.Visible := True;
+
+  {Temp := TControl(Sender);
+  if Assigned(Control) then
+  begin
+    ControlVisible := TControl(Sender).Visible;
+    (*if Assigned(ClientAreaPanel) then
+      ClientAreaPanel.Visible := ControlVisible;
+    if Assigned(Splitter) then
+      Splitter.Visible := ControlVisible;
+      *)
+//    if Assigned(TCDManager(OwnerDockManager).DockStyleHandler) then
+    if Assigned(Manager) then
+    with TCDManagerTabs(Manager) do
+    begin
+      //UpdateClientSize;
+      if ControlVisible then
+        Switch(FDockItems.IndexOf(FindControlInPanels(TControl(Sender))));
+      if not (Control is TWinControl) then raise Exception.Create('Not TWinControl');
+      if not Assigned(Control) then raise Exception.Create('Control not assigned');
+      ChangeVisible(TWinControl(Control), ControlVisible);
+      // Show parent control
+      Temp := TControl(Sender).HostDockSite;
+
+      if ControlVisible then
+        TControl(Sender).HostDockSite.Visible := ControlVisible;
+    end;
+    if csDestroying in Control.ComponentState then Control := nil;
+  end;
+  }
+end;
+
 { TCDManagerTabs }
 
 function TCDManagerTabs.FindControlInPanels(Control: TControl
@@ -103,57 +152,9 @@ begin
 end;
 
 procedure TCDManagerTabs.TabControlChange(Sender: TObject);
-var
-  I: Integer;
 begin
-  //UpdateClientSize;
-{  // Hide all clients
-  for I := 0 to DockItems.Count - 1 do
-    if TCDManagerItem(DockItems[I]).Control.Visible
-    //and (PageControl.TabIndex <> I)
-    then
-    begin
-      TCDManagerItem(DockItems[I]).Control.Tag := Integer(dhtTemporal);
-      TCDManagerItem(DockItems[I]).Control.Hide;
-      //TCDClientPanel(DockItems[I]).ClientAreaPanel.Hide;
-      //TCDClientPanel(DockItems[I]).ClientAreaPanel.Parent := PageControl.Pages[I];
-      //TCDClientPanel(DockPanels[I]).ClientAreaPanel.Parent := DockSite;
-      TCDManagerItem(DockItems[I]).Control.Align := alClient;
-      //TCDClientPanel(DockPanels[I]).Control.Parent :=
-      //  TCDClientPanel(DockPanels[I]).ClientAreaPanel;
-      //ShowMessage(TCDClientPanel(DockPanels[I]).Control.ClassName);
-      //Application.ProcessMessages;
-
-      // Workaround for "Cannot focus" error
-      TForm(TCDManagerItem(DockItems[I]).Control).ActiveControl := nil;
-    end;
-
-  // Show selected
-  if (PageControl.TabIndex <> -1) and (DockItems.Count > PageControl.TabIndex)
-//  and not TCDClientPanel(DockPanels[PageControl.TabIndex]).Control.Visible
-  then begin
-    with TCDManagerItem(DockItems[PageControl.TabIndex]) do begin
-      Control.Show;
-      (*AutoHide.Enable := True;
-      if AutoHide.Enable then begin
-        //Parent := nil;
-        Visible := True;
-        if AutoHide.ControlVisible then begin
-          AutoHide.Hide;
-        end;
-        AutoHide.Control := Control;
-        AutoHide.Show;
-      end else begin
-      *)
-        //Parent := DockSite;
-        //Show;
-        Visible := True;
-        UpdateClientSize;
-//      end;
-    end;
-  //TCDClientPanel(FDockPanels[TabControl.TabIndex]).Visible := True;
-  end;
-  MouseDownSkip := True;        }
+  UpdateClientSize;
+  MouseDownSkip := True;
 end;
 
 procedure TCDManagerTabs.TabControlMouseDown(Sender: TObject;
@@ -207,8 +208,6 @@ begin
     OnMouseUp := TabControlMouseUp;
     Images := TabImageList;
   end;
-  //TabsPos := hpTop;
-  //MoveDuration := 1000; // ms
 
   //PageControl.Visible := True;
   //TabImageList.Clear;
@@ -341,12 +340,13 @@ var
 begin
   for I := 0 to DockItems.Count - 1 do
   with TCDManagerTabsItem(DockItems[I]) do begin
-    Control.Visible := False;
-    Control.Parent := nil;
+    //Control.Visible := False;
+    //Control.Parent := nil;
   end;
 
   while PageControl.PageList.Count > DockItems.Count do begin
-    //PageControl.Pages[PageControl.PageCount - 1].Parent := nil;
+    TCDManagerTabsItem(DockItems[I]).Control.Parent := nil;
+    PageControl.Pages[PageControl.PageCount - 1].Parent := nil;
     PageControl.Pages[PageControl.PageCount - 1].Free;
     TabImageList.Delete(TabImageList.Count - 1);
   end;
@@ -363,8 +363,16 @@ begin
     TabImageList.Replace(I, IconImage.Picture.Bitmap, nil);
     Control.Parent := PageControl.Pages[I];
     Control.Align := alClient;
-    Control.Visible := True;
-    PageControl.Pages[I].TabVisible := Control.Visible;
+    if PageControl.PageIndex = I then begin
+      if (not Control.Visible) and (HideType = dhtTemporal) then
+        Control.Visible := True;
+    end else begin
+      if Control.Visible then begin
+        HideType := dhtTemporal;
+        Control.Visible := False;
+      end;
+    end;
+    PageControl.Pages[I].TabVisible := Control.Visible or (HideType = dhtTemporal);
     //TCDClientPanel(DockPanels[I]).ClientAreaPanel.Width := DockSite.Width;
     //TCDClientPanel(DockPanels[I]).ClientAreaPanel.Height := DockSite.Height - PageControl.Height;
     //TCDClientPanel(FDockPanels[I]).DockPanelPaint(Self);
@@ -408,7 +416,7 @@ begin
 
         I := DockItems.IndexOf(FindControlInPanels(Control));
         if Control.Tag = Integer(dhtPermanent) then
-        if I <> -1 then
+        if (I <> -1) and (I < PageControl.PageCount) then
   //        Control.Hide;
           PageControl.Page[I].TabVisible := False;
         //Control.Tag := 0;

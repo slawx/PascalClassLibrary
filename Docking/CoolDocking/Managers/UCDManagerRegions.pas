@@ -59,8 +59,12 @@ uses
 procedure TCDManagerRegionsItem.VisibleChange(Sender: TObject);
 begin
   inherited VisibleChange(Sender);
-  PanelHeader.Visible := Control.Visible;
-  Manager.UpdateClientSize;
+  with TCDManagerRegions(Manager) do begin
+    //if TControl(Sender).Visible then begin
+    //  TCDManagerRegionsItem(DockItems[DockItems.IndexOf(FindControlInPanels(TControl(Sender)))]).HideType := dhtPermanent;
+    //end;
+    UpdateClientSize;
+  end;
 end;
 
 procedure TCDManagerRegionsItem.Paint(Sender: TObject);
@@ -305,6 +309,7 @@ begin
     if Assigned(TWinControl(Control).DockManager) then
       PanelHeader.Header.Visible := TCDManager(TWinControl(Control).DockManager).HeaderVisible;
     PanelHeader.Header.Title.Caption := TForm(Control).Caption;
+    PanelHeader.Visible := Control.Visible;
     Paint(Self);
     if I < (DockItems.Count - 1) then PanelHeader.Align := BaseAlign
       else PanelHeader.Align := alClient;

@@ -63,7 +63,9 @@ type
 
   TCDManagerItem = class
   private
+    function GetHideType: TCDHideType;
     procedure ResizeExecute(Sender: TObject);
+    procedure SetHideType(const AValue: TCDHideType);
   public
     Control: TControl;
     Manager: TCDManager;
@@ -73,6 +75,7 @@ type
     procedure VisibleChange(Sender: TObject); virtual;
     constructor Create; virtual;
     destructor Destroy; override;
+    property HideType: TCDHideType read GetHideType write SetHideType;
   end;
 
   { TCDManager }
@@ -239,6 +242,11 @@ begin
 
 end;
 
+function TCDManagerItem.GetHideType: TCDHideType;
+begin
+  Result := TCDHideType(Control.Tag);
+end;
+
 procedure TCDManagerItem.ResizeExecute(Sender: TObject);
 begin
 (*  if Assigned(Control) then begin
@@ -249,6 +257,11 @@ begin
     //Control.SetBounds(0, GrabberSize, Width - Control.Left,
     //  Height - Control.Top);
   end;*)
+end;
+
+procedure TCDManagerItem.SetHideType(const AValue: TCDHideType);
+begin
+  Control.Tag := Integer(AValue);
 end;
 
 procedure TCDManagerItem.DockPanelMouseDown(Sender: TObject;
@@ -276,39 +289,7 @@ begin
 end;
 
 procedure TCDManagerItem.VisibleChange(Sender: TObject);
-var
-  ControlVisible: Boolean;
-  Temp: TControl;
-  Temp2: TControl;
 begin
-
-{  Temp := TControl(Sender);
-  if Assigned(Control) then
-  begin
-    ControlVisible := TControl(Sender).Visible;
-    (*if Assigned(ClientAreaPanel) then
-      ClientAreaPanel.Visible := ControlVisible;
-    if Assigned(Splitter) then
-      Splitter.Visible := ControlVisible;
-      *)
-//    if Assigned(TCDManager(OwnerDockManager).DockStyleHandler) then
-    if Assigned(Manager) then
-    with TCDManager(Manager) do
-    begin
-      //UpdateClientSize;
-      if ControlVisible then
-        Switch(DockItems.IndexOf(FindControlInPanels(TControl(Sender))));
-      if not (Control is TWinControl) then raise Exception.Create('Not TWinControl');
-      if not Assigned(Control) then raise Exception.Create('Control not assigned');
-      ChangeVisible(TWinControl(Control), ControlVisible);
-      // Show parent control
-      Temp := TControl(Sender).HostDockSite;
-
-      if ControlVisible then
-        TControl(Sender).HostDockSite.Visible := ControlVisible;
-    end;
-    if csDestroying in Control.ComponentState then Control := nil;
-  end;}
 end;
 
 { TCDManager }
