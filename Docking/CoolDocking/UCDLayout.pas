@@ -448,7 +448,7 @@ begin
             FormClass := TFormClass(FindClass('TCDConjoinForm'));
             if FormClass = TCDConjoinForm then
             begin
-              ParentComponent := TCDManager(Form.DockManager).CreateContainer(alNone);
+              ParentComponent := TCDManager(Form.DockManager).CreateConjoinForm;
               TCDManager(TCDConjoinForm(ParentComponent).DockManager).DockStyle :=
                 ParentLayoutItem.DockStyle;
               ParentLayoutItem.Restore(TWinControl(ParentComponent));

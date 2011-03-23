@@ -16,6 +16,10 @@ type
   TCDManager = class;
   TCDManagerItem = class;
 
+  TCDPanelForm = class(TForm)
+    Panel: TPanel;
+  end;
+
   { TCDHeaderButton }
 
   TCDHeaderButton = class
@@ -36,7 +40,7 @@ type
   public
     Buttons: TObjectList; // TList<TCDHeaderButton>
     Icon: TImage;
-    ManagerItem: TCDManagerItem;
+    Control: TControl;
     constructor Create(TheOwner: TComponent); override;
     destructor Destroy; override;
   end;
@@ -62,19 +66,22 @@ type
 
   TCDManagerItem = class
   private
+    FControl: TWinControl;
     function GetHideType: TCDHideType;
     procedure ResizeExecute(Sender: TObject);
     procedure SetHideType(const AValue: TCDHideType);
   public
-    Control: TWinControl;
     Manager: TCDManager;
+    procedure SetControl(const AValue: TWinControl); virtual;
     procedure DockPanelMouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     procedure Paint(Sender: TObject); virtual;
     procedure VisibleChange(Sender: TObject); virtual;
+    procedure VisibleChanging(Sender: TObject); virtual;
     constructor Create; virtual;
     destructor Destroy; override;
     property HideType: TCDHideType read GetHideType write SetHideType;
+    property Control: TWinControl read FControl write SetControl;
   end;
 
   { TCDManager }
@@ -89,12 +96,12 @@ type
     procedure SetDockStyle(const AValue: TCDStyleType);
     procedure SetHeaderVisible(const AValue: Boolean);
     procedure SetMoveDuration(const AValue: Integer);
-    procedure SetVisible(const AValue: Boolean);
   public
     Locked: Boolean;
     PopupMenu: TCDPopupMenu;
     FDockStyle: TCDStyleType;
     FreeParentIfEmpty: Boolean; // Free or not parent conjoin forms
+    procedure SetVisible(const AValue: Boolean); virtual;
     constructor Create(ADockSite: TWinControl); override;
     destructor Destroy; override;
     procedure UpdateClientSize; virtual;
@@ -103,7 +110,6 @@ type
     procedure Assign(Source: TCDManager); virtual;
     procedure InsertControlPanel(Control: TControl; InsertAt: TAlign;
       DropCtl: TControl); virtual;
-    procedure DoSetVisible(const AValue: Boolean); virtual;
     procedure SetHeaderPos(const AValue: THeaderPos); virtual;
     function GetHeaderPos: THeaderPos; virtual;
 
@@ -129,7 +135,8 @@ type
     function AutoFreeByControl: Boolean; override;
 
     function FindControlInPanels(Control: TControl): TCDManagerItem; virtual;
-    function CreateContainer(InsertAt: TAlign): TCDConjoinForm;
+    function CreateConjoinForm: TCDConjoinForm;
+    function CreateDockableForm: TCDPanelForm;
     property DockStyle: TCDStyleType read FDockStyle write SetDockStyle;
     property MoveDuration: Integer read GetMoveDuration write SetMoveDuration;
     property DockSite: TWinControl read GetDockSite;
@@ -143,7 +150,7 @@ implementation
 
 uses
   UCDManagerRegions, UCDManagerTabs, UCDManagerRegionsPopup, UCDManagerTabsPopup,
-  UCDResource;
+  UCDResource, UCDClient;
 
 function CreateRotatedFont(F: TFont; Angle: Integer): Integer;
 var
@@ -280,6 +287,12 @@ begin
   end;*)
 end;
 
+procedure TCDManagerItem.SetControl(const AValue: TWinControl);
+begin
+  if FControl = AValue then Exit;
+  FControl := AValue;
+end;
+
 procedure TCDManagerItem.SetHideType(const AValue: TCDHideType);
 begin
   Control.Tag := Integer(AValue);
@@ -311,6 +324,11 @@ end;
 
 procedure TCDManagerItem.VisibleChange(Sender: TObject);
 begin
+end;
+
+procedure TCDManagerItem.VisibleChanging(Sender: TObject);
+begin
+
 end;
 
 { TCDManager }
@@ -389,11 +407,6 @@ procedure TCDManager.InsertControlPanel(Control: TControl; InsertAt: TAlign;
 begin
 end;
 
-procedure TCDManager.DoSetVisible(const AValue: Boolean);
-begin
-
-end;
-
 procedure TCDManager.InsertControl(Control: TControl; InsertAt: TAlign;
   DropCtl: TControl);
 var
@@ -408,12 +421,12 @@ begin
   if (FDockSite is TForm) and (not (FDockSite is TCDConjoinForm)) then begin
     if (not Assigned(FDockSite.Parent)) then begin
       // Create conjointed form
-      NewConjoinDockForm := CreateContainer(InsertAt);
+      NewConjoinDockForm := CreateConjoinForm;
       FDockSite.ManualDock(NewConjoinDockForm);
       Control.ManualDock(NewConjoinDockForm, nil, InsertAt);
       NewConjoinDockForm.UpdateCaption;
     end else begin
-      NewConjoinDockForm := CreateContainer(InsertAt);
+      NewConjoinDockForm := CreateConjoinForm;
       NewDockSite := FDockSite.HostDockSite;
 //      FDockSite.ManualFloat(FDockSite.BoundsRect);
       NewConjoinDockForm.ManualDock(NewDockSite, nil, InsertAt);
@@ -503,20 +516,37 @@ begin
   Result := inherited AutoFreeByControl;
 end;
 
-function TCDManager.CreateContainer(InsertAt: TAlign): TCDConjoinForm;
+function TCDManager.CreateConjoinForm: TCDConjoinForm;
 var
   NewDockSite: TWinControl;
   NewConjoinDockForm: TCDConjoinForm;
 begin
   NewConjoinDockForm := TCDConjoinForm.Create(Application);
   NewConjoinDockForm.Name := GetUniqueName('ConjoinForm');
-  NewConjoinDockForm.Visible := True;
+  //NewConjoinDockForm.Visible := True;
   NewConjoinDockForm.BoundsRect := FDockSite.BoundsRect;
   NewConjoinDockForm.CoolDockClient.Master := Self.Master;
   NewDockSite := FDockSite.HostDockSite;
   // FDockSite.ManualFloat(FDockSite.BoundsRect);
   //NewConjoinDockForm.ManualDock(NewDockSite, nil, InsertAt);
   Result := NewConjoinDockForm;
+end;
+
+function TCDManager.CreateDockableForm: TCDPanelForm;
+var
+  NewClient: TCDClient;
+begin
+  Application.CreateForm(TCDPanelForm, Result);
+  Result.Name := GetUniqueName('DockForm');
+  NewClient := TCDClient.Create(Result);
+  Result.Panel := TPanel.Create(Result);
+  Result.Panel.Parent := Result;
+  //Result.Panel.Visible := True;
+  Result.Panel.BevelInner := bvNone;
+  Result.Panel.BevelOuter := bvNone;
+  NewClient.Panel := Result.Panel;
+  NewClient.Master := Self.Master;
+  NewClient.Dockable := False;
 end;
 
 procedure TCDManager.SetDockStyle(const AValue: TCDStyleType);
@@ -563,13 +593,7 @@ begin
 end;
 
 procedure TCDManager.SetVisible(const AValue: Boolean);
-var
-  I: Integer;
 begin
-  DoSetVisible(AValue);
-  //Visible := AValue;
-//  for I := 0 to DockPanels.Count - 1 do
-//    TCDClientPanel(DockPanels[I]).Visible := AValue;
 end;
 
 procedure TCDManager.UpdateClientSize;
@@ -637,6 +661,9 @@ begin
     Top := 2;
     Visible := True;
   end;
+
+  BevelInner := bvNone;
+  BevelOuter := bvNone;
 end;
 
 destructor TCDHeader.Destroy;
@@ -661,7 +688,8 @@ var
   Title: string;
   R: TRect;
 begin
-  with TCDManager(TWinControl(ManagerItem.Control).DockManager) do
+  if Assigned(Control) then
+  with TCDManager(TWinControl(Control).DockManager) do
   case HeaderPos of
     hpLeft: begin
       Align := alLeft;
@@ -681,9 +709,10 @@ begin
     end;
   end;
 
-  if (ManagerItem.Control as TWinControl).Focused then
-  Canvas.Font.Style := Canvas.Font.Style + [fsBold]
-  else Canvas.Font.Style := Canvas.Font.Style - [fsBold];
+  if Assigned(Control) then
+    if (Control as TWinControl).Focused then
+      Canvas.Font.Style := Canvas.Font.Style + [fsBold]
+        else Canvas.Font.Style := Canvas.Font.Style - [fsBold];
 
   RearrangeButtons;
 
@@ -736,7 +765,8 @@ begin
     end else TitleLeft := 6;
 
     //SelectObject(Canvas.Handle, MyFont);
-    Title := ManagerItem.Control.Caption;
+    if Assigned(Control) then
+      Title := Control.Caption else Title := '';
     if (TextWidth(Title) > TitleMaxWidth) then begin
       while (Length(Title) > 0) and (TextWidth(Title + '...') > TitleMaxWidth) do begin
         Delete(Title, Length(Title), 1);
@@ -775,10 +805,9 @@ end;
 
 procedure TCDHeader.CloseButtonClick(Sender: TObject);
 begin
-  ManagerItem.Control.Hide;
+  if Assigned(Control) then
+    Control.Hide;
 end;
-
-
 
 end.
 

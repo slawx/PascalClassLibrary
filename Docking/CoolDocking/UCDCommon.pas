@@ -78,13 +78,13 @@ function HeaderPosToTabPos(HeaderPos: THeaderPos): TTabPosition;
 
 implementation
 
-function GetUniqueName(BaseName: string): string;
 var
-  I: Integer;
+  UniqueNameCounter: Integer;
+
+function GetUniqueName(BaseName: string): string;
 begin
-  I := 1;
-  while Assigned(FindGlobalComponent(BaseName + IntToStr(I))) do Inc(I);
-  Result := BaseName + IntToStr(I);
+  Result := BaseName + IntToStr(UniqueNameCounter);
+  Inc(UniqueNameCounter);
 end;
 
 function HeaderPosToTabPos(HeaderPos: THeaderPos): TTabPosition;
@@ -209,6 +209,10 @@ function TCDMasterBase.GetClient(Index: Integer): TCDClientBase;
 begin
   Result := TCDClientBase(FClients[Index]);
 end;
+
+initialization
+
+UniqueNameCounter := 1;
 
 end.
 

@@ -20,6 +20,7 @@ type
     procedure Paint(Sender: TObject); override;
     constructor Create;
     destructor Destroy; override;
+    procedure SetControl(const AValue: TWinControl); override;
   end;
 
   { TCDManagerRegions }
@@ -42,7 +43,7 @@ type
     destructor Destroy; override;
     procedure PaintSite(DC: HDC); override;
     procedure UpdateClientSize; override;
-    procedure DoSetVisible(const AValue: Boolean); override;
+    procedure SetVisible(const AValue: Boolean); override;
     procedure ChangeVisible(Control: TWinControl; Visible: Boolean);
     property DockDirection: TCDDirection read FDockDirection
       write FDockDirection;
@@ -87,7 +88,7 @@ end;
 constructor TCDManagerRegionsItem.Create;
 begin
   PanelHeader := TCDPanelHeader.Create(nil);
-  PanelHeader.Header.ManagerItem := Self;
+//  PanelHeader.Header.ManagerItem := Self;
   PanelHeader.Header.OnMouseDown := DockPanelMouseDown;
   PanelHeader.Header.Icon.OnMouseDown := DockPanelMouseDown;
 
@@ -108,6 +109,12 @@ begin
   Splitter.Free;
   Control.Parent := nil;
   inherited Destroy;
+end;
+
+procedure TCDManagerRegionsItem.SetControl(const AValue: TWinControl);
+begin
+  inherited SetControl(AValue);
+  PanelHeader.Header.Control := AValue;
 end;
 
 
@@ -174,6 +181,7 @@ begin
 
   NewItem.Control := TWinControl(Control);
   Control.AddHandlerOnVisibleChanged(NewItem.VisibleChange);
+  Control.AddHandlerOnVisibleChanging(NewItem.VisibleChanging);
   Control.Parent := NewItem.PanelHeader.ControlPanel;
   Control.Align := alClient;
   if (InsertAt = alTop) or (InsertAt = alLeft) then
@@ -198,7 +206,7 @@ begin
       NewDirection := GetDirection(InsertAt);
       if (NewDirection <> FDockDirection) then begin
         // Direction change, create conjoin form
-        NewConjoinDockForm := CreateContainer(InsertAt);
+        NewConjoinDockForm := CreateConjoinForm;
         try
           FreeParentIfEmpty := False;
           for I := DockSite.DockClientCount - 1 downto 0 do begin
@@ -227,6 +235,7 @@ begin
   ManagerItem := FindControlInPanels(Control);
   if Assigned(ManagerItem) then begin
     Control.RemoveHandlerOnVisibleChanged(ManagerItem.VisibleChange);
+    Control.RemoveHandlerOnVisibleChanging(ManagerItem.VisibleChanging);
   end;
 
   DockItems.Remove(ManagerItem);
@@ -334,15 +343,12 @@ begin
   end;
 end;
 
-procedure TCDManagerRegions.DoSetVisible(const AValue: Boolean);
+procedure TCDManagerRegions.SetVisible(const AValue: Boolean);
 var
   I: Integer;
 begin
   inherited;
   for I := 0 to DockItems.Count - 1 do
-
-        //Show;
-        //ShowMessage(IntToStr(Control.Tag));
       with TCDManagerRegionsItem(DockItems[I]) do begin
         if AValue and (not Control.Visible) and (Control.Tag = Integer(dhtTemporal))  then begin
           Control.Show;

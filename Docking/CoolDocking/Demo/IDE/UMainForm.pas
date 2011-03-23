@@ -160,32 +160,36 @@ var
 begin
   DefaultLayout := CoolDockLayoutList1.FindByName(DefaultLayoutName);
   if not Assigned(DefaultLayout) then begin
-    NewContainer1 := TCDManager(DockPanel.DockManager).CreateContainer(alRight);
+    NewContainer1 := TCDManager(DockPanel.DockManager).CreateConjoinForm;
     TCDManager(NewContainer1.DockManager).DockStyle := dsPopupTabs;
     TCDManager(NewContainer1.DockManager).HeaderPos := hpLeft;
+    NewContainer1.Visible := True;
 
     StructureForm.ManualDock(NewContainer1, nil, alTop);
     StructureForm.Show;
     ObjectInspectorForm.ManualDock(NewContainer1, nil, alTop);
     ObjectInspectorForm.Show;
 
-    NewContainer2 := TCDManager(DockPanel.DockManager).CreateContainer(alRight);
+    NewContainer2 := TCDManager(DockPanel.DockManager).CreateConjoinForm;
     TCDManager(NewContainer2.DockManager).DockStyle := dsPopupTabs;
     TCDManager(NewContainer2.DockManager).HeaderPos := hpRight;
+    NewContainer2.Visible := True;
+
     ProjectManagerForm.ManualDock(NewContainer2, nil, alTop);
     ProjectManagerForm.Show;
     ToolPaletteForm.ManualDock(NewContainer2, nil, alTop);
     ToolPaletteForm.Show;
 
-    SourceCodeContainer := TCDManager(DockPanel.DockManager).CreateContainer(alRight);
+    SourceCodeContainer := TCDManager(DockPanel.DockManager).CreateConjoinForm;
     TCDManager(SourceCodeContainer.DockManager).DockStyle := dsTabs;
     TCDManager(SourceCodeContainer.DockManager).HeaderPos := hpTop;
+    SourceCodeContainer.Visible := True;
 
-    NewContainer1.ManualDock(DockPanel);
+    //NewContainer1.ManualDock(DockPanel);
     NewContainer1.Show;
-//    SourceCodeContainer.ManualDock(DockPanel);
-//    SourceCodeContainer.Show;
-    NewContainer2.ManualDock(DockPanel);
+    SourceCodeContainer.ManualDock(DockPanel);
+    SourceCodeContainer.Show;
+    //NewContainer2.ManualDock(DockPanel);
     NewContainer2.Show;
 
     DefaultLayout := TCDLayout.Create;

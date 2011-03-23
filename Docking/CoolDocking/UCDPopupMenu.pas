@@ -207,7 +207,7 @@ begin
   end;
   if PopupComponent is TCDHeader then
   with TCDHeader(PopupComponent) do begin
-    TForm(ManagerItem.Control).Close;
+    TForm(Control).Close;
   end;
 end;
 
@@ -226,9 +226,9 @@ begin
   end;
   if PopupComponent is TCDHeader then
   with TCDHeader(PopupComponent) do begin
-    Value := ManagerItem.Control.Caption;
+    Value := Control.Caption;
     if InputQuery(SRenameWindow, SEnterNewWindowName, False, Value) then begin
-      ManagerItem.Control.Caption := Value;
+      Control.Caption := Value;
       Invalidate;
     end;
   end;
@@ -242,7 +242,7 @@ begin
   end else
   if PopupComponent is TCDHeader then
   with TCDHeader(PopupComponent) do begin
-    TCDManager(TWinControl(ManagerItem.Control).DockManager).HeaderPos := hpTop;
+    TCDManager(TWinControl(Control).DockManager).HeaderPos := hpTop;
     Invalidate;
   end;
 end;
@@ -255,7 +255,7 @@ begin
   end else
   if PopupComponent is TCDHeader then
   with TCDHeader(PopupComponent) do begin
-    TCDManager(TWinControl(ManagerItem.Control).DockManager).HeaderPos := hpLeft;
+    TCDManager(TWinControl(Control).DockManager).HeaderPos := hpLeft;
     Invalidate;
   end;
 end;
@@ -268,7 +268,7 @@ begin
   end else
   if PopupComponent is TCDHeader then
   with TCDHeader(PopupComponent) do begin
-    TCDManager(TWinControl(ManagerItem.Control).DockManager).HeaderPos := hpRight;
+    TCDManager(TWinControl(Control).DockManager).HeaderPos := hpRight;
     Invalidate;
   end;
 end;
@@ -281,7 +281,7 @@ begin
   end else
   if PopupComponent is TCDHeader then
   with TCDHeader(PopupComponent) do begin
-    TCDManager(TWinControl(ManagerItem.Control).DockManager).HeaderPos := hpTop;
+    TCDManager(TWinControl(Control).DockManager).HeaderPos := hpTop;
     Invalidate;
   end;
 end;
@@ -294,25 +294,25 @@ begin
   end else
   if PopupComponent is TCDHeader then
   with TCDHeader(PopupComponent) do begin
-    TCDManager(TWinControl(ManagerItem.Control).DockManager).HeaderPos := hpBottom;
+    TCDManager(TWinControl(Control).DockManager).HeaderPos := hpBottom;
     Invalidate;
   end;
 end;
 
 procedure TCDPopupMenu.PopupMenuUndockClick(Sender: TObject);
 var
-  Control: TControl;
+  UndockControl: TControl;
 begin
   if PopupComponent is TPageControl then
   with TPageControl(PopupComponent) do begin
-    Control := TCDManagerTabsItem(TCDManagerTabs(Manager).DockItems[TabIndex]).Control;
+    UndockControl := TCDManagerTabsItem(TCDManagerTabs(Manager).DockItems[TabIndex]).Control;
   end else
   if PopupComponent is TCDHeader then
   with TCDHeader(PopupComponent) do begin
-    Control := ManagerItem.Control;
-  end else Control := nil;
-  if Assigned(Control) then
-    Control.ManualFloat(Control.BoundsRect);
+    UndockControl := Control;
+  end else UndockControl := nil;
+  if Assigned(UndockControl) then
+    UndockControl.ManualFloat(UndockControl.BoundsRect);
 end;
 
 procedure TCDPopupMenu.PopupMenuCustomizeClick(Sender: TObject);

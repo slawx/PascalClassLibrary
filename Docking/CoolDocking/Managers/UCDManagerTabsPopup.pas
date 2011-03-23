@@ -245,6 +245,7 @@ begin
     C := TCDManagerTabsPopupItem(DockItems[PageControl.TabIndex]).Control;
     C.Align := alClient;
     C.Parent := HeaderPanel.ControlPanel;
+    HeaderPanel.Header.Control := C;
     //AutoHide.Control.Align := alCustom;
     //Pos := DockSite.ClientToScreen(Pos);
     //AutoHide.Control.SetBounds(0, 0, 100, 100);
