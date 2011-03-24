@@ -24,6 +24,7 @@
     procedure SetCount(const AValue: TGListIndex); virtual;
     procedure QuickSort(L, R : TGListIndex; Compare: TGListSortCompare);
   public
+    function CompareMem(P1, P2: Pointer; Length: cardinal): Boolean; inline;
     function Add(Item: TGListItem): TGListIndex;
     procedure AddArray(Values: array of TGListItem);
     procedure AddList(List: TGList);
@@ -207,11 +208,28 @@ begin
     raise EListError.CreateFmt(SListIndexError, [0]);
 end;
 
+function TGList.CompareMem(P1, P2: Pointer; Length: cardinal): Boolean;
+var
+  I: Cardinal;
+begin
+  Result := True;
+  I := 0;
+  if (P1) <> (P2) then
+    while Result and (I < Length) do
+    begin
+      Result := PByte(P1)^ = PByte(P2)^;
+      Inc(I);
+      Inc(pchar(P1));
+      Inc(pchar(P2));
+    end;
+end;
+
 function TGList.IndexOf(Item: TGListItem; Start: TGListIndex): TGListIndex;
 begin
   Result := Start;
   while (Result < FCount) and
-  not CompareMem(Addr(FItems[Result]), Addr(Item), SizeOf(TGListItem)) do
+  not CompareMem(@FItems[Result], @Item, SizeOf(TGListItem)) do
+//  not (CompareByte(FItems[Result], Item, SizeOf(TGListItem)) = 0) do
     Result := Result + 1;
   if Result = FCount then Result := -1;
 end;
@@ -503,4 +521,4 @@ begin
 end;
 
 {$UNDEF IMPLEMENTATION}
-{$ENDIF}
+{$ENDIF}

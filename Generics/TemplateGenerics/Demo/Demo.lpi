@@ -37,7 +37,7 @@
         <PackageName Value="LCL"/>
       </Item2>
     </RequiredPackages>
-    <Units Count="62">
+    <Units Count="66">
       <Unit0>
         <Filename Value="Demo.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -54,10 +54,11 @@
         <ComponentName Value="MainForm"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UMainForm"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="232"/>
-        <CursorPos X="19" Y="237"/>
+        <TopLine Value="645"/>
+        <CursorPos X="28" Y="663"/>
         <UsageCount Value="233"/>
         <Bookmarks Count="1">
           <Item0 X="65" Y="224" ID="2"/>
@@ -77,10 +78,10 @@
       <Unit3>
         <Filename Value="../Specialized/SpecializedList.pas"/>
         <UnitName Value="SpecializedList"/>
-        <EditorIndex Value="2"/>
+        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="3"/>
-        <CursorPos X="43" Y="13"/>
+        <TopLine Value="47"/>
+        <CursorPos X="20" Y="60"/>
         <UsageCount Value="10"/>
         <Loaded Value="True"/>
       </Unit3>
@@ -311,11 +312,10 @@
       </Unit31>
       <Unit32>
         <Filename Value="../Generic/GenericList.inc"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="6"/>
+        <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="462"/>
-        <CursorPos X="40" Y="470"/>
+        <TopLine Value="227"/>
+        <CursorPos X="29" Y="238"/>
         <UsageCount Value="107"/>
         <Loaded Value="True"/>
       </Unit32>
@@ -432,6 +432,7 @@
         <TopLine Value="2624"/>
         <CursorPos X="37" Y="2636"/>
         <UsageCount Value="90"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit47>
       <Unit48>
         <Filename Value="../../../../../lazarus/trunk/lcl/interfaces/carbon/issues.xml"/>
@@ -447,6 +448,7 @@
         <TopLine Value="199"/>
         <CursorPos X="14" Y="213"/>
         <UsageCount Value="28"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit49>
       <Unit50>
         <Filename Value="/usr/share/fpcsrc/rtl/objpas/classes/lists.inc"/>
@@ -454,6 +456,7 @@
         <TopLine Value="199"/>
         <CursorPos X="3" Y="201"/>
         <UsageCount Value="28"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit50>
       <Unit51>
         <Filename Value="../Generic/GenericListObject.inc"/>
@@ -469,6 +472,7 @@
         <TopLine Value="1"/>
         <CursorPos X="27" Y="26"/>
         <UsageCount Value="28"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit52>
       <Unit53>
         <Filename Value="/usr/share/fpcsrc/rtl/inc/systemh.inc"/>
@@ -476,6 +480,7 @@
         <TopLine Value="381"/>
         <CursorPos X="3" Y="398"/>
         <UsageCount Value="28"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit53>
       <Unit54>
         <Filename Value="/usr/share/fpcsrc/rtl/inc/varianth.inc"/>
@@ -483,6 +488,7 @@
         <TopLine Value="475"/>
         <CursorPos X="10" Y="503"/>
         <UsageCount Value="7"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit54>
       <Unit55>
         <Filename Value="../../../../../lazarus/trunk/lcl/include/control.inc"/>
@@ -490,6 +496,7 @@
         <TopLine Value="2270"/>
         <CursorPos X="22" Y="2273"/>
         <UsageCount Value="19"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit55>
       <Unit56>
         <Filename Value="../Specialized/SpecializedMatrix.pas"/>
@@ -511,167 +518,199 @@
       </Unit57>
       <Unit58>
         <Filename Value="../../../../../Programy/Lazarus/fpc/2.4.3/source/rtl/objpas/dateutil.inc"/>
-        <EditorIndex Value="5"/>
         <WindowIndex Value="0"/>
         <TopLine Value="38"/>
         <CursorPos X="3" Y="50"/>
         <UsageCount Value="11"/>
-        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit58>
       <Unit59>
         <Filename Value="../../../../../Programy/Lazarus/fpc/2.4.3/source/rtl/objpas/classes/classesh.inc"/>
-        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
         <TopLine Value="649"/>
         <CursorPos X="38" Y="671"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit59>
       <Unit60>
         <Filename Value="../../../../../Programy/Lazarus/fpc/2.4.3/source/rtl/objpas/classes/stringl.inc"/>
-        <EditorIndex Value="4"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1185"/>
         <CursorPos X="22" Y="1196"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit60>
       <Unit61>
         <Filename Value="../../../../../Programy/Lazarus/fpc/2.4.3/source/rtl/objpas/types.pp"/>
         <UnitName Value="types"/>
-        <EditorIndex Value="3"/>
         <WindowIndex Value="0"/>
         <TopLine Value="112"/>
         <CursorPos X="3" Y="124"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit61>
+      <Unit62>
+        <Filename Value="../../../../../Projekty2/FreePascalManager/trunk/Instance/1/FPC/rtl/objpas/sysutils/sysstrh.inc"/>
+        <EditorIndex Value="3"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="71"/>
+        <CursorPos X="10" Y="84"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit62>
+      <Unit63>
+        <Filename Value="../../../../../Projekty2/FreePascalManager/trunk/Instance/1/FPC/rtl/objpas/sysutils/sysstr.inc"/>
+        <EditorIndex Value="4"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="148"/>
+        <CursorPos X="11" Y="169"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit63>
+      <Unit64>
+        <Filename Value="../../../../../Projekty2/FreePascalManager/trunk/Instance/1/FPC/rtl/inc/systemh.inc"/>
+        <EditorIndex Value="5"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="511"/>
+        <CursorPos X="11" Y="524"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit64>
+      <Unit65>
+        <Filename Value="../../../../../Projekty2/FreePascalManager/trunk/Instance/1/FPC/rtl/i386/i386.inc"/>
+        <EditorIndex Value="6"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="411"/>
+        <CursorPos X="10" Y="424"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit65>
     </Units>
     <JumpHistory Count="30" HistoryIndex="27">
       <Position1>
         <Filename Value="UMainForm.pas"/>
-        <Caret Line="42" Column="51" TopLine="20"/>
+        <Caret Line="617" Column="1" TopLine="593"/>
       </Position1>
       <Position2>
         <Filename Value="UMainForm.pas"/>
-        <Caret Line="458" Column="36" TopLine="440"/>
+        <Caret Line="260" Column="25" TopLine="230"/>
       </Position2>
       <Position3>
         <Filename Value="UMainForm.pas"/>
-        <Caret Line="7" Column="52" TopLine="1"/>
+        <Caret Line="246" Column="21" TopLine="233"/>
       </Position3>
       <Position4>
         <Filename Value="UMainForm.pas"/>
-        <Caret Line="526" Column="1" TopLine="502"/>
+        <Caret Line="364" Column="25" TopLine="358"/>
       </Position4>
       <Position5>
         <Filename Value="UMainForm.pas"/>
-        <Caret Line="32" Column="49" TopLine="27"/>
+        <Caret Line="596" Column="33" TopLine="586"/>
       </Position5>
       <Position6>
         <Filename Value="UMainForm.pas"/>
-        <Caret Line="416" Column="38" TopLine="312"/>
+        <Caret Line="237" Column="19" TopLine="232"/>
       </Position6>
       <Position7>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="417" Column="38" TopLine="393"/>
+        <Filename Value="../Generic/GenericList.inc"/>
+        <Caret Line="468" Column="70" TopLine="462"/>
       </Position7>
       <Position8>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="418" Column="38" TopLine="394"/>
+        <Filename Value="../Generic/GenericList.inc"/>
+        <Caret Line="469" Column="1" TopLine="462"/>
       </Position8>
       <Position9>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="241" Column="3" TopLine="234"/>
+        <Filename Value="../Generic/GenericList.inc"/>
+        <Caret Line="470" Column="1" TopLine="462"/>
       </Position9>
       <Position10>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="377" Column="1" TopLine="361"/>
+        <Filename Value="../Generic/GenericList.inc"/>
+        <Caret Line="471" Column="1" TopLine="462"/>
       </Position10>
       <Position11>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="617" Column="1" TopLine="593"/>
+        <Filename Value="../Generic/GenericList.inc"/>
+        <Caret Line="470" Column="5" TopLine="462"/>
       </Position11>
       <Position12>
         <Filename Value="UMainForm.pas"/>
-        <Caret Line="260" Column="25" TopLine="230"/>
+        <Caret Line="237" Column="19" TopLine="232"/>
       </Position12>
       <Position13>
         <Filename Value="UMainForm.pas"/>
-        <Caret Line="246" Column="21" TopLine="233"/>
+        <Caret Line="237" Column="19" TopLine="232"/>
       </Position13>
       <Position14>
         <Filename Value="UMainForm.pas"/>
-        <Caret Line="364" Column="25" TopLine="358"/>
+        <Caret Line="495" Column="26" TopLine="482"/>
       </Position14>
       <Position15>
         <Filename Value="UMainForm.pas"/>
-        <Caret Line="596" Column="33" TopLine="586"/>
+        <Caret Line="503" Column="9" TopLine="490"/>
       </Position15>
       <Position16>
         <Filename Value="UMainForm.pas"/>
-        <Caret Line="237" Column="19" TopLine="232"/>
+        <Caret Line="480" Column="3" TopLine="467"/>
       </Position16>
       <Position17>
-        <Filename Value="../../../../../Programy/Lazarus/fpc/2.4.3/source/rtl/objpas/classes/classesh.inc"/>
-        <Caret Line="701" Column="36" TopLine="683"/>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="511" Column="32" TopLine="498"/>
       </Position17>
       <Position18>
-        <Filename Value="../../../../../Programy/Lazarus/fpc/2.4.3/source/rtl/objpas/classes/classesh.inc"/>
-        <Caret Line="659" Column="27" TopLine="653"/>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="519" Column="33" TopLine="506"/>
       </Position18>
       <Position19>
-        <Filename Value="../Generic/GenericList.inc"/>
-        <Caret Line="468" Column="70" TopLine="462"/>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="526" Column="26" TopLine="513"/>
       </Position19>
       <Position20>
-        <Filename Value="../Generic/GenericList.inc"/>
-        <Caret Line="469" Column="1" TopLine="462"/>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="538" Column="27" TopLine="525"/>
       </Position20>
       <Position21>
-        <Filename Value="../Generic/GenericList.inc"/>
-        <Caret Line="470" Column="1" TopLine="462"/>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="549" Column="26" TopLine="536"/>
       </Position21>
       <Position22>
-        <Filename Value="../Generic/GenericList.inc"/>
-        <Caret Line="471" Column="1" TopLine="462"/>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="561" Column="25" TopLine="548"/>
       </Position22>
       <Position23>
-        <Filename Value="../Generic/GenericList.inc"/>
-        <Caret Line="470" Column="5" TopLine="462"/>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="572" Column="16" TopLine="559"/>
       </Position23>
       <Position24>
         <Filename Value="UMainForm.pas"/>
-        <Caret Line="237" Column="19" TopLine="232"/>
+        <Caret Line="584" Column="25" TopLine="571"/>
       </Position24>
       <Position25>
-        <Filename Value="../../../../../Programy/Lazarus/fpc/2.4.3/source/rtl/objpas/classes/classesh.inc"/>
-        <Caret Line="659" Column="26" TopLine="647"/>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="595" Column="26" TopLine="582"/>
       </Position25>
       <Position26>
-        <Filename Value="../../../../../Programy/Lazarus/fpc/2.4.3/source/rtl/objpas/classes/stringl.inc"/>
-        <Caret Line="1193" Column="20" TopLine="1185"/>
+        <Filename Value="../Generic/GenericList.inc"/>
+        <Caret Line="214" Column="12" TopLine="201"/>
       </Position26>
       <Position27>
-        <Filename Value="../../../../../Programy/Lazarus/fpc/2.4.3/source/rtl/objpas/classes/stringl.inc"/>
-        <Caret Line="1196" Column="22" TopLine="1185"/>
+        <Filename Value="../Generic/GenericList.inc"/>
+        <Caret Line="231" Column="16" TopLine="218"/>
       </Position27>
       <Position28>
-        <Filename Value="../../../../../Programy/Lazarus/fpc/2.4.3/source/rtl/objpas/classes/classesh.inc"/>
-        <Caret Line="661" Column="23" TopLine="649"/>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="634" Column="11" TopLine="614"/>
       </Position28>
       <Position29>
-        <Filename Value="../../../../../Programy/Lazarus/fpc/2.4.3/source/rtl/objpas/classes/classesh.inc"/>
-        <Caret Line="657" Column="48" TopLine="644"/>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="479" Column="12" TopLine="467"/>
       </Position29>
       <Position30>
-        <Filename Value="../../../../../Programy/Lazarus/fpc/2.4.3/source/rtl/objpas/classes/classesh.inc"/>
-        <Caret Line="651" Column="3" TopLine="639"/>
+        <Filename Value="../Generic/GenericList.inc"/>
+        <Caret Line="23" Column="58" TopLine="9"/>
       </Position30>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
-    <Version Value="9"/>
+    <Version Value="10"/>
     <Target>
       <Filename Value="Demo"/>
     </Target>
