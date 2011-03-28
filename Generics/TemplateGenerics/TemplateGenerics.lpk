@@ -3,7 +3,7 @@
   <Package Version="3">
     <PathDelim Value="\"/>
     <Name Value="TemplateGenerics"/>
-    <Author Value="Chronos"/>
+    <Author Value="Chronos (robie@centrum.cz)"/>
     <CompilerOptions>
       <Version Value="10"/>
       <PathDelim Value="\"/>

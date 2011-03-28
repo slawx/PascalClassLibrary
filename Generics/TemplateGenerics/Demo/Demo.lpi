@@ -54,11 +54,10 @@
         <ComponentName Value="MainForm"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UMainForm"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="645"/>
-        <CursorPos X="28" Y="663"/>
+        <TopLine Value="624"/>
+        <CursorPos X="39" Y="628"/>
         <UsageCount Value="233"/>
         <Bookmarks Count="1">
           <Item0 X="65" Y="224" ID="2"/>
@@ -418,10 +417,11 @@
       </Unit45>
       <Unit46>
         <Filename Value="../Generic/GenericMatrix.inc"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="7"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="311"/>
-        <CursorPos X="48" Y="331"/>
+        <TopLine Value="9"/>
+        <CursorPos X="31" Y="19"/>
         <UsageCount Value="103"/>
         <Loaded Value="True"/>
       </Unit46>
@@ -503,8 +503,8 @@
         <UnitName Value="SpecializedMatrix"/>
         <EditorIndex Value="8"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="31"/>
-        <CursorPos X="38" Y="62"/>
+        <TopLine Value="1"/>
+        <CursorPos X="25" Y="41"/>
         <UsageCount Value="19"/>
         <Loaded Value="True"/>
       </Unit56>
