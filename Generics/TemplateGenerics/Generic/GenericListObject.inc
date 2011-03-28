@@ -16,8 +16,8 @@
     procedure Put(Index: TGListIndex; const AValue: TGListItem); override;
   public
     OwnsObjects: Boolean;
-    function AddNew: TGListItem;
-    function AddInsertNew(Index: TGListIndex): TGListItem;
+    function AddNew(NewObject: TGListItem = nil): TGListItem;
+    function AddInsertNew(Index: TGListIndex; NewObject: TGListItem = nil): TGListItem;
     procedure Delete(Index: TGListObjectIndex); override;
     procedure Clear; override;
     procedure Assign(Source: TGList); override;
@@ -50,15 +50,18 @@
 
 { TGListObject }
 
-function TGListObject.AddNew: TGListItem;
+function TGListObject.AddNew(NewObject: TGListItem = nil): TGListItem;
 begin
-  Result := TGListItem.Create;
+  if Assigned(NewObject) then Result := NewObject
+    else Result := TGListItem.Create;
   Add(Result);
 end;
 
-function TGListObject.AddInsertNew(Index: TGListIndex): TGListItem;
+function TGListObject.AddInsertNew(Index: TGListIndex;
+  NewObject: TGListItem = nil): TGListItem;
 begin
-  Result := TGListItem.Create;
+  if Assigned(NewObject) then Result := NewObject
+    else Result := TGListItem.Create;
   Insert(Index, Result);
 end;
 
