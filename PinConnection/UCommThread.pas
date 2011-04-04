@@ -119,8 +119,10 @@ var
 begin
   try
     StreamHelper := TStreamHelper.Create(Stream);
-  with Parent do repeat
-      if FDataAvailable.WaitFor(1 * OneMillisecond) = wrSignaled then try
+    with Parent do
+    repeat
+      if FDataAvailable.WaitFor(1 * OneMillisecond) = wrSignaled then begin
+      try
         FInputBufferLock.Acquire;
         Stream.Size := 0;
         StreamHelper.WriteStream(FInputBuffer, FInputBuffer.Size);
@@ -129,9 +131,8 @@ begin
       finally
         FInputBufferLock.Release;
       end;
-      Yield;
-  until Terminated;
-
+      end else Yield;
+    until Terminated;
   finally
     StreamHelper.Free;
   end;

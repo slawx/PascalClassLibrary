@@ -211,7 +211,7 @@ begin
       if TestIndex(1) then
         SequenceNumber := ReadVarUInt(1);
       if TestIndex(2) then
-        ReadVarIntegerArray(2, CommandIndex);
+        ReadVarUIntArray(2, CommandIndex);
       if TestIndex(3) then
         ReadVarIndexedBlock(3, RequestData);
       if Assigned(FOnCommand) then
@@ -286,7 +286,7 @@ begin
           Enclose := False;
           WriteVarUInt(0, Integer(mtRequest));
           WriteVarUInt(1, SequenceNumber);
-          WriteVarIntegerArray(2, CommandIndex);
+          WriteVarUIntArray(2, CommandIndex);
           if Assigned(RequestParameters) then
             WriteVarIndexedBlock(3, RequestParameters);
         end;

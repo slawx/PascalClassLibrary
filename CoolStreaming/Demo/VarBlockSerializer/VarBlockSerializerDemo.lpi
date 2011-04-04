@@ -42,12 +42,12 @@
         <PackageName Value="LCL"/>
       </Item3>
     </RequiredPackages>
-    <Units Count="8">
+    <Units Count="15">
       <Unit0>
         <Filename Value="VarBlockSerializerDemo.lpr"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="VarBlockSerializerDemo"/>
-        <UsageCount Value="55"/>
+        <UsageCount Value="57"/>
       </Unit0>
       <Unit1>
         <Filename Value="UMainForm.pas"/>
@@ -55,190 +55,257 @@
         <ComponentName Value="MainForm"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UMainForm"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="167"/>
-        <CursorPos X="40" Y="174"/>
-        <UsageCount Value="55"/>
+        <TopLine Value="221"/>
+        <CursorPos X="1" Y="238"/>
+        <UsageCount Value="57"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit1>
       <Unit2>
         <Filename Value="E:\Projekty2\FreePascalManager\trunk\Instance\1\Lazarus\lcl\spin.pp"/>
         <UnitName Value="Spin"/>
-        <EditorIndex Value="6"/>
+        <EditorIndex Value="12"/>
         <WindowIndex Value="0"/>
         <TopLine Value="172"/>
         <CursorPos X="17" Y="185"/>
-        <UsageCount Value="28"/>
+        <UsageCount Value="29"/>
         <Loaded Value="True"/>
       </Unit2>
       <Unit3>
         <Filename Value="..\..\UVarBlockSerializer.pas"/>
         <UnitName Value="UVarBlockSerializer"/>
-        <EditorIndex Value="2"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="8"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="392"/>
-        <CursorPos X="74" Y="405"/>
-        <UsageCount Value="28"/>
+        <TopLine Value="218"/>
+        <CursorPos X="22" Y="248"/>
+        <UsageCount Value="29"/>
         <Loaded Value="True"/>
       </Unit3>
       <Unit4>
         <Filename Value="E:\Projekty2\FreePascalManager\trunk\Instance\1\FPC\rtl\objpas\classes\classesh.inc"/>
-        <EditorIndex Value="4"/>
+        <EditorIndex Value="10"/>
         <WindowIndex Value="0"/>
         <TopLine Value="773"/>
         <CursorPos X="14" Y="786"/>
-        <UsageCount Value="28"/>
+        <UsageCount Value="29"/>
         <Loaded Value="True"/>
       </Unit4>
       <Unit5>
         <Filename Value="E:\Projekty2\FreePascalManager\trunk\Instance\1\FPC\rtl\objpas\classes\streams.inc"/>
-        <EditorIndex Value="5"/>
+        <EditorIndex Value="11"/>
         <WindowIndex Value="0"/>
         <TopLine Value="134"/>
         <CursorPos X="26" Y="144"/>
-        <UsageCount Value="28"/>
+        <UsageCount Value="29"/>
         <Loaded Value="True"/>
       </Unit5>
       <Unit6>
         <Filename Value="E:\Projekty2\FreePascalManager\trunk\Instance\1\Lazarus\lcl\include\control.inc"/>
         <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="2798"/>
-        <CursorPos X="1" Y="2808"/>
-        <UsageCount Value="11"/>
+        <TopLine Value="1672"/>
+        <CursorPos X="1" Y="1685"/>
+        <UsageCount Value="12"/>
         <Loaded Value="True"/>
       </Unit6>
       <Unit7>
         <Filename Value="..\..\UStreamHelper.pas"/>
         <UnitName Value="UStreamHelper"/>
-        <EditorIndex Value="3"/>
+        <EditorIndex Value="9"/>
         <WindowIndex Value="0"/>
         <TopLine Value="192"/>
         <CursorPos X="1" Y="205"/>
-        <UsageCount Value="11"/>
+        <UsageCount Value="12"/>
         <Loaded Value="True"/>
       </Unit7>
+      <Unit8>
+        <Filename Value="E:\Projekty2\FreePascalManager\trunk\Instance\1\FPC\rtl\inc\mathh.inc"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="57"/>
+        <CursorPos X="18" Y="79"/>
+        <UsageCount Value="10"/>
+      </Unit8>
+      <Unit9>
+        <Filename Value="E:\Projekty2\FreePascalManager\trunk\Instance\1\Lazarus\lcl\include\buttoncontrol.inc"/>
+        <EditorIndex Value="6"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="14"/>
+        <CursorPos X="1" Y="22"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+      </Unit9>
+      <Unit10>
+        <Filename Value="E:\Projekty2\FreePascalManager\trunk\Instance\1\Lazarus\lcl\include\buttons.inc"/>
+        <EditorIndex Value="7"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="320"/>
+        <CursorPos X="1" Y="342"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+      </Unit10>
+      <Unit11>
+        <Filename Value="E:\Projekty2\FreePascalManager\trunk\Instance\1\Lazarus\lcl\include\wincontrol.inc"/>
+        <EditorIndex Value="2"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="5229"/>
+        <CursorPos X="38" Y="5239"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+      </Unit11>
+      <Unit12>
+        <Filename Value="E:\Projekty2\FreePascalManager\trunk\Instance\1\Lazarus\lcl\lclmessageglue.pas"/>
+        <UnitName Value="LCLMessageGlue"/>
+        <EditorIndex Value="3"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="122"/>
+        <CursorPos X="1" Y="122"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+      </Unit12>
+      <Unit13>
+        <Filename Value="E:\Projekty2\FreePascalManager\trunk\Instance\1\Lazarus\lcl\interfaces\win32\win32callback.inc"/>
+        <EditorIndex Value="4"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="2617"/>
+        <CursorPos X="1" Y="2617"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+      </Unit13>
+      <Unit14>
+        <Filename Value="E:\Projekty2\FreePascalManager\trunk\Instance\1\Lazarus\lcl\interfaces\win32\win32wsstdctrls.pp"/>
+        <UnitName Value="Win32WSStdCtrls"/>
+        <EditorIndex Value="5"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="407"/>
+        <CursorPos X="1" Y="407"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+      </Unit14>
     </Units>
-    <JumpHistory Count="29" HistoryIndex="28">
+    <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="177" Column="1" TopLine="167"/>
+        <Filename Value="..\..\UVarBlockSerializer.pas"/>
+        <Caret Line="244" Column="1" TopLine="236"/>
       </Position1>
       <Position2>
         <Filename Value="..\..\UVarBlockSerializer.pas"/>
-        <Caret Line="302" Column="1" TopLine="289"/>
+        <Caret Line="243" Column="1" TopLine="236"/>
       </Position2>
       <Position3>
         <Filename Value="..\..\UVarBlockSerializer.pas"/>
-        <Caret Line="303" Column="1" TopLine="289"/>
+        <Caret Line="244" Column="1" TopLine="236"/>
       </Position3>
       <Position4>
         <Filename Value="..\..\UVarBlockSerializer.pas"/>
-        <Caret Line="304" Column="1" TopLine="289"/>
+        <Caret Line="243" Column="1" TopLine="236"/>
       </Position4>
       <Position5>
         <Filename Value="..\..\UVarBlockSerializer.pas"/>
-        <Caret Line="305" Column="1" TopLine="289"/>
+        <Caret Line="244" Column="1" TopLine="236"/>
       </Position5>
       <Position6>
         <Filename Value="..\..\UVarBlockSerializer.pas"/>
-        <Caret Line="226" Column="1" TopLine="213"/>
+        <Caret Line="243" Column="1" TopLine="236"/>
       </Position6>
       <Position7>
         <Filename Value="..\..\UVarBlockSerializer.pas"/>
-        <Caret Line="370" Column="1" TopLine="357"/>
+        <Caret Line="244" Column="1" TopLine="236"/>
       </Position7>
       <Position8>
         <Filename Value="..\..\UVarBlockSerializer.pas"/>
-        <Caret Line="371" Column="1" TopLine="357"/>
+        <Caret Line="243" Column="1" TopLine="236"/>
       </Position8>
       <Position9>
         <Filename Value="..\..\UVarBlockSerializer.pas"/>
-        <Caret Line="372" Column="1" TopLine="357"/>
+        <Caret Line="244" Column="1" TopLine="236"/>
       </Position9>
       <Position10>
         <Filename Value="..\..\UVarBlockSerializer.pas"/>
-        <Caret Line="374" Column="1" TopLine="357"/>
+        <Caret Line="243" Column="1" TopLine="236"/>
       </Position10>
       <Position11>
         <Filename Value="..\..\UVarBlockSerializer.pas"/>
-        <Caret Line="375" Column="1" TopLine="357"/>
+        <Caret Line="244" Column="1" TopLine="236"/>
       </Position11>
       <Position12>
         <Filename Value="..\..\UVarBlockSerializer.pas"/>
-        <Caret Line="385" Column="1" TopLine="372"/>
+        <Caret Line="243" Column="1" TopLine="236"/>
       </Position12>
       <Position13>
         <Filename Value="..\..\UVarBlockSerializer.pas"/>
-        <Caret Line="386" Column="1" TopLine="372"/>
+        <Caret Line="244" Column="1" TopLine="236"/>
       </Position13>
       <Position14>
         <Filename Value="..\..\UVarBlockSerializer.pas"/>
-        <Caret Line="387" Column="1" TopLine="372"/>
+        <Caret Line="243" Column="1" TopLine="236"/>
       </Position14>
       <Position15>
         <Filename Value="..\..\UVarBlockSerializer.pas"/>
-        <Caret Line="388" Column="1" TopLine="372"/>
+        <Caret Line="244" Column="1" TopLine="236"/>
       </Position15>
       <Position16>
         <Filename Value="..\..\UVarBlockSerializer.pas"/>
-        <Caret Line="390" Column="1" TopLine="375"/>
+        <Caret Line="243" Column="1" TopLine="236"/>
       </Position16>
       <Position17>
         <Filename Value="..\..\UVarBlockSerializer.pas"/>
-        <Caret Line="392" Column="1" TopLine="375"/>
+        <Caret Line="244" Column="1" TopLine="236"/>
       </Position17>
       <Position18>
         <Filename Value="..\..\UVarBlockSerializer.pas"/>
-        <Caret Line="393" Column="1" TopLine="375"/>
+        <Caret Line="243" Column="1" TopLine="236"/>
       </Position18>
       <Position19>
         <Filename Value="..\..\UVarBlockSerializer.pas"/>
-        <Caret Line="394" Column="1" TopLine="375"/>
+        <Caret Line="244" Column="1" TopLine="236"/>
       </Position19>
       <Position20>
         <Filename Value="..\..\UVarBlockSerializer.pas"/>
-        <Caret Line="395" Column="1" TopLine="375"/>
+        <Caret Line="243" Column="1" TopLine="236"/>
       </Position20>
       <Position21>
         <Filename Value="..\..\UVarBlockSerializer.pas"/>
-        <Caret Line="396" Column="1" TopLine="375"/>
+        <Caret Line="244" Column="1" TopLine="236"/>
       </Position21>
       <Position22>
         <Filename Value="..\..\UVarBlockSerializer.pas"/>
-        <Caret Line="402" Column="1" TopLine="389"/>
+        <Caret Line="243" Column="1" TopLine="236"/>
       </Position22>
       <Position23>
         <Filename Value="..\..\UVarBlockSerializer.pas"/>
-        <Caret Line="403" Column="18" TopLine="389"/>
+        <Caret Line="244" Column="1" TopLine="236"/>
       </Position23>
       <Position24>
         <Filename Value="..\..\UVarBlockSerializer.pas"/>
-        <Caret Line="405" Column="22" TopLine="389"/>
+        <Caret Line="243" Column="1" TopLine="236"/>
       </Position24>
       <Position25>
         <Filename Value="..\..\UVarBlockSerializer.pas"/>
-        <Caret Line="403" Column="29" TopLine="389"/>
+        <Caret Line="244" Column="1" TopLine="236"/>
       </Position25>
       <Position26>
         <Filename Value="..\..\UVarBlockSerializer.pas"/>
-        <Caret Line="108" Column="29" TopLine="97"/>
+        <Caret Line="243" Column="1" TopLine="236"/>
       </Position26>
       <Position27>
         <Filename Value="..\..\UVarBlockSerializer.pas"/>
-        <Caret Line="404" Column="17" TopLine="392"/>
+        <Caret Line="244" Column="1" TopLine="236"/>
       </Position27>
       <Position28>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="172" Column="1" TopLine="167"/>
+        <Filename Value="..\..\UVarBlockSerializer.pas"/>
+        <Caret Line="243" Column="1" TopLine="236"/>
       </Position28>
       <Position29>
         <Filename Value="..\..\UVarBlockSerializer.pas"/>
-        <Caret Line="405" Column="74" TopLine="392"/>
+        <Caret Line="244" Column="1" TopLine="236"/>
       </Position29>
+      <Position30>
+        <Filename Value="..\..\UVarBlockSerializer.pas"/>
+        <Caret Line="243" Column="1" TopLine="236"/>
+      </Position30>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
@@ -263,12 +330,6 @@
     </Other>
   </CompilerOptions>
   <Debugging>
-    <BreakPoints Count="1">
-      <Item1>
-        <Source Value="UMainForm.pas"/>
-        <Line Value="172"/>
-      </Item1>
-    </BreakPoints>
     <Exceptions Count="3">
       <Item1>
         <Name Value="EAbort"/>

@@ -81,8 +81,8 @@ type
     // Advanced data types
     procedure WriteVarSInt(Index: Integer; Value: Int64);
     function ReadVarSInt(Index: Integer): Int64;
-    procedure WriteVarFloat(Index: Integer; Value: Double);
-    function ReadVarFloat(Index: Integer): Double;
+    procedure WriteVarFloat(Index: Integer; Value: Double; Base: Integer = 2);
+    function ReadVarFloat(Index: Integer; Base: Integer = 2): Double;
     procedure WriteVarString(Index: Integer; Value: string);
     function ReadVarString(Index: Integer): string;
     procedure WriteVarUIntArray(Index: Integer; List: TListInteger);
@@ -656,16 +656,16 @@ begin
   Result := TVarBlockSerializer(Items[Index]).ReadVarSInt;
 end;
 
-procedure TVarBlockIndexed.WriteVarFloat(Index: Integer; Value:Double);
+procedure TVarBlockIndexed.WriteVarFloat(Index: Integer; Value:Double; Base: Integer = 2);
 begin
   CheckItem(Index);
-  TVarBlockSerializer(Items[Index]).WriteVarFloat(Value);
+  TVarBlockSerializer(Items[Index]).WriteVarFloat(Value, Base);
 end;
 
-function TVarBlockIndexed.ReadVarFloat(Index: Integer):Double;
+function TVarBlockIndexed.ReadVarFloat(Index: Integer; Base: Integer = 2):Double;
 begin
   TVarBlockSerializer(Items[Index]).Stream.Position := 0;
-  Result := TVarBlockSerializer(Items[Index]).ReadVarFloat;
+  Result := TVarBlockSerializer(Items[Index]).ReadVarFloat(Base);
 end;
 
 procedure TVarBlockIndexed.WriteVarString(Index: Integer; Value:string);

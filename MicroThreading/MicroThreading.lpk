@@ -2,7 +2,7 @@
 <CONFIG>
   <Package Version="3">
     <Name Value="MicroThreading"/>
-    <Author Value="Chronos"/>
+    <Author Value="Chronos (robie@centrum.cz)"/>
     <CompilerOptions>
       <Version Value="10"/>
       <SearchPaths>
@@ -10,6 +10,9 @@
         <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
       </SearchPaths>
       <Other>
+        <CompilerMessages>
+          <UseMsgFile Value="True"/>
+        </CompilerMessages>
         <CompilerPath Value="$(CompPath)"/>
       </Other>
     </CompilerOptions>
