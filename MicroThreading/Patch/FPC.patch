@@ -1,0 +1,78 @@
+Index: rtl/inc/except.inc
+===================================================================
+--- rtl/inc/except.inc	(revision 16876)
++++ rtl/inc/except.inc	(working copy)
+@@ -26,12 +26,6 @@
+   cFinalizeFrame  = 2;
+ 
+ Type
+-  PExceptAddr = ^TExceptAddr;
+-  TExceptAddr = record
+-    buf       : pjmp_buf;
+-    next      : PExceptAddr;
+-    frametype : Longint;
+-  end;
+ 
+   TExceptObjectClass = Class of TObject;
+ 
+@@ -48,6 +42,29 @@
+ end;
+ 
+ 
++// Used for microthreading context switching
++
++Function GetExceptionAddrStack : PExceptAddr;
++begin
++  Result := ExceptAddrStack;
++end;
++
++Function GetExceptionObjectStack : PExceptObject;
++begin
++  Result := ExceptObjectStack;
++end;
++
++procedure SetExceptionAddrStack(Value : PExceptAddr);
++begin
++  ExceptAddrStack := Value;
++end;
++
++procedure SetExceptionObjectStack(Value : PExceptObject);
++begin
++  ExceptObjectStack := Value;
++end;
++
++
+ function AcquireExceptionObject: Pointer;
+ var
+   _ExceptObjectStack : PExceptObject;
+Index: rtl/inc/objpash.inc
+===================================================================
+--- rtl/inc/objpash.inc	(revision 16876)
++++ rtl/inc/objpash.inc	(working copy)
+@@ -333,6 +333,13 @@
+          Framecount : Longint;
+          Frames     : PPointer;
+        end;
++       
++       PExceptAddr = ^TExceptAddr;
++       TExceptAddr = record
++         buf       : pjmp_buf;
++         next      : PExceptAddr;
++         frametype : Longint;
++       end;
+ 
+     Const
+        ExceptProc : TExceptProc = Nil;
+@@ -341,6 +348,12 @@
+ 
+     Function RaiseList : PExceptObject;
+ 
++    // Used for microthreading context switching
++    Function GetExceptionAddrStack : PExceptAddr;
++    Function GetExceptionObjectStack : PExceptObject;
++    procedure SetExceptionAddrStack(Value : PExceptAddr);
++    procedure SetExceptionObjectStack(Value : PExceptObject);
++
+     { @abstract(increase exception reference count)
+       When leaving an except block, the exception object is normally
+       freed automatically. To avoid this, call this function.
