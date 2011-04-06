@@ -237,7 +237,7 @@ begin
   if Source is TURI then begin
     Scheme := TURI(Source).Scheme;
     Authority := TURI(Source).Authority;
-    Path := TURI(Source).Path;
+    Path.Assign(TURI(Source).Path);
     Fragment := TURI(Source).Fragment;
     Query := TURI(Source).Query;
   end else inherited Assign(Source);
@@ -309,7 +309,7 @@ begin
   if Pos(ExtensionSeparator, AValue) > 0 then begin
     RightCutString(AValue, Extension, ExtensionSeparator);
     Extension := ExtensionSeparator + Extension;
-  end;
+  end else Extension := '';
   if Pos(DirectorySeparator, AValue) > 0 then RightCutString(AValue, Name, DirectorySeparator)
     else begin
       Name := AValue;
@@ -318,7 +318,7 @@ begin
   if Pos(DriveSeparator, AValue) > 0 then begin
     LeftCutString(AValue, Drive, DriveSeparator);
     Drive := Drive + DriveSeparator;
-  end;
+  end else Drive := '';
   Directory.AsString := AValue;
 end;
 

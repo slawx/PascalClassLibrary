@@ -2,20 +2,20 @@
   This source is only used to compile and install the package.
  }
 
-unit Common; 
+unit CoolTranslator; 
 
 interface
 
 uses
-    StopWatch, UCommon, UDebugLog, UDelay, UPrefixMultiplier, UURI, 
-  LazarusPackageIntf;
+  UCoolTranslator, LazarusPackageIntf;
 
 implementation
 
 procedure Register; 
 begin
+  RegisterUnit('UCoolTranslator', @UCoolTranslator.Register); 
 end; 
 
 initialization
-  RegisterPackage('Common', @Register); 
+  RegisterPackage('CoolTranslator', @Register); 
 end.

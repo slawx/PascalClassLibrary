@@ -1,0 +1,37 @@
+msgid ""
+msgstr "Content-Type: text/plain; charset=UTF-8"
+
+#: TFORM1.FORM1.CAPTION
+msgctxt "TFORM1.FORM1.CAPTION"
+msgid "Translator Demo"
+msgstr ""
+
+#: TMAINFORM.BUTTON1.CAPTION
+msgid "Show MainForm.Name"
+msgstr ""
+
+#: TMAINFORM.LABEL1.CAPTION
+msgid "MainForm"
+msgstr ""
+
+#: TMAINFORM.LABEL2.CAPTION
+msgid "Form name as label caption:"
+msgstr ""
+
+#: TMAINFORM.LABEL3.CAPTION
+msgid "Language list:"
+msgstr ""
+
+#: TMAINFORM.LABEL4.CAPTION
+msgid "Excludes:"
+msgstr ""
+
+#: TMAINFORM.MAINFORM.CAPTION
+msgctxt "TMAINFORM.MAINFORM.CAPTION"
+msgid "Translator Demo"
+msgstr ""
+
+#: umainform.stranslatedtext
+msgid "Text stored in resourcestring"
+msgstr ""
+

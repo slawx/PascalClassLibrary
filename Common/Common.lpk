@@ -16,8 +16,8 @@
     </CompilerOptions>
     <Description Value="Various libraries"/>
     <License Value="GNU/GPL"/>
-    <Version Minor="1"/>
-    <Files Count="5">
+    <Version Minor="2"/>
+    <Files Count="6">
       <Item1>
         <Filename Value="StopWatch.pas"/>
         <UnitName Value="StopWatch"/>
@@ -38,6 +38,10 @@
         <Filename Value="UPrefixMultiplier.pas"/>
         <UnitName Value="UPrefixMultiplier"/>
       </Item5>
+      <Item6>
+        <Filename Value="UURI.pas"/>
+        <UnitName Value="UURI"/>
+      </Item6>
     </Files>
     <Type Value="RunAndDesignTime"/>
     <RequiredPkgs Count="3">

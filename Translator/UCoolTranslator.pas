@@ -1,0 +1,492 @@
+unit UCoolTranslator;
+
+{$mode Delphi}{$H+}
+
+interface
+
+uses
+  Classes, SysUtils, Forms, StdCtrls, ExtCtrls, StrUtils, Controls, Contnrs,
+  Translations, TypInfo, Dialogs, FileUtil, LCLProc;
+
+type
+
+  TLanguage = class
+    Name: string;
+    Code: string;
+  end;
+
+  { TLanguageList }
+
+  TLanguageList = class(TObjectList)
+    function SearchByCode(ACode: string): TLanguage;
+  end;
+
+  { TComponentExcludes }
+
+  TComponentExcludes = class
+    ExcludedClassType: TClass;
+    PropertyExcludes: TStringList;
+    constructor Create;
+    destructor Destroy; override;
+  end;
+
+  { TComponentExcludesList }
+
+  TComponentExcludesList = class(TObjectList)
+    function FindByClassType(AClassType: TClass): TComponentExcludes;
+    procedure DumpToStrings(Strings: TStrings);
+  end;
+
+  { TCoolTranslator }
+
+  TCoolTranslator = class(TComponent)
+  private
+    FLanguage: TLanguage;
+    FOnTranslate: TNotifyEvent;
+    FPOFilesFolder: string;
+    FPOFile: TPOFile;
+    function FindLocaleFileName(LCExt: string): string;
+    function GetLocaleFileName(const LangID, LCExt: string): string;
+    procedure ReloadFiles;
+    procedure SetPOFilesFolder(const AValue: string);
+    procedure Translate;
+    procedure SetLanguage(const AValue: TLanguage);
+    procedure TranslateProperty(Component: TPersistent; PropInfo: PPropInfo);
+    function IsExcluded(Component: TPersistent; PropertyName: string): Boolean;
+  public
+    ComponentExcludes: TComponentExcludesList;
+    Languages: TLanguageList;
+    procedure LanguageListToStrings(Strings: TStrings);
+    procedure TranslateResourceStrings(PoFileName: string);
+    procedure TranslateUnitResourceStrings(UnitName: string; PoFileName: string);
+    procedure TranslateComponent(Component: TPersistent);
+    procedure TranslateComponentRecursive(Component: TComponent);
+    function TranslateText(Identifier, Text: string): string;
+    procedure AddExcludes(AClassType: TClass; PropertyName: string);
+    constructor Create(AOwner: TComponent); override;
+    destructor Destroy; override;
+  published
+    property POFilesFolder: string read FPOFilesFolder write SetPOFilesFolder;
+    property Language: TLanguage read FLanguage write SetLanguage;
+    property OnTranslate: TNotifyEvent read FOnTranslate write FOnTranslate;
+  end;
+
+procedure Register;
+
+resourcestring
+  SLanguageCzech = 'Czech';
+  SLanguageEnglish = 'English';
+  SLanguageAutomatic = 'Automatic';
+
+
+implementation
+
+procedure Register;
+begin
+  RegisterComponents('Sample', [TCoolTranslator]);
+end;
+
+{ TComponentExcludesList }
+
+function TComponentExcludesList.FindByClassType(AClassType: TClass
+  ): TComponentExcludes;
+var
+  I: Integer;
+begin
+  I := 0;
+  while (I < Count) and (TComponentExcludes(Items[I]).ExcludedClassType <> AClassType) do
+    Inc(I);
+  if I < Count then Result := TComponentExcludes(Items[I])
+    else Result := nil;
+end;
+
+procedure TComponentExcludesList.DumpToStrings(Strings: TStrings);
+var
+  I, J: Integer;
+  Text: string;
+begin
+  Strings.Clear;
+  for I := 0 to Count - 1 do
+  with TComponentExcludes(Items[I]) do begin
+    Text := ExcludedClassType.ClassName + ': ';
+    for J := 0 to PropertyExcludes.Count - 1 do
+      Text := Text + PropertyExcludes[J] + ', ';
+    Strings.Add(Text);
+  end;
+end;
+
+{ TComponentExcludes }
+
+constructor TComponentExcludes.Create;
+begin
+  PropertyExcludes := TStringList.Create;
+end;
+
+destructor TComponentExcludes.Destroy;
+begin
+  PropertyExcludes.Free;
+  inherited Destroy;
+end;
+
+
+{ TCoolTranslator }
+
+procedure TCoolTranslator.Translate;
+begin
+  TranslateComponentRecursive(Application);
+  if Assigned(FPOFile) then
+    Translations.TranslateResourceStrings(FPOFile);
+end;
+
+procedure TCoolTranslator.ReloadFiles;
+var
+  FileName: string;
+begin
+  FreeAndNil(FPOFile);
+  if Assigned(FLanguage) then begin
+    FileName := FindLocaleFileName('.po');
+    if FileExistsUTF8(FileName) then FPOFile := TPOFile.Create(FileName);
+  end;
+end;
+
+procedure TCoolTranslator.SetPOFilesFolder(const AValue: string);
+begin
+  if FPoFilesFolder = AValue then Exit;
+  FPoFilesFolder := AValue;
+  ReloadFiles;
+end;
+
+procedure TCoolTranslator.SetLanguage(const AValue: TLanguage);
+begin
+  if FLanguage = AValue then Exit;
+  FLanguage := AValue;
+  ReloadFiles;
+  Translate;
+  if Assigned(FOnTranslate) then FOnTranslate(Self);
+end;
+
+procedure TCoolTranslator.TranslateComponent(Component: TPersistent);
+var
+  I, Count: Integer;
+  PropInfo: PPropInfo;
+  PropList: PPropList;
+  Excludes: TComponentExcludes;
+begin
+  Count := GetTypeData(Component.ClassInfo)^.PropCount;
+  if Count > 0 then begin
+    GetMem(PropList, Count * SizeOf(Pointer));
+    try
+      GetPropInfos(Component.ClassInfo, PropList);
+      for I := 0 to Count - 1 do
+      begin
+        PropInfo := PropList^[I];
+        if PropInfo = nil then
+          Break;
+        TranslateProperty(Component, PropInfo);
+      end;
+    finally
+      FreeMem(PropList, Count * SizeOf(Pointer));
+    end;
+  end;
+end;
+
+procedure TCoolTranslator.TranslateComponentRecursive(Component: TComponent);
+var
+  I: Integer;
+begin
+  TranslateComponent(Component);
+  for I := 0 to Component.ComponentCount - 1 do
+    TranslateComponentRecursive(Component.Components[I]);
+end;
+
+procedure TCoolTranslator.TranslateProperty(Component: TPersistent;
+  PropInfo: PPropInfo);
+var
+  PropType: PTypeInfo;
+  Parent: TObject;
+  Obj: TObject;
+  I: Integer;
+begin
+
+//  PropInfo^.Name;
+  // Using IsDefaultPropertyValue will tell us if we should write out
+  // a given property because it was different from the default or
+  // different from the Ancestor (if applicable).
+  if (PropInfo^.GetProc <> nil) and
+     ((PropInfo^.SetProc <> nil) or
+     ((PropInfo^.PropType^.Kind = tkClass) and
+      (TObject(GetOrdProp(Component, PropInfo)) is TComponent) and
+      (csSubComponent in TComponent(GetOrdProp(Component, PropInfo)).ComponentStyle))) then
+  begin
+    begin
+      PropType := PropInfo^.PropType;
+      case PropType^.Kind of
+        tkString, tkLString, tkWString, tkAString: begin
+          if not IsExcluded(Component, PropInfo^.Name) then
+              SetStrProp(Component, PropInfo, TranslateText(PropInfo^.Name, GetWideStrProp(Component, PropInfo)));
+        end;
+        tkClass: begin
+          Obj := TObject(GetOrdProp(Component, PropInfo));
+          if Obj is TCollection then
+            for I := 0 to TCollection(Obj).Count - 1 do
+              with TCollection(Obj).Items[I] do
+                TranslateComponent(TCollection(Obj).Items[I]);
+        end;
+      end;
+    end;
+  end;
+end;
+
+function TCoolTranslator.IsExcluded(Component: TPersistent; PropertyName: string
+  ): Boolean;
+var
+  Item: TClass;
+
+  Excludes: TComponentExcludes;
+begin
+  Result := False;
+  Item := Component.ClassType;
+  while Assigned(Item) do begin
+    //ShowMessage(Component.Name + ', ' + Component.ClassName + ', ' + Item.ClassName + ', ' + PropertyName);
+    Excludes := ComponentExcludes.FindByClassType(Item.ClassType);
+    if Assigned(Excludes) then begin
+      if Excludes.PropertyExcludes.IndexOf(PropertyName) <> -1 then begin
+        Result := True;
+        Exit;
+      end;
+    end;
+    Item := Item.ClassParent;
+  end;
+end;
+
+procedure TCoolTranslator.LanguageListToStrings(Strings: TStrings);
+var
+  I: Integer;
+begin
+  with Strings do begin
+    Clear;
+    for I := 0 to Languages.Count - 1 do begin
+      AddObject(TLanguage(Languages[I]).Name, Languages[I]);
+    end;
+  end;
+end;
+
+procedure TCoolTranslator.TranslateResourceStrings(PoFileName: string);
+begin
+  Translations.TranslateResourceStrings(PoFileName);
+end;
+
+procedure TCoolTranslator.TranslateUnitResourceStrings(UnitName: string;
+  PoFileName: string);
+begin
+  Translations.TranslateUnitResourceStrings(UnitName, PoFileName);
+end;
+
+function TCoolTranslator.TranslateText(Identifier, Text: string): string;
+begin
+  if Assigned(FPOFile) then
+    Result := FPOFile.Translate(Identifier, Text);
+  //ShowMessage(Text + ' => ' + Result);
+end;
+
+procedure TCoolTranslator.AddExcludes(AClassType: TClass; PropertyName: string
+  );
+var
+  NewItem: TComponentExcludes;
+begin
+  NewItem := ComponentExcludes.FindByClassType(AClassType);
+  if not Assigned(NewItem) then begin
+    NewItem := TComponentExcludes.Create;
+    NewItem.ExcludedClassType := AClassType;
+    ComponentExcludes.Add(NewItem);
+  end;
+  NewItem.PropertyExcludes.Add(PropertyName);
+end;
+
+constructor TCoolTranslator.Create(AOwner: TComponent);
+begin
+  inherited;
+  ComponentExcludes := TComponentExcludesList.Create;
+  AddExcludes(TComponent, 'Name');
+
+  Languages := TLanguageList.Create;
+  with TLanguage(Languages[Languages.Add(TLanguage.Create)]) do begin
+    Name := SLanguageAutomatic;
+    Code := '';
+  end;
+  with TLanguage(Languages[Languages.Add(TLanguage.Create)]) do begin
+    Name := SLanguageCzech;
+    Code := 'cs';
+  end;
+  with TLanguage(Languages[Languages.Add(TLanguage.Create)]) do begin
+    Name := SLanguageEnglish;
+    Code := 'en';
+  end;
+end;
+
+destructor TCoolTranslator.Destroy;
+begin
+  Languages.Free;
+  inherited Destroy;
+end;
+
+function TCoolTranslator.FindLocaleFileName(LCExt: string): string;
+var
+  T: string;
+  I: Integer;
+  Lang: string;
+begin
+  Result := '';
+  // Win32 user may decide to override locale with LANG variable.
+  Lang := GetEnvironmentVariableUTF8('LANG');
+
+  // Use user selected language
+  if Assigned(Language) and (Language.Code <> '') then
+    Lang := Language.Code;
+
+  if Lang = '' then begin
+    for i := 1 to Paramcount - 1 do
+      if (ParamStrUTF8(i) = '--LANG') or (ParamStrUTF8(i) = '-l') or
+        (ParamStrUTF8(i) = '--lang') then
+        Lang := ParamStrUTF8(i + 1);
+  end;
+  if Lang = '' then
+    LCLGetLanguageIDs(Lang, T);
+
+  if Lang = 'en' then Lang := ''; // English files are without en code
+
+  Result := GetLocaleFileName(Lang, LCExt);
+  if Result <> '' then
+    Exit;
+
+  Result := ChangeFileExt(ParamStrUTF8(0), LCExt);
+  if FileExistsUTF8(Result) then
+    exit;
+
+  Result := '';
+end;
+
+function TCoolTranslator.GetLocaleFileName(const LangID, LCExt: string): string;
+var
+  LangShortID: string;
+  FormatLang: string;
+begin
+  if LangID <> '' then FormatLang := '.%s' else FormatLang := '';
+
+  begin
+
+    // ParamStrUTF8(0) is said not to work properly in linux, but I've tested it
+    Result := ExtractFilePath(ParamStrUTF8(0)) + LangID +
+      DirectorySeparator + ChangeFileExt(ExtractFileName(ParamStrUTF8(0)), LCExt);
+    if FileExistsUTF8(Result) then
+      exit;
+
+    Result := ExtractFilePath(ParamStrUTF8(0)) + 'languages' + DirectorySeparator + LangID +
+      DirectorySeparator + ChangeFileExt(ExtractFileName(ParamStrUTF8(0)), LCExt);
+    if FileExistsUTF8(Result) then
+      exit;
+
+    Result := ExtractFilePath(ParamStrUTF8(0)) + 'locale' + DirectorySeparator
+      + LangID + DirectorySeparator + ChangeFileExt(ExtractFileName(ParamStrUTF8(0)), LCExt);
+    if FileExistsUTF8(Result) then
+      exit;
+
+    Result := ExtractFilePath(ParamStrUTF8(0)) + 'locale' + DirectorySeparator
+      + LangID + DirectorySeparator + 'LC_MESSAGES' + DirectorySeparator +
+      ChangeFileExt(ExtractFileName(ParamStrUTF8(0)), LCExt);
+    if FileExistsUTF8(Result) then
+      exit;
+
+    {$IFDEF UNIX}
+    // In unix-like systems we can try to search for global locale
+    Result := '/usr/share/locale/' + LangID + '/LC_MESSAGES/' +
+      ChangeFileExt(ExtractFileName(ParamStrUTF8(0)), LCExt);
+    if FileExistsUTF8(Result) then
+      exit;
+    {$ENDIF}
+    // Let us search for reducted files
+    LangShortID := copy(LangID, 1, 2);
+    // At first, check all was checked
+    Result := ExtractFilePath(ParamStrUTF8(0)) + LangShortID +
+      DirectorySeparator + ChangeFileExt(ExtractFileName(ParamStrUTF8(0)), LCExt);
+    if FileExistsUTF8(Result) then
+      exit;
+
+    Result := ExtractFilePath(ParamStrUTF8(0)) + 'languages' + DirectorySeparator +
+      LangShortID + DirectorySeparator + ChangeFileExt(
+      ExtractFileName(ParamStrUTF8(0)), LCExt);
+    if FileExistsUTF8(Result) then
+      exit;
+
+    Result := ExtractFilePath(ParamStrUTF8(0)) + 'locale' + DirectorySeparator
+      + LangShortID + DirectorySeparator + ChangeFileExt(
+      ExtractFileName(ParamStrUTF8(0)), LCExt);
+    if FileExistsUTF8(Result) then
+      exit;
+
+    Result := ExtractFilePath(ParamStrUTF8(0)) + 'locale' + DirectorySeparator
+      + LangShortID + DirectorySeparator + 'LC_MESSAGES' + DirectorySeparator +
+      ChangeFileExt(ExtractFileName(ParamStrUTF8(0)), LCExt);
+    if FileExistsUTF8(Result) then
+      exit;
+
+    // Full language in file name - this will be default for the project
+    // We need more careful handling, as it MAY result in incorrect filename
+    try
+      Result := ExtractFilePath(ParamStrUTF8(0)) + ChangeFileExt(ExtractFileName(ParamStrUTF8(0)), Format(FormatLang, [LangID])) + LCExt;
+      if FileExistsUTF8(Result) then
+        exit;
+      // Common location (like in Lazarus)
+      Result := ExtractFilePath(ParamStrUTF8(0)) + 'locale' + DirectorySeparator +
+        ChangeFileExt(ExtractFileName(ParamStrUTF8(0)), Format(FormatLang, [LangID])) + LCExt;
+      if FileExistsUTF8(Result) then
+        exit;
+
+      Result := ExtractFilePath(ParamStrUTF8(0)) + 'languages' +
+        DirectorySeparator + ChangeFileExt(ExtractFileName(ParamStrUTF8(0)), Format(FormatLang, [LangID])) + LCExt;
+      if FileExistsUTF8(Result) then
+        exit;
+    except
+      Result := ''; // Or do something else (useless)
+    end;
+
+    {$IFDEF UNIX}
+    Result := '/usr/share/locale/' + LangShortID + '/LC_MESSAGES/' +
+      ChangeFileExt(ExtractFileName(ParamStrUTF8(0)), LCExt);
+    if FileExistsUTF8(Result) then
+      exit;
+    {$ENDIF}
+    Result := ExtractFilePath(ParamStrUTF8(0)) + ChangeFileExt(
+      ExtractFileName(ParamStrUTF8(0)), Format(FormatLang, [LangShortID])) + LCExt;
+    if FileExistsUTF8(Result) then
+      exit;
+
+    Result := ExtractFilePath(ParamStrUTF8(0)) + 'locale' + DirectorySeparator +
+      ChangeFileExt(ExtractFileName(ParamStrUTF8(0)), Format(FormatLang, [LangShortID])) + LCExt;
+    if FileExistsUTF8(Result) then
+      exit;
+
+    Result := ExtractFilePath(ParamStrUTF8(0)) + 'languages' + DirectorySeparator +
+      ChangeFileExt(ExtractFileName(ParamStrUTF8(0)), Format(FormatLang, [LangShortID])) + LCExt;
+    if FileExistsUTF8(Result) then
+      exit;
+  end;
+
+  Result := '';
+end;
+
+{ TLanguageList }
+
+function TLanguageList.SearchByCode(ACode: string): TLanguage;
+var
+  I: Integer;
+begin
+  I := 0;
+  while (I < Count) and (TLanguage(Items[I]).Code < ACode) do Inc(I);
+  if I < Count then Result := TLanguage(Items[I])
+    else Result := nil;
+end;
+
+
+end.
+
