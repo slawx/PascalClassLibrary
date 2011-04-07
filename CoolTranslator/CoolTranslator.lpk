@@ -8,7 +8,7 @@
       <Version Value="9"/>
       <PathDelim Value="\"/>
       <SearchPaths>
-        <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)\"/>
+        <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
       </SearchPaths>
       <Other>
         <CompilerPath Value="$(CompPath)"/>
@@ -17,13 +17,21 @@
     <Description Value="Application interface translator tool"/>
     <License Value="GNU/GPL"/>
     <Version Minor="1"/>
-    <Files Count="1">
+    <Files Count="2">
       <Item1>
         <Filename Value="UCoolTranslator.pas"/>
         <HasRegisterProc Value="True"/>
         <UnitName Value="UCoolTranslator"/>
       </Item1>
+      <Item2>
+        <Filename Value="ULanguages.pas"/>
+        <UnitName Value="ULanguages"/>
+      </Item2>
     </Files>
+    <i18n>
+      <EnableI18N Value="True"/>
+      <OutDir Value="Languages"/>
+    </i18n>
     <Type Value="RunAndDesignTime"/>
     <RequiredPkgs Count="2">
       <Item1>

@@ -6,21 +6,9 @@ interface
 
 uses
   Classes, SysUtils, Forms, StdCtrls, ExtCtrls, StrUtils, Controls, Contnrs,
-  Translations, TypInfo, Dialogs, FileUtil, LCLProc;
+  Translations, TypInfo, Dialogs, FileUtil, LCLProc, ULanguages;
 
 type
-
-  TLanguage = class
-    Name: string;
-    Code: string;
-  end;
-
-  { TLanguageList }
-
-  TLanguageList = class(TObjectList)
-    function SearchByCode(ACode: string): TLanguage;
-  end;
-
   { TComponentExcludes }
 
   TComponentExcludes = class
@@ -72,12 +60,6 @@ type
   end;
 
 procedure Register;
-
-resourcestring
-  SLanguageCzech = 'Czech';
-  SLanguageEnglish = 'English';
-  SLanguageAutomatic = 'Automatic';
-
 
 implementation
 
@@ -307,21 +289,13 @@ constructor TCoolTranslator.Create(AOwner: TComponent);
 begin
   inherited;
   ComponentExcludes := TComponentExcludesList.Create;
-  AddExcludes(TComponent, 'Name');
-
   Languages := TLanguageList.Create;
-  with TLanguage(Languages[Languages.Add(TLanguage.Create)]) do begin
-    Name := SLanguageAutomatic;
-    Code := '';
-  end;
-  with TLanguage(Languages[Languages.Add(TLanguage.Create)]) do begin
-    Name := SLanguageCzech;
-    Code := 'cs';
-  end;
-  with TLanguage(Languages[Languages.Add(TLanguage.Create)]) do begin
-    Name := SLanguageEnglish;
-    Code := 'en';
-  end;
+  POFilesFolder := 'Languages';
+
+  // LCL
+  AddExcludes(TComponent, 'Name');
+  //AddExcludes(TAction, 'Category');
+  AddExcludes(TControl, 'HelpKeyword');
 end;
 
 destructor TCoolTranslator.Destroy;
@@ -473,18 +447,6 @@ begin
   end;
 
   Result := '';
-end;
-
-{ TLanguageList }
-
-function TLanguageList.SearchByCode(ACode: string): TLanguage;
-var
-  I: Integer;
-begin
-  I := 0;
-  while (I < Count) and (TLanguage(Items[I]).Code < ACode) do Inc(I);
-  if I < Count then Result := TLanguage(Items[I])
-    else Result := nil;
 end;
 
 

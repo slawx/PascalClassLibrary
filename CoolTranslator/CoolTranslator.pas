@@ -7,7 +7,7 @@ unit CoolTranslator;
 interface
 
 uses
-  UCoolTranslator, LazarusPackageIntf;
+  UCoolTranslator, ULanguages, LazarusPackageIntf;
 
 implementation
 
