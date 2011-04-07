@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, StdCtrls, ExtCtrls, StrUtils, Controls, Contnrs,
-  Translations, TypInfo, Dialogs, FileUtil, LCLProc, ULanguages;
+  Translations, TypInfo, Dialogs, FileUtil, LCLProc, ULanguages, LCLType;
 
 type
   { TComponentExcludes }
@@ -51,6 +51,7 @@ type
     procedure TranslateComponentRecursive(Component: TComponent);
     function TranslateText(Identifier, Text: string): string;
     procedure AddExcludes(AClassType: TClass; PropertyName: string);
+    procedure CheckLanguageFiles;
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
   published
@@ -115,6 +116,7 @@ end;
 
 procedure TCoolTranslator.Translate;
 begin
+  TranslateResourceStrings('ULanguages.cs.po');
   TranslateComponentRecursive(Application);
   if Assigned(FPOFile) then
     Translations.TranslateResourceStrings(FPOFile);
@@ -204,7 +206,8 @@ begin
       PropType := PropInfo^.PropType;
       case PropType^.Kind of
         tkString, tkLString, tkWString, tkAString: begin
-          if not IsExcluded(Component, PropInfo^.Name) then
+          if (UpperCase(PropType.Name) = 'TTRANSLATESTRING') then
+          //if not IsExcluded(Component, PropInfo^.Name) then
               SetStrProp(Component, PropInfo, TranslateText(PropInfo^.Name, GetWideStrProp(Component, PropInfo)));
         end;
         tkClass: begin
@@ -213,6 +216,10 @@ begin
             for I := 0 to TCollection(Obj).Count - 1 do
               with TCollection(Obj).Items[I] do
                 TranslateComponent(TCollection(Obj).Items[I]);
+          if Obj is TStrings then
+            for I := 0 to TStrings(Obj).Count - 1 do
+              with TStrings(Obj) do
+                Strings[I] := TranslateText(Strings[I], Strings[I]);
         end;
       end;
     end;
@@ -244,12 +251,17 @@ end;
 procedure TCoolTranslator.LanguageListToStrings(Strings: TStrings);
 var
   I: Integer;
+  ItemName: string;
 begin
   with Strings do begin
     Clear;
-    for I := 0 to Languages.Count - 1 do begin
-      AddObject(TLanguage(Languages[I]).Name, Languages[I]);
-    end;
+    for I := 0 to Languages.Count - 1 do
+    with TLanguage(Languages[I]) do
+      if Available then begin
+        ItemName := Name;
+        if Code <> '' then ItemName := ItemName + ' (' + Code + ')';
+        AddObject(ItemName, Languages[I]);
+      end;
   end;
 end;
 
@@ -285,12 +297,26 @@ begin
   NewItem.PropertyExcludes.Add(PropertyName);
 end;
 
+procedure TCoolTranslator.CheckLanguageFiles;
+var
+  I: Integer;
+begin
+  TLanguage(Languages[0]).Available := True; // Automatic
+
+  for I := 1 to Languages.Count - 1 do
+  with TLanguage(Languages[I]) do begin
+    Available := FileExistsUTF8(POFilesFolder + DirectorySeparator + ExtractFileNameOnly(Application.ExeName) +
+      '.' + Code + ExtensionSeparator + 'po') or (Code = 'en');
+  end;
+end;
+
 constructor TCoolTranslator.Create(AOwner: TComponent);
 begin
   inherited;
   ComponentExcludes := TComponentExcludesList.Create;
   Languages := TLanguageList.Create;
   POFilesFolder := 'Languages';
+  CheckLanguageFiles;
 
   // LCL
   AddExcludes(TComponent, 'Name');

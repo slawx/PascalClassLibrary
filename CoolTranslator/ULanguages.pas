@@ -11,6 +11,7 @@ type
   TLanguage = class
     Name: string;
     Code: string;
+    Available: Boolean;
   end;
 
   { TLanguageList }
