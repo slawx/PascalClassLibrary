@@ -79,13 +79,17 @@ type
 // TListByte<Integer, Byte>
 {$DEFINE TGListIndex := Integer}
 {$DEFINE TGListItem := Byte}
-{$DEFINE TGList := TListByte}
+{$DEFINE TGList := TListByteBase}
 {$DEFINE TGListSortCompare := TListByteSortCompare}
 {$DEFINE TGListToStringConverter := TListByteToStringConverter}
 {$DEFINE TGListFromStringConverter := TListByteFromStringConverter}
 {$DEFINE TGListItemArray := TListByteItemArray}
 {$DEFINE INTERFACE}
 {$I 'GenericList.inc'}
+
+TListByte = class(TListByteBase)
+  procedure WriteToStream(Stream: TStream);
+end;
 
 // TListChar<Integer, Char>
 {$DEFINE TGListIndex := Integer}
@@ -215,7 +219,7 @@ implementation
 // TListByte<Integer, Byte>
 {$DEFINE TGListIndex := Integer}
 {$DEFINE TGListItem := Byte}
-{$DEFINE TGList := TListByte}
+{$DEFINE TGList := TListByteBase}
 {$DEFINE TGListSortCompare := TListByteSortCompare}
 {$DEFINE TGListToStringConverter := TListByteToStringConverter}
 {$DEFINE TGListFromStringConverter := TListByteFromStringConverter}
@@ -332,5 +336,15 @@ begin
     I := I + 1;
   end;
 end;
+
+procedure TListByte.WriteToStream(Stream: TStream);
+var
+  I: Integer;
+begin
+  I := 0;
+  while I < Count do
+    Stream.WriteByte(Items[I]);
+end;
+
 
 end.
