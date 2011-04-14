@@ -17,7 +17,7 @@
     <Description Value="Various libraries"/>
     <License Value="GNU/GPL"/>
     <Version Minor="2"/>
-    <Files Count="6">
+    <Files Count="7">
       <Item1>
         <Filename Value="StopWatch.pas"/>
         <UnitName Value="StopWatch"/>
@@ -42,6 +42,10 @@
         <Filename Value="UURI.pas"/>
         <UnitName Value="UURI"/>
       </Item6>
+      <Item7>
+        <Filename Value="UThreading.pas"/>
+        <UnitName Value="UThreading"/>
+      </Item7>
     </Files>
     <Type Value="RunAndDesignTime"/>
     <RequiredPkgs Count="3">

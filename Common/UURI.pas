@@ -9,6 +9,9 @@ interface
 uses
   Classes, SysUtils;
 
+const
+  URIPathSeparator = '/';
+
 type
 
   { TPath }
@@ -20,6 +23,7 @@ type
   public
     Items: TStringList;
     IsAbsolute: Boolean;
+    DirSeparator: string;
     procedure Assign(Source: TPath);
     constructor Create;
     destructor Destroy; override;
@@ -136,10 +140,10 @@ function TPath.GetAsString: string;
 var
   I: Integer;
 begin
-  if IsAbsolute then Result := DirectorySeparator
+  if IsAbsolute then Result := DirSeparator
     else Result := '';
   for I := 0 to Items.Count - 1 do
-    Result := Result + Items[I] + DirectorySeparator;
+    Result := Result + Items[I] + DirSeparator;
 end;
 
 procedure TPath.SetAsString(AValue: string);
@@ -148,13 +152,13 @@ var
 begin
   Items.Clear;
   if Length(AValue) > 0 then begin
-    if AValue[1] = DirectorySeparator then begin
+    if AValue[1] = DirSeparator then begin
       IsAbsolute := True;
       Delete(AValue, 1, 1);
     end else IsAbsolute := False;
-    while Pos(DirectorySeparator, AValue) > 0 do begin
-      Name := Copy(AValue, 1, Pos(DirectorySeparator, AValue) - 1);
-      Delete(AValue, 1, Pos(DirectorySeparator, AValue));
+    while Pos(DirSeparator, AValue) > 0 do begin
+      Name := Copy(AValue, 1, Pos(DirSeparator, AValue) - 1);
+      Delete(AValue, 1, Pos(DirSeparator, AValue));
       Items.Add(Name);
     end;
     if Length(AValue) > 0 then
@@ -166,11 +170,13 @@ procedure TPath.Assign(Source: TPath);
 begin
   IsAbsolute := Source.IsAbsolute;
   Items.Assign(Source.Items);
+  DirSeparator := Source.DirSeparator;
 end;
 
 constructor TPath.Create;
 begin
   Items := TStringList.Create;
+  DirSeparator := DirectorySeparator;
 end;
 
 destructor TPath.Destroy;
@@ -187,12 +193,11 @@ begin
   if Scheme <> '' then Result := Scheme + ':';
   if Path.Combine <> '' then begin
     Result := Result + '//' + Authority;
-    if Path.Drive <> '' then Result := Result + '/';
+    if Scheme = 'file' then Result := Result + URIPathSeparator;
     Result := Result + Path.Combine;
   end;
   if Query <> '' then Result := Result + '?' + Query;
   if Fragment <> '' then Result := Result + '#' + Fragment;
-  StringReplace(Result, '\', '/', [rfReplaceAll]);
 end;
 
 procedure TURI.SetAsString(Value: string);
@@ -203,18 +208,18 @@ begin
   LeftCutString(Value, Scheme, ':');
   if Copy(Value, 1, 2) = '//' then begin
     Value := Copy(Value, 3, Length(Value));
-    LeftCutString(Value, Authority, '/');
+    LeftCutString(Value, Authority, URIPathSeparator);
   end;
   RightCutString(Value, Fragment, '#');
   RightCutString(Value, Query, '?', '=&');
-  if (Length(Value) > 2) and (Value[2] = DriveSeparator) then
-    Delete(Value, 1, 1); // Remove beginning slash
+  //if Scheme = 'file' then Delete(Value, 1, 1); // Remove beginning slash
   Path.Parse(Value);
 end;
 
 constructor TURI.Create;
 begin
   Path := TFileName.Create;
+  Path.Directory.DirSeparator := URIPathSeparator;
 end;
 
 procedure TURI.Clear;
@@ -277,7 +282,7 @@ begin
     Port := StrToInt(HostPort);
   end else LeftCutString(Value, HostAddr, '', '.');
   Host := HostAddr;
-  LeftCutString(Value, TempPath, '', '/.');
+  LeftCutString(Value, TempPath, '', URIPathSeparator + '.');
   Path.Parse(TempPath);
 end;
 
@@ -310,7 +315,8 @@ begin
     RightCutString(AValue, Extension, ExtensionSeparator);
     Extension := ExtensionSeparator + Extension;
   end else Extension := '';
-  if Pos(DirectorySeparator, AValue) > 0 then RightCutString(AValue, Name, DirectorySeparator)
+  if Pos(Directory.DirSeparator, AValue) > 0 then
+    RightCutString(AValue, Name, Directory.DirSeparator)
     else begin
       Name := AValue;
       AValue := '';
