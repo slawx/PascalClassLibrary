@@ -27,6 +27,7 @@ type
     MouseDown: Boolean;
     MouseButton: TMouseButton;
     FDockItems: TObjectList; // TList<TCDManagerRegionsItem>
+    FUpdating: Boolean;
     procedure TabControlMouseLeave(Sender: TObject);
     procedure TabControlMouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
@@ -334,6 +335,7 @@ var
 begin
   for I := 0 to DockItems.Count - 1 do
   with TCDManagerTabsItem(DockItems[I]) do begin
+    //Control.Tag := Integer(dhtTemporal);
     //Control.Visible := False;
     //Control.Parent := nil;
   end;
@@ -368,6 +370,7 @@ begin
       end;
     end;
     PageControl.Pages[I].TabVisible := Control.Visible or (HideType = dhtTemporal);
+
     //TCDClientPanel(DockPanels[I]).ClientAreaPanel.Width := DockSite.Width;
     //TCDClientPanel(DockPanels[I]).ClientAreaPanel.Height := DockSite.Height - PageControl.Height;
     //TCDClientPanel(FDockPanels[I]).DockPanelPaint(Self);

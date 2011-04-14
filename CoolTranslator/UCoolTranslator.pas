@@ -216,10 +216,11 @@ begin
             for I := 0 to TCollection(Obj).Count - 1 do
               with TCollection(Obj).Items[I] do
                 TranslateComponent(TCollection(Obj).Items[I]);
-          if Obj is TStrings then
+          (*if Obj is TStrings then
             for I := 0 to TStrings(Obj).Count - 1 do
               with TStrings(Obj) do
                 Strings[I] := TranslateText(Strings[I], Strings[I]);
+          *)
         end;
       end;
     end;
@@ -326,7 +327,9 @@ end;
 
 destructor TCoolTranslator.Destroy;
 begin
+  FPOFile.Free;
   Languages.Free;
+  ComponentExcludes.Free;
   inherited Destroy;
 end;
 

@@ -5,7 +5,7 @@ unit UStreamHelper;
 interface
 
 uses
-  Classes, DateUtils, syncobjs, UMicroThreading;
+  Classes, DateUtils, syncobjs;
 
 type
   TEndianness = (enBig, enLittle);
@@ -18,7 +18,9 @@ type
     FStream: TStream;
     FEndianness: TEndianness;
     SwapData: Boolean;
+    function GetItem(Index: Integer): Byte;
     procedure SetEndianness(const AValue: TEndianness);
+    procedure SetItem(Index: Integer; const AValue: Byte);
   public
     procedure WriteByte(Data: Byte);
     procedure WriteWord(Data: Word);
@@ -49,6 +51,7 @@ type
     procedure FillByte(Data: Byte; Count: Integer);
     constructor Create; overload;
     constructor Create(AStream: TStream); overload;
+    procedure Clear;
     destructor Destroy; override;
     function GetSize: Int64; override;
     procedure SetSize(NewSize: Longint); override;
@@ -57,15 +60,7 @@ type
     function Write(const Buffer; Count: Longint): Longint; override;
     property Endianness: TEndianness read FEndianness write SetEndianness;
     property Stream: TStream read FStream write FStream;
-  end;
-
-  { TThreadStreamHelper }
-
-  TThreadStreamHelper = class(TStreamHelper)
-    Lock: TMicroThreadCriticalSection;
-    procedure Clear;
-    constructor Create;
-    destructor Destroy; override;
+    property Items[Index: Integer]: Byte read GetItem write SetItem; default;
   end;
 
 implementation
@@ -194,6 +189,11 @@ begin
   FOwnStream := False;
 end;
 
+procedure TStreamHelper.Clear;
+begin
+  Stream.Size := 0;
+end;
+
 destructor TStreamHelper.Destroy;
 begin
   if FOwnStream then FStream.Free;
@@ -272,6 +272,18 @@ begin
   {$endif}
 end;
 
+function TStreamHelper.GetItem(Index: Integer): Byte;
+begin
+  Position := Index;
+  Result := ReadByte;
+end;
+
+procedure TStreamHelper.SetItem(Index: Integer; const AValue: Byte);
+begin
+ Position := Index;
+ WriteByte(AValue);
+end;
+
 procedure TStreamHelper.WriteAnsiString(Data: string);
 var
   StringLength: Longint;
@@ -347,28 +359,5 @@ begin
   Write(Data, SizeOf(Word));
 end;
 
-{ TThreadStreamHelper }
-
-procedure TThreadStreamHelper.Clear;
-begin
-  try
-    Lock.Acquire;
-    Size := 0;
-  finally
-    Lock.Release;
-  end;
-end;
-
-constructor TThreadStreamHelper.Create;
-begin
-  inherited Create;
-  Lock := TMicroThreadCriticalSection.Create;
-end;
-
-destructor TThreadStreamHelper.Destroy;
-begin
-  Lock.Free;
-  inherited Destroy;
-end;
 
 end.

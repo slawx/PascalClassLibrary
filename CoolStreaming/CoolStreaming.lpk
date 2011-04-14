@@ -5,7 +5,7 @@
     <Name Value="CoolStreaming"/>
     <Author Value="Chronos"/>
     <CompilerOptions>
-      <Version Value="10"/>
+      <Version Value="9"/>
       <PathDelim Value="\"/>
       <SearchPaths>
         <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
@@ -48,17 +48,14 @@
       </Item7>
     </Files>
     <Type Value="RunAndDesignTime"/>
-    <RequiredPkgs Count="3">
+    <RequiredPkgs Count="2">
       <Item1>
-        <PackageName Value="MicroThreading"/>
+        <PackageName Value="TemplateGenerics"/>
       </Item1>
       <Item2>
-        <PackageName Value="TemplateGenerics"/>
-      </Item2>
-      <Item3>
         <PackageName Value="FCL"/>
         <MinVersion Major="1" Valid="True"/>
-      </Item3>
+      </Item2>
     </RequiredPkgs>
     <UsageOptions>
       <UnitPath Value="$(PkgOutDir)"/>

@@ -30,7 +30,7 @@ It is possible to exclude properties which should not be translated
 Some class properties are translated.
 
 * TCollection: TListView.Columns
-* TStrings: TRadioGroup.
+* TStrings: TRadioGroup.Items, TPageControl.Pages, TComboBox.Items, TMemo.Lines
 
 ==Other constants==
 
