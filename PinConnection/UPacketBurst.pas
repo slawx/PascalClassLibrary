@@ -6,12 +6,12 @@ interface
 
 uses
   Classes, UCommPin, SyncObjs, UStreamHelper, UCommon, SysUtils,
-  UMicroThreading, DateUtils;
+  DateUtils;
 
 type
   TPacketBurst = class;
 
-  TPacketBurstSendThread = class(TMicroThread)
+  TPacketBurstSendThread = class(TThread)
     PacketBurst: TPacketBurst;
     procedure Execute; override;
   end;
@@ -21,7 +21,7 @@ type
   TPacketBurst = class
   private
     FActive: Boolean;
-    SendThreadEvent: TMicroThreadEvent;
+    SendThreadEvent: TEvent;
     SendThread: TPacketBurstSendThread;
     SendStreamLock: TCriticalSection;
     SendStream: TStreamHelper;
@@ -30,7 +30,7 @@ type
     procedure PacketBurstReceive(Sender: TCommPin; Stream: TStream);
     procedure SetActive(const AValue: Boolean);
   public
-    SendPeriod: TDateTime;
+    SendPeriod: Integer;
     SendBurstSize: Integer;
     PacketSinglePin: TCommPin;
     PacketBurstPin: TCommPin;
@@ -49,8 +49,8 @@ begin
   PacketSinglePin.OnReceive := PacketSingleReceive;
   PacketBurstPin := TCommPin.Create;
   PacketBurstPin.OnReceive := PacketBurstReceive;
-  SendThreadEvent := TMicroThreadEvent.Create;
-  SendPeriod := OneMillisecond;
+  SendThreadEvent := TSimpleEvent.Create;
+  SendPeriod := 1;
 end;
 
 destructor TPacketBurst.Destroy;
@@ -92,7 +92,7 @@ begin
     SendThread := TPacketBurstSendThread.Create(True);
     SendThread.FreeOnTerminate := False;
     SendThread.PacketBurst := Self;
-    SendThread.Name := 'PacketBurst';
+    //SendThread.Name := 'PacketBurst';
     SendThread.Start;
   end else begin
     FreeAndNil(SendThread);

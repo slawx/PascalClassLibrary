@@ -5,7 +5,7 @@
     <Name Value="PinConnection"/>
     <Author Value="Chronos"/>
     <CompilerOptions>
-      <Version Value="10"/>
+      <Version Value="9"/>
       <PathDelim Value="\"/>
       <SearchPaths>
         <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
@@ -56,23 +56,20 @@
       </Item9>
     </Files>
     <Type Value="RunAndDesignTime"/>
-    <RequiredPkgs Count="5">
+    <RequiredPkgs Count="4">
       <Item1>
-        <PackageName Value="MicroThreading"/>
+        <PackageName Value="synapse"/>
       </Item1>
       <Item2>
-        <PackageName Value="synapse"/>
+        <PackageName Value="Common"/>
       </Item2>
       <Item3>
-        <PackageName Value="Common"/>
+        <PackageName Value="CoolStreaming"/>
       </Item3>
       <Item4>
-        <PackageName Value="CoolStreaming"/>
-      </Item4>
-      <Item5>
         <PackageName Value="FCL"/>
         <MinVersion Major="1" Valid="True"/>
-      </Item5>
+      </Item4>
     </RequiredPkgs>
     <UsageOptions>
       <UnitPath Value="$(PkgOutDir)"/>

@@ -5,8 +5,8 @@ unit UCommProtocol;
 interface
 
 uses
-  Classes, SysUtils, UVarBlockSerializer, syncobjs, UCommPin, UMicroThreading,
-  UDebugLog, UStreamHelper, StopWatch, SpecializedList, UCommon, UPlatform,
+  Classes, SysUtils, UVarBlockSerializer, syncobjs, UCommPin, UThreading,
+  UDebugLog, UStreamHelper, StopWatch, SpecializedList, UCommon,
   DateUtils;
 
 type
@@ -25,12 +25,12 @@ type
   TDeviceProtocolSession = class
   private
     RepeatCounter: integer;
-    ReceiveEvent: TMicroThreadEvent;
+    ReceiveEvent: TSimpleEvent;
     Request: TStreamHelper;
     ResponseParameters: TVarBlockIndexed;
     TransmitTime: TDateTime;
   public
-    Lock: TMicroThreadCriticalSection;
+    Lock: TCriticalSection;
     SequenceNumber: Integer;
     ResponseCode: Integer;
     CommandError: Integer;
@@ -50,7 +50,7 @@ type
   public
     SequenceNumber: integer;
     Parent: TCommProtocol;
-    Lock: TMicroThreadCriticalSection;
+    Lock: TCriticalSection;
     procedure Add(Session: TDeviceProtocolSession);
     function GetBySequence(Sequence: integer): TDeviceProtocolSession;
     procedure Remove(Session: TDeviceProtocolSession);
@@ -64,7 +64,7 @@ type
 
   { TRetransmitCheckThread }
 
-  TRetransmitCheckThread = class(TMicroThread)
+  TRetransmitCheckThread = class(TListedThread)
   public
     Parent: TCommProtocol;
     CheckPeriod: Integer;
@@ -81,7 +81,6 @@ type
     FOnDebugLog: TDebugLogAddEvent;
     OnAfterRequest: TAfterRequest;
     RetransmitThread: TRetransmitCheckThread;
-    procedure DataReceive(Sender: TCommPin; Stream: TStream);
     procedure HandleRequest(Stream: TStream);
     procedure SetActive(const AValue: Boolean);
   public
@@ -97,6 +96,7 @@ type
     Pin: TCommPin;
     LastCommandResponseTime: TDateTime;
     LastLatency: TDateTime;
+    procedure DataReceive(Sender: TCommPin; Stream: TStream); virtual;
     procedure SendCommand(Command: array of integer;
       ResponseParameters: TVarBlockIndexed = nil;
       RequestParameters: TVarBlockIndexed = nil; ARaiseError: boolean = True);
@@ -152,7 +152,7 @@ begin
                   else ResponseCode := 0;
                 if TestIndex(4) then CommandError := ReadVarUInt(4)
                   else CommandError := 0;
-                Latency := NowPrecise - TransmitTime;
+                Latency := Now - TransmitTime;
                 ReceiveEvent.SetEvent;
               finally
                 Session.Lock.Release;
@@ -253,7 +253,7 @@ begin
   if AValue then begin
     RetransmitThread := TRetransmitCheckThread.Create(True);
     with RetransmitThread do begin
-      CheckPeriod := 100;
+      CheckPeriod := 100; // ms
       Parent := Self;
       FreeOnTerminate := False;
       Name := 'CommProtocol';
@@ -295,10 +295,10 @@ begin
 
         // Wait for free remote buffer
         while (RemoteBufferUsed + Request.Size) > RemoteBufferSize do
-          MTSleep(1 * OneMillisecond);
+          Sleep(1);
 
         //StopWatch.Start;
-        TransmitTime := NowPrecise;
+        TransmitTime := Now;
         Pin.Send(Request);
       finally
         Lock.Release;
@@ -310,7 +310,7 @@ begin
         finally
           Sessions.Lock.Release;
         end;
-        while ReceiveEvent.WaitFor(10 * OneMillisecond) = wrTimeout do begin
+        while ReceiveEvent.WaitFor(10) = wrTimeout do begin
           if Timeouted then
             raise ECommTimeout.Create(SResponseTimeout);
         end;
@@ -319,7 +319,7 @@ begin
             FOnDebugLog(SDeviceProtocol, Format(SResponseError, [CommandIndex.Implode('.', IntToStr), IntToStr(ResponseCode)]));
           raise ECommResponseCodeError.Create(Format(SResponseError, [CommandIndex.Implode('.', IntToStr), IntToStr(ResponseCode)]));
         end;
-        LastCommandResponseTime := NowPrecise;
+        LastCommandResponseTime := Now;
         LastLatency := Latency;
       finally
         try
@@ -364,9 +364,9 @@ end;
 constructor TDeviceProtocolSession.Create;
 begin
   ResponseCode := 0;
-  Lock := TMicroThreadCriticalSection.Create;
-  ReceiveEvent := TMicroThreadEvent.Create;
-  ReceiveEvent.AutoReset := False;
+  Lock := TCriticalSection.Create;
+  ReceiveEvent := TSimpleEvent.Create;
+  //ReceiveEvent.ManualReset := True;
   Request := TStreamHelper.Create;
   ResponseParameters := nil;
   CommandIndex := TListInteger.Create;
@@ -395,7 +395,7 @@ begin
     begin
       try
         Lock.Release;
-        MTSleep(1 * OneMillisecond);
+        Sleep(1);
       finally
         Lock.Acquire;
       end;
@@ -433,7 +433,7 @@ end;
 constructor TDeviceProtocolSessionList.Create;
 begin
   inherited Create;
-  Lock := TMicroThreadCriticalSection.Create;
+  Lock := TCriticalSection.Create;
 end;
 
 destructor TDeviceProtocolSessionList.Destroy;
@@ -477,10 +477,10 @@ begin
         with TDeviceProtocolSession(Sessions[I]) do begin
           try
             Session.Lock.Acquire;
-            if (TransmitTime > 0) and (NowPrecise > (TransmitTime + RetransmitTimeout)) then begin
+            if (TransmitTime > 0) and (Now > (TransmitTime + RetransmitTimeout)) then begin
               if RepeatCounter < RetransmitRepeatCount then begin
                 Pin.Send(Request);
-                TransmitTime := NowPrecise;
+                TransmitTime := Now;
                 Inc(RepeatCounter);
                 Inc(RetransmitTotalCount);
               end else
@@ -497,7 +497,7 @@ begin
     end;
 
     if not Terminated then
-      MTSleep(CheckPeriod * OneMillisecond);
+      Sleep(CheckPeriod);
   until Terminated;
 end;
 

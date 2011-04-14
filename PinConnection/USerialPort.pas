@@ -5,7 +5,7 @@ unit USerialPort;
 interface
 
 uses
-  Classes, SysUtils, SynaSer, StdCtrls, Dialogs, UCommon, UMicroThreading,
+  Classes, SysUtils, SynaSer, StdCtrls, Dialogs, UCommon, UThreading,
   DateUtils;
 
 type
@@ -22,7 +22,7 @@ type
 
   { TSerialPortReceiveThread }
 
-  TSerialPortReceiveThread = class(TMicroThread)
+  TSerialPortReceiveThread = class(TListedThread)
   public
     Parent: TSerialPort;
     procedure Execute; override;
@@ -291,8 +291,8 @@ var
 begin
   InBufferUsed := 0;
   with Parent do repeat
-      if InBufferUsed = 0 then MTSleep(1 * OneMillisecond)
-        else Yield;
+      if InBufferUsed = 0 then Sleep(1);
+        //else Yield;
       if Active then begin
         InBufferUsed := WaitingData;
         if InBufferUsed > 0 then begin

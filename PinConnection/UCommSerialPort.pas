@@ -5,7 +5,7 @@ unit UCommSerialPort;
 interface
 
 uses
-  Classes, USerialPort, UCommPin, SysUtils, UMicroThreading, DateUtils,
+  Classes, USerialPort, UCommPin, SysUtils, DateUtils,
   SyncObjs;
 
 type
@@ -14,7 +14,7 @@ type
     procedure Receive(Sender: TCommPin; Stream: TStream);
     procedure ReceiveData(Stream: TMemoryStream);
   public
-    Lock: TMicroThreadCriticalSection;
+    Lock: TCriticalSection;
     Pin: TCommPin;
     destructor Destroy; override;
     constructor Create;
@@ -34,7 +34,7 @@ end;
 constructor TCommSerialPort.Create;
 begin
   inherited;
-  Lock := TMicroThreadCriticalSection.Create;
+  Lock := TCriticalSection.Create;
   Pin := TCommPin.Create;
   Pin.OnReceive := Receive;
   OnReceiveData := ReceiveData;
@@ -59,7 +59,7 @@ begin
       Lock.Release;
     end;
     if Stream.Position <> Stream.Size then
-      MTSleep(1 * OneMillisecond);
+      Sleep(1);
   until Stream.Position = Stream.Size;
 end;
 

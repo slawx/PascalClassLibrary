@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, blcksock, UCommPin, SyncObjs, UStreamHelper, UCommon,
-  UMicroThreading, DateUtils;
+  DateUtils, UThreading;
 
 type
   TCommThread = class;
@@ -15,7 +15,7 @@ type
 
   { TCommThreadReceiveThread }
 
-  TCommThreadReceiveThread = class(TMicroThread)
+  TCommThreadReceiveThread = class(TListedThread)
   public
     Parent: TCommThread;
     Stream: TMemoryStream;
@@ -33,8 +33,8 @@ type
     FOnReceiveData: TReceiveDataEvent;
     FReceiveThread: TCommThreadReceiveThread;
     FInputBuffer: TMemoryStream;
-    FInputBufferLock: TMicroThreadCriticalSection;
-    FDataAvailable: TMicroThreadEvent;
+    FInputBufferLock: TCriticalSection;
+    FDataAvailable: TEvent;
     procedure ReceiveData(Sender: TCommPin; Stream: TStream);
     procedure ExtReceiveData(Sender: TCommPin; Stream: TStream);
     procedure SetActive(const AValue: Boolean);
@@ -92,12 +92,12 @@ constructor TCommThread.Create;
 begin
   inherited Create;
   FInputBuffer := TMemoryStream.Create;
-  FInputBufferLock := TMicroThreadCriticalSection.Create;
+  FInputBufferLock := TCriticalSection.Create;
   Ext := TCommPin.Create;
   Ext.OnReceive := ExtReceiveData;
   Pin := TCommPin.Create;
   Pin.OnReceive := ReceiveData;
-  FDataAvailable := TMicroThreadEvent.Create;
+  FDataAvailable := TSimpleEvent.Create;
 end;
 
 destructor TCommThread.Destroy;
@@ -121,7 +121,7 @@ begin
     StreamHelper := TStreamHelper.Create(Stream);
     with Parent do
     repeat
-      if FDataAvailable.WaitFor(1 * OneMillisecond) = wrSignaled then begin
+      if FDataAvailable.WaitFor(1) = wrSignaled then begin
       try
         FInputBufferLock.Acquire;
         Stream.Size := 0;
@@ -131,7 +131,7 @@ begin
       finally
         FInputBufferLock.Release;
       end;
-      end else Yield;
+      end; // else Yield;
     until Terminated;
   finally
     StreamHelper.Free;

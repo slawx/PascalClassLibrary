@@ -5,7 +5,7 @@ unit UCommSocket;
 interface
 
 uses
-  Classes, SysUtils, blcksock, UCommPin, UCommon, UMicroThreading,
+  Classes, SysUtils, blcksock, UCommPin, UCommon, UThreading,
   DateUtils;
 
 type
@@ -15,7 +15,7 @@ type
 
   { TCommSocketReceiveThread }
 
-  TCommSocketReceiveThread = class(TMicroThread)
+  TCommSocketReceiveThread = class(TListedThread)
   public
     Parent: TCommSocket;
     Stream: TMemoryStream;
@@ -93,8 +93,8 @@ var
 begin
   InBufferUsed := 0;
   with Parent do repeat
-      if InBufferUsed = 0 then MTSleep(1 * OneMillisecond)
-        else Yield;
+      if InBufferUsed = 0 then Sleep(1);
+        //else Yield;
       if Assigned(Socket) then
       with Socket do
       if CanRead(0) then begin
