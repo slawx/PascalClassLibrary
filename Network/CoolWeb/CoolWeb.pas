@@ -20,6 +20,7 @@ begin
   RegisterUnit('UHTTPServerTCP', @UHTTPServerTCP.Register); 
   RegisterUnit('UHTTPSessionFile', @UHTTPSessionFile.Register); 
   RegisterUnit('UHTTPSessionMySQL', @UHTTPSessionMySQL.Register); 
+  RegisterUnit('USqlDatabase', @USqlDatabase.Register); 
 end; 
 
 initialization

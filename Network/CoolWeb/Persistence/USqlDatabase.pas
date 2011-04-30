@@ -29,24 +29,26 @@ type
     destructor Destroy; override;
   end;
 
-  TSqlDatabase = class
-    procedure mySQLClient1ConnectError(Sender: TObject; Msg: String);
+  { TSqlDatabase }
+
+  TSqlDatabase = class(TComponent)
   private
+    FEncoding: string;
+    FHostName: string;
+    FPassword: string;
     FSession: PMYSQL;
     FConnected: Boolean;
     FDatabase: string;
+    FUserName: string;
+    procedure mySQLClient1ConnectError(Sender: TObject; Msg: String);
     function GetConnected: Boolean;
     function GetLastErrorMessage: string;
     function GetLastErrorNumber: Integer;
     function GetCharset: string;
+    procedure SetConnected(const AValue: Boolean);
     procedure SetDatabase(const Value: string);
   public
-    Hostname: string;
-    UserName: string;
-    Password: string;
-    Encoding: string;
-    Table: string;
-    RepeatLastAction: Boolean;
+    LastUsedTable: string;
     LastQuery: string;
     procedure CreateDatabase;
     procedure CreateTable(Name: string);
@@ -62,17 +64,25 @@ type
     function LastInsertId: Integer;
     property LastErrorMessage: string read GetLastErrorMessage;
     property LastErrorNumber: Integer read GetLastErrorNumber;
-    property Connected: Boolean read GetConnected;
-    constructor Create;
+    constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     property Charset: string read GetCharset;
+  published
+    property Connected: Boolean read GetConnected write SetConnected;
     property Database: string read FDatabase write SetDatabase;
+    property HostName: string read FHostName write FHostName;
+    property UserName: string read FUserName write FUserName;
+    property Password: string read FPassword write FPassword;
+    property Encoding: string read FEncoding write FEncoding;
   end;
 
   function MySQLFloatToStr(F: Real): string;
   function MySQLStrToFloat(S: string): Real;
   function SQLToDateTime(Value: string): TDateTime;
   function DateTimeToSQL(Value: TDateTime): string;
+
+procedure Register;
+
 
 implementation
 
@@ -96,6 +106,11 @@ const
   CLIENT_SSL = 2048;             // Switch to SSL after handshake
   CLIENT_IGNORE_SIGPIPE = 4096;  // IGNORE sigpipes
   CLIENT_TRANSACTIONS = 8192;    // Client knows about transactions
+
+procedure Register;
+begin
+  RegisterComponents('CoolWeb', [TSqlDatabase]);
+end;
 
 function MySQLFloatToStr(F: Real): string;
 var
@@ -156,7 +171,6 @@ var
   NewSession: PMYSQL;
   Rows: TDbRows;
 begin
-  RepeatLastAction := False;
 //  mySQLClient1.Connect;
   FSession := mysql_init(FSession);
 //  FSession.charset := 'latin2';
@@ -186,7 +200,7 @@ var
   Value: string;
   DbResult: TDbRows;
 begin
-  Table := ATable;
+  LastUsedTable := ATable;
   DbNames := '';
   DbValues := '';
   for I := 0 to Data.Count - 1 do begin
@@ -200,7 +214,7 @@ begin
   System.Delete(DbValues, 1, 1);
   try
     DbResult := TDbRows.Create;
-    Query(DbResult, 'INSERT INTO `' + Table + '` (' + DbNames + ') VALUES (' + DbValues + ')');
+    Query(DbResult, 'INSERT INTO `' + ATable + '` (' + DbNames + ') VALUES (' + DbValues + ')');
   finally
     DbResult.Free;
   end;
@@ -214,7 +228,6 @@ var
 begin
   DbRows.Clear;
   //DebugLog('SqlDatabase query: '+Data);
-  RepeatLastAction := False;
   LastQuery := Data;
   mysql_query(FSession, PChar(Data));
   if LastErrorNumber <> 0 then begin
@@ -246,7 +259,7 @@ var
   I: Integer;
   DbResult: TDbRows;
 begin
-  Table := ATable;
+  LastUsedTable := ATable;
   DbNames := '';
   DbValues := '';
   for I := 0 to Data.Count - 1 do begin
@@ -260,7 +273,7 @@ begin
   System.Delete(DbValues, 1, 1);
   try
     DbResult := TDbRows.Create;
-    Query(DbResult, 'REPLACE INTO `' + Table + '` (' + DbNames + ') VALUES (' + DbValues + ')');
+    Query(DbResult, 'REPLACE INTO `' + ATable + '` (' + DbNames + ') VALUES (' + DbValues + ')');
   finally
     DbResult.Free;
   end;
@@ -268,8 +281,8 @@ end;
 
 procedure TSqlDatabase.Select(DbRows: TDbRows; ATable: string; Filter: string = '*'; Condition: string = '1');
 begin
-  Table := ATable;
-  Query(DbRows, 'SELECT ' + Filter + ' FROM `' + Table + '` WHERE ' + Condition);
+  LastUsedTable := ATable;
+  Query(DbRows, 'SELECT ' + Filter + ' FROM `' + ATable + '` WHERE ' + Condition);
 end;
 
 procedure TSqlDatabase.Update(ATable: string; Data: TDictionaryStringString; Condition: string = '1');
@@ -279,7 +292,7 @@ var
   I: Integer;
   DbResult: TDbRows;
 begin
-  Table := ATable;
+  LastUsedTable := ATable;
   DbValues := '';
   for I := 0 to Data.Count - 1 do begin
     Value := Data.Items[I].Value;
@@ -290,7 +303,7 @@ begin
   System.Delete(DbValues, 1, 1);
   try
     DbResult := TDbRows.Create;
-    Query(DbResult, 'UPDATE `' + Table + '` SET (' + DbValues + ') WHERE ' + Condition);
+    Query(DbResult, 'UPDATE `' + ATable + '` SET (' + DbValues + ') WHERE ' + Condition);
   finally
     DbResult.Free;
   end;
@@ -305,10 +318,10 @@ procedure TSqlDatabase.Delete(ATable: string; Condition: string = '1');
 var
   DbResult: TDbRows;
 begin
-  Table := ATable;
+  LastUsedTable := ATable;
   try
     DbResult := TDbRows.Create;
-    Query(DbResult, 'DELETE FROM `' + Table + '` WHERE ' + Condition);
+    Query(DbResult, 'DELETE FROM `' + ATable + '` WHERE ' + Condition);
   finally
     DbResult.Free;
   end;
@@ -325,7 +338,7 @@ begin
   FConnected := False;
 end;
 
-constructor TSqlDatabase.Create;
+constructor TSqlDatabase.Create(AOwner: TComponent);
 begin
   inherited;
   FSession := nil;
@@ -403,6 +416,13 @@ end;
 function TSqlDatabase.GetCharset: string;
 begin
   Result := mysql_character_set_name(FSession);
+end;
+
+procedure TSqlDatabase.SetConnected(const AValue: Boolean);
+begin
+  if AValue = FConnected then Exit;
+  if AValue then Connect
+    else Disconnect;
 end;
 
 procedure TSqlDatabase.SetDatabase(const Value: string);

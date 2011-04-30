@@ -16,18 +16,19 @@ type
   THTTPSessionStorageMySQL = class(THTTPSessionStorage)
   private
     FSessionIdCookieName: string;
+    FDatabase: TSqlDatabase;
     FTimeout: Integer;
     Lock: TCriticalSection;
     function GetNewSessionId: string;
     procedure GetSessionId(HandlerData: THTTPHandlerData);
   public
-    SqlDatabase: TSqlDatabase;
     Sessions: TStringList;
     procedure Load(HandlerData: THTTPHandlerData); override;
     procedure Save(HandlerData: THTTPHandlerData); override;
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
   published
+    property Database: TSqlDatabase read FDatabase write FDatabase;
     property Timeout: Integer read FTimeout write FTimeout; // in seconds
     property SessionIdCookieName: string read FSessionIdCookieName
       write FSessionIdCookieName;
@@ -54,7 +55,7 @@ begin
     Result := BinToHexString(SHA1(FloatToStr(Now)));
     try
       DbRows := TDbRows.Create;
-      SqlDatabase.Query(DbRows, 'SELECT * FROM `HTTPSession` WHERE `Identification`="' +
+      Database.Query(DbRows, 'SELECT * FROM `HTTPSession` WHERE `Identification`="' +
         Result + '"');
       Found := DbRows.Count > 0;
     finally
@@ -82,9 +83,9 @@ begin
   try
     Lock.Acquire;
     DbRows := TDbRows.Create;
-    SqlDatabase.Query(DbRows, 'DELETE FROM `HTTPSession` WHERE `Time` < DATE_SUB(NOW(), INTERVAL ' +
+    Database.Query(DbRows, 'DELETE FROM `HTTPSession` WHERE `Time` < DATE_SUB(NOW(), INTERVAL ' +
       IntToStr(Timeout) +' SECOND)');
-    SqlDatabase.Query(DbRows, 'SELECT * FROM `HTTPSession` WHERE `Identification`="' +
+    Database.Query(DbRows, 'SELECT * FROM `HTTPSession` WHERE `Identification`="' +
       HandlerData.SessionId + '"');
     if DbRows.Count > 0 then begin
       HandlerData.Session.Text := DbRows[0].Values['Variables'];
@@ -107,12 +108,12 @@ begin
     Lock.Acquire;
     DbRows := TDbRows.Create;
     DbRows2 := TDbRows.Create;
-    SqlDatabase.Query(DbRows, 'SELECT * FROM `HTTPSession` WHERE `Identification`="' +
+    Database.Query(DbRows, 'SELECT * FROM `HTTPSession` WHERE `Identification`="' +
       HandlerData.SessionId + '"');
     if DbRows.Count > 0 then
-      SqlDatabase.Query(DbRows2, 'UPDATE `HTTPSession` SET `Variables`="' + HandlerData.Session.Text
+      Database.Query(DbRows2, 'UPDATE `HTTPSession` SET `Variables`="' + HandlerData.Session.Text
         + '", `Time` = NOW() WHERE `Identification`="' + HandlerData.SessionId + '"')
-    else SqlDatabase.Query(DbRows2, 'INSERT INTO `HTTPSession` (`Time`,  `Variables`, `Identification`) VALUES (' +
+    else Database.Query(DbRows2, 'INSERT INTO `HTTPSession` (`Time`,  `Variables`, `Identification`) VALUES (' +
     'NOW(), "' + HandlerData.Session.Text + '", "' + HandlerData.SessionId + '")');
     HandlerData.Response.Cookies.Values[SessionIdCookieName] := HandlerData.SessionId;
   finally

@@ -18,7 +18,7 @@
     </CompilerOptions>
     <Description Value="Unit set for generating CGI or server web application."/>
     <License Value="GNU/GPL"/>
-    <Version Minor="1"/>
+    <Version Minor="2"/>
     <Files Count="17">
       <Item1>
         <Filename Value="WebServer/UHTTPServer.pas"/>
@@ -46,6 +46,7 @@
       </Item5>
       <Item6>
         <Filename Value="Persistence/USqlDatabase.pas"/>
+        <HasRegisterProc Value="True"/>
         <UnitName Value="USqlDatabase"/>
       </Item6>
       <Item7>
