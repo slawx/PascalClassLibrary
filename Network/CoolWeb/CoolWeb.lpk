@@ -19,25 +19,29 @@
     <Description Value="Unit set for generating CGI or server web application."/>
     <License Value="GNU/GPL"/>
     <Version Minor="1"/>
-    <Files Count="16">
+    <Files Count="17">
       <Item1>
         <Filename Value="WebServer/UHTTPServer.pas"/>
         <UnitName Value="UHTTPServer"/>
       </Item1>
       <Item2>
         <Filename Value="WebServer/UHTTPServerCGI.pas"/>
+        <HasRegisterProc Value="True"/>
         <UnitName Value="UHTTPServerCGI"/>
       </Item2>
       <Item3>
         <Filename Value="WebServer/UHTTPServerTCP.pas"/>
+        <HasRegisterProc Value="True"/>
         <UnitName Value="UHTTPServerTCP"/>
       </Item3>
       <Item4>
         <Filename Value="WebServer/UHTTPSessionFile.pas"/>
+        <HasRegisterProc Value="True"/>
         <UnitName Value="UHTTPSessionFile"/>
       </Item4>
       <Item5>
         <Filename Value="WebServer/UHTTPSessionMySQL.pas"/>
+        <HasRegisterProc Value="True"/>
         <UnitName Value="UHTTPSessionMySQL"/>
       </Item5>
       <Item6>
@@ -84,6 +88,10 @@
         <Filename Value="Common/UXmlClasses.pas"/>
         <UnitName Value="UXmlClasses"/>
       </Item16>
+      <Item17>
+        <Filename Value="WebServer/UWebPage.pas"/>
+        <UnitName Value="UWebPage"/>
+      </Item17>
     </Files>
     <Type Value="RunAndDesignTime"/>
     <RequiredPkgs Count="3">

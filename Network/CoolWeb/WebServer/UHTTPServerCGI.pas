@@ -15,19 +15,28 @@ type
   public
     EnvVars: TStringList;
     procedure Run; override;
-    constructor Create;
+    constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure ServerInfo(HandlerData: THTTPHandlerData); override;
   end;
+
+
+procedure Register;
 
 implementation
 
 resourcestring
   SEnvironmentVariables = 'Environment variables:';
 
+procedure Register;
+begin
+  RegisterComponents('CoolWeb', [THTTPServerCGI]);
+end;
+
+
 { THTTPServerCGI }
 
-constructor THTTPServerCGI.Create;
+constructor THTTPServerCGI.Create(AOwner: TComponent);
 begin
   inherited;
   EnvVars := TStringList.Create;

@@ -11,23 +11,37 @@ type
 
   { TFileHTTPSessionStorage }
 
+  { THTTPSessionStorageMySQL }
+
   THTTPSessionStorageMySQL = class(THTTPSessionStorage)
   private
+    FSessionIdCookieName: string;
+    FTimeout: Integer;
     Lock: TCriticalSection;
     function GetNewSessionId: string;
     procedure GetSessionId(HandlerData: THTTPHandlerData);
   public
-    Timeout: Integer; // in seconds
     SqlDatabase: TSqlDatabase;
-    SessionIdCookieName: string;
     Sessions: TStringList;
     procedure Load(HandlerData: THTTPHandlerData); override;
     procedure Save(HandlerData: THTTPHandlerData); override;
-    constructor Create; override;
+    constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
+  published
+    property Timeout: Integer read FTimeout write FTimeout; // in seconds
+    property SessionIdCookieName: string read FSessionIdCookieName
+      write FSessionIdCookieName;
   end;
 
+procedure Register;
+
 implementation
+
+procedure Register;
+begin
+  RegisterComponents('CoolWeb', [THTTPSessionStorageMySQL]);
+end;
+
 
 { THTTPSession }
 
@@ -109,9 +123,9 @@ begin
   inherited;
 end;
 
-constructor THTTPSessionStorageMySQL.Create;
+constructor THTTPSessionStorageMySQL.Create(AOwner: TComponent);
 begin
-  inherited Create;
+  inherited;
   Lock := TCriticalSection.Create;
   Sessions := TStringList.Create;
   SessionIdCookieName := 'SessionId';

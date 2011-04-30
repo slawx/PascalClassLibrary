@@ -13,20 +13,28 @@ type
 
   THTTPServerTCP = class(THTTPServer)
   private
+    FMaxConnection: Integer;
     procedure HandleClient(Sender: TObject);
   public
     Socket: TTCPServer;
-    MaxConnection: Integer;
     RequestHandlerList: TRequestHandlerList;
-    constructor Create;
+    constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
+  published
+    property MaxConnection: Integer read FMaxConnection write FMaxConnection;
   end;
+
+procedure Register;
 
 implementation
 
+procedure Register;
+begin
+  RegisterComponents('CoolWeb', [THTTPServerTCP]);
+end;
+
 procedure THTTPServerTCP.HandleClient(Sender: TObject);
 var
-  RequestHandler: TRequestHandler;
   Line: string;
   LineIndex: Integer;
   LineParts: TListString;
@@ -118,7 +126,7 @@ end;
 
 { THTTPServerTCP }
 
-constructor THTTPServerTCP.Create;
+constructor THTTPServerTCP.Create(AOwner: TComponent);
 begin
   inherited;
   MaxConnection := 10000;

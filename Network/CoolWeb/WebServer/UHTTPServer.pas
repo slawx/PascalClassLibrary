@@ -76,33 +76,35 @@ type
 
   { THTTPSessionStorage }
 
-  THTTPSessionStorage = class
+  THTTPSessionStorage = class(TComponent)
     procedure Load(HandlerData: THTTPHandlerData); virtual;
     procedure Save(HandlerData: THTTPHandlerData); virtual;
-    constructor Create; virtual;
+    constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
   end;
 
   { THTTPServer }
 
-  THTTPServer = class
+  THTTPServer = class(TComponent)
   private
+    FDocumentRoot: string;
     FOnRequest: TRequestEvent;
+    FSessionStorage: THTTPSessionStorage;
     FShowExceptions: Boolean;
     procedure SetShowExceptions(const AValue: Boolean);
   public
-    Name: string;
-    DocumentRoot: string;
-    SessionStorage: THTTPSessionStorage;
-    ShowExceptions: Boolean;
     procedure Run; virtual;
     procedure ErrorResponse(HandlerData: THTTPHandlerData);
     procedure FileResponse(HandlerData: THTTPHandlerData);
     procedure ServerInfo(HandlerData: THTTPHandlerData); virtual;
-    constructor Create;
+    constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-    property OnRequest: TRequestEvent read FOnRequest write FOnRequest;
+  published
     property ShowExceptions: Boolean read FShowExceptions write SetShowExceptions;
+    property DocumentRoot: string read FDocumentRoot write FDocumentRoot;
+    property SessionStorage: THTTPSessionStorage read FSessionStorage
+      write FSessionStorage;
+    property OnRequest: TRequestEvent read FOnRequest write FOnRequest;
   end;
 
 procedure HTTPExceptionShow(Obj: TObject; Addr: Pointer; FrameCount: Longint; Frames: PPointer);
@@ -199,16 +201,15 @@ begin
   end;
 end;
 
-constructor THTTPServer.Create;
+constructor THTTPServer.Create(AOwner: TComponent);
 begin
+  inherited;
   ShowExceptions := False;
   DocumentRoot := './';
-  Name := 'THTTPServer';
 end;
 
 destructor THTTPServer.Destroy;
 begin
-  SessionStorage.Free;
   inherited Destroy;
 end;
 
@@ -350,7 +351,7 @@ end;
 
 constructor THTTPSessionStorage.Create;
 begin
-
+  inherited;
 end;
 
 destructor THTTPSessionStorage.Destroy;

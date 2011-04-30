@@ -13,21 +13,34 @@ type
 
   THTTPSessionStorageFile = class(THTTPSessionStorage)
   private
+    FDirectory: string;
+    FSessionIdCookieName: string;
+    FTimeout: Integer;
     Lock: TCriticalSection;
     function GetNewSessionId: string;
     procedure GetSessionId(HandlerData: THTTPHandlerData);
   public
-    Timeout: Integer; // in seconds
-    Directory: string;
-    SessionIdCookieName: string;
     Sessions: TStringList;
     procedure Load(HandlerData: THTTPHandlerData); override;
     procedure Save(HandlerData: THTTPHandlerData); override;
-    constructor Create; override;
+    constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
+  published
+    property Timeout: Integer read FTimeout write FTimeout; // in seconds
+    property Directory: string read FDirectory write FDirectory;
+    property SessionIdCookieName: string read FSessionIdCookieName
+      write FSessionIdCookieName;
   end;
 
+procedure Register;
+
 implementation
+
+procedure Register;
+begin
+  RegisterComponents('CoolWeb', [THTTPSessionStorageFile]);
+end;
+
 
 { THTTPSession }
 
@@ -87,9 +100,9 @@ begin
   inherited;
 end;
 
-constructor THTTPSessionStorageFile.Create;
+constructor THTTPSessionStorageFile.Create(AOwner: TComponent);
 begin
-  inherited Create;
+  inherited;
   Lock := TCriticalSection.Create;
   Sessions := TStringList.Create;
   SessionIdCookieName := 'SessionId';
