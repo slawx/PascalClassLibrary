@@ -3,7 +3,7 @@ unit UCommon;
 interface
 
 uses
-  Windows, Classes, SysUtils, SpecializedList, StrUtils; //, ShFolder, ShellAPI;
+  Windows, Classes, SysUtils, SpecializedList, StrUtils, Dialogs; //, ShFolder, ShellAPI;
 
 type
   TArrayOfByte = array of Byte;
@@ -42,8 +42,34 @@ procedure SetBit(var Variable: Word; Index: Byte; State: Boolean);
 function AddLeadingZeroes(const aNumber, Length : integer) : string;
 function LastPos(const SubStr: String; const S: String): Integer;
 function GenerateNewName(OldName: string): string;
+function GetFileFilterItemExt(Filter: string; Index: Integer): string;
+procedure FileDialogUpdateFilterFileType(FileDialog: TOpenDialog);
+
 
 implementation
+
+function GetFileFilterItemExt(Filter: string; Index: Integer): string;
+var
+  List: TStringList;
+begin
+  try
+    List := TStringList.Create;
+    List.Text := StringReplace(Filter, '|', #10, [rfReplaceAll]);
+    Result := List[Index * 2 + 1];
+  finally
+    List.Free;
+  end;
+end;
+
+procedure FileDialogUpdateFilterFileType(FileDialog: TOpenDialog);
+var
+  FileExt: string;
+begin
+  FileExt := GetFileFilterItemExt(FileDialog.Filter, FileDialog.FilterIndex - 1);
+  Delete(FileExt, 1, 1); // Remove symbol '*'
+  if FileExt <> '.*' then
+    FileDialog.FileName := ChangeFileExt(FileDialog.FileName, FileExt)
+end;
 
 function GenerateNewName(OldName: string): string;
 var
