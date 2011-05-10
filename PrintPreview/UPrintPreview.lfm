@@ -1,7 +1,7 @@
 object PrintPreviewForm: TPrintPreviewForm
-  Left = 288
+  Left = 244
   Height = 459
-  Top = 171
+  Top = 124
   Width = 664
   Caption = 'Print preview'
   ClientHeight = 459
@@ -113,15 +113,6 @@ object PrintPreviewForm: TPrintPreviewForm
       Caption = 'ToolButton9'
       Style = tbsSeparator
     end
-    object Button5: TButton
-      Left = 478
-      Height = 22
-      Top = 2
-      Width = 75
-      Caption = 'Button5'
-      OnClick = Button5Click
-      TabOrder = 5
-    end
   end
   object Image1: TImage
     Left = 0
@@ -154,7 +145,7 @@ object PrintPreviewForm: TPrintPreviewForm
   end
   object ActionList1: TActionList
     Images = ImageList1
-    left = 247
+    left = 248
     top = 67
     object APrint: TAction
       Caption = 'Print'

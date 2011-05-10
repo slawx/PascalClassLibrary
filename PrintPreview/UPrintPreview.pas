@@ -27,6 +27,7 @@ type
 
   TPrintPreview = class(TComponent)
   private
+    FOnNewPage: TNotifyEvent;
     FOnPrint: TNotifyEvent;
     FOnPrintFooter: TNotifyEvent;
     FZoom: Double;
@@ -46,9 +47,11 @@ type
     Pages: TObjectList;
     PageTitle: string;
     Margins: TRect;
+    MarginsMM: TRect;
     property XDPI: Integer read GetXDPI;
     property YDPI: Integer read GetYDPI;
-    function MM(AValue: Double; VertRes: Boolean=True): Integer;
+    function MMToPixels(AValue: Double; VertRes: Boolean = True): Integer;
+    function PixelsToMM(AValue: Integer; VertRes: Boolean = True): Double;
     procedure CreateNewPage;
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -58,6 +61,7 @@ type
   published
     property PageNumber: Integer read GetPageNumber;
     property Zoom: Double read GetZoom write SetZoom;
+    property OnNewPage: TNotifyEvent read FOnNewPage write FOnNewPage;
     property OnPrint: TNotifyEvent read FOnPrint write FOnPrint;
     property PageWidth: Integer read GetWidth;
     property PageHeight: Integer read GetHeight;
@@ -82,7 +86,6 @@ type
     Button2: TButton;
     Button3: TButton;
     Button4: TButton;
-    Button5: TButton;
     EditPageNumber: TEdit;
     Image1: TImage;
     ImageList1: TImageList;
@@ -111,7 +114,6 @@ type
     procedure APrintExecute(Sender: TObject);
     procedure AZoomInExecute(Sender: TObject);
     procedure AZoomOutExecute(Sender: TObject);
-    procedure Button5Click(Sender: TObject);
     procedure EditPageNumberChange(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -203,15 +205,24 @@ end;
 
 procedure TPrintPreview.UpdateMargins;
 begin
-  Margins := Rect(MM(10), MM(10), MM(10), MM(10));
+  Margins := Rect(MMToPixels(MarginsMM.Left), MMToPixels(MarginsMM.Top),
+    MMToPixels(MarginsMM.Right), MMToPixels(MarginsMM.Bottom));
 end;
 
-function TPrintPreview.MM(AValue: Double; VertRes: Boolean = True): Integer;
+function TPrintPreview.MMToPixels(AValue: Double; VertRes: Boolean = True): Integer;
 begin
   if VertRes then
     Result := Round(AValue * YDPI / 25.4)
   else
     Result := Round(AValue * XDPI / 25.4);
+end;
+
+function TPrintPreview.PixelsToMM(AValue: Integer; VertRes: Boolean): Double;
+begin
+  if VertRes then
+    Result := AValue / YDPI * 25.4
+  else
+    Result := AValue / XDPI * 25.4;
 end;
 
 procedure TPrintPreview.CreateNewPage;
@@ -222,8 +233,10 @@ begin
     Printer.NewPage;
   end else begin
       NewPage := TPrintPage.Create;
-      Pages.Add(NewPage);
       Canvas := NewPage.Bitmap.Canvas;
+      if Pages.Count > 0 then
+        NewPage.Bitmap.Canvas.Font.Assign(TPrintPage(Pages.Last).Bitmap.Canvas.Font);
+      Pages.Add(NewPage);
       NewPage.Bitmap.SetSize(PageWidth, PageHeight);
       with NewPage.Bitmap.Canvas do begin
         Brush.Color := clWhite;
@@ -240,6 +253,7 @@ begin
         Inc(FPageNumber);
       end;
     end;
+  if Assigned(FOnNewPage) then FOnNewPage(Self);
 end;
 
 constructor TPrintPreview.Create(AOwner: TComponent);
@@ -247,6 +261,7 @@ begin
   inherited;
   Zoom := 1;
   Pages := TObjectList.Create;
+  MarginsMM := Rect(10, 10, 10, 10);
 end;
 
 destructor TPrintPreview.Destroy;
@@ -306,6 +321,16 @@ end;
 
 procedure TPrintPreviewForm.APrintExecute(Sender: TObject);
 begin
+(*  with Printer.Canvas.Font do begin
+    Size := 10;
+    ShowMessage(IntToStr(Height) + ' ' +
+      IntToStr(PixelsPerInch));
+  end;
+  with TPrintPage(PrintPreview.Pages.Last).Bitmap.Canvas.Font do begin
+    Size := 10;
+    ShowMessage(IntToStr(Height) + ' ' + IntToStr(PixelsPerInch));
+  end; *)
+
   PrintDialog1.MinPage := 1;
   PrintDialog1.MaxPage := PrintPreview.PageCount;
   PrintDialog1.FromPage := 1;
@@ -316,22 +341,15 @@ end;
 
 procedure TPrintPreviewForm.AZoomInExecute(Sender: TObject);
 begin
-  PrintPreview.Zoom := PrintPreview.Zoom * 2;
+  PrintPreview.Zoom := PrintPreview.Zoom * 1.25;
   Redraw;
 end;
 
 procedure TPrintPreviewForm.AZoomOutExecute(Sender: TObject);
 begin
-  PrintPreview.Zoom := PrintPreview.Zoom / 2;
+  PrintPreview.Zoom := PrintPreview.Zoom / 1.25;
+  EditPageNumberChange(Self);
   Redraw;
-end;
-
-procedure TPrintPreviewForm.Button5Click(Sender: TObject);
-begin
-  ShowMessage('Printer page size: ' + IntToStr(Printer.PageWidth) + ', ' + IntToStr(Printer.PageHeight) +
-    ' DPI: ' + IntToStr(Printer.XDPI) + ', ' + IntToStr(Printer.YDPI) +
-  ' Page size: ' + IntToStr(TPrintPage(PrintPreview.Pages.Last).Bitmap.Width) +
-    ', ' + IntToStr(TPrintPage(PrintPreview.Pages.Last).Bitmap.Height) + ' ');
 end;
 
 procedure TPrintPreviewForm.EditPageNumberChange(Sender: TObject);
@@ -396,8 +414,8 @@ begin
   SourceRect := Rect(0, 0,
     Page.Bitmap.Canvas.Width,
     Page.Bitmap.Canvas.Height);
-  DestRect.Left := -Round(ScrollBarHoriz.Position / ScrollBarHoriz.Max * Width);
-  DestRect.Top := -Round(ScrollBarVert.Position / ScrollBarVert.Max * Height);
+  DestRect.Left := -Round(ScrollBarHoriz.Position / ScrollBarHoriz.Max * Width * PrintPreview.Zoom);
+  DestRect.Top := -Round(ScrollBarVert.Position / ScrollBarVert.Max * Height * PrintPreview.Zoom);
   DestRect.Right := DestRect.Left + Round(Page.Bitmap.Canvas.Width * PrintPreview.Zoom);
   DestRect.Bottom := DestRect.Top + Round(Page.Bitmap.Canvas.Height * PrintPreview.Zoom);
   try
@@ -420,9 +438,20 @@ end;
 
 procedure TPrintPreviewForm.APageSetupExecute(Sender: TObject);
 begin
-  PageSetupDialog1.Margins := PrintPreview.Margins;
-  PageSetupDialog1.Execute;
-  PrintPreview.Margins := PageSetupDialog1.Margins;
+  with PrintPreview do begin
+    PageSetupDialog1.Margins := Rect(MarginsMM.Left * 100,
+      MarginsMM.Top * 100,
+      MarginsMM.Right * 100,
+      MarginsMM.Bottom * 100);
+    if PageSetupDialog1.Execute then begin
+      MarginsMM := Rect(Round(PageSetupDialog1.Margins.Left / 100),
+        Round(PageSetupDialog1.Margins.Top / 100),
+        Round(PageSetupDialog1.Margins.Right / 100),
+        Round(PageSetupDialog1.Margins.Bottom / 100));
+      UpdateMargins;
+      Redraw;
+    end;
+  end;
 end;
 
 procedure TPrintPreviewForm.APreviousPageExecute(Sender: TObject);

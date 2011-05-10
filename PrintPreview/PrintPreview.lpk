@@ -3,16 +3,20 @@
   <Package Version="3">
     <PathDelim Value="\"/>
     <Name Value="PrintPreview"/>
+    <Author Value="Chronos (robie@centrum.cz)"/>
     <CompilerOptions>
       <Version Value="9"/>
       <PathDelim Value="\"/>
       <SearchPaths>
-        <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)\"/>
+        <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
       </SearchPaths>
       <Other>
         <CompilerPath Value="$(CompPath)"/>
       </Other>
     </CompilerOptions>
+    <Description Value="Print preview component"/>
+    <License Value="GNU/GPL"/>
+    <Version Minor="1"/>
     <Files Count="1">
       <Item1>
         <Filename Value="UPrintPreview.pas"/>
@@ -20,6 +24,10 @@
         <UnitName Value="UPrintPreview"/>
       </Item1>
     </Files>
+    <i18n>
+      <EnableI18N Value="True"/>
+      <OutDir Value="languages"/>
+    </i18n>
     <Type Value="RunAndDesignTime"/>
     <RequiredPkgs Count="3">
       <Item1>
