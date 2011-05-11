@@ -59,6 +59,8 @@ type
     procedure SaveToStream(Stream: TStream);
     procedure LoadFromFile(FileName: string);
     procedure SaveToFile(FileName: string);
+    procedure LoadFromString(Value: string);
+    function SaveToString: string;
     procedure PopulateStringList(List: TStrings);
     function FindByName(Name: string): TCDLayout;
     constructor Create(AOwner: TComponent); override;
@@ -197,6 +199,40 @@ begin
       Stream := TFileStream.Create(FileName, fmCreate);
     Stream.Size := 0;
     SaveToStream(Stream);
+  finally
+    Stream.Free;
+  end;
+end;
+
+procedure TCDLayoutList.LoadFromString(Value: string);
+var
+  Stream: TMemoryStream;
+begin
+  if Length(Value) > 0 then
+  try
+    Stream := TMemoryStream.Create;
+    Stream.WriteBuffer(Value[1], Length(Value));
+    Stream.Position := 0;
+    LoadFromStream(Stream);
+  finally
+    Stream.Free;
+  end;
+end;
+
+function TCDLayoutList.SaveToString: string;
+var
+  Stream: TMemoryStream;
+begin
+  Result := '';
+  try
+    Stream := TMemoryStream.Create;
+    Stream.Size := 0;
+    SaveToStream(Stream);
+    if Stream.Size > 0 then begin
+      SetLength(Result, Stream.Size);
+      Stream.Position := 0;
+      Stream.ReadBuffer(Result[1], Stream.Size);
+    end;
   finally
     Stream.Free;
   end;

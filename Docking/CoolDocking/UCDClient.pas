@@ -109,6 +109,7 @@ begin
       end;
       UseDockManager := True;
       DockManager := TCDManagerRegions.Create(TWinControl(AOwner));
+      //FormStyle := fsStayOnTop;
     end;
   end;
 end;
