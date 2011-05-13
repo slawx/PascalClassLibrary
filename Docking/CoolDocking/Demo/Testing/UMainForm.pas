@@ -6,8 +6,9 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  ComCtrls, ExtCtrls, Buttons, Menus, UCoolDocking, UCoolDockCustomize,
-  UDockForm, UComponentTree;
+  ComCtrls, ExtCtrls, Buttons, Menus, UCDMaster, UCDCustomize, UCDClient,
+  UDockForm, UComponentTree, UCDWindowList, UCDConjoinForm, UCDManager,
+  UCDCommon;
 
 type
 
@@ -16,10 +17,10 @@ type
   TMainForm = class(TForm)
     Button1: TButton;
     Button2: TButton;
-    CoolDockClient1: TCoolDockClient;
-    CoolDockCustomize1: TCoolDockCustomize;
-    CoolDockMaster1: TCoolDockMaster;
-    CoolDockWindowList1: TCoolDockWindowList;
+    CoolDockClient1: TCDClient;
+    CoolDockCustomize1: TCDCustomize;
+    CoolDockMaster1: TCDMaster;
+    CoolDockWindowList1: TCDWindowList;
     MainMenu1: TMainMenu;
     MenuItem1: TMenuItem;
     MenuItem2: TMenuItem;
@@ -68,19 +69,19 @@ end;
 
 procedure TMainForm.FormShow(Sender: TObject);
 var
-  ConjoinedDockForm1: TCoolDockConjoinForm;
-  ConjoinedDockForm2: TCoolDockConjoinForm;
+  ConjoinedDockForm1: TCDConjoinForm;
+  ConjoinedDockForm2: TCDConjoinForm;
 begin
   NewDockForm.ManualDock(Panel1);
   NewDockForm.ManualDock(Panel1);
-  ConjoinedDockForm1 := TCoolDockManager(Panel1.DockManager).CreateContainer(alRight);
+  ConjoinedDockForm1 := TCDManager(Panel1.DockManager).CreateConjoinForm;
   ConjoinedDockForm1.Name := 'Model';;
   //TCoolDockManager(ConjoinedDockForm1.Panel.DockManager).TabsPos := hpLeft;
   ConjoinedDockForm1.ManualDock(Panel1);
-  TCoolDockManager(ConjoinedDockForm1.Panel.DockManager).DockStyle := dsTabs;
-  NewDockForm.ManualDock(ConjoinedDockForm1.Panel);
-  NewDockForm.ManualDock(ConjoinedDockForm1.Panel);
-  NewDockForm.ManualDock(ConjoinedDockForm1.Panel);
+  TCDManager(ConjoinedDockForm1.DockManager).DockStyle := dsTabs;
+  NewDockForm.ManualDock(ConjoinedDockForm1);
+  NewDockForm.ManualDock(ConjoinedDockForm1);
+  NewDockForm.ManualDock(ConjoinedDockForm1);
   //NewDockForm.ManualDock(TForm(DockForms[0]));
   //NewDockForm.ManualDock(TForm(DockForms[0]));
   //NewDockForm.ManualDock(TForm(DockForms[0]));

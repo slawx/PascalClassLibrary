@@ -29,19 +29,15 @@
         <FormatVersion Value="1"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="3">
+    <RequiredPackages Count="2">
       <Item1>
-        <PackageName Value="LCLBase"/>
-        <MinVersion Major="1" Release="1" Valid="True"/>
+        <PackageName Value="CoolDocking"/>
       </Item1>
       <Item2>
-        <PackageName Value="CoolDocking"/>
-      </Item2>
-      <Item3>
         <PackageName Value="LCL"/>
-      </Item3>
+      </Item2>
     </RequiredPackages>
-    <Units Count="82">
+    <Units Count="85">
       <Unit0>
         <Filename Value="Demo.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -58,14 +54,12 @@
         <ComponentName Value="MainForm"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UMainForm"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="5"/>
+        <EditorIndex Value="3"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="19"/>
-        <CursorPos X="22" Y="28"/>
+        <TopLine Value="69"/>
+        <CursorPos X="44" Y="84"/>
         <UsageCount Value="201"/>
         <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit1>
       <Unit2>
@@ -134,10 +128,10 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UDockForm"/>
-        <EditorIndex Value="4"/>
+        <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="2"/>
-        <CursorPos X="23" Y="15"/>
+        <TopLine Value="1"/>
+        <CursorPos X="12" Y="9"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -337,10 +331,13 @@
         <ComponentName Value="DockableForm"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="SampleDockableForm"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
-        <CursorPos X="34" Y="12"/>
+        <CursorPos X="22" Y="9"/>
         <UsageCount Value="147"/>
+        <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit31>
       <Unit32>
@@ -446,10 +443,12 @@
         <ComponentName Value="ComponentTree"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UComponentTree"/>
+        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="35"/>
+        <TopLine Value="1"/>
         <CursorPos X="44" Y="45"/>
         <UsageCount Value="99"/>
+        <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit44>
       <Unit45>
@@ -616,12 +615,10 @@
       <Unit64>
         <Filename Value="E:\Projekty2\FreePascalManager\trunk\Instance\1\Lazarus\lcl\comctrls.pp"/>
         <UnitName Value="ComCtrls"/>
-        <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
         <TopLine Value="289"/>
         <CursorPos X="45" Y="297"/>
         <UsageCount Value="11"/>
-        <Loaded Value="True"/>
       </Unit64>
       <Unit65>
         <Filename Value="E:\Projekty2\FreePascalManager\trunk\Instance\1\Lazarus\lcl\forms.pp"/>
@@ -721,12 +718,10 @@
       <Unit78>
         <Filename Value="E:\Projekty2\FreePascalManager\trunk\Instance\1\Lazarus\lcl\extctrls.pp"/>
         <UnitName Value="ExtCtrls"/>
-        <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
         <TopLine Value="214"/>
         <CursorPos X="14" Y="227"/>
         <UsageCount Value="11"/>
-        <Loaded Value="True"/>
       </Unit78>
       <Unit79>
         <Filename Value="E:\Projekty2\FreePascalManager\trunk\Instance\1\Lazarus\lcl\include\custompage.inc"/>
@@ -737,40 +732,130 @@
       </Unit79>
       <Unit80>
         <Filename Value="E:\Projekty2\FreePascalManager\trunk\Instance\1\Lazarus\lcl\include\customnotebook.inc"/>
-        <EditorIndex Value="3"/>
         <WindowIndex Value="0"/>
         <TopLine Value="707"/>
         <CursorPos X="57" Y="710"/>
         <UsageCount Value="11"/>
-        <Loaded Value="True"/>
       </Unit80>
       <Unit81>
         <Filename Value="E:\Projekty2\FreePascalManager\trunk\Instance\1\Lazarus\lcl\include\pagecontrol.inc"/>
-        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
         <TopLine Value="46"/>
         <CursorPos X="21" Y="48"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
       </Unit81>
+      <Unit82>
+        <Filename Value="..\..\UCDConjoinForm.pas"/>
+        <UnitName Value="UCDConjoinForm"/>
+        <EditorIndex Value="5"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="36" Y="13"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit82>
+      <Unit83>
+        <Filename Value="..\..\UCDCommon.pas"/>
+        <UnitName Value="UCDCommon"/>
+        <EditorIndex Value="6"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="3" Y="11"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit83>
+      <Unit84>
+        <Filename Value="..\..\UCDManager.pas"/>
+        <UnitName Value="UCDManager"/>
+        <EditorIndex Value="4"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="34" Y="1"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit84>
     </Units>
-    <JumpHistory Count="3" HistoryIndex="2">
+    <JumpHistory Count="19" HistoryIndex="18">
       <Position1>
-        <Filename Value="E:\Projekty2\FreePascalManager\trunk\Instance\1\Lazarus\lcl\comctrls.pp"/>
-        <Caret Line="329" Column="57" TopLine="316"/>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="28" Column="22" TopLine="1"/>
       </Position1>
       <Position2>
-        <Filename Value="E:\Projekty2\FreePascalManager\trunk\Instance\1\Lazarus\lcl\comctrls.pp"/>
-        <Caret Line="331" Column="22" TopLine="316"/>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="9" Column="54" TopLine="1"/>
       </Position2>
       <Position3>
-        <Filename Value="E:\Projekty2\FreePascalManager\trunk\Instance\1\Lazarus\lcl\comctrls.pp"/>
-        <Caret Line="298" Column="59" TopLine="289"/>
+        <Filename Value="UDockForm.pas"/>
+        <Caret Line="16" Column="24" TopLine="2"/>
       </Position3>
+      <Position4>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="9" Column="74" TopLine="6"/>
+      </Position4>
+      <Position5>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="10" Column="43" TopLine="1"/>
+      </Position5>
+      <Position6>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="72" Column="26" TopLine="58"/>
+      </Position6>
+      <Position7>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="121" Column="32" TopLine="108"/>
+      </Position7>
+      <Position8>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="10" Column="59" TopLine="1"/>
+      </Position8>
+      <Position9>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="76" Column="27" TopLine="63"/>
+      </Position9>
+      <Position10>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="10" Column="71" TopLine="1"/>
+      </Position10>
+      <Position11>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="76" Column="73" TopLine="63"/>
+      </Position11>
+      <Position12>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="80" Column="30" TopLine="67"/>
+      </Position12>
+      <Position13>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="71" Column="28" TopLine="58"/>
+      </Position13>
+      <Position14>
+        <Filename Value="..\..\UCDConjoinForm.pas"/>
+        <Caret Line="13" Column="36" TopLine="1"/>
+      </Position14>
+      <Position15>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="71" Column="28" TopLine="58"/>
+      </Position15>
+      <Position16>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="80" Column="53" TopLine="67"/>
+      </Position16>
+      <Position17>
+        <Filename Value="..\..\UCDManager.pas"/>
+        <Caret Line="140" Column="34" TopLine="127"/>
+      </Position17>
+      <Position18>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="11" Column="12" TopLine="1"/>
+      </Position18>
+      <Position19>
+        <Filename Value="SampleDockableForm.pas"/>
+        <Caret Line="16" Column="24" TopLine="1"/>
+      </Position19>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
-    <Version Value="10"/>
+    <Version Value="9"/>
     <PathDelim Value="\"/>
     <Target>
       <Filename Value="Demo"/>

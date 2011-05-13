@@ -6,14 +6,14 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs,
-  StdCtrls, UCoolDocking;
+  StdCtrls, UCDClient;
 
 type
 
   { TDockableForm }
 
   TDockableForm = class(TForm)
-    CoolDockClient1: TCoolDockClient;
+    CoolDockClient1: TCDClient;
     ImageList1: TImageList;
     Memo1: TMemo;
   private

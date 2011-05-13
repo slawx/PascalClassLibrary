@@ -84,7 +84,7 @@ object MainForm: TMainForm
     OnClick = Button2Click
     TabOrder = 2
   end
-  object CoolDockMaster1: TCoolDockMaster
+  object CoolDockMaster1: TCDMaster
     TabsEnabled = False
     DefaultTabsPos = hpAuto
     DefaultHeaderPos = hpAuto
@@ -93,11 +93,11 @@ object MainForm: TMainForm
     ShowIcons = False
     left = 384
   end
-  object CoolDockCustomize1: TCoolDockCustomize
+  object CoolDockCustomize1: TCDCustomize
     Master = CoolDockMaster1
     left = 472
   end
-  object CoolDockWindowList1: TCoolDockWindowList
+  object CoolDockWindowList1: TCDWindowList
     left = 472
     top = 64
   end
@@ -118,7 +118,7 @@ object MainForm: TMainForm
       end
     end
   end
-  object CoolDockClient1: TCoolDockClient
+  object CoolDockClient1: TCDClient
     Dockable = False
     Floatable = False
     Master = CoolDockMaster1

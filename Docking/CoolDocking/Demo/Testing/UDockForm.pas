@@ -6,14 +6,14 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  UCoolDocking;
+  UCDClient;
 
 type
 
   { TDockForm }
 
   TDockForm = class(TForm)
-    CoolDockClient1: TCoolDockClient;
+    CoolDockClient1: TCDClient;
     Memo1: TMemo;
     procedure FormDestroy(Sender: TObject);
   private
