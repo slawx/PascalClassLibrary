@@ -37,7 +37,7 @@
         <PackageName Value="LCL"/>
       </Item2>
     </RequiredPackages>
-    <Units Count="85">
+    <Units Count="102">
       <Unit0>
         <Filename Value="Demo.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -54,12 +54,13 @@
         <ComponentName Value="MainForm"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UMainForm"/>
-        <EditorIndex Value="3"/>
+        <EditorIndex Value="8"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="69"/>
-        <CursorPos X="44" Y="84"/>
+        <TopLine Value="67"/>
+        <CursorPos X="84" Y="89"/>
         <UsageCount Value="201"/>
         <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit1>
       <Unit2>
@@ -331,12 +332,11 @@
         <ComponentName Value="DockableForm"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="SampleDockableForm"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
-        <CursorPos X="22" Y="9"/>
-        <UsageCount Value="147"/>
+        <CursorPos X="22" Y="17"/>
+        <UsageCount Value="150"/>
         <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit31>
@@ -447,7 +447,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="44" Y="45"/>
-        <UsageCount Value="99"/>
+        <UsageCount Value="102"/>
         <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit44>
@@ -619,6 +619,7 @@
         <TopLine Value="289"/>
         <CursorPos X="45" Y="297"/>
         <UsageCount Value="11"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit64>
       <Unit65>
         <Filename Value="E:\Projekty2\FreePascalManager\trunk\Instance\1\Lazarus\lcl\forms.pp"/>
@@ -627,6 +628,7 @@
         <TopLine Value="170"/>
         <CursorPos X="17" Y="183"/>
         <UsageCount Value="9"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit65>
       <Unit66>
         <Filename Value="E:\Projekty2\FreePascalManager\trunk\Instance\1\Lazarus\lcl\include\customform.inc"/>
@@ -634,6 +636,7 @@
         <TopLine Value="391"/>
         <CursorPos X="1" Y="404"/>
         <UsageCount Value="13"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit66>
       <Unit67>
         <Filename Value="E:\Projekty2\FreePascalManager\trunk\Instance\1\FPC\rtl\objpas\classes\classesh.inc"/>
@@ -641,6 +644,7 @@
         <TopLine Value="1917"/>
         <CursorPos X="30" Y="1930"/>
         <UsageCount Value="9"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit67>
       <Unit68>
         <Filename Value="E:\Projekty2\FreePascalManager\trunk\Instance\1\FPC\rtl\objpas\sysutils\systhrdh.inc"/>
@@ -648,6 +652,7 @@
         <TopLine Value="5"/>
         <CursorPos X="16" Y="18"/>
         <UsageCount Value="9"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit68>
       <Unit69>
         <Filename Value="E:\Projekty2\FreePascalManager\trunk\Instance\1\Lazarus\lcl\include\scrollingwincontrol.inc"/>
@@ -655,6 +660,7 @@
         <TopLine Value="233"/>
         <CursorPos X="16" Y="238"/>
         <UsageCount Value="9"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit69>
       <Unit70>
         <Filename Value="E:\Projekty2\FreePascalManager\trunk\Instance\1\Lazarus\lcl\controls.pp"/>
@@ -663,6 +669,7 @@
         <TopLine Value="1296"/>
         <CursorPos X="17" Y="1309"/>
         <UsageCount Value="9"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit70>
       <Unit71>
         <Filename Value="E:\Projekty2\FreePascalManager\trunk\Instance\1\Lazarus\lcl\include\customcontrol.inc"/>
@@ -670,6 +677,7 @@
         <TopLine Value="27"/>
         <CursorPos X="14" Y="30"/>
         <UsageCount Value="9"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit71>
       <Unit72>
         <Filename Value="E:\Projekty2\FreePascalManager\trunk\Instance\1\Lazarus\lcl\include\wincontrol.inc"/>
@@ -677,6 +685,7 @@
         <TopLine Value="6295"/>
         <CursorPos X="36" Y="6298"/>
         <UsageCount Value="9"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit72>
       <Unit73>
         <Filename Value="E:\Projekty2\FreePascalManager\trunk\Instance\1\Lazarus\lcl\include\control.inc"/>
@@ -684,6 +693,7 @@
         <TopLine Value="1378"/>
         <CursorPos X="1" Y="1391"/>
         <UsageCount Value="13"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit73>
       <Unit74>
         <Filename Value="E:\Projekty2\FreePascalManager\trunk\Instance\1\Lazarus\lcl\include\tabcontrol.inc"/>
@@ -691,6 +701,7 @@
         <TopLine Value="464"/>
         <CursorPos X="1" Y="477"/>
         <UsageCount Value="13"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit74>
       <Unit75>
         <Filename Value="E:\Projekty2\FreePascalManager\trunk\Instance\1\Lazarus\lcl\lclproc.pas"/>
@@ -699,6 +710,7 @@
         <TopLine Value="1514"/>
         <CursorPos X="1" Y="1527"/>
         <UsageCount Value="13"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit75>
       <Unit76>
         <Filename Value="E:\Projekty2\FreePascalManager\trunk\Instance\1\Lazarus\lcl\imglist.pp"/>
@@ -707,6 +719,7 @@
         <TopLine Value="171"/>
         <CursorPos X="15" Y="184"/>
         <UsageCount Value="9"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit76>
       <Unit77>
         <Filename Value="E:\Projekty2\FreePascalManager\trunk\Instance\1\Lazarus\lcl\include\imglist.inc"/>
@@ -714,6 +727,7 @@
         <TopLine Value="717"/>
         <CursorPos X="25" Y="730"/>
         <UsageCount Value="9"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit77>
       <Unit78>
         <Filename Value="E:\Projekty2\FreePascalManager\trunk\Instance\1\Lazarus\lcl\extctrls.pp"/>
@@ -722,6 +736,7 @@
         <TopLine Value="214"/>
         <CursorPos X="14" Y="227"/>
         <UsageCount Value="11"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit78>
       <Unit79>
         <Filename Value="E:\Projekty2\FreePascalManager\trunk\Instance\1\Lazarus\lcl\include\custompage.inc"/>
@@ -729,6 +744,7 @@
         <TopLine Value="56"/>
         <CursorPos X="3" Y="69"/>
         <UsageCount Value="11"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit79>
       <Unit80>
         <Filename Value="E:\Projekty2\FreePascalManager\trunk\Instance\1\Lazarus\lcl\include\customnotebook.inc"/>
@@ -736,6 +752,7 @@
         <TopLine Value="707"/>
         <CursorPos X="57" Y="710"/>
         <UsageCount Value="11"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit80>
       <Unit81>
         <Filename Value="E:\Projekty2\FreePascalManager\trunk\Instance\1\Lazarus\lcl\include\pagecontrol.inc"/>
@@ -743,115 +760,324 @@
         <TopLine Value="46"/>
         <CursorPos X="21" Y="48"/>
         <UsageCount Value="10"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit81>
       <Unit82>
         <Filename Value="..\..\UCDConjoinForm.pas"/>
         <UnitName Value="UCDConjoinForm"/>
-        <EditorIndex Value="5"/>
+        <EditorIndex Value="22"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="36" Y="13"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="11"/>
         <Loaded Value="True"/>
       </Unit82>
       <Unit83>
         <Filename Value="..\..\UCDCommon.pas"/>
         <UnitName Value="UCDCommon"/>
-        <EditorIndex Value="6"/>
+        <EditorIndex Value="23"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="3" Y="11"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="11"/>
         <Loaded Value="True"/>
       </Unit83>
       <Unit84>
         <Filename Value="..\..\UCDManager.pas"/>
         <UnitName Value="UCDManager"/>
-        <EditorIndex Value="4"/>
+        <EditorIndex Value="9"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="1"/>
-        <CursorPos X="34" Y="1"/>
-        <UsageCount Value="10"/>
+        <TopLine Value="599"/>
+        <CursorPos X="1" Y="601"/>
+        <UsageCount Value="11"/>
         <Loaded Value="True"/>
       </Unit84>
+      <Unit85>
+        <Filename Value="H:\0.9.30_2.4.2\lcl\include\imglist.inc"/>
+        <EditorIndex Value="3"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="908"/>
+        <CursorPos X="66" Y="932"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+      </Unit85>
+      <Unit86>
+        <Filename Value="..\..\Managers\UCDManagerTabs.pas"/>
+        <UnitName Value="UCDManagerTabs"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="10"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="246"/>
+        <CursorPos X="27" Y="254"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+      </Unit86>
+      <Unit87>
+        <Filename Value="H:\0.9.30_2.4.2\lcl\include\customnotebook.inc"/>
+        <EditorIndex Value="21"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="965"/>
+        <CursorPos X="1" Y="987"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+      </Unit87>
+      <Unit88>
+        <Filename Value="H:\0.9.30_2.4.2\lcl\imglist.pp"/>
+        <UnitName Value="ImgList"/>
+        <EditorIndex Value="4"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="123"/>
+        <CursorPos X="15" Y="145"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+      </Unit88>
+      <Unit89>
+        <Filename Value="H:\0.9.30_2.4.2\lcl\lcltype.pp"/>
+        <UnitName Value="LCLType"/>
+        <EditorIndex Value="7"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1236"/>
+        <CursorPos X="30" Y="1244"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+      </Unit89>
+      <Unit90>
+        <Filename Value="H:\0.9.30_2.4.2\lcl\lclclasses.pp"/>
+        <UnitName Value="LCLClasses"/>
+        <EditorIndex Value="6"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="190"/>
+        <CursorPos X="1" Y="203"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+      </Unit90>
+      <Unit91>
+        <Filename Value="H:\0.9.30_2.4.2\lcl\interfaces\win32\win32wsextctrls.pp"/>
+        <UnitName Value="Win32WSExtCtrls"/>
+        <EditorIndex Value="5"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="651"/>
+        <CursorPos X="1" Y="664"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+      </Unit91>
+      <Unit92>
+        <Filename Value="H:\0.9.30_2.4.2\lcl\include\control.inc"/>
+        <EditorIndex Value="19"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1668"/>
+        <CursorPos X="1" Y="1685"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+      </Unit92>
+      <Unit93>
+        <Filename Value="H:\0.9.30_2.4.2\lcl\controls.pp"/>
+        <UnitName Value="Controls"/>
+        <EditorIndex Value="20"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="278"/>
+        <CursorPos X="34" Y="288"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+      </Unit93>
+      <Unit94>
+        <Filename Value="H:\0.9.30_2.4.2\lcl\lclproc.pas"/>
+        <UnitName Value="LCLProc"/>
+        <EditorIndex Value="18"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1515"/>
+        <CursorPos X="1" Y="1528"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+      </Unit94>
+      <Unit95>
+        <Filename Value="H:\0.9.30_2.4.2\lcl\include\wincontrol.inc"/>
+        <EditorIndex Value="11"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="5912"/>
+        <CursorPos X="1" Y="5927"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+      </Unit95>
+      <Unit96>
+        <Filename Value="H:\0.9.30_2.4.2\lcl\include\customcontrol.inc"/>
+        <EditorIndex Value="17"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="99"/>
+        <CursorPos X="1" Y="112"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+      </Unit96>
+      <Unit97>
+        <Filename Value="H:\0.9.30_2.4.2\lcl\include\customform.inc"/>
+        <EditorIndex Value="12"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1260"/>
+        <CursorPos X="1" Y="1363"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+      </Unit97>
+      <Unit98>
+        <Filename Value="H:\0.9.30_2.4.2\lcl\lclmessageglue.pas"/>
+        <UnitName Value="LCLMessageGlue"/>
+        <EditorIndex Value="13"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="95"/>
+        <CursorPos X="1" Y="110"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+      </Unit98>
+      <Unit99>
+        <Filename Value="H:\0.9.30_2.4.2\lcl\interfaces\win32\win32callback.inc"/>
+        <EditorIndex Value="14"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="196"/>
+        <CursorPos X="71" Y="211"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+      </Unit99>
+      <Unit100>
+        <Filename Value="H:\0.9.30_2.4.2\lcl\interfaces\win32\win32wsforms.pp"/>
+        <UnitName Value="Win32WSForms"/>
+        <EditorIndex Value="15"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="279"/>
+        <CursorPos X="1" Y="292"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+      </Unit100>
+      <Unit101>
+        <Filename Value="H:\0.9.30_2.4.2\lcl\interfaces\win32\win32proc.pp"/>
+        <UnitName Value="win32proc"/>
+        <EditorIndex Value="16"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="911"/>
+        <CursorPos X="1" Y="924"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit101>
     </Units>
-    <JumpHistory Count="19" HistoryIndex="18">
+    <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="28" Column="22" TopLine="1"/>
+        <Filename Value="H:\0.9.30_2.4.2\lcl\interfaces\win32\win32wsforms.pp"/>
+        <Caret Line="376" Column="1" TopLine="363"/>
       </Position1>
       <Position2>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="9" Column="54" TopLine="1"/>
+        <Filename Value="H:\0.9.30_2.4.2\lcl\interfaces\win32\win32wsforms.pp"/>
+        <Caret Line="292" Column="1" TopLine="279"/>
       </Position2>
       <Position3>
-        <Filename Value="UDockForm.pas"/>
-        <Caret Line="16" Column="24" TopLine="2"/>
+        <Filename Value="..\..\Managers\UCDManagerTabs.pas"/>
+        <Caret Line="169" Column="1" TopLine="156"/>
       </Position3>
       <Position4>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="9" Column="74" TopLine="6"/>
+        <Filename Value="..\..\Managers\UCDManagerTabs.pas"/>
+        <Caret Line="211" Column="22" TopLine="207"/>
       </Position4>
       <Position5>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="10" Column="43" TopLine="1"/>
+        <Filename Value="..\..\Managers\UCDManagerTabs.pas"/>
+        <Caret Line="220" Column="1" TopLine="207"/>
       </Position5>
       <Position6>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="72" Column="26" TopLine="58"/>
+        <Filename Value="H:\0.9.30_2.4.2\lcl\interfaces\win32\win32callback.inc"/>
+        <Caret Line="213" Column="1" TopLine="196"/>
       </Position6>
       <Position7>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="121" Column="32" TopLine="108"/>
+        <Filename Value="H:\0.9.30_2.4.2\lcl\interfaces\win32\win32callback.inc"/>
+        <Caret Line="211" Column="71" TopLine="196"/>
       </Position7>
       <Position8>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="10" Column="59" TopLine="1"/>
+        <Filename Value="..\..\Managers\UCDManagerTabs.pas"/>
+        <Caret Line="220" Column="1" TopLine="207"/>
       </Position8>
       <Position9>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="76" Column="27" TopLine="63"/>
+        <Filename Value="..\..\Managers\UCDManagerTabs.pas"/>
+        <Caret Line="221" Column="1" TopLine="207"/>
       </Position9>
       <Position10>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="10" Column="71" TopLine="1"/>
+        <Filename Value="..\..\Managers\UCDManagerTabs.pas"/>
+        <Caret Line="220" Column="1" TopLine="207"/>
       </Position10>
       <Position11>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="76" Column="73" TopLine="63"/>
+        <Filename Value="H:\0.9.30_2.4.2\lcl\include\wincontrol.inc"/>
+        <Caret Line="5925" Column="1" TopLine="5912"/>
       </Position11>
       <Position12>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="80" Column="30" TopLine="67"/>
+        <Filename Value="H:\0.9.30_2.4.2\lcl\include\wincontrol.inc"/>
+        <Caret Line="5926" Column="1" TopLine="5912"/>
       </Position12>
       <Position13>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="71" Column="28" TopLine="58"/>
+        <Filename Value="H:\0.9.30_2.4.2\lcl\include\wincontrol.inc"/>
+        <Caret Line="5927" Column="1" TopLine="5912"/>
       </Position13>
       <Position14>
-        <Filename Value="..\..\UCDConjoinForm.pas"/>
-        <Caret Line="13" Column="36" TopLine="1"/>
+        <Filename Value="..\..\Managers\UCDManagerTabs.pas"/>
+        <Caret Line="378" Column="27" TopLine="355"/>
       </Position14>
       <Position15>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="71" Column="28" TopLine="58"/>
+        <Filename Value="..\..\UCDManager.pas"/>
+        <Caret Line="601" Column="1" TopLine="599"/>
       </Position15>
       <Position16>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="80" Column="53" TopLine="67"/>
+        <Filename Value="H:\0.9.30_2.4.2\lcl\interfaces\win32\win32wsforms.pp"/>
+        <Caret Line="376" Column="1" TopLine="363"/>
       </Position16>
       <Position17>
-        <Filename Value="..\..\UCDManager.pas"/>
-        <Caret Line="140" Column="34" TopLine="127"/>
+        <Filename Value="H:\0.9.30_2.4.2\lcl\interfaces\win32\win32wsforms.pp"/>
+        <Caret Line="292" Column="1" TopLine="279"/>
       </Position17>
       <Position18>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="11" Column="12" TopLine="1"/>
+        <Filename Value="H:\0.9.30_2.4.2\lcl\interfaces\win32\win32wsforms.pp"/>
+        <Caret Line="376" Column="1" TopLine="363"/>
       </Position18>
       <Position19>
-        <Filename Value="SampleDockableForm.pas"/>
-        <Caret Line="16" Column="24" TopLine="1"/>
+        <Filename Value="H:\0.9.30_2.4.2\lcl\interfaces\win32\win32wsforms.pp"/>
+        <Caret Line="292" Column="1" TopLine="279"/>
       </Position19>
+      <Position20>
+        <Filename Value="..\..\Managers\UCDManagerTabs.pas"/>
+        <Caret Line="169" Column="1" TopLine="156"/>
+      </Position20>
+      <Position21>
+        <Filename Value="..\..\Managers\UCDManagerTabs.pas"/>
+        <Caret Line="204" Column="55" TopLine="187"/>
+      </Position21>
+      <Position22>
+        <Filename Value="..\..\Managers\UCDManagerTabs.pas"/>
+        <Caret Line="169" Column="1" TopLine="156"/>
+      </Position22>
+      <Position23>
+        <Filename Value="..\..\Managers\UCDManagerTabs.pas"/>
+        <Caret Line="213" Column="29" TopLine="207"/>
+      </Position23>
+      <Position24>
+        <Filename Value="..\..\Managers\UCDManagerTabs.pas"/>
+        <Caret Line="220" Column="5" TopLine="207"/>
+      </Position24>
+      <Position25>
+        <Filename Value="..\..\Managers\UCDManagerTabs.pas"/>
+        <Caret Line="169" Column="1" TopLine="156"/>
+      </Position25>
+      <Position26>
+        <Filename Value="..\..\Managers\UCDManagerTabs.pas"/>
+        <Caret Line="377" Column="37" TopLine="357"/>
+      </Position26>
+      <Position27>
+        <Filename Value="..\..\Managers\UCDManagerTabs.pas"/>
+        <Caret Line="169" Column="1" TopLine="156"/>
+      </Position27>
+      <Position28>
+        <Filename Value="..\..\Managers\UCDManagerTabs.pas"/>
+        <Caret Line="219" Column="1" TopLine="206"/>
+      </Position28>
+      <Position29>
+        <Filename Value="..\..\Managers\UCDManagerTabs.pas"/>
+        <Caret Line="361" Column="5" TopLine="349"/>
+      </Position29>
+      <Position30>
+        <Filename Value="..\..\Managers\UCDManagerTabs.pas"/>
+        <Caret Line="169" Column="1" TopLine="156"/>
+      </Position30>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
@@ -880,6 +1106,7 @@
         <OverflowChecks Value="True"/>
         <StackChecks Value="True"/>
       </Checks>
+      <VerifyObjMethodCallValidity Value="True"/>
     </CodeGeneration>
     <Linking>
       <Debugging>
@@ -900,11 +1127,19 @@
     </Other>
   </CompilerOptions>
   <Debugging>
-    <BreakPoints Count="1">
+    <BreakPoints Count="3">
       <Item1>
         <Source Value="..\UCoolDocking.pas"/>
         <Line Value="528"/>
       </Item1>
+      <Item2>
+        <Source Value="H:\0.9.30_2.4.2\lcl\include\imglist.inc"/>
+        <Line Value="1378"/>
+      </Item2>
+      <Item3>
+        <Source Value="..\..\Managers\UCDManagerTabs.pas"/>
+        <Line Value="120"/>
+      </Item3>
     </BreakPoints>
     <Watches Count="2">
       <Item1>

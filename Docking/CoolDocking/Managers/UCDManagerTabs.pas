@@ -217,7 +217,7 @@ var
   I: Integer;
 begin
   inherited PaintSite(DC);
-  PageControl.Invalidate;
+  //PageControl.Invalidate;
 end;
 
 procedure TCDManagerTabs.Switch(Index: Integer);
@@ -332,19 +332,25 @@ procedure TCDManagerTabs.UpdateClientSize;
 var
   I: Integer;
   NewTabSheet: TTabSheet;
+  DeletedPage: TTabSheet;
 begin
   for I := 0 to DockItems.Count - 1 do
   with TCDManagerTabsItem(DockItems[I]) do begin
     //Control.Tag := Integer(dhtTemporal);
     //Control.Visible := False;
-    //Control.Parent := nil;
+    //if I >= DockItems.Count then
+    //  Control.Parent := nil;
   end;
 
   while PageControl.PageList.Count > DockItems.Count do begin
 //    TCDManagerTabsItem(DockItems[DockItems.Count - 1]).Control.Visible := False;
 //    TCDManagerTabsItem(DockItems[DockItems.Count - 1]).Control.Parent := nil;
-    //PageControl.Pages[PageControl.PageCount - 1].Parent := nil;
-    PageControl.Pages[PageControl.PageCount - 1].Free;
+
+    PageControl.OnChange := nil;
+    DeletedPage := PageControl.Pages[PageControl.PageCount - 1];
+    DeletedPage.Parent := nil;
+    PageControl.OnChange := TabControlChange;
+    DeletedPage.Free;
     TabImageList.Delete(TabImageList.Count - 1);
   end;
   while PageControl.PageList.Count < DockItems.Count do begin
@@ -358,6 +364,7 @@ begin
     PageControl.Pages[I].Caption := Control.Caption;
     PageControl.Pages[I].ImageIndex := I;
     TabImageList.Replace(I, IconImage.Picture.Bitmap, nil);
+    //if (I < PageControl.PageCount) and Assigned(PageControl.Pages[I]) then
     Control.Parent := PageControl.Pages[I];
     Control.Align := alClient;
     if PageControl.PageIndex = I then begin

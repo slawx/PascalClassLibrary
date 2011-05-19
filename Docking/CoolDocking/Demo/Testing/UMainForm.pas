@@ -74,18 +74,19 @@ var
 begin
   NewDockForm.ManualDock(Panel1);
   NewDockForm.ManualDock(Panel1);
-  ConjoinedDockForm1 := TCDManager(Panel1.DockManager).CreateConjoinForm;
+(*  ConjoinedDockForm1 := TCDManager(Panel1.DockManager).CreateConjoinForm;
   ConjoinedDockForm1.Name := 'Model';;
+  ConjoinedDockForm1.Show;
   //TCoolDockManager(ConjoinedDockForm1.Panel.DockManager).TabsPos := hpLeft;
   ConjoinedDockForm1.ManualDock(Panel1);
-  TCDManager(ConjoinedDockForm1.DockManager).DockStyle := dsTabs;
+  //TCDManager(ConjoinedDockForm1.DockManager).DockStyle := dsTabs;
   NewDockForm.ManualDock(ConjoinedDockForm1);
   NewDockForm.ManualDock(ConjoinedDockForm1);
-  NewDockForm.ManualDock(ConjoinedDockForm1);
+  //NewDockForm.ManualDock(ConjoinedDockForm1);
   //NewDockForm.ManualDock(TForm(DockForms[0]));
   //NewDockForm.ManualDock(TForm(DockForms[0]));
   //NewDockForm.ManualDock(TForm(DockForms[0]));
-  //TCustomDockManager(TDockForm(DockForms[0]).DockManager).DockStyle := dsTabs;
+  //TCustomDockManager(TDockForm(DockForms[0]).DockManager).DockStyle := dsTabs; *)
 end;
 
 procedure TMainForm.MenuItem2Click(Sender: TObject);

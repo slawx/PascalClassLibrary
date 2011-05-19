@@ -4,13 +4,13 @@ object MainForm: TMainForm
   Top = 150
   Width = 576
   Caption = 'MainForm'
-  ClientHeight = 416
+  ClientHeight = 415
   ClientWidth = 576
   Menu = MainMenu1
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
-  LCLVersion = '0.9.31'
+  LCLVersion = '0.9.30'
   object Button1: TButton
     Left = 10
     Height = 25
@@ -22,12 +22,12 @@ object MainForm: TMainForm
   end
   object Panel1: TPanel
     Left = 0
-    Height = 368
+    Height = 367
     Top = 48
     Width = 576
     Align = alBottom
     Anchors = [akTop, akLeft, akRight, akBottom]
-    ClientHeight = 368
+    ClientHeight = 367
     ClientWidth = 576
     DockSite = True
     TabOrder = 1
@@ -61,7 +61,7 @@ object MainForm: TMainForm
       Top = 144
       Width = 200
       MultiLine = True
-      TabIndex = 2
+      TabIndex = 0
       TabOrder = 1
       Tabs.Strings = (
         'ggdfg'
@@ -85,11 +85,11 @@ object MainForm: TMainForm
     TabOrder = 2
   end
   object CoolDockMaster1: TCDMaster
+    Customize = CoolDockCustomize1
     TabsEnabled = False
     DefaultTabsPos = hpAuto
     DefaultHeaderPos = hpAuto
     DefaultMoveSpeed = 0
-    Customize = CoolDockCustomize1
     ShowIcons = False
     left = 384
   end
@@ -119,10 +119,10 @@ object MainForm: TMainForm
     end
   end
   object CoolDockClient1: TCDClient
-    Dockable = False
-    Floatable = False
     Master = CoolDockMaster1
     Panel = Panel1
+    Dockable = False
+    Floatable = False
     left = 376
     top = 64
   end

@@ -17,22 +17,34 @@ type
     function GetBottomLeft: TPoint;
     function GetBottomRight: TPoint;
     function GetHeight: Integer;
+    function GetSize: TPoint;
     function GetTopLeft: TPoint;
     function GetTopRight: TPoint;
     function GetTRect: TRect;
     function GetWidth: Integer;
+    procedure SetBottom(const AValue: Integer);
     procedure SetBottomLeft(const AValue: TPoint);
     procedure SetBottomRight(const AValue: TPoint);
     procedure SetHeight(const AValue: Integer);
+    procedure SetLeft(const AValue: Integer);
+    procedure SetRight(const AValue: Integer);
+    procedure SetSize(const AValue: TPoint);
+    procedure SetTop(const AValue: Integer);
     procedure SetTopLeft(const AValue: TPoint);
     procedure SetTopRight(const AValue: TPoint);
     procedure SetTRect(const AValue: TRect);
     procedure SetWidth(const AValue: Integer);
   public
-    Left: Integer;
-    Top: Integer;
-    Right: Integer;
-    Bottom: Integer;
+    FLeft: Integer;
+    FTop: Integer;
+    FRight: Integer;
+    FBottom: Integer;
+    KeepSize: Boolean;
+
+    property Left: Integer read FLeft write SetLeft;
+    property Top: Integer read FTop write SetTop;
+    property Right: Integer read FRight write SetRight;
+    property Bottom: Integer read FBottom write SetBottom;
 
     procedure Assign(Source: TRectangle);
     function IsInside(Pos: TPoint): Boolean;
@@ -44,6 +56,8 @@ type
     property TopRight: TPoint read GetTopRight write SetTopRight;
     property BottomLeft: TPoint read GetBottomLeft write SetBottomLeft;
     property BottomRight: TPoint read GetBottomRight write SetBottomRight;
+
+    property Size: TPoint read GetSize write SetSize;
 
     property AsTRect: TRect read GetTRect write SetTRect;
   end;
@@ -67,6 +81,11 @@ end;
 function TRectangle.GetHeight: Integer;
 begin
   Result := Bottom - Top;
+end;
+
+function TRectangle.GetSize: TPoint;
+begin
+  Result := Point(Width, Height);
 end;
 
 function TRectangle.GetTopLeft: TPoint;
@@ -94,6 +113,13 @@ begin
   Result := Right - Left;
 end;
 
+procedure TRectangle.SetBottom(const AValue: Integer);
+begin
+  if FBottom = AValue then exit;
+  if KeepSize then Inc(FTop, AValue - FBottom);
+  FBottom := AValue;
+end;
+
 procedure TRectangle.SetBottomLeft(const AValue: TPoint);
 begin
   Left := AValue.X;
@@ -109,6 +135,33 @@ end;
 procedure TRectangle.SetHeight(const AValue: Integer);
 begin
   Bottom := Top + AValue;
+end;
+
+procedure TRectangle.SetLeft(const AValue: Integer);
+begin
+  if FLeft = AValue then Exit;
+  if KeepSize then Inc(FRight, AValue - FLeft);
+  FLeft := AValue;
+end;
+
+procedure TRectangle.SetRight(const AValue: Integer);
+begin
+  if FRight = AValue then Exit;
+  if KeepSize then Inc(FLeft, AValue - FRight);
+  FRight := AValue;
+end;
+
+procedure TRectangle.SetSize(const AValue: TPoint);
+begin
+  Width := AValue.X;
+  Height := AValue.Y;
+end;
+
+procedure TRectangle.SetTop(const AValue: Integer);
+begin
+  if FTop = AValue then Exit;
+  if KeepSize then Inc(FBottom, AValue - FTop);
+  FTop := AValue;
 end;
 
 procedure TRectangle.SetTopLeft(const AValue: TPoint);
