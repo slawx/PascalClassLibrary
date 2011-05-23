@@ -1,9 +1,12 @@
 unit UCommon;
 
+{$mode delphi}
+
 interface
 
 uses
-  Windows, Classes, SysUtils, SpecializedList, StrUtils, Dialogs; //, ShFolder, ShellAPI;
+  Windows, Classes, SysUtils, SpecializedList, StrUtils, Dialogs,
+  FileUtil; //, ShFolder, ShellAPI;
 
 type
   TArrayOfByte = array of Byte;
@@ -24,6 +27,10 @@ type
 
 var
   ExceptionHandler: TExceptionEvent;
+  DLLHandle1: HModule;
+  GetUserNameEx: procedure (NameFormat: DWORD;
+    lpNameBuffer: LPSTR; nSize: PULONG); stdcall;
+
 
 function IntToBin(Data: Cardinal; Count: Byte): string;
 function TryHexToInt(Data: string; var Value: Integer): Boolean;
@@ -44,9 +51,28 @@ function LastPos(const SubStr: String; const S: String): Integer;
 function GenerateNewName(OldName: string): string;
 function GetFileFilterItemExt(Filter: string; Index: Integer): string;
 procedure FileDialogUpdateFilterFileType(FileDialog: TOpenDialog);
+procedure DeleteFiles(APath, AFileSpec: string);
 
 
 implementation
+
+procedure DeleteFiles(APath, AFileSpec: string);
+var
+  SearchRec: TSearchRec;
+  Find: Integer;
+  Path: string;
+begin
+  Path := IncludeTrailingPathDelimiter(APath);
+
+  Find := FindFirst(Path + AFileSpec, faAnyFile xor faDirectory, SearchRec);
+  while Find = 0 do begin
+    DeleteFile(Path + SearchRec.Name);
+
+    Find := SysUtils.FindNext(SearchRec);
+  end;
+  FindClose(SearchRec);
+end;
+
 
 function GetFileFilterItemExt(Filter: string; Index: Integer): string;
 var
@@ -225,19 +251,25 @@ begin
     Result := '';
 end;
 
-procedure GetUserNameEx(NameFormat: DWORD;
-  lpNameBuffer: LPSTR; nSize: PULONG); stdcall;
-  external 'secur32.dll' Name 'GetUserNameExA';
-
+function GetVersionInfo: TOSVersionInfo;
+begin
+  Result.dwOSVersionInfoSize := SizeOf(Result);
+  if GetVersionEx(Result) then begin
+  end;
+end;
 
 function LoggedOnUserNameEx(Format: TUserNameFormat): string;
 var
   UserName: array[0..250] of Char;
+  VersionInfo: TOSVersionInfo;
   Size: DWORD;
 begin
-  Size := 250;
-  GetUserNameEx(Integer(Format), @UserName, @Size);
-  Result := UTF8Encode(UserName);
+  VersionInfo := GetVersionInfo;
+  if VersionInfo.dwPlatformId = VER_PLATFORM_WIN32_NT then begin
+    Size := 250;
+    GetUserNameEx(Integer(Format), @UserName, @Size);
+    Result := UTF8Encode(UserName);
+  end else Result := GetUserName;
 end;
 
 function SplitString(var Text: string; Count: Word): string;
@@ -270,5 +302,29 @@ function AddLeadingZeroes(const aNumber, Length : integer) : string;
 begin
   Result := SysUtils.Format('%.*d', [Length, aNumber]) ;
 end;
+
+procedure LoadLibraries;
+begin
+  DLLHandle1 := LoadLibrary('secur32.dll');
+  if DLLHandle1 <> 0 then
+  begin
+    @GetUserNameEx := GetProcAddress(DLLHandle1, 'GetUserNameExA');
+  end;
+end;
+
+procedure FreeLibraries;
+begin
+  if DLLHandle1 <> 0 then FreeLibrary(DLLHandle1);
+end;
+
+
+initialization
+
+LoadLibraries;
+
+
+finalization
+
+FreeLibraries;
 
 end.

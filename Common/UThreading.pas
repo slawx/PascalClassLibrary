@@ -5,19 +5,11 @@ unit UThreading;
 interface
 
 uses
-  Classes, SysUtils, Forms, Contnrs;
+  Classes, SysUtils, Forms, Contnrs, SyncObjs;
 
 type
-
+  TExceptionEvent = procedure (Sender: TObject; E: Exception) of object;
   TMethodCall = procedure of object;
-
-  { TTermThread }
-
-  TTermThread = class(TThread)
-    Finished: Boolean;
-    Method: TMethodCall;
-    procedure Execute; override;
-  end;
 
   { TListedThread }
 
@@ -27,13 +19,29 @@ type
                        const StackSize: SizeUInt = DefaultStackSize);
     destructor Destroy; override;
     procedure Sleep(Delay: Integer);
+    property Terminated;
+  end;
+
+  { TTermThread }
+
+  TTermThread = class(TListedThread)
+  private
+  public
+    Finished: Boolean;
+    Method: TMethodCall;
+    procedure Execute; override;
   end;
 
 var
-  ThreadList: TObjectList; // TListedThread
+  ThreadList: TObjectList; // TList<TListedThread>
+  ThreadListLock: TCriticalSection;
+  OnException: TExceptionEvent;
 
 procedure RunInThread(Method: TMethodCall);
 procedure Synchronize(Method: TMethodCall);
+
+resourcestring
+  SCurrentThreadNotFound = 'Current thread ID %d not found in list.';
 
 
 implementation
@@ -48,7 +56,7 @@ begin
     Thread.Resume;
     Thread.Method := Method;
     while not Thread.Finished do begin
-      Application.ProcessMessages;
+      if MainThreadID = ThreadID then Application.ProcessMessages;
       Sleep(1);
     end;
   finally
@@ -69,7 +77,7 @@ begin
     if I < ThreadList.Count then begin
       Thread := TListedThread(ThreadList[I]);
       TThread.Synchronize(Thread, Method);
-    end else raise Exception.Create(Format('Current thread ID %d not found in list.', [ThreadID]));
+    end else raise Exception.Create(Format(SCurrentThreadNotFound, [ThreadID]));
   end;
 end;
 
@@ -79,12 +87,27 @@ constructor TListedThread.Create(CreateSuspended: Boolean;
   const StackSize: SizeUInt);
 begin
   inherited;
-  ThreadList.Add(Self);
+  try
+    ThreadListLock.Acquire;
+    ThreadList.Add(Self);
+  finally
+    ThreadListLock.Release;
+  end;
 end;
 
 destructor TListedThread.Destroy;
 begin
-  ThreadList.Delete(ThreadList.IndexOf(Self));
+  if not Suspended then
+  begin
+    Terminate;
+    WaitFor;
+  end;
+  try
+    ThreadListLock.Acquire;
+    ThreadList.Delete(ThreadList.IndexOf(Self));
+  finally
+    ThreadListLock.Release;
+  end;
   inherited Destroy;
 end;
 
@@ -105,18 +128,26 @@ end;
 
 procedure TTermThread.Execute;
 begin
-  Method;
-  Finished := True;
+  try
+    Method;
+    Finished := True;
+  except
+    on E: Exception do
+      if Assigned(OnException) then
+        OnException(Self, E);
+  end;
 end;
 
 initialization
 
+ThreadListLock := TCriticalSection.Create;
 ThreadList := TObjectList.Create;
 ThreadList.OwnsObjects := False;
 
 finalization
 
 ThreadList.Free;
+ThreadListLock.Free;
 
 end.
 
