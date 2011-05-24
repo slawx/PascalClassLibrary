@@ -121,6 +121,7 @@ object PrintPreviewForm: TPrintPreviewForm
     Width = 645
     Align = alCustom
     Anchors = [akTop, akLeft, akRight, akBottom]
+    Center = True
   end
   object ScrollBarHoriz: TScrollBar
     Left = 0

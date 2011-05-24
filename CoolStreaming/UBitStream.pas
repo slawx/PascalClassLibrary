@@ -27,18 +27,18 @@ type
     function Read(var Buffer; Count: Longint): Longint; virtual;
     function CopyFrom(Source: TBitStream; Count: LongInt): LongInt;
     function Write(const Buffer; Count: Longint): Longint; virtual;
+    function EqualTo(Source: TBitStream): Boolean;
     function GetString: string;
     procedure SetString(const AValue: string);
     procedure ReadBuffer(var Buffer; Count: Longint);
     procedure WriteBuffer(const Buffer; Count: Longint);
-    property Position: LongInt read GetPosition write SetPosition;
-    property Size: LongInt read GetSize write SetSize;
-    property Bit[Index: Integer]: Boolean read GetBit write SetBit;
-
     function ReadBit: Boolean;
     procedure WriteBit(AValue: Boolean);
     function ReadNumber(Count: Byte): QWord;
     procedure WriteNumber(AValue: QWord; Count: Byte);
+    property Position: LongInt read GetPosition write SetPosition;
+    property Size: LongInt read GetSize write SetSize;
+    property Bit[Index: Integer]: Boolean read GetBit write SetBit;
     property AsString: string read GetString write SetString;
   end;
 
@@ -62,6 +62,7 @@ type
     destructor Destroy; override;
     property Stream: TMemoryStream read FStream;
   end;
+
 
 implementation
 
@@ -132,6 +133,20 @@ end;
 function TBitStream.Write(const Buffer; Count:Longint):Longint;
 begin
   Result := 0;
+end;
+
+function TBitStream.EqualTo(Source: TBitStream): Boolean;
+var
+  I: Integer;
+begin
+  if Size = Source.Size then begin
+    I := 0;
+    Result := True;
+    Position := 0;
+    Source.Position := 0;
+    while (I < Size) and (ReadBit = Source.ReadBit) do Inc(I);
+    if I < Size then Result := False;
+  end else Result := False;
 end;
 
 procedure TBitStream.ReadBuffer(var Buffer; Count:Longint);
@@ -322,4 +337,4 @@ begin
 end;
 
 end.
-
+

@@ -422,7 +422,7 @@ begin
     Image1.Picture.Bitmap.SetSize(Image1.Width, Image1.Height);
     Image1.Picture.Bitmap.BeginUpdate(True);
     with Image1.Picture.Bitmap, Canvas do begin
-      Brush.Color:= clBlue;
+      Brush.Color := clBlack;
       Brush.Style := bsSolid;
       FillRect(Rect(0, 0, Width, Height));
       Draw(DestRect.Left, DestRect.Top, Page.Bitmap);

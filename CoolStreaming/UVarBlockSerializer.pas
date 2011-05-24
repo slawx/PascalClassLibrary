@@ -790,6 +790,7 @@ begin
   if Enclose then VarBlock.BlockUnclose;
   VarBlock.Stream.Position := 0;
   Mask := VarBlock.ReadVarUInt;
+  Items.Clear;
   I := 0;
   while Mask <> 0 do begin
     if VarBlock.TestMask(Mask, I) then begin

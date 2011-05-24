@@ -29,6 +29,7 @@
     procedure AddArray(Values: array of TGListItem);
     procedure AddList(List: TGList);
     procedure Assign(Source: TGList); virtual;
+    constructor Create; virtual;
     procedure Clear; virtual;
     procedure Delete(Index: TGListIndex); virtual;
     procedure DeleteItems(Index, Count: TGListIndex);
@@ -51,7 +52,7 @@
     procedure Reverse;
     procedure Replace(Index: TGListIndex; Source: TGList);
     procedure Sort(Compare: TGListSortCompare);
-    procedure SetArray(Values: TGListItemArray);
+    procedure SetArray(Values: array of TGListItem);
     property Count: TGListIndex read FCount write SetCount;
     property Capacity: TGListIndex read GetCapacity write SetCapacity;
     property Items[Index: TGListIndex]: TGListItem read Get write Put; default;
@@ -72,6 +73,11 @@ uses
 {$IFDEF IMPLEMENTATION}
 
 { TGList }
+
+constructor TGList.Create;
+begin
+  FCount := 0;
+end;
 
 procedure TGList.Replace(Index: TGListIndex; Source: TGList);
 var
@@ -404,7 +410,7 @@ begin
   end;
 end;
 
-procedure TGList.SetArray(Values: TGListItemArray);
+procedure TGList.SetArray(Values: array of TGListItem);
 var
   I: TGListIndex;
 begin

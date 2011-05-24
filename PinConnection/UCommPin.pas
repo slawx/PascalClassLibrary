@@ -50,9 +50,12 @@ implementation
 
 procedure TCommPin.Connect(Pin: TCommPin);
 begin
-  if Assigned(Pin) then Disconnect;
-  Self.RemotePin := Pin;
-  Pin.RemotePin := Self;
+  if Pin <> RemotePin then begin
+    Pin.Disconnect;
+    Disconnect;
+    Self.RemotePin := Pin;
+    Pin.RemotePin := Self;
+  end;
 end;
 
 destructor TCommPin.Destroy;

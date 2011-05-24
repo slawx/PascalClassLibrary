@@ -96,8 +96,8 @@ var
 begin
   Buffer := Report.Text;
   if FileExists(FLogFileName) then
-    LogFile := TFileStream.Create(FLogFileName, fmOpenReadWrite)
-    else LogFile := TFileStream.Create(FLogFileName, fmCreate);
+    LogFile := TFileStream.Create(UTF8Decode(FLogFileName), fmOpenReadWrite)
+    else LogFile := TFileStream.Create(UTF8Decode(FLogFileName), fmCreate);
   with LogFile do try
     Seek(0, soFromEnd);
     if Length(Buffer) > 0 then
@@ -114,8 +114,8 @@ var
   Line: string;
 begin
   if FileExists(FLogFileName) then
-    LogFile := TFileStream.Create(FLogFileName, fmOpenReadWrite)
-    else LogFile := TFileStream.Create(FLogFileName, fmCreate);
+    LogFile := TFileStream.Create(UTF8Decode(FLogFileName), fmOpenReadWrite)
+    else LogFile := TFileStream.Create(UTF8Decode(FLogFileName), fmCreate);
   with LogFile do try
     Seek(0, soFromEnd);
     for I := 0 to StackTrace.Count - 1 do

@@ -100,8 +100,9 @@ type
     procedure SendCommand(Command: array of integer;
       ResponseParameters: TVarBlockIndexed = nil;
       RequestParameters: TVarBlockIndexed = nil; ARaiseError: boolean = True);
-    constructor Create;
+    constructor Create; virtual;
     destructor Destroy; override;
+    procedure Assign(Source: TCommProtocol); virtual;
     property OnAfterRequest: TAfterRequest read FOnAfterRequest write FOnAfterRequest;
     property OnCommand: TAfterRequest read FOnCommand write FOnCommand;
     property OnDebugLog: TDebugLogAddEvent read FOnDebugLog write FOnDebugLog;
@@ -357,6 +358,25 @@ begin
   Sessions.Free;
   Pin.Free;
   inherited Destroy;
+end;
+
+procedure TCommProtocol.Assign(Source: TCommProtocol);
+begin
+  LastCommandResponseTime := Source.LastCommandResponseTime;
+  LastLatency := Source.LastLatency;
+  MaxSequenceNumber := Source.MaxSequenceNumber;
+  MaxSessionCount := Source.MaxSessionCount;
+  RemoteBufferSize := Source.RemoteBufferSize;
+  RemoteBufferUsed := Source.RemoteBufferUsed;
+  WrongSequenceCount := Source.WrongSequenceCount;
+  RetransmitTimeout := Source.RetransmitTimeout;
+  RetransmitRepeatCount := Source.RetransmitRepeatCount;
+  RetransmitTotalCount := Source.RetransmitTotalCount;
+  Pin.Connect(Source.Pin.RemotePin);
+  OnCommand := Source.OnCommand;
+  OnAfterRequest := Source.OnAfterRequest;
+  OnDebugLog := Source.OnDebugLog;
+  Active := Source.Active;
 end;
 
 { TDeviceProtocolSession }
