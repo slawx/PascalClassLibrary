@@ -15,6 +15,7 @@ type
 
   TCDManagerTabsItem = class(TCDManagerItem)
     IconImage: TImage;
+    TabSheet: TTabSheet;
     constructor Create; override;
     destructor Destroy; override;
     procedure VisibleChange(Sender: TObject); override;
@@ -37,6 +38,7 @@ type
       DropCtl: TControl); override;
     function FindControlInPanels(Control: TControl): TCDManagerItem; override;
     function GetHeaderPos: THeaderPos; override;
+    function FindTabSheet(TabSheet: TTabSheet): TCDManagerTabsItem;
   public
     MouseDownSkip: Boolean;
     TabImageList: TImageList;
@@ -262,6 +264,8 @@ begin
     Control.RemoveHandlerOnVisibleChanging(ManagerItem.VisibleChanging);
   end; //else raise Exception.Create(Format('Control %s not found in DockItems', [Control.Name]));
 
+  ManagerItem.Control.Visible := False;
+  ManagerItem.Control.Parent := nil;
   DockItems.Remove(ManagerItem);
   ClientCount := DockItems.Count;
 
@@ -288,6 +292,17 @@ end;
 function TCDManagerTabs.GetHeaderPos: THeaderPos;
 begin
   Result := inherited;
+end;
+
+function TCDManagerTabs.FindTabSheet(TabSheet: TTabSheet): TCDManagerTabsItem;
+var
+  I: Integer;
+begin
+  I := 0;
+  while (I < FDockItems.Count) and
+    (TCDManagerTabsItem(FDockItems[I]).TabSheet <> TabSheet) do Inc(I);
+  if I < FDockItems.Count then Result := TCDManagerTabsItem(FDockItems[I])
+    else Result := nil;
 end;
 
 procedure TCDManagerTabs.SetHeaderPos(const AValue: THeaderPos);
@@ -342,21 +357,30 @@ begin
     //  Control.Parent := nil;
   end;
 
-  while PageControl.PageList.Count > DockItems.Count do begin
+  // Remove old existed tabs which doesn't have item associated
+  for I := PageControl.PageList.Count - 1 downto 0 do begin
 //    TCDManagerTabsItem(DockItems[DockItems.Count - 1]).Control.Visible := False;
 //    TCDManagerTabsItem(DockItems[DockItems.Count - 1]).Control.Parent := nil;
 
-    PageControl.OnChange := nil;
-    DeletedPage := PageControl.Pages[PageControl.PageCount - 1];
-    DeletedPage.Parent := nil;
-    PageControl.OnChange := TabControlChange;
-    DeletedPage.Free;
-    TabImageList.Delete(TabImageList.Count - 1);
+    if FindTabSheet(TTabSheet(PageControl.PageList[I])) = nil then begin
+      PageControl.OnChange := nil;
+      DeletedPage := PageControl.Pages[I];
+      DeletedPage.Parent := nil;
+      PageControl.OnChange := TabControlChange;
+      DeletedPage.Free;
+      TabImageList.Delete(I);
+    end;
   end;
-  while PageControl.PageList.Count < DockItems.Count do begin
-    NewTabSheet := TTabSheet.Create(PageControl);
-    NewTabSheet.PageControl := PageControl;
-    TabImageList.Add(TCDManagerTabsItem(DockItems[PageControl.PageList.Count - 1]).IconImage.Picture.Bitmap, nil);
+
+  // Create tabs for new items
+  for I := 0 to DockItems.Count - 1 do
+  with TCDManagerTabsItem(DockItems[I]) do begin
+    if not Assigned(TabSheet) then begin
+      NewTabSheet := TTabSheet.Create(PageControl);
+      NewTabSheet.PageControl := PageControl;
+      TabSheet := NewTabSheet;
+      TabImageList.Add(IconImage.Picture.Bitmap, nil);
+    end;
   end;
 
   for I := 0 to DockItems.Count - 1 do
