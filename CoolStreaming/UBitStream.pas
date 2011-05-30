@@ -227,7 +227,7 @@ begin
   if FPosition > FSize then FPosition := FSize;
 end;
 
-function TMemoryBitStream.WriteToByte(var Data: Byte; NewData,Pos,Count:Byte):Byte;
+function TMemoryBitStream.WriteToByte(var Data: Byte; NewData, Pos, Count: Byte) :Byte;
 begin
   Data := Byte(Data and not (((1 shl Count) - 1) shl Pos) // Make zero space for new data
      or ((NewData and ((1 shl Count) - 1)) shl Pos));  // Write new data
@@ -259,18 +259,21 @@ begin
       if PosInByte > 0 then
         TBytes(Buffer)[I] := TBytes(Buffer)[I] or
           ((Integer(Data) and ((1 shl PosInByte) - 1)) shl (8 - PosInByte));
-      //if (I = (ByteCount - 1)) and (PosInByte > 0) then
-      //  TBytes(Buffer)[I] := TBytes(Buffer)[I] and ((1 shl (Count mod 8)) - 1);
+      if (I = (ByteCount - 1)) and (PosInByte > 0) then
+        TBytes(Buffer)[I] := TBytes(Buffer)[I] and ((1 shl (Count mod 8)) - 1);
     end;
     Inc(FPosition, Count);
     Result := Count;
   end;
 end;
 
-function TMemoryBitStream.Write(const Buffer;Count:Longint):Longint;
+function TMemoryBitStream.Write(const Buffer; Count: Longint): Longint;
 var
   ByteCount: LongInt;
   BitCount: LongInt;
+  WriteBitCount: Integer;
+  RestBitCount: Integer;
+  NextRestBitCount: Integer;
   I: LongInt;
   BytePos: Byte;
   Data: Byte;
@@ -285,27 +288,32 @@ begin
   if Count < 0 then
     raise EWriteError.Create(SWriteError);
 
+  RestBitCount := 0;
+  NextRestBitCount := 0;
   BitCount := Count;
   ByteCount := Ceil(Count / 8);
-  BytePos := FPosition mod 8;
   Stream.Position := Trunc(FPosition / 8);
-  if Stream.Position < Stream.Size then begin
-    Data := Stream.ReadByte;
-    Stream.Position := Stream.Position - 1;
-  end else Data := 0;
-  for I := 0 to ByteCount - 1 do begin
-    Dec(BitCount, WriteToByte(Data, TBytes(Buffer)[I], BytePos, Min(8 - BytePos, BitCount)));
-    Stream.WriteByte(Data);
-    Data := 0;
-    if (BitCount > 0) and (BytePos > 0) then begin
-      if (I = (ByteCount - 1)) and (Stream.Position < Stream.Size) then begin
-        Data := Stream.ReadByte;
-        Stream.Position := Stream.Position - 1;
-      end;
-      Dec(BitCount, WriteToByte(Data, TBytes(Buffer)[I] shr (8 - BytePos), 0, Min(BytePos, BitCount)));
-      if I = (ByteCount - 1) then
-        Stream.WriteByte(Data);
+  BytePos := FPosition mod 8;
+  I := 0;
+  while (I < ByteCount) or (RestBitCount > 0) do begin
+    WriteBitCount := Min(8 - BytePos, BitCount);
+    if (Stream.Position < Stream.Size) and (WriteBitCount < 8) then begin
+      Data := Stream.ReadByte;
+      Stream.Position := Stream.Position - 1;
+    end else Data := 0;
+
+    // Write rest of previous source byte to target
+    if RestBitCount > 0 then begin
+      Dec(BitCount, WriteToByte(Data, TBytes(Buffer)[I - 1] shr (8 - BytePos), 0, RestBitCount));
+      WriteBitCount := Min(8 - BytePos, BitCount);
     end;
+
+    // Write part up to one byte from source to target
+    Dec(BitCount, WriteToByte(Data, TBytes(Buffer)[I], BytePos, WriteBitCount));
+    Stream.WriteByte(Data);
+
+    RestBitCount := Min(8 - WriteBitCount, BitCount);
+    Inc(I);
   end;
   Inc(FPosition, Count);
   if FSize < FPosition then FSize := FPosition;

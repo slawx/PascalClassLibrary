@@ -14,7 +14,13 @@ type
   { TMainForm }
 
   TMainForm = class(TForm)
+    Button1: TButton;
+    Button2: TButton;
+    Button3: TButton;
     Memo1: TMemo;
+    procedure Button1Click(Sender: TObject);
+    procedure Button2Click(Sender: TObject);
+    procedure Button3Click(Sender: TObject);
     procedure FormShow(Sender: TObject);
   private
     procedure PrintBitStream(Stream: TBitStream; StringList: TStrings);
@@ -31,6 +37,11 @@ implementation
 {$R *.lfm}
 
 procedure TMainForm.FormShow(Sender: TObject);
+begin
+  WindowState := wsMaximized;
+end;
+
+procedure TMainForm.Button1Click(Sender: TObject);
 var
   BitStream: TMemoryBitStream;
   BitStream2: TMemoryBitStream;
@@ -39,25 +50,24 @@ var
   Y: Integer;
   C: Integer;
 begin
-  WindowState := wsMaximized;
-
   with Memo1, Lines do try
     BeginUpdate;
     BitStream := TMemoryBitStream.Create;
     BitStream2 := TMemoryBitStream.Create;
     SetLength(Buffer, 4);
-    Buffer[0] := $12;
-    Buffer[1] := $34;
-    Buffer[2] := $56;
-    Buffer[3] := $78;
+    Buffer[0] := $21;
+    Buffer[1] := $43;
+    Buffer[2] := $65;
+    Buffer[3] := $87;
     Add('Source data:');
     PrintData(Buffer, Length(Buffer) * 8, Lines);
 
-    BitStream.Write(Buffer[0], 28);
+    BitStream.Write(Buffer[0], Length(Buffer) * 8);
     Add('Write data to stream:');
     PrintBitStream(BitStream, Lines);
+
     // Write second bit array after first which lead to store data as shifted
-    BitStream.Write(Buffer[0], 28);
+    BitStream.Write(Buffer[0], Length(Buffer) * 8);
     Add('Append shifted data to stream:');
     PrintBitStream(BitStream, Lines);
 
@@ -82,6 +92,38 @@ begin
       BitStream2.CopyFrom(BitStream, BitStream.Size);
       PrintBitStream(BitStream2, Lines);
     end;  *)
+  finally
+    BitStream.Free;
+    BitStream2.Free;
+    EndUpdate;
+  end;
+end;
+
+procedure TMainForm.Button2Click(Sender: TObject);
+var
+  BitStream: TMemoryBitStream;
+  BitStream2: TMemoryBitStream;
+  Buffer: array of Byte;
+  I: Integer;
+  Y: Integer;
+  C: Integer;
+begin
+  with Memo1, Lines do try
+    BeginUpdate;
+    BitStream := TMemoryBitStream.Create;
+    BitStream2 := TMemoryBitStream.Create;
+
+    SetLength(Buffer, 4);
+    Buffer[0] := $21;
+    Buffer[1] := $43;
+    Buffer[2] := $65;
+    Buffer[3] := $87;
+    Add('Source data:');
+    PrintData(Buffer, Length(Buffer) * 8, Lines);
+
+    BitStream.Write(Buffer[0], Length(Buffer) * 8);
+    Add('Write data to stream:');
+    PrintBitStream(BitStream, Lines);
 
     Add('Bit copy of substreams');
     SetLength(Buffer, 1000);
@@ -96,6 +138,66 @@ begin
         C := BitStream.Read(Buffer[0], Y);
         SetLength(Buffer, C div 8 + 1);
         PrintData(Buffer, C, Lines);
+      end;
+      Add('');
+    end;
+  finally
+    BitStream.Free;
+    BitStream2.Free;
+    EndUpdate;
+  end;
+end;
+
+procedure TMainForm.Button3Click(Sender: TObject);
+var
+  BitStream: TMemoryBitStream;
+  BitStream2: TMemoryBitStream;
+  Buffer: array of Byte;
+  I: Integer;
+  Y: Integer;
+  C: Integer;
+begin
+  with Memo1, Lines do try
+    BeginUpdate;
+    BitStream := TMemoryBitStream.Create;
+    BitStream2 := TMemoryBitStream.Create;
+
+    SetLength(Buffer, 5);
+    Buffer[0] := $10;
+    Buffer[1] := $32;
+    Buffer[2] := $54;
+    Buffer[3] := $76;
+    Buffer[4] := $98;
+    Add('Source data:');
+    PrintData(Buffer, Length(Buffer) * 8, Lines);
+
+    Add('Bit copy of substreams');
+    BitStream.Size := Length(Buffer) * 8;
+    SetLength(Buffer, 1000);
+    for Y := 0 to BitStream.Size do begin
+      Add('Size: ' + IntToStr(Y));
+      for I := 0 to BitStream.Size - Y do begin
+        BitStream.Position := 0;
+        for C := 0 to BitStream.Size - 1 do
+          BitStream.WriteBit(True);
+        BitStream.Position := I;
+        C := BitStream.Write(Buffer[0], Y);
+        PrintBitStream(BitStream, Lines);
+      end;
+      Add('');
+    end;
+
+    Add('Bit copy of substreams');
+    SetLength(Buffer, 1000);
+    for Y := 0 to BitStream.Size do begin
+      Add('Size: ' + IntToStr(Y));
+      for I := 0 to BitStream.Size - Y do begin
+        BitStream.Position := 0;
+        for C := 0 to BitStream.Size - 1 do
+          BitStream.WriteBit(False);
+        BitStream.Position := I;
+        C := BitStream.Write(Buffer[0], Y);
+        PrintBitStream(BitStream, Lines);
       end;
       Add('');
     end;

@@ -7,16 +7,43 @@ object MainForm: TMainForm
   ClientHeight = 414
   ClientWidth = 613
   OnShow = FormShow
-  LCLVersion = '0.9.31'
+  LCLVersion = '0.9.30'
   object Memo1: TMemo
-    Left = 7
-    Height = 372
-    Top = 8
+    Left = 8
+    Height = 364
+    Top = 40
     Width = 599
     Anchors = [akTop, akLeft, akRight, akBottom]
     Font.Name = 'Courier'
     ParentFont = False
     ScrollBars = ssAutoBoth
     TabOrder = 0
+  end
+  object Button1: TButton
+    Left = 9
+    Height = 25
+    Top = 7
+    Width = 75
+    Caption = 'Base test'
+    OnClick = Button1Click
+    TabOrder = 1
+  end
+  object Button2: TButton
+    Left = 93
+    Height = 25
+    Top = 7
+    Width = 75
+    Caption = 'Read test'
+    OnClick = Button2Click
+    TabOrder = 2
+  end
+  object Button3: TButton
+    Left = 176
+    Height = 25
+    Top = 7
+    Width = 75
+    Caption = 'Write test'
+    OnClick = Button3Click
+    TabOrder = 3
   end
 end
