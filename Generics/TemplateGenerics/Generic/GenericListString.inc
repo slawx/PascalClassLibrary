@@ -17,6 +17,7 @@
     procedure Delete(Index: TGListStringIndex); override;
     procedure Clear; override;
     procedure Assign(Source: TGList); override;
+    function IndexOf(Item: TGListItem; Start: TGListIndex = 0): TGListIndex; override;
     constructor Create;
     destructor Destroy; override;
   end;
@@ -68,6 +69,15 @@ begin
     I := I + 1;
   end;
   inherited Clear;
+end;
+
+function TGListString.IndexOf(Item: TGListItem; Start: TGListIndex): TGListIndex;
+begin
+  Result := Start;
+  while (Result < Count) and
+  (CompareStr(FItems[Result], Item) = -1) do
+    Result := Result + 1;
+  if Result = FCount then Result := -1;
 end;
 
 constructor TGListString.Create;

@@ -7,13 +7,14 @@ unit Common;
 interface
 
 uses
-    StopWatch, UCommon, UDebugLog, UDelay, UPrefixMultiplier, UURI, 
-  UThreading, LazarusPackageIntf;
+  StopWatch, UCommon, UDebugLog, UDelay, UPrefixMultiplier, UURI, UThreading, 
+  LazarusPackageIntf;
 
 implementation
 
 procedure Register; 
 begin
+  RegisterUnit('UDebugLog', @UDebugLog.Register); 
 end; 
 
 initialization

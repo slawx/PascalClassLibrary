@@ -5,7 +5,7 @@
     <Name Value="Common"/>
     <Author Value="Chronos (robie@centrum.cz)"/>
     <CompilerOptions>
-      <Version Value="9"/>
+      <Version Value="10"/>
       <PathDelim Value="\"/>
       <SearchPaths>
         <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
@@ -28,6 +28,7 @@
       </Item2>
       <Item3>
         <Filename Value="UDebugLog.pas"/>
+        <HasRegisterProc Value="True"/>
         <UnitName Value="UDebugLog"/>
       </Item3>
       <Item4>

@@ -23,26 +23,50 @@ type
   TDebugLog = class(TComponent)
   private
     FFileName: string;
+    FMaxCount: Integer;
     FOnNewItem: TNewItemEvent;
+    FWriteToFileEnable: Boolean;
+    procedure SetMaxCount(const AValue: Integer);
   public
-    WriteToFileEnable: Boolean;
     Items: TThreadList;
-    MaxCount: Integer;
     procedure Add(Group: string; Text: string);
     procedure WriteToFile(Text: string);
-    property OnNewItem: TNewItemEvent read FOnNewItem write FOnNewItem;
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
   published
+    property WriteToFileEnable: Boolean read FWriteToFileEnable
+      write FWriteToFileEnable;
     property FileName: string read FFileName write FFileName;
+    property MaxCount: Integer read FMaxCount write SetMaxCount;
+    property OnNewItem: TNewItemEvent read FOnNewItem write FOnNewItem;
   end;
 
-var
-  DebugLog: TDebugLog;
+procedure Register;
 
 implementation
 
+procedure Register;
+begin
+  RegisterComponents('Common', [TDebugLog]);
+end;
+
 { TDebugLog }
+
+procedure TDebugLog.SetMaxCount(const AValue: Integer);
+var
+  List: TList;
+  I: Integer;
+begin
+  if FMaxCount = AValue then Exit;
+  FMaxCount := AValue;
+  List := Items.LockList;
+  if List.Count > 0 then begin
+    for I := AValue to List.Count - 1 do
+      TDebugLogItem(List[I]).Free;
+    List.Count := AValue;
+  end;
+  Items.UnlockList;
+end;
 
 procedure TDebugLog.Add(Group: string; Text: string);
 var
