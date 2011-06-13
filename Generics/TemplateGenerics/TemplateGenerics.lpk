@@ -82,6 +82,7 @@
       </Item13>
       <Item14>
         <Filename Value="Generic\GenericStream.inc"/>
+        <UnitName Value="GenericStream"/>
       </Item14>
       <Item15>
         <Filename Value="Specialized\SpecializedList.pas"/>
@@ -131,7 +132,6 @@
       </Item2>
     </RequiredPkgs>
     <UsageOptions>
-      <IncludePath Value="Generic"/>
       <UnitPath Value="$(PkgOutDir)"/>
     </UsageOptions>
     <PublishOptions>

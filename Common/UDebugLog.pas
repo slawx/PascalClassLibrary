@@ -20,19 +20,21 @@ type
 
   { TDebugLog }
 
-  TDebugLog = class
+  TDebugLog = class(TComponent)
   private
+    FFileName: string;
     FOnNewItem: TNewItemEvent;
   public
-    FileName: string;
     WriteToFileEnable: Boolean;
     Items: TThreadList;
     MaxCount: Integer;
     procedure Add(Group: string; Text: string);
     procedure WriteToFile(Text: string);
     property OnNewItem: TNewItemEvent read FOnNewItem write FOnNewItem;
-    constructor Create;
+    constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
+  published
+    property FileName: string read FFileName write FFileName;
   end;
 
 var
@@ -84,8 +86,9 @@ begin
   end;
 end;
 
-constructor TDebugLog.Create;
+constructor TDebugLog.Create(AOwner: TComponent);
 begin
+  inherited;
   Items := TThreadList.Create;
   MaxCount := 100;
   FileName := 'DebugLog.txt';
@@ -103,14 +106,6 @@ begin
   Items.Free;
   inherited Destroy;
 end;
-
-initialization
-
-DebugLog := TDebugLog.Create;
-
-finalization
-
-DebugLog.Free;
 
 end.
 

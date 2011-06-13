@@ -19,7 +19,7 @@
     <Description Value="Unit set for generating CGI or server web application."/>
     <License Value="GNU/GPL"/>
     <Version Minor="2"/>
-    <Files Count="17">
+    <Files Count="16">
       <Item1>
         <Filename Value="WebServer/UHTTPServer.pas"/>
         <UnitName Value="UHTTPServer"/>
@@ -62,52 +62,51 @@
         <UnitName Value="UUser"/>
       </Item9>
       <Item10>
-        <Filename Value="Common/UCommon.pas"/>
-        <UnitName Value="UCommon"/>
-      </Item10>
-      <Item11>
         <Filename Value="Common/UHtmlClasses.pas"/>
         <UnitName Value="UHtmlClasses"/>
-      </Item11>
-      <Item12>
+      </Item10>
+      <Item11>
         <Filename Value="Common/UMemoryStreamEx.pas"/>
         <UnitName Value="UMemoryStreamEx"/>
-      </Item12>
-      <Item13>
+      </Item11>
+      <Item12>
         <Filename Value="Common/UMIMEType.pas"/>
         <UnitName Value="UMIMEType"/>
-      </Item13>
-      <Item14>
+      </Item12>
+      <Item13>
         <Filename Value="Common/UPool.pas"/>
         <UnitName Value="UPool"/>
-      </Item14>
-      <Item15>
+      </Item13>
+      <Item14>
         <Filename Value="Common/UResetableThread.pas"/>
         <UnitName Value="UResetableThread"/>
-      </Item15>
-      <Item16>
+      </Item14>
+      <Item15>
         <Filename Value="Common/UXmlClasses.pas"/>
         <UnitName Value="UXmlClasses"/>
-      </Item16>
-      <Item17>
+      </Item15>
+      <Item16>
         <Filename Value="WebServer/UWebPage.pas"/>
         <UnitName Value="UWebPage"/>
-      </Item17>
+      </Item16>
     </Files>
     <Type Value="RunAndDesignTime"/>
-    <RequiredPkgs Count="3">
+    <RequiredPkgs Count="4">
       <Item1>
+        <PackageName Value="Common"/>
+      </Item1>
+      <Item2>
         <PackageName Value="TemplateGenerics"/>
         <MaxVersion Minor="3" Valid="True"/>
         <MinVersion Minor="3" Valid="True"/>
-      </Item1>
-      <Item2>
-        <PackageName Value="synapse"/>
       </Item2>
       <Item3>
+        <PackageName Value="synapse"/>
+      </Item3>
+      <Item4>
         <PackageName Value="FCL"/>
         <MinVersion Major="1" Valid="True"/>
-      </Item3>
+      </Item4>
     </RequiredPkgs>
     <UsageOptions>
       <UnitPath Value="$(PkgOutDir)"/>

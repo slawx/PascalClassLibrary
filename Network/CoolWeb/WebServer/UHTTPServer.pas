@@ -77,6 +77,7 @@ type
   { THTTPSessionStorage }
 
   THTTPSessionStorage = class(TComponent)
+  public
     procedure Load(HandlerData: THTTPHandlerData); virtual;
     procedure Save(HandlerData: THTTPHandlerData); virtual;
     constructor Create(AOwner: TComponent); override;

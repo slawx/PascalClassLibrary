@@ -35,6 +35,7 @@ var
 function IntToBin(Data: Cardinal; Count: Byte): string;
 function TryHexToInt(Data: string; var Value: Integer): Boolean;
 function TryBinToInt(Data: string; var Value: Integer): Boolean;
+function BinToHexString(Source: AnsiString): string;
 //function DelTree(DirName : string): Boolean;
 //function GetSpecialFolderPath(Folder: Integer): string;
 function BCDToInt(Value: Byte): Byte;
@@ -55,6 +56,16 @@ procedure DeleteFiles(APath, AFileSpec: string);
 
 
 implementation
+
+function BinToHexString(Source: AnsiString): string;
+var
+  I: Integer;
+begin
+  for I := 1 to Length(Source) do begin
+    Result := Result + LowerCase(IntToHex(Ord(Source[I]), 2));
+  end;
+end;
+
 
 procedure DeleteFiles(APath, AFileSpec: string);
 var

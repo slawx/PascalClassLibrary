@@ -5,7 +5,7 @@ unit UHTTPSessionFile;
 interface
 
 uses
-  Classes, SysUtils, UHTTPServer, syncobjs, synacode, UCommon;
+  Classes, SysUtils, UHTTPServer, syncobjs, synacode, UCommon, FileUtil;
 
 type
 
@@ -36,6 +36,9 @@ procedure Register;
 
 implementation
 
+resourcestring
+  SCantCreateSessionStorageDirectory = 'Can''t create session storage directory.';
+
 procedure Register;
 begin
   RegisterComponents('CoolWeb', [THTTPSessionStorageFile]);
@@ -47,7 +50,7 @@ end;
 function THTTPSessionStorageFile.GetNewSessionId: string;
 begin
   Result := BinToHexString(SHA1(FloatToStr(Now)));
-  while FileExists(Directory + '/' + Result) do
+  while FileExistsUTF8(Directory + DirectorySeparator + Result) do
     Result := BinToHexString(SHA1(FloatToStr(Now)));
 end;
 
@@ -70,8 +73,8 @@ begin
   GetSessionId(HandlerData);
   try
     Lock.Acquire;
-    SessionFile := Directory + '/' + HandlerData.SessionId;
-    if FileExists(SessionFile) then
+    SessionFile := Directory + DirectorySeparator + HandlerData.SessionId;
+    if FileExistsUTF8(SessionFile) then
       HandlerData.Session.LoadFromFile(SessionFile)
       else HandlerData.SessionId := GetNewSessionId;
   finally
@@ -86,12 +89,12 @@ var
 begin
   try
     Lock.Acquire;
-    SessionFile := Directory + '/' + HandlerData.SessionId;
+    SessionFile := Directory + DirectorySeparator + HandlerData.SessionId;
     ForceDirectories(Directory);
-    if DirectoryExists(Directory) then begin
+    if DirectoryExistsUTF8(Directory) then begin
       DeleteFile(SessionFile);
       HandlerData.Session.SaveToFile(SessionFile)
-    end else raise Exception.Create('Can''t create session storage directory.');
+    end else raise Exception.Create(SCantCreateSessionStorageDirectory);
 
     HandlerData.Response.Cookies.Values[SessionIdCookieName] := HandlerData.SessionId;
   finally

@@ -20,6 +20,8 @@ type
 
   TSetClientCapabilities = set of TClientCapabilities;
 
+  TLogEvent = procedure(Sender: TObject; Text: string) of object;
+
   TDbRows = class(TListObject)
   private
     function GetData(Index: Integer): TDictionaryStringString;
@@ -40,6 +42,7 @@ type
     FConnected: Boolean;
     FDatabase: string;
     FUserName: string;
+    FOnLogQuery: TLogEvent;
     procedure mySQLClient1ConnectError(Sender: TObject; Msg: String);
     function GetConnected: Boolean;
     function GetLastErrorMessage: string;
@@ -55,10 +58,14 @@ type
     procedure CreateColumn(Table, ColumnName: string; ColumnType: TTypeKind);
     procedure Query(DbRows: TDbRows; Data: string);
     procedure Select(DbRows: TDbRows; ATable: string; Filter: string = '*'; Condition: string = '1');
-    procedure Delete(ATable: string; Condition: string = '1');
-    procedure Insert(ATable: string; Data: TDictionaryStringString);
-    procedure Update(ATable: string; Data: TDictionaryStringString; Condition: string = '1');
-    procedure Replace(ATable: string; Data: TDictionaryStringString);
+    procedure Delete(ATable: string; Condition: string = '1';
+      Schema: string = '');
+    procedure Insert(ATable: string; Data: TDictionaryStringString;
+      Schema: string = '');
+    procedure Update(ATable: string; Data: TDictionaryStringString;
+      Condition: string = '1'; Schema: string = '');
+    procedure Replace(ATable: string; Data: TDictionaryStringString;
+      Schema: string = '');
     procedure Connect;
     procedure Disconnect;
     function LastInsertId: Integer;
@@ -74,6 +81,7 @@ type
     property UserName: string read FUserName write FUserName;
     property Password: string read FPassword write FPassword;
     property Encoding: string read FEncoding write FEncoding;
+    property OnLogQuery: TLogEvent read FOnLogQuery write FOnLogQuery;
   end;
 
   function MySQLFloatToStr(F: Real): string;
@@ -192,7 +200,8 @@ begin
   end;
 end;
 
-procedure TSqlDatabase.Insert(ATable: string; Data: TDictionaryStringString);
+procedure TSqlDatabase.Insert(ATable: string; Data: TDictionaryStringString;
+  Schema: string);
 var
   DbNames: string;
   DbValues: string;
@@ -214,7 +223,8 @@ begin
   System.Delete(DbValues, 1, 1);
   try
     DbResult := TDbRows.Create;
-    Query(DbResult, 'INSERT INTO `' + ATable + '` (' + DbNames + ') VALUES (' + DbValues + ')');
+    if Schema <> '' then Schema := '`' + Schema + '`.';
+    Query(DbResult, 'INSERT INTO ' + Schema + '`' + ATable + '` (' + DbNames + ') VALUES (' + DbValues + ')');
   finally
     DbResult.Free;
   end;
@@ -227,7 +237,7 @@ var
   DbRow: MYSQL_ROW;
 begin
   DbRows.Clear;
-  //DebugLog('SqlDatabase query: '+Data);
+  if Assigned(FOnLogQuery) then FOnLogQuery(Self, Data);
   LastQuery := Data;
   mysql_query(FSession, PChar(Data));
   if LastErrorNumber <> 0 then begin
@@ -251,7 +261,8 @@ begin
   mysql_free_result(DbResult);
 end;
 
-procedure TSqlDatabase.Replace(ATable: string; Data: TDictionaryStringString);
+procedure TSqlDatabase.Replace(ATable: string; Data: TDictionaryStringString;
+  Schema: string = '');
 var
   DbNames: string;
   DbValues: string;
@@ -273,7 +284,8 @@ begin
   System.Delete(DbValues, 1, 1);
   try
     DbResult := TDbRows.Create;
-    Query(DbResult, 'REPLACE INTO `' + ATable + '` (' + DbNames + ') VALUES (' + DbValues + ')');
+    if Schema <> '' then Schema := '`' + Schema + '`.';
+    Query(DbResult, 'REPLACE INTO ' + Schema + '`' + ATable + '` (' + DbNames + ') VALUES (' + DbValues + ')');
   finally
     DbResult.Free;
   end;
@@ -285,7 +297,8 @@ begin
   Query(DbRows, 'SELECT ' + Filter + ' FROM `' + ATable + '` WHERE ' + Condition);
 end;
 
-procedure TSqlDatabase.Update(ATable: string; Data: TDictionaryStringString; Condition: string = '1');
+procedure TSqlDatabase.Update(ATable: string; Data: TDictionaryStringString;
+  Condition: string = '1'; Schema: string = '');
 var
   DbValues: string;
   Value: string;
@@ -303,7 +316,8 @@ begin
   System.Delete(DbValues, 1, 1);
   try
     DbResult := TDbRows.Create;
-    Query(DbResult, 'UPDATE `' + ATable + '` SET (' + DbValues + ') WHERE ' + Condition);
+    if Schema <> '' then Schema := '`' + Schema + '`.';
+    Query(DbResult, 'UPDATE ' + Schema + '`' + ATable + '` SET (' + DbValues + ') WHERE ' + Condition);
   finally
     DbResult.Free;
   end;
@@ -314,14 +328,16 @@ begin
 //  LastError := Msg + '('+IntToStr(mySQLClient1.LastErrorNumber)+')';
 end;
 
-procedure TSqlDatabase.Delete(ATable: string; Condition: string = '1');
+procedure TSqlDatabase.Delete(ATable: string; Condition: string = '1';
+  Schema: string = '');
 var
   DbResult: TDbRows;
 begin
   LastUsedTable := ATable;
   try
     DbResult := TDbRows.Create;
-    Query(DbResult, 'DELETE FROM `' + ATable + '` WHERE ' + Condition);
+    if Schema <> '' then Schema := '`' + Schema + '`.';
+    Query(DbResult, 'DELETE FROM ' + Schema + '`' + ATable + '` WHERE ' + Condition);
   finally
     DbResult.Free;
   end;
