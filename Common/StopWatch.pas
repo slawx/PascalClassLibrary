@@ -3,9 +3,13 @@ unit StopWatch;
 
 interface
 
-uses Windows, SysUtils, DateUtils;
+uses
+  {$IFDEF Windows}Windows,{$ENDIF}
+  SysUtils, DateUtils;
 
-type 
+type
+  TLargeInteger = Int64;
+
   TStopWatch = class
   private
     fFrequency : TLargeInteger;
@@ -35,7 +39,11 @@ begin
 
   fIsRunning := False;
 
+  {$IFDEF Windows}
   fIsHighResolution := QueryPerformanceFrequency(fFrequency) ;
+  {$ELSE}
+  raise Exception.Create('Not implemeneted');
+  {$ENDIF}
   if NOT fIsHighResolution then fFrequency := MSecsPerSec;
 
   if StartOnCreate then Start;
@@ -49,7 +57,11 @@ end;
 procedure TStopWatch.SetTickStamp(var lInt : TLargeInteger) ;
 begin
   if fIsHighResolution then
+    {$IFDEF Windows}
     QueryPerformanceCounter(lInt)
+    {$ELSE}
+    raise Exception.Create('Not implemeneted')
+    {$ENDIF}
   else
     lInt := MilliSecondOf(Now) ;
 end;
@@ -79,4 +91,4 @@ begin
   fIsRunning := False;
 end;
 
-end.
+end.

@@ -5,7 +5,8 @@ unit UCommon;
 interface
 
 uses
-  Windows, Classes, SysUtils, SpecializedList, StrUtils, Dialogs,
+  {$IFDEF Windows}Windows,{$ENDIF}
+  Classes, SysUtils, SpecializedList, StrUtils, Dialogs,
   FileUtil; //, ShFolder, ShellAPI;
 
 type
@@ -28,9 +29,11 @@ type
 var
   ExceptionHandler: TExceptionEvent;
   DLLHandle1: HModule;
+
+{$IFDEF Windows}
   GetUserNameEx: procedure (NameFormat: DWORD;
     lpNameBuffer: LPSTR; nSize: PULONG); stdcall;
-
+{$ENDIF}
 
 function IntToBin(Data: Cardinal; Count: Byte): string;
 function TryHexToInt(Data: string; var Value: Integer): Boolean;
@@ -40,8 +43,10 @@ function BinToHexString(Source: AnsiString): string;
 //function GetSpecialFolderPath(Folder: Integer): string;
 function BCDToInt(Value: Byte): Byte;
 function CompareByteArray(Data1, Data2: TArrayOfByte): Boolean;
+{$IFDEF Windows}
 function GetUserName: string;
 function LoggedOnUserNameEx(Format: TUserNameFormat): string;
+{$ENDIF}
 function SplitString(var Text: string; Count: Word): string;
 function GetBit(Variable: QWord; Index: Byte): Boolean;
 procedure SetBit(var Variable: QWord; Index: Byte; State: Boolean);
@@ -249,6 +254,7 @@ begin
   Result[High(Result)] := Data;
 end;
 
+{$IFDEF Windows}
 function GetUserName: string;
 const
   MAX_USERNAME_LENGTH = 256;
@@ -282,6 +288,7 @@ begin
     Result := UTF8Encode(UserName);
   end else Result := GetUserName;
 end;
+{$ENDIF}
 
 function SplitString(var Text: string; Count: Word): string;
 begin
@@ -316,16 +323,20 @@ end;
 
 procedure LoadLibraries;
 begin
+  {$IFDEF Windows}
   DLLHandle1 := LoadLibrary('secur32.dll');
   if DLLHandle1 <> 0 then
   begin
     @GetUserNameEx := GetProcAddress(DLLHandle1, 'GetUserNameExA');
   end;
+  {$ENDIF}
 end;
 
 procedure FreeLibraries;
 begin
+  {$IFDEF Windows}
   if DLLHandle1 <> 0 then FreeLibrary(DLLHandle1);
+  {$ENDIF}
 end;
 
 
@@ -338,4 +349,4 @@ finalization
 
 FreeLibraries;
 
-end.
+end.
