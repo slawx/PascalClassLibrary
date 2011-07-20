@@ -5,7 +5,8 @@
 interface
 
 uses
-  Classes, SysUtils, Graphics;
+  Classes, SysUtils,
+  Graphics, FPImage;
 
 type
   {$MACRO ON}
@@ -25,6 +26,20 @@ type
 {$DEFINE INTERFACE}
 {$I 'GenericBitmap.inc'}
 
+// TBitmapTFPColor<Integer, Integer, TFPColor>
+{$DEFINE TGBitmapIndexX := Integer}
+{$DEFINE TGBitmapIndexY := Integer}
+{$DEFINE TGBitmapItem := TFPColor}
+{$DEFINE TGBitmapIndex := TBitmapTFPColorIndex}
+{$DEFINE TGBitmapRow := TBitmapTFPColorRow}
+{$DEFINE TGBitmapMatrix := TBitmapTFPColorMatrix}
+{$DEFINE TGBitmap := TBitmapTFPColor}
+{$DEFINE TGBitmapSortCompare := TBitmapTFPColorSortCompare}
+{$DEFINE TGBitmapToStringConverter := TBitmapTFPColorToStringConverter}
+{$DEFINE TGBitmapFromStringConverter := TBitmapTFPColorFromStringConverter}
+{$DEFINE TGBitmapMerge := TBitmapTFPColorMerge}
+{$DEFINE INTERFACE}
+{$I 'GenericBitmap.inc'}
 
 implementation
 
@@ -43,6 +58,21 @@ implementation
 {$DEFINE TGBitmapToStringConverter := TBitmapTColorToStringConverter}
 {$DEFINE TGBitmapFromStringConverter := TBitmapTColorFromStringConverter}
 {$DEFINE TGBitmapMerge := TBitmapTColorMerge}
+{$DEFINE IMPLEMENTATION}
+{$I 'GenericBitmap.inc'}
+
+// TBitmapTFPColor<Integer, Integer, TFPColor>
+{$DEFINE TGBitmapIndexX := Integer}
+{$DEFINE TGBitmapIndexY := Integer}
+{$DEFINE TGBitmapItem := TFPColor}
+{$DEFINE TGBitmapIndex := TBitmapTFPColorIndex}
+{$DEFINE TGBitmapRow := TBitmapTFPColorRow}
+{$DEFINE TGBitmapMatrix := TBitmapTFPColorMatrix}
+{$DEFINE TGBitmap := TBitmapTFPColor}
+{$DEFINE TGBitmapSortCompare := TBitmapTFPColorSortCompare}
+{$DEFINE TGBitmapToStringConverter := TBitmapTFPColorToStringConverter}
+{$DEFINE TGBitmapFromStringConverter := TBitmapTFPColorFromStringConverter}
+{$DEFINE TGBitmapMerge := TBitmapTFPColorMerge}
 {$DEFINE IMPLEMENTATION}
 {$I 'GenericBitmap.inc'}
 

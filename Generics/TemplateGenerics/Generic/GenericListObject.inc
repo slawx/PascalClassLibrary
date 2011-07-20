@@ -17,7 +17,7 @@
   public
     OwnsObjects: Boolean;
     function AddNew(NewObject: TGListItem = nil): TGListItem;
-    function AddInsertNew(Index: TGListIndex; NewObject: TGListItem = nil): TGListItem;
+    function InsertNew(Index: TGListIndex; NewObject: TGListItem = nil): TGListItem;
     procedure Delete(Index: TGListObjectIndex); override;
     procedure Clear; override;
     procedure Assign(Source: TGList); override;
@@ -57,7 +57,7 @@ begin
   Add(Result);
 end;
 
-function TGListObject.AddInsertNew(Index: TGListIndex;
+function TGListObject.InsertNew(Index: TGListIndex;
   NewObject: TGListItem = nil): TGListItem;
 begin
   if Assigned(NewObject) then Result := NewObject
@@ -111,4 +111,4 @@ begin
 end;
 
 {$UNDEF IMPLEMENTATION}
-{$ENDIF}
+{$ENDIF}
