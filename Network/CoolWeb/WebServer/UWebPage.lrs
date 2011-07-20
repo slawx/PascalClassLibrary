@@ -1,0 +1,6 @@
+{ This is an automatically generated lazarus resource file }
+
+LazarusResources.Add('TWebPage','FORMDATA',[
+  'TPF0'#8'TWebPage'#7'WebPage'#14'OldCreateOrder'#8#6'Height'#3#240#0#16'Horiz'
+  +'ontalOffset'#3'5'#2#14'VerticalOffset'#3#216#0#5'Width'#3'@'#1#0#0
+]);

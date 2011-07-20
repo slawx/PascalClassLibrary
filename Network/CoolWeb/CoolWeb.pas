@@ -10,7 +10,7 @@ uses
   UHTTPServer, UHTTPServerCGI, UHTTPServerTCP, UHTTPSessionFile, 
   UHTTPSessionMySQL, USqlDatabase, UTCPServer, UPageList, UUser, UHtmlClasses, 
   UMemoryStreamEx, UMIMEType, UPool, UResetableThread, UXmlClasses, UWebPage, 
-  LazarusPackageIntf;
+  UWebApp, LazIDEReg, LazarusPackageIntf;
 
 implementation
 
@@ -21,6 +21,9 @@ begin
   RegisterUnit('UHTTPSessionFile', @UHTTPSessionFile.Register); 
   RegisterUnit('UHTTPSessionMySQL', @UHTTPSessionMySQL.Register); 
   RegisterUnit('USqlDatabase', @USqlDatabase.Register); 
+  RegisterUnit('UWebPage', @UWebPage.Register); 
+  RegisterUnit('UWebApp', @UWebApp.Register); 
+  RegisterUnit('LazIDEReg', @LazIDEReg.Register); 
 end; 
 
 initialization

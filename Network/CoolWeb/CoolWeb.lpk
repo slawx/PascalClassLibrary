@@ -1,7 +1,8 @@
 <?xml version="1.0"?>
 <CONFIG>
-  <Package Version="3">
+  <Package Version="4">
     <Name Value="CoolWeb"/>
+    <AddToProjectUsesSection Value="True"/>
     <Author Value="Chronos (robie@centrum.cz)"/>
     <CompilerOptions>
       <Version Value="10"/>
@@ -19,7 +20,7 @@
     <Description Value="Unit set for generating CGI or server web application."/>
     <License Value="GNU/GPL"/>
     <Version Minor="2"/>
-    <Files Count="16">
+    <Files Count="18">
       <Item1>
         <Filename Value="WebServer/UHTTPServer.pas"/>
         <UnitName Value="UHTTPServer"/>
@@ -87,26 +88,46 @@
       </Item15>
       <Item16>
         <Filename Value="WebServer/UWebPage.pas"/>
+        <HasRegisterProc Value="True"/>
         <UnitName Value="UWebPage"/>
       </Item16>
+      <Item17>
+        <Filename Value="WebServer/UWebApp.pas"/>
+        <HasRegisterProc Value="True"/>
+        <UnitName Value="UWebApp"/>
+      </Item17>
+      <Item18>
+        <Filename Value="LazIDEReg.pas"/>
+        <HasRegisterProc Value="True"/>
+        <UnitName Value="LazIDEReg"/>
+      </Item18>
     </Files>
     <Type Value="RunAndDesignTime"/>
-    <RequiredPkgs Count="4">
+    <RequiredPkgs Count="7">
       <Item1>
-        <PackageName Value="Common"/>
+        <PackageName Value="LCL"/>
       </Item1>
       <Item2>
+        <PackageName Value="IDEIntf"/>
+      </Item2>
+      <Item3>
+        <PackageName Value="LCL"/>
+      </Item3>
+      <Item4>
+        <PackageName Value="Common"/>
+      </Item4>
+      <Item5>
         <PackageName Value="TemplateGenerics"/>
         <MaxVersion Minor="3" Valid="True"/>
         <MinVersion Minor="3" Valid="True"/>
-      </Item2>
-      <Item3>
+      </Item5>
+      <Item6>
         <PackageName Value="synapse"/>
-      </Item3>
-      <Item4>
+      </Item6>
+      <Item7>
         <PackageName Value="FCL"/>
         <MinVersion Major="1" Valid="True"/>
-      </Item4>
+      </Item7>
     </RequiredPkgs>
     <UsageOptions>
       <UnitPath Value="$(PkgOutDir)"/>

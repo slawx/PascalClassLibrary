@@ -1,0 +1,7 @@
+object WebPage: TWebPage
+  OldCreateOrder = False
+  Height = 240
+  HorizontalOffset = 565
+  VerticalOffset = 216
+  Width = 320
+end

@@ -5,21 +5,34 @@ unit UWebPage;
 interface
 
 uses
-  Classes, SysUtils;
+  Classes, SysUtils, UHTTPServer, Controls;
 
 type
-  TOnProduceEvent = procedure of object;
+  TOnProduceEvent = procedure(HandlerData: THTTPHandlerData) of object;
 
   { TWebPage }
 
-  TWebPage = class(TComponent)
+  TWebPage = class(TDataModule)
   private
+    FCaption: string;
     FOnProduce: TOnProduceEvent;
   published
+    property Caption: string read FCaption write FCaption;
     property OnProduce: TOnProduceEvent read FOnProduce write FOnProduce;
   end;
 
+
+  TWebPageClass = class of TWebPage;
+
+procedure Register;
+
+
 implementation
+
+procedure Register;
+begin
+  RegisterNoIcon([TWebPage]);
+end;
 
 end.
 
