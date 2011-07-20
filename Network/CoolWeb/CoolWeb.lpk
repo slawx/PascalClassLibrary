@@ -103,31 +103,28 @@
       </Item18>
     </Files>
     <Type Value="RunAndDesignTime"/>
-    <RequiredPkgs Count="7">
+    <RequiredPkgs Count="6">
       <Item1>
-        <PackageName Value="LCL"/>
+        <PackageName Value="IDEIntf"/>
       </Item1>
       <Item2>
-        <PackageName Value="IDEIntf"/>
+        <PackageName Value="LCL"/>
       </Item2>
       <Item3>
-        <PackageName Value="LCL"/>
+        <PackageName Value="Common"/>
       </Item3>
       <Item4>
-        <PackageName Value="Common"/>
-      </Item4>
-      <Item5>
         <PackageName Value="TemplateGenerics"/>
         <MaxVersion Minor="3" Valid="True"/>
         <MinVersion Minor="3" Valid="True"/>
+      </Item4>
+      <Item5>
+        <PackageName Value="synapse"/>
       </Item5>
       <Item6>
-        <PackageName Value="synapse"/>
-      </Item6>
-      <Item7>
         <PackageName Value="FCL"/>
         <MinVersion Major="1" Valid="True"/>
-      </Item7>
+      </Item6>
     </RequiredPkgs>
     <UsageOptions>
       <UnitPath Value="$(PkgOutDir)"/>

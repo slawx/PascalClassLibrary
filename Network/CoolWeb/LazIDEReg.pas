@@ -5,7 +5,7 @@ unit LazIDEReg;
 interface
 
 uses
-  Classes, SysUtils, LazIDEIntf, ProjectIntf, UWebPage, Forms, Controls;
+  Classes, SysUtils, LazIDEIntf, ProjectIntf, FormEditingIntf, UWebPage, Forms, Controls;
 
 type
    { TFileDescWebPage }
@@ -49,6 +49,7 @@ begin
   RegisterProjectFileDescriptor(FileDescriptorWebPage);
   CGIAppDescriptor := TCGIApplicationDescriptor.Create;
   RegisterProjectDescriptor(CGIAppDescriptor);
+  FormEditingHook.RegisterDesignerBaseClass(TWebPage);
 end;
 
 { TFileDescWebPage }

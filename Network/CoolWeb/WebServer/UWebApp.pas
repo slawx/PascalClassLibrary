@@ -40,7 +40,6 @@ end;
 
 procedure TWebApp.DoRun;
 begin
-  WriteLn('ss');
   Terminate;
 end;
 
