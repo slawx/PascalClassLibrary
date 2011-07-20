@@ -358,11 +358,11 @@ begin
   end;
 
   // Remove old existed tabs which doesn't have item associated
-  for I := PageControl.PageList.Count - 1 downto 0 do begin
+  for I := PageControl.PageCount - 1 downto 0 do begin
 //    TCDManagerTabsItem(DockItems[DockItems.Count - 1]).Control.Visible := False;
 //    TCDManagerTabsItem(DockItems[DockItems.Count - 1]).Control.Parent := nil;
 
-    if FindTabSheet(TTabSheet(PageControl.PageList[I])) = nil then begin
+    if FindTabSheet(TTabSheet(PageControl.Pages[I])) = nil then begin
       PageControl.OnChange := nil;
       DeletedPage := PageControl.Pages[I];
       DeletedPage.Parent := nil;
@@ -410,4 +410,4 @@ begin
 end;
 
 end.
-
+

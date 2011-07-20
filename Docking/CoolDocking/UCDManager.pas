@@ -688,7 +688,7 @@ var
   Title: string;
   R: TRect;
 begin
-  if Assigned(Control) then
+  if Assigned(Control) and Assigned(TWinControl(Control).DockManager) then
   with TCDManager(TWinControl(Control).DockManager) do
   case HeaderPos of
     hpLeft: begin
@@ -810,4 +810,4 @@ begin
 end;
 
 end.
-
+
