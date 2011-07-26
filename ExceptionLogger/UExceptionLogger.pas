@@ -53,7 +53,7 @@ resourcestring
 
 procedure Register;
 begin
-  RegisterComponents('Sample', [TExceptionLogger]);
+  RegisterComponents('Samples', [TExceptionLogger]);
 end;
 
 { TExceptionLogger }

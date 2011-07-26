@@ -311,13 +311,13 @@ begin
     Value := Data.Items[I].Value;
     StringReplace(Value, '"', '\"', [rfReplaceAll]);
     if Value = 'NOW()' then DbValues := DbValues + ',' + Value
-    else DbValues := DbValues + ',' + Data.Keys[I] + '=' + '"' + Value + '"';
+    else DbValues := DbValues + ',`' + Data.Keys[I] + '` =' + '"' + Value + '"';
   end;
   System.Delete(DbValues, 1, 1);
   try
     DbResult := TDbRows.Create;
     if Schema <> '' then Schema := '`' + Schema + '`.';
-    Query(DbResult, 'UPDATE ' + Schema + '`' + ATable + '` SET (' + DbValues + ') WHERE ' + Condition);
+    Query(DbResult, 'UPDATE ' + Schema + '`' + ATable + '` SET ' + DbValues + ' WHERE ' + Condition);
   finally
     DbResult.Free;
   end;

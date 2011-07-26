@@ -66,7 +66,7 @@ implementation
 
 procedure Register;
 begin
-  RegisterComponents('Sample', [TCoolTranslator]);
+  RegisterComponents('Samples', [TCoolTranslator]);
 end;
 
 { TComponentExcludesList }

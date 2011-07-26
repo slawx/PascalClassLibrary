@@ -320,7 +320,7 @@ begin
   except
     on E: Exception do
       if Assigned(OnException) then
-        OnException(Self, E);
+        OnException(FThread, E);
   end;
 end;
 

@@ -75,7 +75,7 @@ function TGListString.IndexOf(Item: TGListItem; Start: TGListIndex): TGListIndex
 begin
   Result := Start;
   while (Result < Count) and
-  (CompareStr(FItems[Result], Item) = -1) do
+  (CompareStr(FItems[Result], Item) <> 0) do
     Result := Result + 1;
   if Result = FCount then Result := -1;
 end;

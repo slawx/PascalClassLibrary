@@ -54,7 +54,8 @@ begin
   repeat
     try
       Lock.Acquire;
-      SendStreamRaw(Stream);
+      if CanWrite(0) then
+        SendStreamRaw(Stream);
     finally
       Lock.Release;
     end;
