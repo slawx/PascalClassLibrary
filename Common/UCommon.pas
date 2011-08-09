@@ -276,16 +276,20 @@ begin
 end;
 
 function LoggedOnUserNameEx(Format: TUserNameFormat): string;
+const
+  MaxLength = 1000;
 var
-  UserName: array[0..250] of Char;
+  UserName: array[0..MaxLength] of Char;
   VersionInfo: TOSVersionInfo;
   Size: DWORD;
 begin
   VersionInfo := GetVersionInfo;
   if VersionInfo.dwPlatformId = VER_PLATFORM_WIN32_NT then begin
-    Size := 250;
+    Size := MaxLength;
     GetUserNameEx(Integer(Format), @UserName, @Size);
-    Result := UTF8Encode(UserName);
+    //ShowMessage(SysErrorMessage(GetLastError));
+    if GetLastError = 0 then Result := UTF8Encode(UserName)
+      else Result := GetUserName;
   end else Result := GetUserName;
 end;
 {$ENDIF}
@@ -349,4 +353,4 @@ finalization
 
 FreeLibraries;
 
-end.
+end.
