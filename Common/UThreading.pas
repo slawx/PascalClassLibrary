@@ -82,12 +82,15 @@ type
     procedure WaitFor; override;
   end;
 
+  TTermThreadState = (ttsReady, ttsRunning, ttsFinished, ttsExceptionOccured);
+
   { TTermThread }
 
   TTermThread = class(TListedThread)
   private
   public
-    Finished: Boolean;
+    State: TTermThreadState;
+    ExceptionMessage: string;
     Method: TMethodCall;
     procedure Execute; override;
   end;
@@ -122,10 +125,12 @@ begin
     Thread.FreeOnTerminate := False;
     Thread.Resume;
     Thread.Method := Method;
-    while not Thread.Finished do begin
+    while (Thread.State = ttsRunning) or (Thread.State = ttsReady) do begin
       if MainThreadID = ThreadID then Application.ProcessMessages;
       Sleep(1);
     end;
+    if Thread.State = ttsExceptionOccured then
+      raise Exception.Create(Thread.ExceptionMessage);
   finally
     Thread.Free;
   end;
@@ -315,12 +320,16 @@ end;
 procedure TTermThread.Execute;
 begin
   try
+    State := ttsRunning;
     Method;
-    Finished := True;
+    State := ttsFinished;
   except
     on E: Exception do
-      if Assigned(OnException) then
+      if Assigned(OnException) then begin
         OnException(FThread, E);
+        ExceptionMessage := E.Message;
+        State := ttsExceptionOccured;
+      end;
   end;
 end;
 
