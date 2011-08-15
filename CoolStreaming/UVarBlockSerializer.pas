@@ -38,6 +38,7 @@ type
     procedure WriteVarStream(AStream: TStream);
     procedure ReadVarStream(AStream: TStream);
     function GetVarSize: Integer;
+    function GetVarCount: Integer;
 
     // Advanced data types
     procedure WriteVarSInt(Value: Int64);
@@ -418,6 +419,24 @@ begin
   if Data = $ff then Result := GetVarSize + ReadVarUInt + 1
   else begin
     Result := DecodeUnaryLength(Data);
+  end;
+  Stream.Position := StoredPosition;
+end;
+
+function TVarBlockSerializer.GetVarCount: Integer;
+var
+  Data: Byte;
+  StoredPosition: Integer;
+  Skip: Integer;
+begin
+  StoredPosition := Stream.Position;
+  Result := 0;
+  while Stream.Position < Stream.Size do begin
+    Data := Stream.ReadByte;
+    if Data = $ff then Skip := ReadVarUInt
+      else Skip := DecodeUnaryLength(Data) - 1;
+    Stream.Seek(Skip, soCurrent);
+    Inc(Result);
   end;
   Stream.Position := StoredPosition;
 end;
