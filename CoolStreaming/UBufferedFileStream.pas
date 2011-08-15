@@ -130,7 +130,7 @@ begin
     FFile.Seek(FPosition, soFromBeginning);
     Flush;
     FBuffer.Clear;
-  end;
+  end else FBuffer.Position := FPosition - FBufferPosition;
 
   Result := FPosition;
 end;
@@ -174,4 +174,4 @@ begin
   Result := TotalWritedCount;
 end;
 
-end.
+end.
