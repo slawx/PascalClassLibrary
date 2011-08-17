@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: \n"
 "PO-Revision-Date: \n"
-"Last-Translator: Jiří Hajda <software@mezservis.cz>\n"
+"Last-Translator: Chronos <robie@centrum.cz>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -35,5 +35,5 @@ msgstr "Čas"
 
 #: uexceptionlogger.sversion
 msgid "Version"
-msgstr ""
+msgstr "Verze"
 

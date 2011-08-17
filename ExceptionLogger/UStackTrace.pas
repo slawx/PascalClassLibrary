@@ -21,10 +21,12 @@ type
   { TStackTrace }
 
   TStackTrace = class(TObjectList)
+    Frames: array of Pointer;
     MaxDepth: Integer;
     procedure GetExceptionBackTrace;
     procedure GetCallStack(BP: Pointer);
     procedure GetCurrentCallStack;
+    procedure GetInfo;
     constructor Create;
   end;
 
@@ -65,12 +67,10 @@ begin
   Clear;
   try
     I := 0;
+    SetLength(Frames, 0);
     while (BP <> nil) and (I < MaxDepth) do begin
-      CallerAddress := TStackFrameInfo(get_caller_addr(BP));
-      StackFrameInfo := TStackFrameInfo.Create;
-      StackFrameInfo.GetFrameInfo(CallerAddress);
-      StackFrameInfo.Index := I + 1;
-      Add(StackFrameInfo);
+      SetLength(Frames, Length(Frames) + 1);
+      Frames[I] := TStackFrameInfo(get_caller_addr(BP));
       Inc(I);
       BP := TStackFrameInfo(get_caller_frame(BP));
     end;
@@ -88,29 +88,37 @@ end;
 procedure TStackTrace.GetExceptionBackTrace;
 var
   FrameCount: Integer;
-  Frames: PPointer;
+  FramesList: PPointer;
   FrameNumber: Integer;
-  StackFrameInfo: TStackFrameInfo;
 begin
-  Clear;
-  StackFrameInfo := TStackFrameInfo.Create;
-  StackFrameInfo.GetFrameInfo(ExceptAddr);
-  StackFrameInfo.Index := 1;
-  Add(StackFrameInfo);
+  SetLength(Frames, 1);
+  Frames[0] := ExceptAddr;
   FrameCount := ExceptFrameCount;
-  Frames := ExceptFrames;
+  FramesList := ExceptFrames;
   if FrameCount > MaxDepth then FrameCount := MaxDepth;
+  SetLength(Frames, FrameCount + 1);
   for FrameNumber := 0 to FrameCount - 1 do begin
-    StackFrameInfo := TStackFrameInfo.Create;
-    StackFrameInfo.GetFrameInfo(Frames[FrameNumber]);
-    StackFrameInfo.Index := FrameNumber + 1;
-    Add(StackFrameInfo);
+    Frames[FrameNumber + 1] := FramesList[FrameNumber]
   end;
 end;
 
 procedure TStackTrace.GetCurrentCallStack;
 begin
   GetCallStack(get_frame);
+end;
+
+procedure TStackTrace.GetInfo;
+var
+  I: Integer;
+  StackFrameInfo: TStackFrameInfo;
+begin
+  Clear;
+  for I := 0 to High(Frames) do begin
+    StackFrameInfo := TStackFrameInfo.Create;
+    StackFrameInfo.GetFrameInfo(Frames[I]);
+    StackFrameInfo.Index := I + 1;
+    Add(StackFrameInfo);
+  end;
 end;
 
 end.

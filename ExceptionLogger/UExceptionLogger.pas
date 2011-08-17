@@ -17,12 +17,15 @@ type
     FMaxCallStackDepth: Integer;
     FLogFileName: string;
     function GetAppVersion: string;
-    procedure MakeReport;
     procedure SetMaxCallStackDepth(const AValue: Integer);
+    procedure MakeReport;
+    procedure ShowForm;
   public
     StackTrace: TStackTrace;
     LastException: Exception;
+    ExceptionSender: TObject;
     IgnoreList: TStringList;
+    procedure LoadDetails;
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure ExceptionHandler(Sender: TObject; E: Exception);
@@ -145,14 +148,17 @@ begin
   BackTraceStrFunc := @StabBackTraceStr;
   StackTrace.GetExceptionBackTrace;
   LastException := E;
-  if Sender is TThread then TThread.Synchronize(TThread(Sender), MakeReport)
-    else MakeReport;
+  ExceptionSender := Sender;
+  if ExceptionSender is TThread then
+    TThread.Synchronize(TThread(ExceptionSender), ShowForm)
+    else ShowForm;
 end;
 
 procedure TExceptionLogger.MakeReport;
 var
   Report: TStringList;
 begin
+  StackTrace.GetInfo;
   if IgnoreList.IndexOf(LastException.ClassName) = -1 then begin
     Report := TStringList.Create;
     try
@@ -169,6 +175,21 @@ begin
     if ExceptionForm.CheckBoxIgnore.Checked then
       IgnoreList.Add(LastException.ClassName);
   end;
+end;
+
+procedure TExceptionLogger.ShowForm;
+begin
+  ExceptionForm.Logger := Self;
+  ExceptionForm.LabelMessage.Caption := LastException.Message;
+  ExceptionForm.MemoExceptionInfo.Clear;
+  if not ExceptionForm.Visible then ExceptionForm.ShowModal;
+end;
+
+procedure TExceptionLogger.LoadDetails;
+begin
+  if ExceptionSender is TThread then
+    TThread.Synchronize(TThread(ExceptionSender), MakeReport)
+    else MakeReport;
 end;
 
 procedure TExceptionLogger.SetMaxCallStackDepth(const AValue: Integer);

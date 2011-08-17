@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  CustomLineInfo, ComCtrls, UStackTrace;
+  CustomLineInfo, ComCtrls, ExtCtrls, UStackTrace, UExceptionLogger;
 
 type
 
@@ -15,21 +15,30 @@ type
   { TExceptionForm }
 
   TExceptionForm = class(TForm)
-    ButtonKill: TButton;
+    ButtonDetails: TButton;
     ButtonClose: TButton;
+    ButtonKill: TButton;
     CheckBoxIgnore: TCheckBox;
+    Image1: TImage;
+    Label1: TLabel;
+    LabelMessage: TLabel;
     ListView1: TListView;
     MemoExceptionInfo: TMemo;
     PageControl1: TPageControl;
+    PanelBasic: TPanel;
+    PanelDescription: TPanel;
+    PanelButtons: TPanel;
     TabSheet1: TTabSheet;
     TabSheet2: TTabSheet;
     procedure ButtonCloseClick(Sender: TObject);
+    procedure ButtonDetailsClick(Sender: TObject);
     procedure ButtonKillClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
-  private
+    procedure Image1Click(Sender: TObject);
   public
+    Logger: TExceptionLogger;
     procedure LoadStackTraceToListView(StackTrace: TStackTrace);
   end;
 
@@ -42,8 +51,14 @@ implementation
 
 procedure TExceptionForm.FormShow(Sender: TObject);
 begin
+  Height := PanelBasic.Height + PanelButtons.Height;
   PageControl1.ActivePageIndex := 0;
   CheckBoxIgnore.Checked := False;
+end;
+
+procedure TExceptionForm.Image1Click(Sender: TObject);
+begin
+
 end;
 
 procedure TExceptionForm.FormCreate(Sender: TObject);
@@ -54,6 +69,15 @@ end;
 procedure TExceptionForm.ButtonCloseClick(Sender: TObject);
 begin
   Close;
+end;
+
+procedure TExceptionForm.ButtonDetailsClick(Sender: TObject);
+begin
+  if PanelDescription.Height = 0 then
+    Height := PanelBasic.Height + PanelButtons.Height + 200
+    else Height := PanelBasic.Height + PanelButtons.Height;
+  Application.ProcessMessages;
+  if MemoExceptionInfo.Text = '' then Logger.LoadDetails;
 end;
 
 procedure TExceptionForm.ButtonKillClick(Sender: TObject);
@@ -71,7 +95,8 @@ var
   I: Integer;
   NewItem: TListItem;
 begin
-  with ListView1, Items do begin
+  with ListView1, Items do
+  try
     BeginUpdate;
     Clear;
     for I := 0 to StackTrace.Count - 1 do
@@ -86,6 +111,7 @@ begin
         SubItems.Add(Source);
       end;
     end;
+  finally
     EndUpdate;
   end;
 end;
