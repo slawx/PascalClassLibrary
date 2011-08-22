@@ -133,6 +133,19 @@ type
 
 procedure Register;
 
+resourcestring
+  SPrintPreview = 'Print preview';
+  SPrint = 'Print';
+  SPageSetup = 'Page setup';
+  SPrinterSetup = 'Printer setup';
+  SClose = 'Close';
+  SZoomOut = 'Zoom out';
+  SZoomIn = 'Zoom in';
+  SNextPage = 'Next page';
+  SPreviousPage = 'Previous page';
+  SLastPage = 'Last page';
+  SFirstPage = 'First page';
+
 implementation
 
 procedure Register;
@@ -381,6 +394,28 @@ end;
 
 procedure TPrintPreviewForm.FormShow(Sender: TObject);
 begin
+  Caption := SPrintPreview;
+  AClose.Caption := SClose;
+  AClose.Hint := SClose;
+  AFirstPage.Caption := SFirstPage;
+  AFirstPage.Hint := SFirstPage;
+  ALastPage.Caption := SLastPage;
+  ALastPage.Hint := SLastPage;
+  ANextPage.Caption := SNextPage;
+  ANextPage.Hint := SNextPage;
+  APreviousPage.Caption := SPreviousPage;
+  APreviousPage.Hint := SPreviousPage;
+  APageSetup.Caption := SPageSetup;
+  APageSetup.Hint := SPageSetup;
+  APrinterSetup.Caption := SPrinterSetup;
+  APrinterSetup.Hint := SPrinterSetup;
+  APrint.Caption := SPrint;
+  APrint.Hint := SPrint;
+  AZoomIn.Caption := SZoomIn;
+  AZoomIn.Hint := SZoomIn;
+  AZoomOut.Caption := SZoomOut;
+  AZoomOut.Hint := SZoomOut;
+
   PrintDialog1.MaxPage := PrintPreview.Pages.Count;
   ReloadPageNumber;
   Redraw;

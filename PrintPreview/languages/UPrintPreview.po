@@ -1,0 +1,47 @@
+msgid ""
+msgstr "Content-Type: text/plain; charset=UTF-8"
+
+#: uprintpreview.sclose
+msgid "Close"
+msgstr ""
+
+#: uprintpreview.sfirstpage
+msgid "First page"
+msgstr ""
+
+#: uprintpreview.slastpage
+msgid "Last page"
+msgstr ""
+
+#: uprintpreview.snextpage
+msgid "Next page"
+msgstr ""
+
+#: uprintpreview.spagesetup
+msgid "Page setup"
+msgstr ""
+
+#: uprintpreview.spreviouspage
+msgid "Previous page"
+msgstr ""
+
+#: uprintpreview.sprint
+msgid "Print"
+msgstr ""
+
+#: uprintpreview.sprintersetup
+msgid "Printer setup"
+msgstr ""
+
+#: uprintpreview.sprintpreview
+msgid "Print preview"
+msgstr ""
+
+#: uprintpreview.szoomin
+msgid "Zoom in"
+msgstr ""
+
+#: uprintpreview.szoomout
+msgid "Zoom out"
+msgstr ""
+

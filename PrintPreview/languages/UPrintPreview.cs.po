@@ -1,0 +1,55 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Project-Id-Version: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: Chronos <robie@centrum.cz>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: uprintpreview.sclose
+msgid "Close"
+msgstr "Zavřít"
+
+#: uprintpreview.sfirstpage
+msgid "First page"
+msgstr "První strana"
+
+#: uprintpreview.slastpage
+msgid "Last page"
+msgstr "Poslední strana"
+
+#: uprintpreview.snextpage
+msgid "Next page"
+msgstr "Další strana"
+
+#: uprintpreview.spagesetup
+msgid "Page setup"
+msgstr "Nastavení strany"
+
+#: uprintpreview.spreviouspage
+msgid "Previous page"
+msgstr "Předchozí strana"
+
+#: uprintpreview.sprint
+msgid "Print"
+msgstr "Tisknout"
+
+#: uprintpreview.sprintersetup
+msgid "Printer setup"
+msgstr "Nastavení tiskárny"
+
+#: uprintpreview.sprintpreview
+msgid "Print preview"
+msgstr "Náhled tisku"
+
+#: uprintpreview.szoomin
+msgid "Zoom in"
+msgstr "Přiblížit"
+
+#: uprintpreview.szoomout
+msgid "Zoom out"
+msgstr "Oddálit"
+

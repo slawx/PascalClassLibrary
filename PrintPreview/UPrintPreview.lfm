@@ -10,7 +10,7 @@ object PrintPreviewForm: TPrintPreviewForm
   OnDestroy = FormDestroy
   OnResize = FormResize
   OnShow = FormShow
-  LCLVersion = '0.9.30'
+  LCLVersion = '0.9.31'
   WindowState = wsMaximized
   object ToolBar1: TToolBar
     Left = 0
@@ -23,10 +23,10 @@ object PrintPreviewForm: TPrintPreviewForm
     ShowHint = True
     TabOrder = 0
     object Button1: TButton
-      Left = 427
+      Left = 482
       Height = 22
       Top = 2
-      Width = 51
+      Width = 62
       Action = AClose
       TabOrder = 0
     end
@@ -42,37 +42,37 @@ object PrintPreviewForm: TPrintPreviewForm
       Left = 76
       Height = 22
       Top = 2
-      Width = 75
+      Width = 100
       Action = APageSetup
       TabOrder = 2
     end
     object Button4: TButton
-      Left = 151
+      Left = 176
       Height = 22
       Top = 2
-      Width = 75
+      Width = 99
       Action = APrinterSetup
       TabOrder = 3
     end
     object ToolButton1: TToolButton
-      Left = 280
+      Left = 331
       Top = 2
-      Width = 8
+      Width = 10
       Caption = 'ToolButton1'
       Style = tbsSeparator
     end
     object ToolButton2: TToolButton
-      Left = 288
+      Left = 341
       Top = 2
       Action = AFirstPage
     end
     object ToolButton3: TToolButton
-      Left = 311
+      Left = 364
       Top = 2
       Action = APreviousPage
     end
     object EditPageNumber: TEdit
-      Left = 334
+      Left = 387
       Height = 21
       Top = 2
       Width = 39
@@ -80,36 +80,36 @@ object PrintPreviewForm: TPrintPreviewForm
       TabOrder = 4
     end
     object ToolButton4: TToolButton
-      Left = 373
+      Left = 426
       Top = 2
       Action = ANextPage
     end
     object ToolButton5: TToolButton
-      Left = 396
+      Left = 449
       Top = 2
       Action = ALastPage
     end
     object ToolButton6: TToolButton
-      Left = 419
+      Left = 472
       Top = 2
-      Width = 8
+      Width = 10
       Caption = 'ToolButton6'
       Style = tbsSeparator
     end
     object ToolButton7: TToolButton
-      Left = 234
+      Left = 285
       Top = 2
       Action = AZoomIn
     end
     object ToolButton8: TToolButton
-      Left = 257
+      Left = 308
       Top = 2
       Action = AZoomOut
     end
     object ToolButton9: TToolButton
-      Left = 226
+      Left = 275
       Top = 2
-      Width = 8
+      Width = 10
       Caption = 'ToolButton9'
       Style = tbsSeparator
     end
