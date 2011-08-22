@@ -32,7 +32,9 @@ type
     FLanguage: TLanguage;
     FOnTranslate: TNotifyEvent;
     FPOFilesFolder: string;
-    FPOFile: TPOFile;
+    FPOFiles: TObjectList; // TObjectList<TPOFile>;
+    function GetLocale: string;
+    function GetLocaleShort: string;
     function FindLocaleFileName(LCExt: string): string;
     function GetLocaleFileName(const LangID, LCExt: string): string;
     procedure ReloadFiles;
@@ -115,21 +117,49 @@ end;
 { TCoolTranslator }
 
 procedure TCoolTranslator.Translate;
+var
+  I, J: Integer;
+  Po: TPoFile;
 begin
-  TranslateResourceStrings('ULanguages.cs.po');
   TranslateComponentRecursive(Application);
-  if Assigned(FPOFile) then
-    Translations.TranslateResourceStrings(FPOFile);
+
+  // Merge files to single translation file
+  try
+    Po := TPOFile.Create;
+    for I := 0 to FPOFiles.Count - 1 do
+    with TPoFile(FPoFiles[I]) do
+      for J := 0 to Items.Count - 1 do
+      with TPoFileItem(Items[J]) do
+        Po.Add(Identifier, Original, Translation, Comments, Context,
+          Flags, PreviousID);
+    Translations.TranslateResourceStrings(Po);
+  finally
+    Po.Free;
+  end;
 end;
 
 procedure TCoolTranslator.ReloadFiles;
 var
   FileName: string;
+  FileList: TStringList;
+  I: Integer;
+  LocaleShort: string;
 begin
-  FreeAndNil(FPOFile);
-  if Assigned(FLanguage) then begin
-    FileName := FindLocaleFileName('.po');
-    if FileExistsUTF8(FileName) then FPOFile := TPOFile.Create(FileName);
+  FPOFiles.Clear;
+  if Assigned(FLanguage) then
+  try
+    LocaleShort := GetLocaleShort;
+    //ShowMessage(ExtractFileDir(Application.ExeName) +
+    //  DirectorySeparator + 'Languages' + ' ' + '*.' + LocaleShort + '.po');
+    FileList := FindAllFiles(ExtractFileDir(Application.ExeName) +
+      DirectorySeparator + 'Languages', '*.' + LocaleShort + '.po');
+    for I := 0 to FileList.Count - 1 do begin
+      FileName := FileList[I];
+      //FileName := FindLocaleFileName('.po');
+      if FileExistsUTF8(FileName) then FPOFiles.Add(TPOFile.Create(FileName));
+    end;
+  finally
+    FileList.Free;
   end;
 end;
 
@@ -278,10 +308,16 @@ begin
 end;
 
 function TCoolTranslator.TranslateText(Identifier, Text: string): string;
+var
+  I: Integer;
 begin
-  if Assigned(FPOFile) then
-    Result := FPOFile.Translate(Identifier, Text);
-  //ShowMessage(Text + ' => ' + Result);
+  if Text <> '' then begin
+    for I := 0 to FPoFiles.Count - 1 do begin
+      Result := TPoFile(FPOFiles[I]).Translate(Identifier, Text);
+      if Result <> Text then Break;
+    end;
+    if Result = '' then Result := Text;
+  end else Result := '';
 end;
 
 procedure TCoolTranslator.AddExcludes(AClassType: TClass; PropertyName: string
@@ -314,6 +350,7 @@ end;
 constructor TCoolTranslator.Create(AOwner: TComponent);
 begin
   inherited;
+  FPOFiles := TObjectList.Create;
   ComponentExcludes := TComponentExcludesList.Create;
   Languages := TLanguageList.Create;
   POFilesFolder := 'Languages';
@@ -327,19 +364,18 @@ end;
 
 destructor TCoolTranslator.Destroy;
 begin
-  FPOFile.Free;
+  FPOFiles.Free;
   Languages.Free;
   ComponentExcludes.Free;
   inherited Destroy;
 end;
 
-function TCoolTranslator.FindLocaleFileName(LCExt: string): string;
+function TCoolTranslator.GetLocale: string;
 var
-  T: string;
-  I: Integer;
   Lang: string;
+  I: Integer;
+  T: string;
 begin
-  Result := '';
   // Win32 user may decide to override locale with LANG variable.
   Lang := GetEnvironmentVariableUTF8('LANG');
 
@@ -357,6 +393,22 @@ begin
     LCLGetLanguageIDs(Lang, T);
 
   if Lang = 'en' then Lang := ''; // English files are without en code
+  Result := Lang;
+end;
+
+function TCoolTranslator.GetLocaleShort: string;
+begin
+  Result := Copy(GetLocale, 1, 2);
+end;
+
+function TCoolTranslator.FindLocaleFileName(LCExt: string): string;
+var
+  T: string;
+  I: Integer;
+  Lang: string;
+begin
+  Result := '';
+  Lang := GetLocale;
 
   Result := GetLocaleFileName(Lang, LCExt);
   if Result <> '' then
@@ -364,7 +416,7 @@ begin
 
   Result := ChangeFileExt(ParamStrUTF8(0), LCExt);
   if FileExistsUTF8(Result) then
-    exit;
+    Exit;
 
   Result := '';
 end;

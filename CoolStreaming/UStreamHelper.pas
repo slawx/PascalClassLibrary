@@ -148,7 +148,7 @@ begin
   end;
 end;
 
-procedure TStreamHelper.ReadStreamPart(AStream:TStream;Count:Integer);
+procedure TStreamHelper.ReadStreamPart(AStream: TStream; Count: Integer);
 var
   Buffer: array of Byte;
 begin
@@ -161,7 +161,7 @@ begin
   end;
 end;
 
-procedure TStreamHelper.WriteStreamPart(AStream:TStream;Count:Integer);
+procedure TStreamHelper.WriteStreamPart(AStream: TStream; Count: Integer);
 var
   Buffer: array of Byte;
 begin
