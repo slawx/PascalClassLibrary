@@ -47,7 +47,7 @@ implementation
 
 procedure Register;
 begin
-  RegisterComponents('Common', [TDebugLog]);
+  RegisterComponents('Samples', [TDebugLog]);
 end;
 
 { TDebugLog }

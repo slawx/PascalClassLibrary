@@ -183,7 +183,7 @@ begin
       if Assigned(OnException) then
         OnException(Parent.FThread, E);
   end;
-end;
+                                                                                                                                                                                                                                                                                                                                    end;
 
 { TVirtualThread }
 

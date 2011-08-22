@@ -1,0 +1,15 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Project-Id-Version: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: Chronos <robie@centrum.cz>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: uthreading.scurrentthreadnotfound
+msgid "Current thread ID %d not found in virtual thread list."
+msgstr "Aktuální vlákno ID %d nenalezeno v seznamu virtuálních vláken."
+
