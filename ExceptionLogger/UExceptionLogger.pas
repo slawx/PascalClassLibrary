@@ -40,11 +40,6 @@ type
 
 procedure Register;
 
-implementation
-
-uses
-  UExceptionForm;
-
 resourcestring
   SExceptionClass = 'Class';
   SMessage = 'Message';
@@ -53,6 +48,25 @@ resourcestring
   SProcessID = 'Process ID';
   SThreadID = 'Thread ID';
   SVersion = 'Version';
+  SCallStack = 'Call stack';
+  SGeneral = 'General';
+  SErrorOccured = 'Error occured during program execution:';
+  STerminate = 'Terminate';
+  SClose = 'Close';
+  SDetails = 'Details';
+  SIgnoreNextTime = 'Next time ignore this exception';
+  SExceptionInfo = 'Exception info';
+  SIndex = 'Index';
+  SAddress = 'Address';
+  SLine = 'Line';
+  SClass = 'Class';
+  SProcedureMethod = 'Procedure/method';
+  SUnit = 'Unit';
+
+implementation
+
+uses
+  UExceptionForm;
 
 procedure Register;
 begin
@@ -142,8 +156,6 @@ begin
 end;
 
 procedure TExceptionLogger.ExceptionHandler(Sender: TObject; E: Exception);
-var
-  Thread: TThread;
 begin
   BackTraceStrFunc := @StabBackTraceStr;
   StackTrace.GetExceptionBackTrace;

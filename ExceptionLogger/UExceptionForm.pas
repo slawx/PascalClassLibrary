@@ -51,6 +51,21 @@ implementation
 
 procedure TExceptionForm.FormShow(Sender: TObject);
 begin
+  Caption := SExceptionInfo;
+  PageControl1.Pages[0].Caption := SGeneral;
+  PageControl1.Pages[1].Caption := SCallStack;
+  Label1.Caption := SErrorOccured;
+  ButtonClose.Caption := SClose;
+  ButtonDetails.Caption := SDetails;
+  ButtonKill.Caption := STerminate;
+  CheckBoxIgnore.Caption := SIgnoreNextTime;
+  ListView1.Column[0].Caption := SIndex;
+  ListView1.Column[1].Caption := SAddress;
+  ListView1.Column[2].Caption := SLine;
+  ListView1.Column[3].Caption := SClass;
+  ListView1.Column[4].Caption := SProcedureMethod;
+  ListView1.Column[5].Caption := SUnit;
+
   Height := PanelBasic.Height + PanelButtons.Height;
   PageControl1.ActivePageIndex := 0;
   CheckBoxIgnore.Checked := False;
