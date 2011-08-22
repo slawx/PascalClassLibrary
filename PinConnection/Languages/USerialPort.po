@@ -1,0 +1,15 @@
+msgid ""
+msgstr "Content-Type: text/plain; charset=UTF-8"
+
+#: userialport.sassignmenterror
+msgid "Assignment error"
+msgstr ""
+
+#: userialport.swrongdatabitsnumber
+msgid "Wrong data bits number %s"
+msgstr ""
+
+#: userialport.swrongnumericbaudrate
+msgid "Wrong numeric baud rate %s"
+msgstr ""
+

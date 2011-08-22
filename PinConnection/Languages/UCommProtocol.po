@@ -1,0 +1,23 @@
+msgid ""
+msgstr "Content-Type: text/plain; charset=UTF-8"
+
+#: ucommprotocol.sdeviceprotocol
+msgid "Device protocol"
+msgstr ""
+
+#: ucommprotocol.sprotocoldecodeerror
+msgid "Data decode error"
+msgstr ""
+
+#: ucommprotocol.sresponseerror
+msgid "Command %0:s response error %1:s"
+msgstr ""
+
+#: ucommprotocol.sresponsetimeout
+msgid "Response timeout"
+msgstr ""
+
+#: ucommprotocol.swrongsequencecount
+msgid "Receive wrong sequence number %d"
+msgstr ""
+

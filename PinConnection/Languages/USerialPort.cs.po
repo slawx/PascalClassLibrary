@@ -1,0 +1,23 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Project-Id-Version: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: Chronos <robie@centrum.cz>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: userialport.sassignmenterror
+msgid "Assignment error"
+msgstr "Chyba přiřazení"
+
+#: userialport.swrongdatabitsnumber
+msgid "Wrong data bits number %s"
+msgstr "Nesprávné číslo datových bitů %s"
+
+#: userialport.swrongnumericbaudrate
+msgid "Wrong numeric baud rate %s"
+msgstr "Nesprávná číslená baudová rychlost %s"
+

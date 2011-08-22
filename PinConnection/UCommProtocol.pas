@@ -112,7 +112,7 @@ type
 implementation
 
 resourcestring
-  SResponseError = 'Command %s response error %s';
+  SResponseError = 'Command %0:s response error %1:s';
   SResponseTimeout = 'Response timeout';
   SWrongSequenceCount = 'Receive wrong sequence number %d';
   SDeviceProtocol = 'Device protocol';

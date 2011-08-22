@@ -1,0 +1,32 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Project-Id-Version: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: Chronos <robie@centrum.cz>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ucommprotocol.sdeviceprotocol
+msgid "Device protocol"
+msgstr "Protokol zařízení"
+
+#: ucommprotocol.sprotocoldecodeerror
+msgid "Data decode error"
+msgstr "Chyba dekódování dat"
+
+#: ucommprotocol.sresponseerror
+#| msgid "Command %s response error %s"
+msgid "Command %0:s response error %1:s"
+msgstr "Chyba %1:s povelu %0:s"
+
+#: ucommprotocol.sresponsetimeout
+msgid "Response timeout"
+msgstr "Vypršel čas odpovědi"
+
+#: ucommprotocol.swrongsequencecount
+msgid "Receive wrong sequence number %d"
+msgstr "Přijato nesprávné pořadové číslo %d"
+
