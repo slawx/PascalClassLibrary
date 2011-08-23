@@ -64,11 +64,13 @@ end;
 procedure TMainForm.ButtonIntegerListClick(Sender: TObject);
 var
   List: TListInteger;
+  List2: TListInteger;
   I: Integer;
 begin
   ListViewOutput.Clear;
   LabelTestName.Caption := 'TListInteger test';
   List := TListInteger.Create;
+  List2 := TListInteger.Create;
   with List do try
     AddArray([10, 20, 30, 40]);
     WriteOutput('AddArray([10, 20, 30, 40])', Implode(',', IntToStr));
@@ -85,8 +87,15 @@ begin
     WriteOutput('MoveItems(3, 2, 3)', Implode(',', IntToStr));
     Insert(5, 11);
     WriteOutput('Insert(5, 11)', Implode(',', IntToStr));
+    DeleteItems(0, 10);
+    WriteOutput('Delete(0, 10)', Implode(',', IntToStr));
+    List2.SetArray([1, 0]);
+    WriteOutput('EqualTo([6, 11])', BoolToStr(EqualTo(List2)));
+    List2.SetArray([2, 0]);
+    WriteOutput('EqualTo([7, 11])', BoolToStr(EqualTo(List2)));
   finally
     Free;
+    List2.Free;
   end;
 end;
 

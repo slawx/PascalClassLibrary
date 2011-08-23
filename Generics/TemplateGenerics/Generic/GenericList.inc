@@ -373,7 +373,7 @@ begin
   if Result then begin
     I := 0;
     while I < Count do begin
-      if not CompareMem(Addr(FItems[I]), Addr(List.FItems[I]), SizeOf(TGListItem)) then begin
+      if not CompareMem(@FItems[I], @List.FItems[I], SizeOf(TGListItem)) then begin
         Result := False;
         Break;
       end;

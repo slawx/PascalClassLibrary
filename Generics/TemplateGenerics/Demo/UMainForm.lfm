@@ -124,7 +124,7 @@ object MainForm: TMainForm
     Left = 10
     Height = 14
     Top = 408
-    Width = 72
+    Width = 62
     Anchors = [akLeft, akBottom]
     Caption = 'Benchmarks:'
     ParentColor = False
