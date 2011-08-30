@@ -88,11 +88,13 @@ type
 
   TTermThread = class(TListedThread)
   private
+    FOnFinished: TNotifyEvent;
   public
     State: TTermThreadState;
     ExceptionMessage: string;
     Method: TMethodCall;
     procedure Execute; override;
+    property OnFinished: TNotifyEvent read FOnFinished write FOnFinished;
   end;
 
   { TThreadList }
@@ -108,6 +110,7 @@ var
   OnException: TExceptionEvent;
 
 procedure RunInThread(Method: TMethodCall);
+procedure RunInThreadAsync(Method: TMethodCall; Callback: TNotifyEvent = nil);
 procedure Synchronize(Method: TMethodCall);
 
 resourcestring
@@ -123,8 +126,8 @@ begin
   try
     Thread := TTermThread.Create(True);
     Thread.FreeOnTerminate := False;
-    Thread.Resume;
     Thread.Method := Method;
+    Thread.Resume;
     while (Thread.State = ttsRunning) or (Thread.State = ttsReady) do begin
       if MainThreadID = ThreadID then Application.ProcessMessages;
       Sleep(1);
@@ -133,6 +136,22 @@ begin
       raise Exception.Create(Thread.ExceptionMessage);
   finally
     Thread.Free;
+  end;
+end;
+
+procedure RunInThreadAsync(Method: TMethodCall; Callback: TNotifyEvent = nil);
+var
+  Thread: TTermThread;
+begin
+  try
+    Thread := TTermThread.Create(True);
+    Thread.FreeOnTerminate := True;
+    Thread.Method := Method;
+    Thread.OnFinished := CallBack;
+    Thread.Resume;
+    //if Thread.State = ttsExceptionOccured then
+    //  raise Exception.Create(Thread.ExceptionMessage);
+  finally
   end;
 end;
 
@@ -149,8 +168,6 @@ begin
     end else raise Exception.Create(Format(SCurrentThreadNotFound, [ThreadID]));
   end;
 end;
-
-{ TVirtualThread }
 
 
 { TThreadList }
@@ -184,9 +201,6 @@ begin
         OnException(Parent.FThread, E);
   end;
                                                                                                                                                                                                                                                                                                                                     end;
-
-{ TVirtualThread }
-
 
 { TListedThread }
 
@@ -323,13 +337,15 @@ begin
     State := ttsRunning;
     Method;
     State := ttsFinished;
+    if Assigned(FOnFinished) then
+      FOnFinished(Self);
   except
-    on E: Exception do
-      if Assigned(OnException) then begin
+    on E: Exception do begin
+      ExceptionMessage := E.Message;
+      State := ttsExceptionOccured;
+      if Assigned(OnException) then
         OnException(FThread, E);
-        ExceptionMessage := E.Message;
-        State := ttsExceptionOccured;
-      end;
+    end;
   end;
 end;
 
