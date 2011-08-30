@@ -13,6 +13,7 @@ type
   ECommResponseCodeError = class(Exception);
   ECommTimeout = class(Exception);
   ECommError = class(Exception);
+  ENotActive = class(Exception);
 
   TResponseError = (rcNone, rcCommandNotSupported, rcSequenceOutOfRange,
     rcEWrongParameters, rcVarIntDecode, rcDropped);
@@ -117,6 +118,7 @@ resourcestring
   SWrongSequenceCount = 'Receive wrong sequence number %d';
   SDeviceProtocol = 'Device protocol';
   SProtocolDecodeError = 'Data decode error';
+  SProtocolNotActive = 'Device protocol not active';
 
 procedure TCommProtocol.DataReceive(Sender: TCommPin; Stream: TStream);
 var
@@ -132,6 +134,7 @@ begin
     Request.Enclose := False;
     with Request do
     try
+      Stream.Position := 0;
       ReadFromStream(Stream);
       if TestIndex(0) then
         MessageType := ReadVarUInt(0);
@@ -272,6 +275,7 @@ var
   Session: TDeviceProtocolSession;
   NewRequest: TVarBlockIndexed;
 begin
+  if FActive then begin
   try
     Session := TDeviceProtocolSession.Create;
     Sessions.Add(Session);
@@ -336,6 +340,7 @@ begin
   finally
     NewRequest.Free;
   end;
+  end else raise ENotActive.Create(SProtocolNotActive);
 end;
 
 constructor TCommProtocol.Create;

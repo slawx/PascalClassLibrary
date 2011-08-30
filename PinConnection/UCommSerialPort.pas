@@ -28,7 +28,7 @@ implementation
 
 procedure TCommSerialPort.ReceiveData(Stream: TMemoryStream);
 begin
-  Pin.Send(Stream);
+  if Active then Pin.Send(Stream);
 end;
 
 constructor TCommSerialPort.Create;
@@ -50,18 +50,20 @@ end;
 
 procedure TCommSerialPort.Receive(Sender: TCommPin; Stream: TStream);
 begin
-  Stream.Position := 0;
-  repeat
-    try
-      Lock.Acquire;
-      if CanWrite(0) then
-        SendStreamRaw(Stream);
-    finally
-      Lock.Release;
-    end;
-    if Stream.Position <> Stream.Size then
-      Sleep(1);
-  until Stream.Position = Stream.Size;
+  if Active then begin
+    Stream.Position := 0;
+    repeat
+      try
+        Lock.Acquire;
+        if CanWrite(0) then
+          SendStreamRaw(Stream);
+      finally
+        Lock.Release;
+      end;
+      if Stream.Position <> Stream.Size then
+        Sleep(1);
+    until Stream.Position = Stream.Size;
+  end;
 end;
 
 end.

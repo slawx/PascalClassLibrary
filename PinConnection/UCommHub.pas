@@ -13,6 +13,7 @@ type
 
   TCommHub = class
   private
+    FActive: Boolean;
     FPins: TObjectList;
     function GetPin(Index: Integer): TCommPin;
     procedure Receive(Sender: TCommPin; Stream: TStream);
@@ -28,6 +29,7 @@ type
     Function Last: TCommPin;
     function AddNew: TCommPin;
     property Pins[Index: Integer]: TCommPin read GetPin;
+    property Active: Boolean read FActive write FActive;
   end;
 
 implementation
@@ -43,10 +45,12 @@ procedure TCommHub.Receive(Sender: TCommPin; Stream: TStream);
 var
   I: Integer;
 begin
-  // Broadcast received packet to all other pins
-  for I := 0 to FPins.Count - 1 do
-    if Sender <> FPins[I] then
-      TCommPin(FPins[I]).Send(Stream);
+  if FActive then begin
+    // Broadcast received packet to all other pins
+    for I := 0 to FPins.Count - 1 do
+      if Sender <> FPins[I] then
+        TCommPin(FPins[I]).Send(Stream);
+  end;
 end;
 
 constructor TCommHub.Create;

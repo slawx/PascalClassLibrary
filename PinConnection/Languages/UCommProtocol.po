@@ -9,6 +9,10 @@ msgstr ""
 msgid "Data decode error"
 msgstr ""
 
+#: ucommprotocol.sprotocolnotactive
+msgid "Device protocol not active"
+msgstr ""
+
 #: ucommprotocol.sresponseerror
 msgid "Command %0:s response error %1:s"
 msgstr ""

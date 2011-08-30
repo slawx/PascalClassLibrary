@@ -48,7 +48,7 @@ implementation
 
 procedure TCommSocket.ReceiveData(Sender: TCommPin; Stream:TStream);
 begin
-  Socket.SendStreamRaw(Stream);
+  if FActive then Socket.SendStreamRaw(Stream);
 end;
 
 procedure TCommSocket.SetActive(const AValue: Boolean);

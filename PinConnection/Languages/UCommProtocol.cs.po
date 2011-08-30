@@ -17,6 +17,10 @@ msgstr "Protokol zařízení"
 msgid "Data decode error"
 msgstr "Chyba dekódování dat"
 
+#: ucommprotocol.sprotocolnotactive
+msgid "Device protocol not active"
+msgstr ""
+
 #: ucommprotocol.sresponseerror
 #| msgid "Command %s response error %s"
 msgid "Command %0:s response error %1:s"

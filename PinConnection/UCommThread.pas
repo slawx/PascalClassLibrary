@@ -18,7 +18,7 @@ type
   TCommThreadReceiveThread = class(TListedThread)
   public
     Parent: TCommThread;
-    Stream: TMemoryStream;
+    Stream: TStreamHelper;
     procedure Execute; override;
     constructor Create(CreateSuspended: Boolean;
       const StackSize: SizeUInt = DefaultStackSize);
@@ -52,7 +52,7 @@ implementation
 
 procedure TCommThread.ReceiveData(Sender: TCommPin; Stream:TStream);
 begin
-  Ext.Send(Stream);
+  if FActive then Ext.Send(Stream);
 end;
 
 procedure TCommThread.ExtReceiveData(Sender: TCommPin; Stream: TStream);
@@ -114,27 +114,23 @@ end;
 { TCommThreadReceiveThread }
 
 procedure TCommThreadReceiveThread.Execute;
-var
-  StreamHelper: TStreamHelper;
 begin
   try
-    StreamHelper := TStreamHelper.Create(Stream);
     with Parent do
     repeat
-      if FDataAvailable.WaitFor(1) = wrSignaled then begin
+      if FDataAvailable.WaitFor(1) = wrSignaled then
       try
         FInputBufferLock.Acquire;
         Stream.Size := 0;
-        StreamHelper.WriteStream(FInputBuffer, FInputBuffer.Size);
+        Stream.WriteStream(FInputBuffer, FInputBuffer.Size);
         Pin.Send(Stream);
-        FInputBuffer.Clear;
       finally
+        FDataAvailable.ResetEvent;
+        FInputBuffer.Clear;
         FInputBufferLock.Release;
-      end;
       end; // else Yield;
     until Terminated;
   finally
-    StreamHelper.Free;
   end;
 end;
 
@@ -142,7 +138,7 @@ constructor TCommThreadReceiveThread.Create(CreateSuspended: Boolean;
   const StackSize: SizeUInt);
 begin
   inherited;
-  Stream := TMemoryStream.Create;
+  Stream := TStreamHelper.Create;
 end;
 
 destructor TCommThreadReceiveThread.Destroy;
