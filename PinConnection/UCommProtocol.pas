@@ -251,6 +251,8 @@ begin
 end;
 
 procedure TCommProtocol.SetActive(const AValue: Boolean);
+var
+  SessionCount: Integer;
 begin
   if FActive = AValue then Exit;
   FActive := AValue;
@@ -264,6 +266,17 @@ begin
       Start;
     end;
   end else begin
+    // Wait for empty session list
+    repeat
+      try
+        Sessions.Lock.Acquire;
+        SessionCount := Sessions.Count;
+      finally
+        Sessions.Lock.Release;
+      end;
+      Sleep(1);
+    until SessionCount = 0;
+
     FreeAndNil(RetransmitThread);
   end;
 end;
