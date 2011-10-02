@@ -5,12 +5,61 @@
     <CompilerOptions>
       <Version Value="10"/>
       <SearchPaths>
-        <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)/"/>
+        <OtherUnitFiles Value="fmodintf;Systems"/>
+        <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
       </SearchPaths>
+      <Linking>
+        <Debugging>
+          <GenerateDebugInfo Value="True"/>
+          <DebugInfoType Value="dsAuto"/>
+        </Debugging>
+      </Linking>
       <Other>
         <CompilerPath Value="$(CompPath)"/>
       </Other>
     </CompilerOptions>
+    <Files Count="10">
+      <Item1>
+        <Filename Value="fmodintf/fmod.pas"/>
+        <UnitName Value="fmod"/>
+      </Item1>
+      <Item2>
+        <Filename Value="fmodintf/fmoddyn.pas"/>
+        <UnitName Value="fmoddyn"/>
+      </Item2>
+      <Item3>
+        <Filename Value="fmodintf/fmoderrors.pas"/>
+        <UnitName Value="fmoderrors"/>
+      </Item3>
+      <Item4>
+        <Filename Value="fmodintf/fmodpresets.pas"/>
+        <UnitName Value="fmodpresets"/>
+      </Item4>
+      <Item5>
+        <Filename Value="fmodintf/fmodtypes.pas"/>
+        <UnitName Value="fmodtypes"/>
+      </Item5>
+      <Item6>
+        <Filename Value="UCoolAudio.pas"/>
+        <UnitName Value="UCoolAudio"/>
+      </Item6>
+      <Item7>
+        <Filename Value="Systems/UAudioSystemFMOD.pas"/>
+        <UnitName Value="UAudioSystemFMOD"/>
+      </Item7>
+      <Item8>
+        <Filename Value="UPlaylist.pas"/>
+        <UnitName Value="UPlaylist"/>
+      </Item8>
+      <Item9>
+        <Filename Value="Systems/UAudioSystemMPlayer.pas"/>
+        <UnitName Value="UAudioSystemMPlayer"/>
+      </Item9>
+      <Item10>
+        <Filename Value="Systems/UAudioSystem.pas"/>
+        <UnitName Value="UAudioSystem"/>
+      </Item10>
+    </Files>
     <Type Value="RunAndDesignTime"/>
     <RequiredPkgs Count="1">
       <Item1>

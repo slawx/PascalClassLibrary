@@ -1,0 +1,66 @@
+object MainForm: TMainForm
+  Left = 479
+  Height = 240
+  Top = 249
+  Width = 359
+  Caption = 'CoolAudio demo'
+  ClientHeight = 240
+  ClientWidth = 359
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  LCLVersion = '0.9.31'
+  object Edit1: TEdit
+    Left = 8
+    Height = 21
+    Top = 12
+    Width = 264
+    Anchors = [akTop, akLeft, akRight]
+    TabOrder = 0
+    Text = '11-seal-amazing.mp3'
+  end
+  object Button1: TButton
+    Left = 277
+    Height = 25
+    Top = 12
+    Width = 75
+    Anchors = [akTop, akRight]
+    Caption = 'Select...'
+    TabOrder = 1
+  end
+  object ButtonPlay: TButton
+    Left = 11
+    Height = 25
+    Top = 63
+    Width = 75
+    Caption = 'Play'
+    OnClick = ButtonPlayClick
+    TabOrder = 2
+  end
+  object ButtonPause: TButton
+    Left = 96
+    Height = 25
+    Top = 64
+    Width = 75
+    Caption = 'Pause'
+    OnClick = ButtonPauseClick
+    TabOrder = 3
+  end
+  object ButtonStop: TButton
+    Left = 182
+    Height = 25
+    Top = 64
+    Width = 75
+    Caption = 'Stop'
+    OnClick = ButtonStopClick
+    TabOrder = 4
+  end
+  object TrackBar1: TTrackBar
+    Left = 11
+    Height = 33
+    Top = 90
+    Width = 341
+    Position = 0
+    Anchors = [akTop, akLeft, akRight]
+    TabOrder = 5
+  end
+end

@@ -7,15 +7,6 @@ interface
 uses
   Classes, SysUtils;
 
-type
-  TAudioFile = class
-
-  end;
-
-  TPlayer = class
-
-  end;
-
 implementation
 
 end.
