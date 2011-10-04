@@ -1,12 +1,12 @@
 unit UMainForm;
 
-{$mode objfpc}{$H+}
+{$mode Delphi}{$H+}
 
 interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  ComCtrls, UAudioSystem, UAudioSystemFMOD, UAudioSystemMPlayer;
+  ComCtrls, ExtCtrls, UAudioSystem, UAudioSystemFMOD, UAudioSystemMPlayer;
 
 type
 
@@ -19,6 +19,7 @@ type
     ButtonPause: TButton;
     Edit1: TEdit;
     OpenDialog1: TOpenDialog;
+    TimerPlayback: TTimer;
     TrackBar1: TTrackBar;
     procedure Button1Click(Sender: TObject);
     procedure ButtonPauseClick(Sender: TObject);
@@ -26,6 +27,8 @@ type
     procedure ButtonStopClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
+    procedure TimerPlaybackTimer(Sender: TObject);
+    procedure TrackBar1Change(Sender: TObject);
   private
     { private declarations }
   public
@@ -54,6 +57,20 @@ procedure TMainForm.FormDestroy(Sender: TObject);
 begin
   Player.Free;
   AudioSystem.Free;
+end;
+
+procedure TMainForm.TimerPlaybackTimer(Sender: TObject);
+begin
+  if Player.Playing then begin
+    TrackBar1.OnChange := nil;
+    TrackBar1.Position := Trunc(Player.Position / Player.Length * TrackBar1.Max);
+    TrackBar1.OnChange := TrackBar1Change;
+  end;
+end;
+
+procedure TMainForm.TrackBar1Change(Sender: TObject);
+begin
+  Player.Position := TrackBar1.Position / TrackBar1.Max * Player.Length;
 end;
 
 procedure TMainForm.ButtonPlayClick(Sender: TObject);

@@ -60,6 +60,8 @@ object MainForm: TMainForm
     Height = 33
     Top = 90
     Width = 417
+    Max = 100
+    OnChange = TrackBar1Change
     Position = 0
     Anchors = [akTop, akLeft, akRight]
     TabOrder = 5
@@ -68,5 +70,10 @@ object MainForm: TMainForm
     Filter = 'Any file (*.*)|*.*|MP3 (*.mp3)|*.mp3|WAV (*.wav)|*.wav'
     left = 296
     top = 48
+  end
+  object TimerPlayback: TTimer
+    OnTimer = TimerPlaybackTimer
+    left = 112
+    top = 144
   end
 end

@@ -28,6 +28,7 @@ type
 
   TPlayer = class(TComponent)
   private
+    procedure SetPlaying(AValue: Boolean);
   protected
     FFileName: string;
     FAudioSystem: TAudioSystem;
@@ -50,6 +51,7 @@ type
     property Muted: Boolean read GetMuted write SetMuted;
     property AudioSystem: TAudioSystem read FAudioSystem write FAudioSystem;
     property FileName: string read FFileName write SetFileName;
+    property Playing: Boolean read FPlaying write SetPlaying;
     constructor Create; virtual;
   end;
 
@@ -60,6 +62,12 @@ resourcestring
 implementation
 
 { TPlayer }
+
+procedure TPlayer.SetPlaying(AValue: Boolean);
+begin
+  if FPlaying = AValue then Exit;
+  if AValue then Play else Stop;
+end;
 
 procedure TPlayer.SetFileName(AValue: string);
 begin

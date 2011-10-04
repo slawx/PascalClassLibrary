@@ -1,3 +1,5 @@
+// MPlayer slave command list: http://www.mplayerhq.hu/DOCS/tech/slave.txt
+
 unit UAudioSystemMPlayer;
 
 {$mode Delphi}{$H+}
@@ -5,7 +7,7 @@ unit UAudioSystemMPlayer;
 interface
 
 uses
-  Classes, SysUtils, UAudioSystem, Process, Math, Dialogs;
+  Classes, SysUtils, UAudioSystem, Process, Math, Dialogs, DateUtils;
 
 const
 {$ifdef Unix}
@@ -34,8 +36,6 @@ type
   TPlayerMPlayer = class(TPlayer)
   private
     FProcess: TProcess;
-    FProcessActive: Boolean;
-    FPlaying: Boolean;
     FVolume: Real;
     function GetProcessOutput: string;
     procedure SendCommand(Command: string);
@@ -107,16 +107,33 @@ end;
 
 procedure TPlayerMPlayer.SendCommand(Command: string);
 begin
-  Command := Command + LineEnding;// #10; // MPLayer always needs #10 as Lineending, no matter if win32 or linux
+  Command := Command + #10; // MPLayer always needs #10 as Lineending, no matter if win32 or linux
   try
-    if FProcessActive then FProcess.Input.Write(Command[1], System.Length(Command));
+    if FProcess.Running then FProcess.Input.Write(Command[1], System.Length(Command));
   except
     raise Exception.Create(SSendCommandException);
   end;
 end;
 
 function TPlayerMPlayer.GetLength: TDateTime;
+var
+  tmps: string;
+  I: Integer;
+  Time: Real;
 begin
+  if FPlaying and fProcess.Running then begin
+    repeat
+      SendCommand('get_time_length');
+      Sleep(5);
+      tmps := GetProcessOutput;
+    until Pos('LENGTH', tmps) > 0;
+    I := LastDelimiter('=', tmps);
+    if I > 0 then begin
+      Tmps := StringReplace(Tmps, '.', ',', [rfReplaceAll]);
+      Time := StrToFloat(Copy(tmps, I + 1, System.Length(tmps)));
+      Result := Time * OneSecond;
+    end;
+  end;
 end;
 
 function TPlayerMPlayer.GetPosition: TDateTime;
@@ -135,9 +152,9 @@ begin
     until (Pos('time_pos', tmps) > 0) or (I >= 3);
     I := LastDelimiter('=', tmps);
     if I > 0 then begin
+      Tmps := StringReplace(Tmps, '.', ',', [rfReplaceAll]);
       Time := StrToFloat(Copy(tmps, I + 1, System.Length(tmps)));
-      Time := Time * 1000;
-      Result := Round(Time);
+      Result := Time * OneSecond;
     end else Result := -1;
   end else Result := -1;
 end;
@@ -167,6 +184,9 @@ end;
 
 procedure TPlayerMPlayer.SetPosition(AValue: TDateTime);
 begin
+  if FPlaying and FProcess.Running then begin
+    SendCommand('set_property time_pos ' + StringReplace(FloatToStr(AValue / OneSecond), ',', '.', [rfReplaceAll]));
+  end;
 end;
 
 procedure TPlayerMPlayer.SetVolume(AValue: Real);
