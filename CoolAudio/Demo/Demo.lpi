@@ -37,12 +37,12 @@
         <PackageName Value="LCL"/>
       </Item2>
     </RequiredPackages>
-    <Units Count="10">
+    <Units Count="20">
       <Unit0>
         <Filename Value="Demo.lpr"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="Demo"/>
-        <UsageCount Value="21"/>
+        <UsageCount Value="28"/>
       </Unit0>
       <Unit1>
         <Filename Value="UMainForm.pas"/>
@@ -50,149 +50,289 @@
         <ComponentName Value="MainForm"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UMainForm"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="1"/>
-        <CursorPos X="25" Y="9"/>
-        <UsageCount Value="21"/>
+        <TopLine Value="58"/>
+        <CursorPos X="66" Y="65"/>
+        <UsageCount Value="28"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit1>
       <Unit2>
         <Filename Value="../UCoolAudio.pas"/>
         <UnitName Value="UCoolAudio"/>
-        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
-        <CursorPos X="1" Y="11"/>
+        <CursorPos X="34" Y="6"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
       </Unit2>
       <Unit3>
         <Filename Value="../Systems/UAudioSystemFMOD.pas"/>
         <UnitName Value="UAudioSystemFMOD"/>
-        <EditorIndex Value="5"/>
+        <EditorIndex Value="6"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
-        <CursorPos X="46" Y="11"/>
-        <UsageCount Value="10"/>
+        <CursorPos X="20" Y="111"/>
+        <UsageCount Value="13"/>
         <Loaded Value="True"/>
       </Unit3>
       <Unit4>
         <Filename Value="../UPlaylist.pas"/>
         <UnitName Value="UPlaylist"/>
-        <EditorIndex Value="7"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="29" Y="8"/>
-        <UsageCount Value="20"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="22"/>
       </Unit4>
       <Unit5>
         <Filename Value="../fmodintf/fmoddyn.pas"/>
         <UnitName Value="fmoddyn"/>
-        <EditorIndex Value="8"/>
         <WindowIndex Value="0"/>
         <TopLine Value="46"/>
         <CursorPos X="10" Y="63"/>
-        <UsageCount Value="10"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="12"/>
       </Unit5>
       <Unit6>
         <Filename Value="../fmodintf/fmodtypes.pas"/>
         <UnitName Value="fmodtypes"/>
-        <EditorIndex Value="6"/>
         <WindowIndex Value="0"/>
         <TopLine Value="158"/>
         <CursorPos X="43" Y="178"/>
-        <UsageCount Value="10"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="12"/>
       </Unit6>
       <Unit7>
         <Filename Value="../Systems/UAudioSystemMPlayer.pas"/>
         <UnitName Value="UAudioSystemMPlayer"/>
-        <EditorIndex Value="4"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="3"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="1"/>
-        <CursorPos X="34" Y="8"/>
-        <UsageCount Value="10"/>
+        <TopLine Value="258"/>
+        <CursorPos X="8" Y="260"/>
+        <UsageCount Value="13"/>
         <Loaded Value="True"/>
       </Unit7>
       <Unit8>
         <Filename Value="../CoolAudio.pas"/>
         <UnitName Value="CoolAudio"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="10"/>
+      </Unit8>
+      <Unit9>
+        <Filename Value="../Systems/UAudioSystem.pas"/>
+        <UnitName Value="UAudioSystem"/>
         <EditorIndex Value="2"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="70"/>
+        <CursorPos X="32" Y="82"/>
+        <UsageCount Value="23"/>
+        <Loaded Value="True"/>
+      </Unit9>
+      <Unit10>
+        <Filename Value="../../../../Lazarus/0.9.31_2.5.1/lcl/stdctrls.pp"/>
+        <UnitName Value="StdCtrls"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1046"/>
+        <CursorPos X="17" Y="1067"/>
+        <UsageCount Value="10"/>
+      </Unit10>
+      <Unit11>
+        <Filename Value="../../../../Lazarus/0.9.31_2.5.1/lcl/controls.pp"/>
+        <UnitName Value="Controls"/>
+        <EditorIndex Value="1"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="2427"/>
+        <CursorPos X="24" Y="2429"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit11>
+      <Unit12>
+        <Filename Value="../../../../Lazarus/0.9.31_2.5.1/lcl/lclclasses.pp"/>
+        <UnitName Value="LCLClasses"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="38"/>
+        <CursorPos X="32" Y="50"/>
+        <UsageCount Value="10"/>
+      </Unit12>
+      <Unit13>
+        <Filename Value="../../../../Lazarus/0.9.31_2.5.1/lcl/widgetset/wslclclasses.pp"/>
+        <UnitName Value="WSLCLClasses"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="120"/>
+        <CursorPos X="16" Y="131"/>
+        <UsageCount Value="10"/>
+      </Unit13>
+      <Unit14>
+        <Filename Value="../../../../Lazarus/0.9.31_2.5.1/lcl/include/buttons.inc"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="26"/>
+        <CursorPos X="18" Y="28"/>
+        <UsageCount Value="10"/>
+      </Unit14>
+      <Unit15>
+        <Filename Value="../../../../Lazarus/0.9.31_2.5.1/lcl/include/buttoncontrol.inc"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="65"/>
+        <CursorPos X="17" Y="67"/>
+        <UsageCount Value="10"/>
+      </Unit15>
+      <Unit16>
+        <Filename Value="../../../../Lazarus/0.9.31_2.5.1/lcl/include/control.inc"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="4280"/>
+        <CursorPos X="19" Y="4283"/>
+        <UsageCount Value="10"/>
+      </Unit16>
+      <Unit17>
+        <Filename Value="../../../../Lazarus/0.9.31_2.5.1/lcl/include/wincontrol.inc"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="6307"/>
+        <CursorPos X="17" Y="6320"/>
+        <UsageCount Value="10"/>
+      </Unit17>
+      <Unit18>
+        <Filename Value="../../../../Lazarus/0.9.31_2.5.1/fpc/2.5.1/source/packages/fcl-process/src/process.pp"/>
+        <UnitName Value="process"/>
+        <EditorIndex Value="4"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="13"/>
+        <CursorPos X="21" Y="26"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit18>
+      <Unit19>
+        <Filename Value="../../../../Lazarus/0.9.31_2.5.1/fpc/2.5.1/source/packages/libogcfpc/src/debug.pp"/>
+        <UnitName Value="debug"/>
+        <EditorIndex Value="5"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
         <UsageCount Value="10"/>
         <Loaded Value="True"/>
-      </Unit8>
-      <Unit9>
-        <Filename Value="../Systems/UAudioSystem.pas"/>
-        <UnitName Value="UAudioSystem"/>
-        <EditorIndex Value="3"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="48"/>
-        <CursorPos X="1" Y="81"/>
-        <UsageCount Value="20"/>
-        <Loaded Value="True"/>
-      </Unit9>
+      </Unit19>
     </Units>
-    <JumpHistory Count="13" HistoryIndex="12">
+    <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
-        <Filename Value="../UCoolAudio.pas"/>
-        <Caret Line="22" Column="75" TopLine="1"/>
+        <Filename Value="../Systems/UAudioSystemMPlayer.pas"/>
+        <Caret Line="232" Column="1" TopLine="212"/>
       </Position1>
       <Position2>
-        <Filename Value="../UCoolAudio.pas"/>
-        <Caret Line="55" Column="3" TopLine="37"/>
+        <Filename Value="../Systems/UAudioSystemMPlayer.pas"/>
+        <Caret Line="244" Column="42" TopLine="228"/>
       </Position2>
       <Position3>
-        <Filename Value="../UCoolAudio.pas"/>
-        <Caret Line="18" Column="60" TopLine="1"/>
+        <Filename Value="../Systems/UAudioSystemMPlayer.pas"/>
+        <Caret Line="239" Column="1" TopLine="228"/>
       </Position3>
       <Position4>
-        <Filename Value="../UCoolAudio.pas"/>
-        <Caret Line="56" Column="18" TopLine="37"/>
+        <Filename Value="../Systems/UAudioSystemMPlayer.pas"/>
+        <Caret Line="240" Column="1" TopLine="228"/>
       </Position4>
       <Position5>
-        <Filename Value="../UCoolAudio.pas"/>
-        <Caret Line="46" Column="33" TopLine="21"/>
+        <Filename Value="../Systems/UAudioSystemMPlayer.pas"/>
+        <Caret Line="241" Column="1" TopLine="228"/>
       </Position5>
       <Position6>
-        <Filename Value="../UCoolAudio.pas"/>
-        <Caret Line="56" Column="3" TopLine="45"/>
+        <Filename Value="../Systems/UAudioSystemMPlayer.pas"/>
+        <Caret Line="242" Column="1" TopLine="228"/>
       </Position6>
       <Position7>
-        <Filename Value="../UCoolAudio.pas"/>
-        <Caret Line="11" Column="11" TopLine="1"/>
+        <Filename Value="../Systems/UAudioSystemMPlayer.pas"/>
+        <Caret Line="243" Column="1" TopLine="228"/>
       </Position7>
       <Position8>
-        <Filename Value="../UCoolAudio.pas"/>
-        <Caret Line="19" Column="12" TopLine="1"/>
+        <Filename Value="../Systems/UAudioSystemMPlayer.pas"/>
+        <Caret Line="240" Column="12" TopLine="228"/>
       </Position8>
       <Position9>
-        <Filename Value="../UCoolAudio.pas"/>
-        <Caret Line="20" Column="34" TopLine="2"/>
+        <Filename Value="../Systems/UAudioSystemMPlayer.pas"/>
+        <Caret Line="219" Column="53" TopLine="203"/>
       </Position9>
       <Position10>
-        <Filename Value="../UCoolAudio.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
+        <Filename Value="../Systems/UAudioSystemMPlayer.pas"/>
+        <Caret Line="240" Column="1" TopLine="227"/>
       </Position10>
       <Position11>
-        <Filename Value="../CoolAudio.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
+        <Filename Value="../Systems/UAudioSystemMPlayer.pas"/>
+        <Caret Line="241" Column="1" TopLine="227"/>
       </Position11>
       <Position12>
-        <Filename Value="../CoolAudio.pas"/>
-        <Caret Line="19" Column="44" TopLine="1"/>
+        <Filename Value="../Systems/UAudioSystemMPlayer.pas"/>
+        <Caret Line="242" Column="1" TopLine="227"/>
       </Position12>
       <Position13>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="46" Column="15" TopLine="37"/>
+        <Filename Value="../Systems/UAudioSystemMPlayer.pas"/>
+        <Caret Line="243" Column="1" TopLine="227"/>
       </Position13>
+      <Position14>
+        <Filename Value="../Systems/UAudioSystemMPlayer.pas"/>
+        <Caret Line="240" Column="12" TopLine="227"/>
+      </Position14>
+      <Position15>
+        <Filename Value="../Systems/UAudioSystemMPlayer.pas"/>
+        <Caret Line="110" Column="37" TopLine="108"/>
+      </Position15>
+      <Position16>
+        <Filename Value="../Systems/UAudioSystemMPlayer.pas"/>
+        <Caret Line="239" Column="1" TopLine="227"/>
+      </Position16>
+      <Position17>
+        <Filename Value="../Systems/UAudioSystemMPlayer.pas"/>
+        <Caret Line="240" Column="1" TopLine="227"/>
+      </Position17>
+      <Position18>
+        <Filename Value="../Systems/UAudioSystemMPlayer.pas"/>
+        <Caret Line="241" Column="1" TopLine="227"/>
+      </Position18>
+      <Position19>
+        <Filename Value="../Systems/UAudioSystemMPlayer.pas"/>
+        <Caret Line="240" Column="10" TopLine="227"/>
+      </Position19>
+      <Position20>
+        <Filename Value="../Systems/UAudioSystemMPlayer.pas"/>
+        <Caret Line="126" Column="50" TopLine="108"/>
+      </Position20>
+      <Position21>
+        <Filename Value="../Systems/UAudioSystemMPlayer.pas"/>
+        <Caret Line="230" Column="1" TopLine="218"/>
+      </Position21>
+      <Position22>
+        <Filename Value="../Systems/UAudioSystemMPlayer.pas"/>
+        <Caret Line="231" Column="1" TopLine="218"/>
+      </Position22>
+      <Position23>
+        <Filename Value="../Systems/UAudioSystemMPlayer.pas"/>
+        <Caret Line="109" Column="1" TopLine="97"/>
+      </Position23>
+      <Position24>
+        <Filename Value="../Systems/UAudioSystemMPlayer.pas"/>
+        <Caret Line="110" Column="1" TopLine="97"/>
+      </Position24>
+      <Position25>
+        <Filename Value="../Systems/UAudioSystemMPlayer.pas"/>
+        <Caret Line="111" Column="1" TopLine="97"/>
+      </Position25>
+      <Position26>
+        <Filename Value="../Systems/UAudioSystemMPlayer.pas"/>
+        <Caret Line="112" Column="1" TopLine="97"/>
+      </Position26>
+      <Position27>
+        <Filename Value="../Systems/UAudioSystemMPlayer.pas"/>
+        <Caret Line="116" Column="1" TopLine="97"/>
+      </Position27>
+      <Position28>
+        <Filename Value="../Systems/UAudioSystemMPlayer.pas"/>
+        <Caret Line="233" Column="45" TopLine="218"/>
+      </Position28>
+      <Position29>
+        <Filename Value="../Systems/UAudioSystemMPlayer.pas"/>
+        <Caret Line="112" Column="45" TopLine="97"/>
+      </Position29>
+      <Position30>
+        <Filename Value="../Systems/UAudioSystemMPlayer.pas"/>
+        <Caret Line="230" Column="1" TopLine="218"/>
+      </Position30>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
@@ -207,7 +347,6 @@
     <Linking>
       <Debugging>
         <GenerateDebugInfo Value="True"/>
-        <DebugInfoType Value="dsAuto"/>
       </Debugging>
       <Options>
         <Win32>
@@ -220,22 +359,11 @@
     </Other>
   </CompilerOptions>
   <Debugging>
-    <BreakPoints Count="2">
+    <Watches Count="1">
       <Item1>
-        <Kind Value="bpkSource"/>
-        <WatchScope Value="wpsLocal"/>
-        <WatchKind Value="wpkWrite"/>
-        <Source Value="../UFMODAudio.pas"/>
-        <Line Value="59"/>
+        <Expression Value="MPOptions"/>
       </Item1>
-      <Item2>
-        <Kind Value="bpkSource"/>
-        <WatchScope Value="wpsLocal"/>
-        <WatchKind Value="wpkWrite"/>
-        <Source Value="../UFMODAudio.pas"/>
-        <Line Value="49"/>
-      </Item2>
-    </BreakPoints>
+    </Watches>
     <Exceptions Count="3">
       <Item1>
         <Name Value="EAbort"/>

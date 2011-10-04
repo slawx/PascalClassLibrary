@@ -11,7 +11,6 @@
       <Linking>
         <Debugging>
           <GenerateDebugInfo Value="True"/>
-          <DebugInfoType Value="dsAuto"/>
         </Debugging>
       </Linking>
       <Other>
@@ -61,10 +60,13 @@
       </Item10>
     </Files>
     <Type Value="RunAndDesignTime"/>
-    <RequiredPkgs Count="1">
+    <RequiredPkgs Count="2">
       <Item1>
-        <PackageName Value="FCL"/>
+        <PackageName Value="LCL"/>
       </Item1>
+      <Item2>
+        <PackageName Value="FCL"/>
+      </Item2>
     </RequiredPkgs>
     <UsageOptions>
       <UnitPath Value="$(PkgOutDir)"/>

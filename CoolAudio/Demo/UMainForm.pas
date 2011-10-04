@@ -18,7 +18,9 @@ type
     ButtonPlay: TButton;
     ButtonPause: TButton;
     Edit1: TEdit;
+    OpenDialog1: TOpenDialog;
     TrackBar1: TTrackBar;
+    procedure Button1Click(Sender: TObject);
     procedure ButtonPauseClick(Sender: TObject);
     procedure ButtonPlayClick(Sender: TObject);
     procedure ButtonStopClick(Sender: TObject);
@@ -42,8 +44,10 @@ implementation
 
 procedure TMainForm.FormCreate(Sender: TObject);
 begin
-  AudioSystem := TFMODAudioSystem.Create;
-  Player := TFMODPlayer.Create;
+  AudioSystem := TAudioSystemMPlayer.Create;
+  TAudioSystemMPlayer(AudioSystem).Path := 'c:\Program Files\SMPlayer\mplayer\mplayer.exe';
+  Player := TPlayerMPlayer.Create;
+  Player.AudioSystem := AudioSystem;
 end;
 
 procedure TMainForm.FormDestroy(Sender: TObject);
@@ -54,6 +58,7 @@ end;
 
 procedure TMainForm.ButtonPlayClick(Sender: TObject);
 begin
+  Player.FileName := Edit1.Text;
   Player.Play;
 end;
 
@@ -65,6 +70,11 @@ end;
 procedure TMainForm.ButtonPauseClick(Sender: TObject);
 begin
   Player.Pause;
+end;
+
+procedure TMainForm.Button1Click(Sender: TObject);
+begin
+  if OpenDialog1.Execute then Edit1.Text := OpenDialog1.FileName;
 end;
 
 end.

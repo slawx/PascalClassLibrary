@@ -14,7 +14,7 @@ type
 
   { TAudioSystem }
 
-  TAudioSystem = class
+  TAudioSystem = class(TComponent)
   protected
     FOutputDriver: TOutputDriver;
     procedure SetOutputMode(AValue: TOutputDriver); virtual;
@@ -26,9 +26,11 @@ type
 
   { TPlayer }
 
-  TPlayer = class
+  TPlayer = class(TComponent)
   private
   protected
+    FFileName: string;
+    FAudioSystem: TAudioSystem;
     FPlaying: Boolean;
     function GetMuted: Boolean; virtual; abstract;
     procedure SetMuted(AValue: Boolean); virtual; abstract;
@@ -37,6 +39,7 @@ type
     function GetVolume: Real; virtual; abstract;
     procedure SetPosition(AValue: TDateTime); virtual; abstract;
     procedure SetVolume(AValue: Real); virtual; abstract;
+    procedure SetFileName(AValue: string); virtual;
   public
     procedure Play; virtual; abstract;
     procedure Pause; virtual; abstract;
@@ -45,6 +48,8 @@ type
     property Length: TDateTime read GetLength;
     property Volume: Real read GetVolume write SetVolume; // 0..1
     property Muted: Boolean read GetMuted write SetMuted;
+    property AudioSystem: TAudioSystem read FAudioSystem write FAudioSystem;
+    property FileName: string read FFileName write SetFileName;
     constructor Create; virtual;
   end;
 
@@ -55,6 +60,12 @@ resourcestring
 implementation
 
 { TPlayer }
+
+procedure TPlayer.SetFileName(AValue: string);
+begin
+  if AValue = FFileName then Exit;
+  FFileName := AValue;
+end;
 
 constructor TPlayer.Create;
 begin
@@ -71,7 +82,12 @@ end;
 
 constructor TAudioSystem.Create;
 begin
-
+  {$IFDEF Windows}
+  FOutputDriver := omWin32;
+  {$ENDIF}
+  {$IFDEF Linux}
+  FOutputDriver := omAlsa;
+  {$ENDIF}
 end;
 
 destructor TAudioSystem.Destroy;

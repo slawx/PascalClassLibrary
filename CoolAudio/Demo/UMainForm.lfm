@@ -1,11 +1,11 @@
 object MainForm: TMainForm
-  Left = 479
+  Left = 531
   Height = 240
-  Top = 249
-  Width = 359
+  Top = 300
+  Width = 435
   Caption = 'CoolAudio demo'
   ClientHeight = 240
-  ClientWidth = 359
+  ClientWidth = 435
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   LCLVersion = '0.9.31'
@@ -13,18 +13,19 @@ object MainForm: TMainForm
     Left = 8
     Height = 21
     Top = 12
-    Width = 264
+    Width = 340
     Anchors = [akTop, akLeft, akRight]
     TabOrder = 0
-    Text = '11-seal-amazing.mp3'
+    Text = 'h:\Projekty2\PascalClassLibrary\CoolAudio\Demo\4 Strings - Catch A Fall (Radio Edit).mp3'
   end
   object Button1: TButton
-    Left = 277
+    Left = 353
     Height = 25
     Top = 12
     Width = 75
     Anchors = [akTop, akRight]
     Caption = 'Select...'
+    OnClick = Button1Click
     TabOrder = 1
   end
   object ButtonPlay: TButton
@@ -58,9 +59,14 @@ object MainForm: TMainForm
     Left = 11
     Height = 33
     Top = 90
-    Width = 341
+    Width = 417
     Position = 0
     Anchors = [akTop, akLeft, akRight]
     TabOrder = 5
+  end
+  object OpenDialog1: TOpenDialog
+    Filter = 'Any file (*.*)|*.*|MP3 (*.mp3)|*.mp3|WAV (*.wav)|*.wav'
+    left = 296
+    top = 48
   end
 end

@@ -9,9 +9,9 @@ uses
 
 type
 
-  { TFMODAudioSystem }
+  { TAudioSystemFMOD }
 
-  TFMODAudioSystem = class(TAudioSystem)
+  TAudioSystemFMOD = class(TAudioSystem)
   private
     procedure SetOutputMode(AValue: TOutputDriver); override;
   public
@@ -19,9 +19,9 @@ type
     destructor Destroy; override;
   end;
 
-  { TFMODPlayer }
+  { TPlayerFMOD }
 
-  TFMODPlayer = class(TPlayer)
+  TPlayerFMOD = class(TPlayer)
   private
     FHandle: PFSoundStream;
     FVolume: Real;
@@ -40,9 +40,9 @@ type
 
 implementation
 
-{ TFMODAudioSystem }
+{ TAudioSystemFMOD }
 
-procedure TFMODAudioSystem.SetOutputMode(AValue: TOutputDriver);
+procedure TAudioSystemFMOD.SetOutputMode(AValue: TOutputDriver);
 begin
   inherited SetOutputMode(AValue);
   {$ifdef linux}
@@ -55,7 +55,7 @@ begin
   {$endif}
 end;
 
-constructor TFMODAudioSystem.Create;
+constructor TAudioSystemFMOD.Create;
 begin
   inherited Create;
   fmod_load('');
@@ -63,62 +63,62 @@ begin
   FSOUND_Init(44100, 32, 0);
 end;
 
-destructor TFMODAudioSystem.Destroy;
+destructor TAudioSystemFMOD.Destroy;
 begin
   FMOD_Unload;
   inherited Destroy;
 end;
 
-{ TFMODPlayer }
+{ TPlayerFMOD }
 
-function TFMODPlayer.GetLength: TDateTime;
+function TPlayerFMOD.GetLength: TDateTime;
 begin
   Result := FVolume;
 end;
 
-function TFMODPlayer.GetPosition: TDateTime;
+function TPlayerFMOD.GetPosition: TDateTime;
 begin
 
 end;
 
-function TFMODPlayer.GetVolume: Real;
+function TPlayerFMOD.GetVolume: Real;
 begin
   Result := FSOUND_GetVolume(0) / 256;
 end;
 
-function TFMODPlayer.GetMuted: Boolean;
+function TPlayerFMOD.GetMuted: Boolean;
 begin
   Result := FSOUND_GetMute(0);
 end;
 
-procedure TFMODPlayer.SetPosition(AValue: TDateTime);
+procedure TPlayerFMOD.SetPosition(AValue: TDateTime);
 begin
   if FPlaying then FSOUND_Stream_SetPosition(FHandle, Trunc(AValue / OneMillisecond));
 end;
 
-procedure TFMODPlayer.SetVolume(AValue: Real);
+procedure TPlayerFMOD.SetVolume(AValue: Real);
 begin
   FSOUND_SetVolume(0, Trunc(AValue * 256));
 end;
 
-procedure TFMODPlayer.SetMuted(AValue: Boolean);
+procedure TPlayerFMOD.SetMuted(AValue: Boolean);
 begin
   FSOUND_SetMute(0, AValue)
 end;
 
-procedure TFMODPlayer.Play;
+procedure TPlayerFMOD.Play;
 begin
   //FHandle := FSOUND_Stream_Open(tmpp, FSOUND_NONBLOCKING, 0, 0);
   FPlaying := True;
 end;
 
-procedure TFMODPlayer.Pause;
+procedure TPlayerFMOD.Pause;
 begin
   if FPlaying then
     FSOUND_Setpaused(0, not FSOUND_Getpaused(0));
 end;
 
-procedure TFMODPlayer.Stop;
+procedure TPlayerFMOD.Stop;
 begin
   if FPlaying then begin
     FSOUND_Stream_Stop(FHandle);
