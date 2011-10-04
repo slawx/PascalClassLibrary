@@ -5,7 +5,7 @@ unit UAudioSystem;
 interface
 
 uses
-  Classes, SysUtils; 
+  Classes, SysUtils, Contnrs;
 
 type
   TOutputDriver = (omAlsa, omOSS, omDirectX, omWin32);
@@ -23,6 +23,8 @@ type
     destructor Destroy; override;
     property OutputMode: TOutputDriver read FOutputDriver write SetOutputMode;
   end;
+
+  TAudioSystemClass = class of TAudioSystem;
 
   { TPlayer }
 
@@ -55,11 +57,70 @@ type
     constructor Create; virtual;
   end;
 
+  TPlayerClass = class of TPlayer;
+
+  { TAudioSystemManagerItem }
+
+  TAudioSystemManagerItem = class
+    Name: string;
+    SystemClass: TAudioSystemClass;
+    PlayerClass: TPlayerClass;
+  end;
+
+  { TAudioSystemManager }
+
+  TAudioSystemManager = class
+    Systems: TObjectList; // TListObject<TAudioSystem>
+    procedure Register(Name: string; SystemClass: TAudioSystemClass;
+      PlayerClass: TPlayerClass);
+    procedure FillStringList(StringList: TStrings);
+    constructor Create;
+    destructor Destroy; override;
+  end;
+
 resourcestring
   SOpenOutputFailed = 'Failed opening audio output';
 
 
 implementation
+
+{ TAudioSystemManagerItem }
+
+
+{ TAudioSystemManager }
+
+procedure TAudioSystemManager.FillStringList(StringList: TStrings);
+var
+  I: Integer;
+begin
+  StringList.Clear;
+  for I := 0 to Systems.Count - 1 do
+  with TAudioSystemManagerItem(Systems[I]) do
+    StringList.AddObject(Name, Systems[I]);
+end;
+
+procedure TAudioSystemManager.Register(Name: string;
+  SystemClass: TAudioSystemClass; PlayerClass: TPlayerClass);
+var
+  NewItem: TAudioSystemManagerItem;
+begin
+  NewItem := TAudioSystemManagerItem.Create;
+  NewItem.Name := Name;
+  NewItem.SystemClass := SystemClass;
+  NewItem.PlayerClass := PlayerClass;
+  Systems.Add(NewItem);
+end;
+
+constructor TAudioSystemManager.Create;
+begin
+  Systems := TObjectList.Create;
+end;
+
+destructor TAudioSystemManager.Destroy;
+begin
+  Systems.Free;
+  inherited Destroy;
+end;
 
 { TPlayer }
 

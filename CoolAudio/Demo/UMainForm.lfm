@@ -31,7 +31,7 @@ object MainForm: TMainForm
   object ButtonPlay: TButton
     Left = 11
     Height = 25
-    Top = 63
+    Top = 87
     Width = 75
     Caption = 'Play'
     OnClick = ButtonPlayClick
@@ -40,7 +40,7 @@ object MainForm: TMainForm
   object ButtonPause: TButton
     Left = 96
     Height = 25
-    Top = 64
+    Top = 88
     Width = 75
     Caption = 'Pause'
     OnClick = ButtonPauseClick
@@ -49,7 +49,7 @@ object MainForm: TMainForm
   object ButtonStop: TButton
     Left = 182
     Height = 25
-    Top = 64
+    Top = 88
     Width = 75
     Caption = 'Stop'
     OnClick = ButtonStopClick
@@ -58,7 +58,7 @@ object MainForm: TMainForm
   object TrackBar1: TTrackBar
     Left = 11
     Height = 33
-    Top = 90
+    Top = 114
     Width = 417
     Max = 100
     OnChange = TrackBar1Change
@@ -66,10 +66,28 @@ object MainForm: TMainForm
     Anchors = [akTop, akLeft, akRight]
     TabOrder = 5
   end
+  object ComboBox1: TComboBox
+    Left = 80
+    Height = 21
+    Top = 46
+    Width = 128
+    ItemHeight = 13
+    OnChange = ComboBox1Change
+    Style = csDropDownList
+    TabOrder = 6
+  end
+  object Label1: TLabel
+    Left = 9
+    Height = 14
+    Top = 46
+    Width = 45
+    Caption = 'Backend:'
+    ParentColor = False
+  end
   object OpenDialog1: TOpenDialog
     Filter = 'Any file (*.*)|*.*|MP3 (*.mp3)|*.mp3|WAV (*.wav)|*.wav'
     left = 296
-    top = 48
+    top = 72
   end
   object TimerPlayback: TTimer
     OnTimer = TimerPlaybackTimer

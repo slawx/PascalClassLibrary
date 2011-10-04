@@ -6,7 +6,8 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  ComCtrls, ExtCtrls, UAudioSystem, UAudioSystemFMOD, UAudioSystemMPlayer;
+  ComCtrls, ExtCtrls, UAudioSystem, UAudioSystemFMOD, UAudioSystemMPlayer,
+  UCoolAudio;
 
 type
 
@@ -17,7 +18,9 @@ type
     ButtonStop: TButton;
     ButtonPlay: TButton;
     ButtonPause: TButton;
+    ComboBox1: TComboBox;
     Edit1: TEdit;
+    Label1: TLabel;
     OpenDialog1: TOpenDialog;
     TimerPlayback: TTimer;
     TrackBar1: TTrackBar;
@@ -25,6 +28,7 @@ type
     procedure ButtonPauseClick(Sender: TObject);
     procedure ButtonPlayClick(Sender: TObject);
     procedure ButtonStopClick(Sender: TObject);
+    procedure ComboBox1Change(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure TimerPlaybackTimer(Sender: TObject);
@@ -47,6 +51,7 @@ implementation
 
 procedure TMainForm.FormCreate(Sender: TObject);
 begin
+  AudioSystemManager.FillStringList(ComboBox1.Items);
   AudioSystem := TAudioSystemMPlayer.Create;
   TAudioSystemMPlayer(AudioSystem).Path := 'c:\Program Files\SMPlayer\mplayer\mplayer.exe';
   Player := TPlayerMPlayer.Create;
@@ -82,6 +87,19 @@ end;
 procedure TMainForm.ButtonStopClick(Sender: TObject);
 begin
   Player.Stop;
+end;
+
+procedure TMainForm.ComboBox1Change(Sender: TObject);
+begin
+  Player.Free;
+  AudioSystem.Free;
+  if ComboBox1.ItemIndex <> - 1 then begin
+    with TAudioSystemManagerItem(ComboBox1.Items.Objects[ComboBox1.ItemIndex]) do begin
+      AudioSystem := SystemClass.Create;
+      Player := PlayerClass.Create;
+      Player.AudioSystem := AudioSystem;
+    end;
+  end;
 end;
 
 procedure TMainForm.ButtonPauseClick(Sender: TObject);
