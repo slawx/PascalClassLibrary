@@ -21,6 +21,7 @@ type
     ComboBox1: TComboBox;
     Edit1: TEdit;
     Label1: TLabel;
+    LabelPosition: TLabel;
     OpenDialog1: TOpenDialog;
     TimerPlayback: TTimer;
     TrackBar1: TTrackBar;
@@ -54,6 +55,7 @@ begin
   AudioSystemManager.FillStringList(ComboBox1.Items);
   AudioSystem := TAudioSystemMPlayer.Create;
   TAudioSystemMPlayer(AudioSystem).Path := 'c:\Program Files\SMPlayer\mplayer\mplayer.exe';
+  TAudioSystemMPlayer(AudioSystem).Path := TAudioSystemMPlayer(AudioSystem).FindPath;
   Player := TPlayerMPlayer.Create;
   Player.AudioSystem := AudioSystem;
 end;
@@ -69,7 +71,9 @@ begin
   if Player.Playing then begin
     TrackBar1.OnChange := nil;
     TrackBar1.Position := Trunc(Player.Position / Player.Length * TrackBar1.Max);
+    Application.ProcessMessages;
     TrackBar1.OnChange := TrackBar1Change;
+    LabelPosition.Caption := 'Position: ' + TimeToStr(Player.Position) + ' / ' + TimeToStr(Player.Length);
   end;
 end;
 

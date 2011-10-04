@@ -4,6 +4,7 @@ unit UAudioSystemWindows;
 
 interface
 
+{$IFDEF Windows}
 uses
   Classes, SysUtils, UAudioSystem, MMSystem;
 
@@ -17,8 +18,11 @@ type
     procedure Pause; override;
     procedure Stop; override;
   end;
+{$ENDIF}
 
 implementation
+
+{$IFDEF Windows}
 
 { TPlayerWindows }
 
@@ -38,5 +42,7 @@ begin
   sndPlaySound(nil, 0);
 end;
 
-end.
+{$ENDIF}
 
+end.
+

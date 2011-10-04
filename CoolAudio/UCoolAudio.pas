@@ -2,7 +2,9 @@ unit UCoolAudio;
 
 {$mode Delphi}{$H+}
 
-{$DEFINE AudioSystemWindows}
+{$IFDEF Windows}
+  {$DEFINE AudioSystemWindows}
+{$ENDIF}
 {$DEFINE AudioSystemMPlayer}
 {$DEFINE AudioSystemFMOD}
 

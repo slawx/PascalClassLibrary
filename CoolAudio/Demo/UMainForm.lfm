@@ -68,10 +68,10 @@ object MainForm: TMainForm
   end
   object ComboBox1: TComboBox
     Left = 80
-    Height = 21
+    Height = 25
     Top = 46
     Width = 128
-    ItemHeight = 13
+    ItemHeight = 0
     OnChange = ComboBox1Change
     Style = csDropDownList
     TabOrder = 6
@@ -80,8 +80,16 @@ object MainForm: TMainForm
     Left = 9
     Height = 14
     Top = 46
-    Width = 45
+    Width = 52
     Caption = 'Backend:'
+    ParentColor = False
+  end
+  object LabelPosition: TLabel
+    Left = 13
+    Height = 14
+    Top = 152
+    Width = 48
+    Caption = 'Position:'
     ParentColor = False
   end
   object OpenDialog1: TOpenDialog

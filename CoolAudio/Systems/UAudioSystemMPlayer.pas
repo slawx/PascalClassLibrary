@@ -24,8 +24,8 @@ type
   private
     FPath: string;
     procedure SetOutputMode(AValue: TOutputDriver); override;
-    function FindPath: string;
   public
+    function FindPath: string;
     constructor Create; override;
     destructor Destroy; override;
     property Path: string read FPath write FPath;
@@ -62,6 +62,28 @@ resourcestring
   SCantStopProcess = 'Can''t stop Mplayer process';
 
 implementation
+
+function StrToFloatPoint(Value: string): Extended;
+var
+  FPointSeparator: TFormatSettings;
+begin
+  // Format seetings to convert a string to a float
+  FPointSeparator := DefaultFormatSettings;
+  FPointSeparator.DecimalSeparator := '.';
+  FPointSeparator.ThousandSeparator := '#';// disable the thousand separator
+  Result := StrToFloat(Value, FPointSeparator);
+end;
+
+function FloatPointToStr(Value: Extended): string;
+var
+  FPointSeparator: TFormatSettings;
+begin
+  // Format seetings to convert a string to a float
+  FPointSeparator := DefaultFormatSettings;
+  FPointSeparator.DecimalSeparator := '.';
+  FPointSeparator.ThousandSeparator := '#';// disable the thousand separator
+  Result := FloatToStr(Value, FPointSeparator);
+end;
 
 { TAudioSystemMPlayer }
 
@@ -129,8 +151,7 @@ begin
     until Pos('LENGTH', tmps) > 0;
     I := LastDelimiter('=', tmps);
     if I > 0 then begin
-      Tmps := StringReplace(Tmps, '.', ',', [rfReplaceAll]);
-      Time := StrToFloat(Copy(tmps, I + 1, System.Length(tmps)));
+      Time := StrToFloatPoint(Copy(tmps, I + 1, System.Length(tmps)));
       Result := Time * OneSecond;
     end;
   end;
@@ -152,8 +173,7 @@ begin
     until (Pos('time_pos', tmps) > 0) or (I >= 3);
     I := LastDelimiter('=', tmps);
     if I > 0 then begin
-      Tmps := StringReplace(Tmps, '.', ',', [rfReplaceAll]);
-      Time := StrToFloat(Copy(tmps, I + 1, System.Length(tmps)));
+      Time := StrToFloatPoint(Copy(tmps, I + 1, System.Length(tmps)));
       Result := Time * OneSecond;
     end else Result := -1;
   end else Result := -1;
@@ -185,7 +205,7 @@ end;
 procedure TPlayerMPlayer.SetPosition(AValue: TDateTime);
 begin
   if FPlaying and FProcess.Running then begin
-    SendCommand('set_property time_pos ' + StringReplace(FloatToStr(AValue / OneSecond), ',', '.', [rfReplaceAll]));
+    SendCommand('set_property time_pos ' + FloatPointToStr(AValue / OneSecond));
   end;
 end;
 
