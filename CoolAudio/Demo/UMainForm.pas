@@ -53,22 +53,20 @@ implementation
 procedure TMainForm.FormCreate(Sender: TObject);
 begin
   AudioSystemManager.FillStringList(ComboBox1.Items);
-  AudioSystem := TAudioSystemMPlayer.Create;
-  TAudioSystemMPlayer(AudioSystem).Path := 'c:\Program Files\SMPlayer\mplayer\mplayer.exe';
-  TAudioSystemMPlayer(AudioSystem).Path := TAudioSystemMPlayer(AudioSystem).FindPath;
-  Player := TPlayerMPlayer.Create;
-  Player.AudioSystem := AudioSystem;
+  if ComboBox1.Items.Count > 0 then
+    ComboBox1.ItemIndex := 0;
+  ComboBox1Change(Self);
 end;
 
 procedure TMainForm.FormDestroy(Sender: TObject);
 begin
-  Player.Free;
-  AudioSystem.Free;
+  FreeAndNil(Player);
+  FreeAndNil(AudioSystem);
 end;
 
 procedure TMainForm.TimerPlaybackTimer(Sender: TObject);
 begin
-  if Player.Playing then begin
+  if Assigned(Player) and Player.Playing then begin
     TrackBar1.OnChange := nil;
     TrackBar1.Position := Trunc(Player.Position / Player.Length * TrackBar1.Max);
     Application.ProcessMessages;
@@ -95,13 +93,14 @@ end;
 
 procedure TMainForm.ComboBox1Change(Sender: TObject);
 begin
-  Player.Free;
-  AudioSystem.Free;
+  FreeAndNil(Player);
+  FreeAndNil(AudioSystem);
   if ComboBox1.ItemIndex <> - 1 then begin
     with TAudioSystemManagerItem(ComboBox1.Items.Objects[ComboBox1.ItemIndex]) do begin
       AudioSystem := SystemClass.Create;
       Player := PlayerClass.Create;
       Player.AudioSystem := AudioSystem;
+      //Player.Active := True;
     end;
   end;
 end;

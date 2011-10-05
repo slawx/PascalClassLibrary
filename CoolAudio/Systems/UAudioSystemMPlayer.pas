@@ -104,7 +104,7 @@ begin
   // Searches for MPlayer in the PATH
   tmps := GetEnvironmentVariable('PATH');
   repeat
-    I := pos(':', tmps);
+    I := Pos(PathSeparator, tmps);
     if I = 0 then I := Length(tmps);
     tmppath := IncludeTrailingPathDelimiter(Copy(tmps, 0, I - 1)) + MPlayerExecutableName;
     if FileExists(tmppath) then Result := tmppath
@@ -117,7 +117,7 @@ end;
 constructor TAudioSystemMPlayer.Create;
 begin
   inherited Create;
-  FPath := '';
+  FPath := FindPath;
 end;
 
 destructor TAudioSystemMPlayer.Destroy;

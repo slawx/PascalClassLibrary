@@ -30,23 +30,27 @@ type
 
   TPlayer = class(TComponent)
   private
-    procedure SetPlaying(AValue: Boolean);
   protected
+    FActive: Boolean;
     FFileName: string;
     FAudioSystem: TAudioSystem;
     FPlaying: Boolean;
-    function GetMuted: Boolean; virtual; abstract;
-    procedure SetMuted(AValue: Boolean); virtual; abstract;
-    function GetLength: TDateTime; virtual; abstract;
-    function GetPosition: TDateTime; virtual; abstract;
-    function GetVolume: Real; virtual; abstract;
-    procedure SetPosition(AValue: TDateTime); virtual; abstract;
-    procedure SetVolume(AValue: Real); virtual; abstract;
+    procedure SetActive(AValue: Boolean); virtual;
+    procedure SetPlaying(AValue: Boolean); virtual;
+    function GetMuted: Boolean; virtual;
+    procedure SetMuted(AValue: Boolean); virtual;
+    function GetLength: TDateTime; virtual;
+    function GetPosition: TDateTime; virtual;
+    function GetVolume: Real; virtual;
+    procedure SetPosition(AValue: TDateTime); virtual;
+    procedure SetVolume(AValue: Real); virtual;
     procedure SetFileName(AValue: string); virtual;
   public
-    procedure Play; virtual; abstract;
-    procedure Pause; virtual; abstract;
-    procedure Stop; virtual; abstract;
+    procedure Play; virtual;
+    procedure Pause; virtual;
+    procedure Stop; virtual;
+    procedure Open; virtual;
+    procedure Close; virtual;
     property Position: TDateTime read GetPosition write SetPosition;
     property Length: TDateTime read GetLength;
     property Volume: Real read GetVolume write SetVolume; // 0..1
@@ -54,7 +58,9 @@ type
     property AudioSystem: TAudioSystem read FAudioSystem write FAudioSystem;
     property FileName: string read FFileName write SetFileName;
     property Playing: Boolean read FPlaying write SetPlaying;
+    property Active: Boolean read FActive write SetActive;
     constructor Create; virtual;
+    destructor Destroy; override;
   end;
 
   TPlayerClass = class of TPlayer;
@@ -124,10 +130,48 @@ end;
 
 { TPlayer }
 
+procedure TPlayer.SetActive(AValue: Boolean);
+begin
+  if FActive = AValue then Exit;
+  FActive := AValue;
+end;
+
 procedure TPlayer.SetPlaying(AValue: Boolean);
 begin
   if FPlaying = AValue then Exit;
   if AValue then Play else Stop;
+end;
+
+function TPlayer.GetMuted: Boolean;
+begin
+  Result := False;
+end;
+
+procedure TPlayer.SetMuted(AValue: Boolean);
+begin
+end;
+
+function TPlayer.GetLength: TDateTime;
+begin
+  Result := 0;
+end;
+
+function TPlayer.GetPosition: TDateTime;
+begin
+  Result := 0;
+end;
+
+function TPlayer.GetVolume: Real;
+begin
+  Result := 0;
+end;
+
+procedure TPlayer.SetPosition(AValue: TDateTime);
+begin
+end;
+
+procedure TPlayer.SetVolume(AValue: Real);
+begin
 end;
 
 procedure TPlayer.SetFileName(AValue: string);
@@ -136,9 +180,36 @@ begin
   FFileName := AValue;
 end;
 
+procedure TPlayer.Play;
+begin
+end;
+
+procedure TPlayer.Pause;
+begin
+end;
+
+procedure TPlayer.Stop;
+begin
+end;
+
+procedure TPlayer.Open;
+begin
+  Active := True;
+end;
+
+procedure TPlayer.Close;
+begin
+  Active := False;
+end;
+
 constructor TPlayer.Create;
 begin
+end;
 
+destructor TPlayer.Destroy;
+begin
+  Active := False;
+  inherited Destroy;
 end;
 
 { TAudioSystem }
