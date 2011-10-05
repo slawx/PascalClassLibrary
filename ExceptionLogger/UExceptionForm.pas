@@ -10,8 +10,6 @@ uses
 
 type
 
-  { TMainForm }
-
   { TExceptionForm }
 
   TExceptionForm = class(TForm)
@@ -88,7 +86,7 @@ end;
 
 procedure TExceptionForm.ButtonDetailsClick(Sender: TObject);
 begin
-  if PanelDescription.Height = 0 then
+  if PanelDescription.Height <= 1 then
     Height := PanelBasic.Height + PanelButtons.Height + 200
     else Height := PanelBasic.Height + PanelButtons.Height;
   Application.ProcessMessages;

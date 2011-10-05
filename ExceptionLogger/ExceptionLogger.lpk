@@ -16,6 +16,12 @@
           <SyntaxMode Value="Delphi"/>
         </SyntaxOptions>
       </Parsing>
+      <Linking>
+        <Debugging>
+          <GenerateDebugInfo Value="True"/>
+          <DebugInfoType Value="dsAuto"/>
+        </Debugging>
+      </Linking>
       <Other>
         <CompilerMessages>
           <UseMsgFile Value="True"/>
@@ -26,7 +32,7 @@
     <Description Value="Component for detailed exception debugging."/>
     <License Value="GNU/GPL"/>
     <Version Major="1"/>
-    <Files Count="5">
+    <Files Count="6">
       <Item1>
         <Filename Value="CustomLineInfo.pas"/>
         <UnitName Value="CustomLineInfo"/>
@@ -48,6 +54,10 @@
         <HasRegisterProc Value="True"/>
         <UnitName Value="UExceptionLogger"/>
       </Item5>
+      <Item6>
+        <Filename Value="ReadMe.txt"/>
+        <Type Value="Binary"/>
+      </Item6>
     </Files>
     <i18n>
       <EnableI18N Value="True"/>
@@ -445,4 +455,4 @@
       <Version Value="2"/>
     </PublishOptions>
   </Package>
-</CONFIG>
+</CONFIG>
