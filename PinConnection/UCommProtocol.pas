@@ -110,8 +110,6 @@ type
     property Active: Boolean read FActive write SetActive;
   end;
 
-implementation
-
 resourcestring
   SResponseError = 'Command %0:s response error %1:s';
   SResponseTimeout = 'Response timeout';
@@ -119,6 +117,9 @@ resourcestring
   SDeviceProtocol = 'Device protocol';
   SProtocolDecodeError = 'Data decode error';
   SProtocolNotActive = 'Device protocol not active';
+
+implementation
+
 
 procedure TCommProtocol.DataReceive(Sender: TCommPin; Stream: TStream);
 var

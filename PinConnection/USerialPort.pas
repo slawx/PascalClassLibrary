@@ -108,8 +108,14 @@ begin
 end;
 
 procedure TSerialPort.SetName(const AValue: string);
+var
+  LastState: Boolean;
 begin
+  if FName = AValue then Exit;
+  LastState := FActive;
+  Active := False;
   FName := AValue;
+  Active := LastState;
 end;
 
 procedure TSerialPort.SetParity(const AValue: TParity);
