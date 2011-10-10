@@ -6,7 +6,7 @@ interface
 
 uses
   {$IFDEF Windows}Windows,{$ENDIF}
-  Classes, SysUtils, SpecializedList, StrUtils, Dialogs,
+  Classes, SysUtils, SpecializedList, StrUtils, Dialogs, Process,
   FileUtil; //, ShFolder, ShellAPI;
 
 type
@@ -35,7 +35,8 @@ var
     lpNameBuffer: LPSTR; nSize: PULONG); stdcall;
 {$ENDIF}
 
-function IntToBin(Data: Cardinal; Count: Byte): string;
+function IntToBin(Data: Int64; Count: Byte): string;
+function BinToInt(BinStr: string): Int64;
 function TryHexToInt(Data: string; var Value: Integer): Boolean;
 function TryBinToInt(Data: string; var Value: Integer): Boolean;
 function BinToHexString(Source: AnsiString): string;
@@ -58,9 +59,29 @@ function GenerateNewName(OldName: string): string;
 function GetFileFilterItemExt(Filter: string; Index: Integer): string;
 procedure FileDialogUpdateFilterFileType(FileDialog: TOpenDialog);
 procedure DeleteFiles(APath, AFileSpec: string);
+procedure OpenWebPage(URL: string);
 
 
 implementation
+
+function BinToInt(BinStr : string) : Int64;
+var
+  i : byte;
+  RetVar : Int64;
+begin
+  BinStr := UpperCase(BinStr);
+  if BinStr[length(BinStr)] = 'B' then Delete(BinStr,length(BinStr),1);
+  RetVar := 0;
+  for i := 1 to length(BinStr) do begin
+    if not (BinStr[i] in ['0','1']) then begin
+      RetVar := 0;
+      Break;
+    end;
+    RetVar := (RetVar shl 1) + (byte(BinStr[i]) and 1) ;
+  end;
+
+  Result := RetVar;
+end;
 
 function BinToHexString(Source: AnsiString): string;
 var
@@ -178,7 +199,7 @@ begin
     Result := '';
 end;*)
 
-function IntToBin(Data: Cardinal; Count: Byte): string;
+function IntToBin(Data: Int64; Count: Byte): string;
 var
   I: Integer;
 begin
@@ -341,6 +362,28 @@ begin
   {$IFDEF Windows}
   if DLLHandle1 <> 0 then FreeLibrary(DLLHandle1);
   {$ENDIF}
+end;
+
+procedure OpenWebPage(URL: string);
+var
+  Process: TProcess;
+  Browser, Params: string;
+begin
+  try
+    Process := TProcess.Create(nil);
+    Browser := '';
+    //FindDefaultBrowser(Browser, Params);
+    //Process.Executable := Browser;
+    //Process.Parameters.Add(Format(Params, [ApplicationInfo.HomePage]);
+    Process.Executable := 'cmd.exe';
+    Process.Parameters.Add('/c');
+    Process.Parameters.Add('start');
+    Process.Parameters.Add(URL);
+    Process.Options := [poNoConsole];
+    Process.Execute;
+  finally
+    Process.Free;
+  end;
 end;
 
 
