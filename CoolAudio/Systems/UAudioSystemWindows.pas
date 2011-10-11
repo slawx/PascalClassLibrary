@@ -219,13 +219,15 @@ const
     'VCR', 'Videodisc', 'WaveAudio');
 var
   Parm: TMCI_Open_Parms;
+  ParmFileName: string;
 begin
   if FDeviceId <> 0 then DoClose;
 
   FillChar(Parm, SizeOf(TMCI_Open_Parms), 0);
   Parm.dwCallback := 0;
   Parm.lpstrDeviceType := DeviceName[FDeviceType];
-  Parm.lpstrElementName := PChar(UTF8Decode(FFileName));
+  ParmFileName := UTF8Decode(FFileName);
+  Parm.lpstrElementName := PChar(ParmFileName);
 
   FFlags := 0;
 

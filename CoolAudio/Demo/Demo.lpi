@@ -130,11 +130,10 @@
       <Unit9>
         <Filename Value="../Systems/UAudioSystem.pas"/>
         <UnitName Value="UAudioSystem"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="5"/>
         <WindowIndex Value="0"/>
         <TopLine Value="177"/>
-        <CursorPos X="3" Y="181"/>
+        <CursorPos X="34" Y="188"/>
         <UsageCount Value="49"/>
         <Loaded Value="True"/>
       </Unit9>
@@ -229,10 +228,11 @@
       <Unit21>
         <Filename Value="../Systems/UAudioSystemWindows.pas"/>
         <UnitName Value="UAudioSystemWindows"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
         <TopLine Value="212"/>
-        <CursorPos X="1" Y="228"/>
+        <CursorPos X="50" Y="224"/>
         <UsageCount Value="45"/>
         <Loaded Value="True"/>
       </Unit21>
@@ -409,13 +409,6 @@
     </Other>
   </CompilerOptions>
   <Debugging>
-    <BreakPoints Count="1">
-      <Item1>
-        <Kind Value="bpkSource"/>
-        <Source Value="../Systems/UAudioSystemWindows.pas"/>
-        <Line Value="228"/>
-      </Item1>
-    </BreakPoints>
     <Watches Count="1">
       <Item1>
         <Expression Value="MPOptions"/>
