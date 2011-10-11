@@ -225,7 +225,7 @@ begin
   FillChar(Parm, SizeOf(TMCI_Open_Parms), 0);
   Parm.dwCallback := 0;
   Parm.lpstrDeviceType := DeviceName[FDeviceType];
-  Parm.lpstrElementName := PChar(FFileName);
+  Parm.lpstrElementName := PChar(UTF8Decode(FFileName));
 
   FFlags := 0;
 

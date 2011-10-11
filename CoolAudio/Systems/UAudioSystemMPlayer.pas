@@ -255,7 +255,7 @@ begin
 
   //MPOptions := '-af volume=' + IntToStr(IntTodB(Round(FVolume * 100), 100)) + ' ' + MPOptions;// -volume xx only supported with patched mplayer;
 
-  FProcess.CommandLine := TAudioSystemMPlayer(AudioSystem).FPath + ' ' + MPOptions + ' "' + FFileName + '"';
+  FProcess.CommandLine := TAudioSystemMPlayer(AudioSystem).FPath + ' ' + MPOptions + ' "' + UTF8Decode(FFileName) + '"';
   FProcess.Options := FProcess.Options + [poUsePipes, poDefaultErrorMode, poStderrToOutPut, poNoConsole];
   //InputBox('', '', FProcess.CommandLine);
   FProcess.Execute;

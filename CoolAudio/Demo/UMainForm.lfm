@@ -1,7 +1,7 @@
 object MainForm: TMainForm
-  Left = 531
+  Left = 571
   Height = 240
-  Top = 300
+  Top = 335
   Width = 435
   Caption = 'CoolAudio demo'
   ClientHeight = 240
@@ -16,7 +16,7 @@ object MainForm: TMainForm
     Width = 340
     Anchors = [akTop, akLeft, akRight]
     TabOrder = 0
-    Text = 'h:\Projekty2\PascalClassLibrary\CoolAudio\Demo\4 Strings - Catch A Fall (Radio Edit).mp3'
+    Text = 'test.mp3'
   end
   object Button1: TButton
     Left = 353

@@ -178,6 +178,8 @@ procedure TPlayer.SetFileName(AValue: string);
 begin
   if AValue = FFileName then Exit;
   FFileName := AValue;
+  Close;
+  Open;
 end;
 
 procedure TPlayer.Play;

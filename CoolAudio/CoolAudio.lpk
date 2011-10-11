@@ -55,12 +55,12 @@
         <UnitName Value="UAudioSystemMPlayer"/>
       </Item9>
       <Item10>
-        <Filename Value="Systems/UAudioSystem.pas"/>
-        <UnitName Value="UAudioSystem"/>
-      </Item10>
-      <Item11>
         <Filename Value="Systems/UAudioSystemWindows.pas"/>
         <UnitName Value="UAudioSystemWindows"/>
+      </Item10>
+      <Item11>
+        <Filename Value="Systems/UAudioSystem.pas"/>
+        <UnitName Value="UAudioSystem"/>
       </Item11>
     </Files>
     <Type Value="RunAndDesignTime"/>

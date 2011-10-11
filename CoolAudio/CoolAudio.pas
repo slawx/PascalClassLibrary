@@ -8,7 +8,7 @@ interface
 
 uses
   fmod, fmoddyn, fmoderrors, fmodpresets, fmodtypes, UCoolAudio, UPlaylist, 
-  UAudioSystemFMOD, UAudioSystemMPlayer, UAudioSystem, UAudioSystemWindows, 
+  UAudioSystemFMOD, UAudioSystemMPlayer, UAudioSystemWindows, UAudioSystem, 
   LazarusPackageIntf;
 
 implementation
