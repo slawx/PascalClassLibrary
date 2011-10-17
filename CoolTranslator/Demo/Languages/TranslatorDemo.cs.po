@@ -18,6 +18,11 @@ msgstr "Ukázka Translatoru"
 msgid "Show MainForm.Name"
 msgstr "Ukázat MainForm.Name"
 
+#: TMAINFORM.CAPTION
+msgctxt "TMAINFORM.CAPTION"
+msgid "Translator Demo"
+msgstr "Ukázka Translatoru"
+
 #: TMAINFORM.LABEL1.CAPTION
 msgid "MainForm"
 msgstr "HlavníFormulář"
@@ -33,11 +38,6 @@ msgstr ""
 #: TMAINFORM.LABEL4.CAPTION
 msgid "Excludes:"
 msgstr ""
-
-#: TMAINFORM.MAINFORM.CAPTION
-msgctxt "TMAINFORM.MAINFORM.CAPTION"
-msgid "Translator Demo"
-msgstr "Ukázka Translatoru"
 
 #: umainform.stranslatedtext
 msgid "Text stored in resourcestring"

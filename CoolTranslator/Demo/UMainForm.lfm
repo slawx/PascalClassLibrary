@@ -7,7 +7,7 @@ object MainForm: TMainForm
   ClientHeight = 240
   ClientWidth = 466
   OnCreate = FormCreate
-  LCLVersion = '0.9.30.1'
+  LCLVersion = '0.9.31'
   object ListBox1: TListBox
     Left = 171
     Height = 168
@@ -67,6 +67,7 @@ object MainForm: TMainForm
     ParentColor = False
   end
   object CoolTranslator1: TCoolTranslator
+    POFilesFolder = 'Languages'
     left = 64
     top = 40
   end

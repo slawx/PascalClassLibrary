@@ -10,6 +10,11 @@ msgstr ""
 msgid "Show MainForm.Name"
 msgstr ""
 
+#: TMAINFORM.CAPTION
+msgctxt "TMAINFORM.CAPTION"
+msgid "Translator Demo"
+msgstr ""
+
 #: TMAINFORM.LABEL1.CAPTION
 msgid "MainForm"
 msgstr ""
@@ -24,11 +29,6 @@ msgstr ""
 
 #: TMAINFORM.LABEL4.CAPTION
 msgid "Excludes:"
-msgstr ""
-
-#: TMAINFORM.MAINFORM.CAPTION
-msgctxt "TMAINFORM.MAINFORM.CAPTION"
-msgid "Translator Demo"
 msgstr ""
 
 #: umainform.stranslatedtext
