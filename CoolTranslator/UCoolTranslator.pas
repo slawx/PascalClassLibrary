@@ -151,8 +151,8 @@ begin
     LocaleShort := GetLocaleShort;
     //ShowMessage(ExtractFileDir(Application.ExeName) +
     //  DirectorySeparator + 'Languages' + ' ' + '*.' + LocaleShort + '.po');
-    FileList := FindAllFiles(ExtractFileDir(Application.ExeName) +
-      DirectorySeparator + 'Languages', '*.' + LocaleShort + '.po');
+    FileList := FindAllFiles(ExtractFileDir(UTF8Encode(Application.ExeName)) +
+      DirectorySeparator + FPOFilesFolder, '*.' + LocaleShort + '.po');
     for I := 0 to FileList.Count - 1 do begin
       FileName := FileList[I];
       //FileName := FindLocaleFileName('.po');

@@ -52,11 +52,10 @@
         <ComponentName Value="MainForm"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UMainForm"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
-        <CursorPos X="30" Y="9"/>
+        <CursorPos X="29" Y="18"/>
         <UsageCount Value="21"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -79,10 +78,11 @@
       <Unit4>
         <Filename Value="..\UCoolTranslator.pas"/>
         <UnitName Value="UCoolTranslator"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
         <TopLine Value="274"/>
-        <CursorPos X="29" Y="279"/>
+        <CursorPos X="1" Y="286"/>
         <UsageCount Value="11"/>
         <Loaded Value="True"/>
       </Unit4>
@@ -140,7 +140,7 @@
         <Loaded Value="True"/>
       </Unit11>
     </Units>
-    <JumpHistory Count="29" HistoryIndex="28">
+    <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
         <Filename Value="..\UCoolTranslator.pas"/>
         <Caret Line="37" Column="48" TopLine="23"/>
@@ -257,6 +257,10 @@
         <Filename Value="UMainForm.pas"/>
         <Caret Line="9" Column="29" TopLine="1"/>
       </Position29>
+      <Position30>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="18" Column="29" TopLine="1"/>
+      </Position30>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
@@ -288,15 +292,6 @@
     </Other>
   </CompilerOptions>
   <Debugging>
-    <BreakPoints Count="1">
-      <Item1>
-        <Kind Value="bpkSource"/>
-        <WatchScope Value="wpsGlobal"/>
-        <WatchKind Value="wpkWrite"/>
-        <Source Value="..\UCoolTranslator.pas"/>
-        <Line Value="279"/>
-      </Item1>
-    </BreakPoints>
     <Exceptions Count="3">
       <Item1>
         <Name Value="EAbort"/>
