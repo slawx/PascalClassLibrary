@@ -13,6 +13,7 @@ type
   TDataDiretion = (ddReceive, ddSend);
   TOnLogDataEvent = procedure (Stream: TStream; Direction: TDataDiretion) of object;
   TOnStreamEvent = procedure (Sender: TCommPin; Stream: TStream) of object;
+  TOnSetStatus = procedure (Sender: TCommPin; Status: Integer) of object;
 
   { TCommPin }
 
@@ -24,7 +25,13 @@ type
     FDataRxCount: Integer;
     FFrameTxCount: Integer;
     FFrameRxCount: Integer;
+    FOnSetStatus: TOnSetStatus;
+    FStatus: Integer;
     function GetConnected: Boolean;
+    procedure SetStatus(AValue: Integer);
+  protected
+    procedure Receive(Stream: TStream);
+    procedure ReceiveStatus(AValue: Integer);
   public
     RemotePin: TCommPin;
     constructor Create;
@@ -32,15 +39,16 @@ type
     procedure Connect(Pin: TCommPin);
     procedure Disconnect;
     procedure Send(Stream: TStream);
-    procedure Receive(Stream: TStream);
     procedure ResetCounters;
-    property OnReceive: TOnStreamEvent read FOnReceive write FOnReceive;
     property Connected: Boolean read GetConnected;
     property OnLogData: TOnLogDataEvent read FOnLogData write FOnLogData;
     property DataTxCount: Integer read FDataTxCount;
     property DataRxCount: Integer read FDataRxCount;
     property FrameTxCount: Integer read FFrameTxCount;
     property FrameRxCount: Integer read FFrameRxCount;
+    property Status: Integer read FStatus write SetStatus; // Used for general status bits such as parity bit
+    property OnReceive: TOnStreamEvent read FOnReceive write FOnReceive;
+    property OnSetSatus: TOnSetStatus read FOnSetStatus write FOnSetStatus;
   end;
 
 
@@ -54,7 +62,10 @@ begin
     Pin.Disconnect;
     Disconnect;
     Self.RemotePin := Pin;
-    Pin.RemotePin := Self;
+    if Assigned(Pin) then begin
+      Pin.RemotePin := Self;
+      RemotePin.ReceiveStatus(FStatus);
+    end;
   end;
 end;
 
@@ -77,6 +88,12 @@ begin
   Result := Assigned(RemotePin);
 end;
 
+procedure TCommPin.SetStatus(AValue: Integer);
+begin
+  FStatus := AValue;
+  if Assigned(RemotePin) then RemotePin.ReceiveStatus(AValue);
+end;
+
 constructor TCommPin.Create;
 begin
   RemotePin := nil;
@@ -89,6 +106,11 @@ begin
   if Assigned(FOnLogData) then FOnLogData(Stream, ddReceive);
   Stream.Position := 0;
   if Assigned(FOnReceive) then FOnReceive(Self, Stream);
+end;
+
+procedure TCommPin.ReceiveStatus(AValue: Integer);
+begin
+  if Assigned(FOnSetStatus) then FOnSetStatus(Self, AValue);
 end;
 
 procedure TCommPin.ResetCounters;

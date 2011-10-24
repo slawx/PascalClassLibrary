@@ -9,9 +9,13 @@ uses
   SyncObjs;
 
 type
+
+  { TCommSerialPort }
+
   TCommSerialPort = class(TSerialPort)
   private
     procedure Receive(Sender: TCommPin; Stream: TStream);
+    procedure SetStatus(Sender: TCommPin; AValue: Integer);
     procedure ReceiveData(Stream: TMemoryStream);
   public
     Lock: TCriticalSection;
@@ -31,12 +35,23 @@ begin
   if Active then Pin.Send(Stream);
 end;
 
+procedure TCommSerialPort.SetStatus(Sender: TCommPin; AValue: Integer);
+begin
+  try
+    Lock.Acquire;
+    if (AValue and 1) = 1 then Parity := paMark else Parity := paSpace;
+  finally
+    Lock.Release;
+  end;
+end;
+
 constructor TCommSerialPort.Create;
 begin
   inherited;
   Lock := TCriticalSection.Create;
   Pin := TCommPin.Create;
   Pin.OnReceive := Receive;
+  Pin.OnSetSatus := SetStatus;
   OnReceiveData := ReceiveData;
 end;
 

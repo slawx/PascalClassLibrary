@@ -18,6 +18,8 @@ const
 type
   TFrameState = (fsOutside, fsStart, fsInside, fsEnd);
 
+  { TCommFrame }
+
   TCommFrame = class
   private
     LastCharIsSpecialChar: Boolean;
@@ -31,7 +33,9 @@ type
     FrameDataPin: TCommPin;
     PacketLoss: Real;
     procedure RawDataReceive(Sender: TCommPin; Stream: TStream);
+    procedure RawSetStatus(Sender: TCommPin; Status: Integer);
     procedure FrameDataReceive(Sender: TCommPin; Stream: TStream);
+    procedure FrameSetStatus(Sender: TCommPin; Status: Integer);
     constructor Create;
     destructor Destroy; override;
     property FrameErrorCount: Integer read FFrameErrorCount;
@@ -102,6 +106,11 @@ begin
   end;
 end;
 
+procedure TCommFrame.FrameSetStatus(Sender: TCommPin; Status: Integer);
+begin
+  RawDataPin.Status := Status;
+end;
+
 procedure TCommFrame.RawDataReceive(Sender: TCommPin; Stream: TStream);
 var
   Character: Byte;
@@ -145,6 +154,11 @@ begin
         else ReceiveBuffer.WriteByte(Character);
       end;
     end;
+end;
+
+procedure TCommFrame.RawSetStatus(Sender: TCommPin; Status: Integer);
+begin
+  FrameDataPin.Status := Status;
 end;
 
 function TCommFrame.GetStreamCRC8(Stream: TStream): Byte;

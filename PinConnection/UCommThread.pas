@@ -35,8 +35,12 @@ type
     FInputBuffer: TMemoryStream;
     FInputBufferLock: TCriticalSection;
     FDataAvailable: TEvent;
-    procedure ReceiveData(Sender: TCommPin; Stream: TStream);
+    FStatusEvent: TEvent;
+    FStatusValue: Integer;
+    procedure PinReceiveData(Sender: TCommPin; Stream: TStream);
+    procedure PinSetStatus(Sender: TCommPin; Status: Integer);
     procedure ExtReceiveData(Sender: TCommPin; Stream: TStream);
+    procedure ExtSetStatus(Sender: TCommPin; AStatus: Integer);
     procedure SetActive(const AValue: Boolean);
   public
     Ext: TCommPin;
@@ -50,9 +54,14 @@ implementation
 
 { TCommThread }
 
-procedure TCommThread.ReceiveData(Sender: TCommPin; Stream:TStream);
+procedure TCommThread.PinReceiveData(Sender: TCommPin; Stream:TStream);
 begin
   if FActive then Ext.Send(Stream);
+end;
+
+procedure TCommThread.PinSetStatus(Sender: TCommPin; Status: Integer);
+begin
+  if FActive then Ext.Status := Status;
 end;
 
 procedure TCommThread.ExtReceiveData(Sender: TCommPin; Stream: TStream);
@@ -67,6 +76,17 @@ begin
   finally
     FInputBufferLock.Release;
     StreamHelper.Free;
+  end;
+end;
+
+procedure TCommThread.ExtSetStatus(Sender: TCommPin; AStatus: Integer);
+begin
+  try
+    FInputBufferLock.Acquire;
+    FStatusValue := AStatus;
+    FStatusEvent.SetEvent;
+  finally
+    FInputBufferLock.Release;
   end;
 end;
 
@@ -95,9 +115,12 @@ begin
   FInputBufferLock := TCriticalSection.Create;
   Ext := TCommPin.Create;
   Ext.OnReceive := ExtReceiveData;
+  Ext.OnSetSatus := ExtSetStatus;
   Pin := TCommPin.Create;
-  Pin.OnReceive := ReceiveData;
+  Pin.OnReceive := PinReceiveData;
+  Pin.OnSetSatus := PinSetStatus;
   FDataAvailable := TSimpleEvent.Create;
+  FStatusEvent := TSimpleEvent.Create;
 end;
 
 destructor TCommThread.Destroy;
@@ -107,6 +130,7 @@ begin
   FInputBufferLock.Free;
   Ext.Free;
   Pin.Free;
+  FStatusEvent.Free;
   FDataAvailable.Free;
   inherited Destroy;
 end;
@@ -118,6 +142,7 @@ begin
   try
     with Parent do
     repeat
+      // Check if new data arrived
       if FDataAvailable.WaitFor(1) = wrSignaled then
       try
         FInputBufferLock.Acquire;
@@ -129,6 +154,16 @@ begin
         FInputBuffer.Clear;
         FInputBufferLock.Release;
       end; // else Yield;
+
+      // Check if state changed
+      if FStatusEvent.WaitFor(1) = wrSignaled then
+      try
+        FInputBufferLock.Acquire;
+        Pin.Status := FStatusValue;
+      finally
+        FStatusEvent.ResetEvent;
+        FInputBufferLock.Release;
+      end;
     until Terminated;
   finally
   end;

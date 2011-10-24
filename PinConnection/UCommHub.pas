@@ -17,6 +17,7 @@ type
     FPins: TObjectList;
     function GetPin(Index: Integer): TCommPin;
     procedure Receive(Sender: TCommPin; Stream: TStream);
+    procedure SetStatus(Sender: TCommPin; Status: Integer);
   public
     constructor Create;
     destructor Destroy; override;
@@ -53,6 +54,18 @@ begin
   end;
 end;
 
+procedure TCommHub.SetStatus(Sender: TCommPin; Status: Integer);
+var
+  I: Integer;
+begin
+  if FActive then begin
+    // Broadcast received packet to all other pins
+    for I := 0 to FPins.Count - 1 do
+      if Sender <> FPins[I] then
+        TCommPin(FPins[I]).Status := Status;
+  end;
+end;
+
 constructor TCommHub.Create;
 begin
   FPins := TObjectList.Create;
@@ -67,12 +80,14 @@ end;
 function TCommHub.Add(Pin: TCommPin): Integer;
 begin
   Pin.OnReceive := Receive;
+  Pin.OnSetSatus := SetStatus;
   Result := FPins.Add(Pin);
 end;
 
 function TCommHub.Extract(Pin: TCommPin): TCommPin;
 begin
   Pin.OnReceive := nil;
+  Pin.OnSetSatus := nil;
   Result := TCommPin(FPins.Extract(Pin));
 end;
 
@@ -89,6 +104,7 @@ end;
 procedure TCommHub.Insert(Index: Integer; Pin: TCommPin);
 begin
   Pin.OnReceive := Receive;
+  Pin.OnSetSatus := SetStatus;
   FPins.Insert(Index, Pin);
 end;
 
@@ -106,6 +122,7 @@ function TCommHub.AddNew: TCommPin;
 begin
   Result := TCommPin.Create;
   Result.OnReceive := Receive;
+  Result.OnSetSatus := SetStatus;
   FPins.Add(Result);
 end;
 
