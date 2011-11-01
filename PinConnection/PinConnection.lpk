@@ -11,6 +11,12 @@
       <SearchPaths>
         <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
       </SearchPaths>
+      <Linking>
+        <Debugging>
+          <GenerateDebugInfo Value="True"/>
+          <DebugInfoType Value="dsAuto"/>
+        </Debugging>
+      </Linking>
       <Other>
         <CompilerMessages>
           <UseMsgFile Value="True"/>
@@ -20,8 +26,8 @@
     </CompilerOptions>
     <Description Value="System for class bidirectional communication interconnection."/>
     <License Value="GNU/GPL"/>
-    <Version Minor="2"/>
-    <Files Count="9">
+    <Version Minor="3"/>
+    <Files Count="10">
       <Item1>
         <Filename Value="UCommFrame.pas"/>
         <UnitName Value="UCommFrame"/>
@@ -58,6 +64,10 @@
         <Filename Value="USerialPort.pas"/>
         <UnitName Value="USerialPort"/>
       </Item9>
+      <Item10>
+        <Filename Value="UCommConcentrator.pas"/>
+        <UnitName Value="UCommConcentrator"/>
+      </Item10>
     </Files>
     <i18n>
       <EnableI18N Value="True"/>

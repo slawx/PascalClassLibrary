@@ -1,6 +1,9 @@
-unit UCommHub;
+// All pins received data is written to main pin
+// Data received on main pin is sent to all pins
 
-{$mode delphi}
+unit UCommConcentrator;
+
+{$mode Delphi}{$H+}
 
 interface
 
@@ -8,30 +11,34 @@ uses
   Classes, SysUtils, Contnrs, UCommPin;
 
 type
-  TCommHub = class;
+  TCommConcentrator = class;
 
   { TPinList }
 
   TPinList = class(TObjectList)
-    Hub: TCommHub;
+    Concentrator: TCommConcentrator;
     function Add(AObject: TObject): Integer;
     function AddNew: TCommPin;
     function Extract(Item: TObject): TObject;
     procedure Insert(Index: Integer; AObject: TObject);
   end;
 
-  { TCommHub }
+  { TCommConcentrator }
 
-  TCommHub = class
+  TCommConcentrator = class
   private
     FActive: Boolean;
     FPins: TPinList;
+    FMain: TCommPin;
+    procedure MainReceive(Sender: TCommPin; Stream: TStream);
+    procedure MainSetStatus(Sender: TCommPin; Status: Integer);
     procedure Receive(Sender: TCommPin; Stream: TStream);
     procedure SetStatus(Sender: TCommPin; Status: Integer);
   public
     constructor Create;
     destructor Destroy; override;
     property Pins: TPinList read FPins write FPins;
+    property Main: TCommPin read FMain write FMain;
     property Active: Boolean read FActive write FActive;
   end;
 
@@ -42,8 +49,8 @@ implementation
 function TPinList.Add(AObject: TObject): Integer;
 begin
   Result := inherited Add(AObject);
-  TCommPin(AObject).OnReceive := Hub.Receive;
-  TCommPin(AObject).OnSetSatus := Hub.SetStatus;
+  TCommPin(AObject).OnReceive := Concentrator.Receive;
+  TCommPin(AObject).OnSetSatus := Concentrator.SetStatus;
 end;
 
 function TPinList.AddNew: TCommPin;
@@ -61,13 +68,13 @@ end;
 procedure TPinList.Insert(Index: Integer; AObject: TObject);
 begin
   inherited Insert(Index, AObject);
-  TCommPin(AObject).OnReceive := Hub.Receive;
-  TCommPin(AObject).OnSetSatus := Hub.SetStatus;
+  TCommPin(AObject).OnReceive := Concentrator.Receive;
+  TCommPin(AObject).OnSetSatus := Concentrator.SetStatus;
 end;
 
-{ TCommHub }
+{ TCommConcentrator }
 
-procedure TCommHub.Receive(Sender: TCommPin; Stream: TStream);
+procedure TCommConcentrator.MainReceive(Sender: TCommPin; Stream: TStream);
 var
   I: Integer;
 begin
@@ -79,7 +86,7 @@ begin
   end;
 end;
 
-procedure TCommHub.SetStatus(Sender: TCommPin; Status: Integer);
+procedure TCommConcentrator.MainSetStatus(Sender: TCommPin; Status: Integer);
 var
   I: Integer;
 begin
@@ -91,16 +98,30 @@ begin
   end;
 end;
 
-constructor TCommHub.Create;
+procedure TCommConcentrator.Receive(Sender: TCommPin; Stream: TStream);
 begin
-  FPins := TPinList.Create;
-  FPins.Hub := Self;
+  if FActive then FMain.Send(Stream);
 end;
 
-destructor TCommHub.Destroy;
+procedure TCommConcentrator.SetStatus(Sender: TCommPin; Status: Integer);
 begin
-  Active := False;
+  if FActive then FMain.Status := Status;
+end;
+
+constructor TCommConcentrator.Create;
+begin
+  FPins := TPinList.Create;
+  FPins.Concentrator := Self;
+  FMain := TCommPin.Create;
+  FMain.OnSetSatus := MainSetStatus;
+  FMain.OnReceive := MainReceive;
+end;
+
+destructor TCommConcentrator.Destroy;
+begin
+  FActive := False;
   FPins.Free;
+  FMain.Free;
   inherited Destroy;
 end;
 
