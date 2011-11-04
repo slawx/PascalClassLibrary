@@ -7,7 +7,7 @@ unit UBitStream;
 interface
 
 uses
-  Classes, SysUtils, RtlConsts, Math;
+  Classes, SysUtils, RtlConsts, Math, UMemory;
 
 type
   TBytes = array[0..MaxInt - 1] of Byte;
@@ -46,7 +46,7 @@ type
 
   TMemoryBitStream = class(TBitStream)
   private
-    FStream: TMemoryStream;
+    FMemory: TPositionMemory;
     FPosition: LongInt;
     FSize: LongInt;
     function GetPosition: LongInt; override;
@@ -60,7 +60,7 @@ type
     function Seek(Offset: LongInt; Origin: TSeekOrigin): LongInt; override;
     constructor Create;
     destructor Destroy; override;
-    property Stream: TMemoryStream read FStream;
+    property Memory: TPositionMemory read FMemory;
   end;
 
 
@@ -174,6 +174,7 @@ end;
 
 function TBitStream.ReadNumber(Count: Byte): QWord;
 begin
+  Result := 0;
   Read(Result, Count);
   Result := Result and ((QWord(1) shl Count) - 1);
 end;
@@ -223,7 +224,7 @@ end;
 procedure TMemoryBitStream.SetSize(const AValue: LongInt);
 begin
   FSize := AValue;
-  Stream.Size := Ceil(AValue / 8);
+  FMemory.Size := Ceil(AValue / 8);
   if FPosition > FSize then FPosition := FSize;
 end;
 
@@ -250,12 +251,13 @@ begin
     if (FPosition + Count) > FSize then Count := FSize - FPosition;
     ByteCount := Ceil(Count / 8);
     PosInByte := FPosition mod 8;
-    Stream.Position := Trunc(FPosition / 8);
-    Data := Stream.ReadByte; // Read first byte
+    FMemory.Position := Trunc(FPosition / 8);
+    Data := FMemory.ReadByte; // Read first byte
     for I := 0 to ByteCount - 1 do begin
       TBytes(Buffer)[I] := (Data shr PosInByte) and ((1 shl (8 - PosInByte)) - 1);
-      if (I < ByteCount) and (Stream.Position < Stream.Size) then
-        Data := Stream.ReadByte else Data := 0;
+      if (I < ByteCount) and (FMemory.Position < FMemory.Size) then begin
+        Data := FMemory.ReadByte;
+      end else Data := 0;
       if PosInByte > 0 then
         TBytes(Buffer)[I] := TBytes(Buffer)[I] or
           ((Integer(Data) and ((1 shl PosInByte) - 1)) shl (8 - PosInByte));
@@ -292,14 +294,14 @@ begin
   NextRestBitCount := 0;
   BitCount := Count;
   ByteCount := Ceil(Count / 8);
-  Stream.Position := Trunc(FPosition / 8);
+  FMemory.Position := Trunc(FPosition / 8);
   BytePos := FPosition mod 8;
   I := 0;
   while (I < ByteCount) or (RestBitCount > 0) do begin
     WriteBitCount := Min(8 - BytePos, BitCount);
-    if (Stream.Position < Stream.Size) and (WriteBitCount < 8) then begin
-      Data := Stream.ReadByte;
-      Stream.Position := Stream.Position - 1;
+    if (FMemory.Position < FMemory.Size) and (WriteBitCount < 8) then begin
+      Data := FMemory.ReadByte;
+      FMemory.Position := FMemory.Position - 1;
     end else Data := 0;
 
     // Write rest of previous source byte to target
@@ -310,7 +312,7 @@ begin
 
     // Write part up to one byte from source to target
     Dec(BitCount, WriteToByte(Data, TBytes(Buffer)[I], BytePos, WriteBitCount));
-    Stream.WriteByte(Data);
+    FMemory.WriteByte(Data);
 
     RestBitCount := Min(8 - WriteBitCount, BitCount);
     Inc(I);
@@ -333,14 +335,14 @@ end;
 
 constructor TMemoryBitStream.Create;
 begin
-  FStream := TMemoryStream.Create;
+  FMemory := TPositionMemory.Create;
   FPosition := 0;
   FSize := 0;
 end;
 
 destructor TMemoryBitStream.Destroy;
 begin
-  FStream.Free;
+  FMemory.Free;
   inherited Destroy;
 end;
 

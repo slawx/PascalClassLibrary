@@ -38,7 +38,7 @@ type
     function ReadWord: Word;
     function ReadCardinal: Cardinal;
     function ReadInt64: Int64;
-    function ReadString: string;
+    function ReadString(Length: Integer): string;
     function ReadShortString: string;
     function ReadAnsiString: string;
     function ReadStringTerminated(Terminator: string = #0): string;
@@ -72,10 +72,7 @@ var
   StringLength: Longint;
 begin
   FStream.ReadBuffer(StringLength, SizeOf(StringLength));
-  SetLength(Result, StringLength);
-  if StringLength > 0 then begin
-    FStream.ReadBuffer(Result[1], StringLength);
-  end;
+  Result := ReadString(StringLength);
 end;
 
 function TStreamHelper.ReadStringTerminated(Terminator: string = #0): string;
@@ -118,12 +115,12 @@ begin
   if SwapData then Result := Swap(Result);
 end;
 
-function TStreamHelper.ReadString:string;
+function TStreamHelper.ReadString(Length: Integer): string;
 begin
-  SetLength(Result, FStream.Size - FStream.Position);
-  if (FStream.Size - FStream.Position) > 0 then
-    FStream.Read(Result[1], FStream.Size - FStream.Position)
-    else Result := '';
+  if Length > 0 then begin
+    SetLength(Result, Length);
+    FStream.Read(Result[1], Length);
+  end else Result := '';
 end;
 
 function TStreamHelper.ReadShortString: string;
@@ -131,8 +128,7 @@ var
   Count: Byte;
 begin
   FStream.ReadBuffer(Count, 1);
-  SetLength(Result, Count);
-  FStream.ReadBuffer(Result[1], Count);
+  Result := ReadString(Count);
 end;
 
 procedure TStreamHelper.ReadStream(AStream: TStream; Count: Integer);
