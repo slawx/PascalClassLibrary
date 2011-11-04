@@ -21,7 +21,7 @@
     <Description Value="Various libraries"/>
     <License Value="GNU/GPL"/>
     <Version Minor="3"/>
-    <Files Count="7">
+    <Files Count="8">
       <Item1>
         <Filename Value="StopWatch.pas"/>
         <UnitName Value="StopWatch"/>
@@ -51,6 +51,10 @@
         <Filename Value="UThreading.pas"/>
         <UnitName Value="UThreading"/>
       </Item7>
+      <Item8>
+        <Filename Value="UMemory.pas"/>
+        <UnitName Value="UMemory"/>
+      </Item8>
     </Files>
     <i18n>
       <EnableI18N Value="True"/>

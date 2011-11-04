@@ -100,8 +100,9 @@ var
   LogFile: TFileStream;
 begin
   try
-    if FileExistsUTF8(FileName) then LogFile := TFileStream.Create(FileName, fmOpenWrite)
-      else LogFile := TFileStream.Create(FileName, fmCreate);
+    ForceDirectoriesUTF8(ExtractFileDir(FileName));
+    if FileExistsUTF8(FileName) then LogFile := TFileStream.Create(UTF8Decode(FileName), fmOpenWrite)
+      else LogFile := TFileStream.Create(UTF8Decode(FileName), fmCreate);
     LogFile.Seek(0, soFromEnd);
     Text := FormatDateTime('hh:nn:ss.zzz', Now) + ': ' + Text + LineEnding;
     LogFile.WriteBuffer(Text[1], Length(Text));

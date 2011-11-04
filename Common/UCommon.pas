@@ -6,7 +6,7 @@ interface
 
 uses
   {$IFDEF Windows}Windows,{$ENDIF}
-  Classes, SysUtils, SpecializedList, StrUtils, Dialogs, Process,
+  Classes, SysUtils, StrUtils, Dialogs, Process,
   FileUtil; //, ShFolder, ShellAPI;
 
 type
@@ -101,9 +101,9 @@ var
 begin
   Path := IncludeTrailingPathDelimiter(APath);
 
-  Find := FindFirst(Path + AFileSpec, faAnyFile xor faDirectory, SearchRec);
+  Find := FindFirst(UTF8Decode(Path + AFileSpec), faAnyFile xor faDirectory, SearchRec);
   while Find = 0 do begin
-    DeleteFile(Path + SearchRec.Name);
+    DeleteFileUTF8(Path + UTF8Encode(SearchRec.Name));
 
     Find := SysUtils.FindNext(SearchRec);
   end;
