@@ -261,8 +261,8 @@ begin
       if PosInByte > 0 then
         TBytes(Buffer)[I] := TBytes(Buffer)[I] or
           ((Integer(Data) and ((1 shl PosInByte) - 1)) shl (8 - PosInByte));
-      if (I = (ByteCount - 1)) and (PosInByte > 0) then
-        TBytes(Buffer)[I] := TBytes(Buffer)[I] and ((1 shl (Count mod 8)) - 1);
+      if (I = (ByteCount - 1)) then
+        TBytes(Buffer)[I] := TBytes(Buffer)[I] and ((1 shl (Count - 8 * (ByteCount - 1))) - 1);
     end;
     Inc(FPosition, Count);
     Result := Count;
