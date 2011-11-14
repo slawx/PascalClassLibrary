@@ -156,7 +156,7 @@ begin
       end; // else Yield;
 
       // Check if state changed
-      if FStatusEvent.WaitFor(1) = wrSignaled then
+      if FStatusEvent.WaitFor(0) = wrSignaled then
       try
         FInputBufferLock.Acquire;
         Pin.Status := FStatusValue;
