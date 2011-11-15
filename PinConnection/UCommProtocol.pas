@@ -32,6 +32,7 @@ type
     TransmitTime: TDateTime;
   public
     Lock: TCriticalSection;
+    Enabled: Boolean;
     SequenceNumber: Integer;
     ResponseCode: Integer;
     CommandError: Integer;
@@ -50,6 +51,8 @@ type
     function GetSequenceNumber: Integer;
   public
     SequenceNumber: integer;
+    MaxSequenceNumber: integer;
+    MaxSessionCount: integer;
     Parent: TCommProtocol;
     Lock: TCriticalSection;
     procedure Add(Session: TDeviceProtocolSession);
@@ -57,6 +60,7 @@ type
     procedure Remove(Session: TDeviceProtocolSession);
     constructor Create;
     destructor Destroy; override;
+    procedure Assign(Source: TListObject);
   end;
 
   TAfterRequest = procedure(Command: TListInteger; Parameters: TVarBlockIndexed;
@@ -65,11 +69,24 @@ type
 
   { TRetransmitCheckThread }
 
-  TRetransmitCheckThread = class(TListedThread)
+  TRetransmitCheckThread = class(TTermThread)
   public
     Parent: TCommProtocol;
     CheckPeriod: Integer;
     procedure Execute; override;
+  end;
+
+  { TRemoteBuffer }
+
+  TRemoteBuffer = class
+    Lock: TCriticalSection;
+    Size: Integer;
+    Used: Integer;
+    procedure Allocate(AValue: Integer);
+    procedure Release(AValue: Integer);
+    procedure Assign(Source: TRemoteBuffer);
+    constructor Create;
+    destructor Destroy; override;
   end;
 
   { TCommProtocol }
@@ -88,15 +105,13 @@ type
     RetransmitTimeout: TDateTime;
     RetransmitRepeatCount: integer;
     RetransmitTotalCount: integer;
-    MaxSequenceNumber: integer;
-    MaxSessionCount: integer;
-    RemoteBufferSize: Integer;
-    RemoteBufferUsed: Integer;
+    RemoteBuffer: TRemoteBuffer;
     WrongSequenceCount: integer;
     Sessions: TDeviceProtocolSessionList;
     Pin: TCommPin;
     LastCommandResponseTime: TDateTime;
     LastLatency: TDateTime;
+    Lock: TCriticalSection;
     procedure DataReceive(Sender: TCommPin; Stream: TStream); virtual;
     procedure SendCommand(Command: array of integer;
       ResponseParameters: TVarBlockIndexed = nil;
@@ -111,6 +126,7 @@ type
   end;
 
 resourcestring
+  SRemoteBufferInconsistency = 'Remote buffer inconsistency';
   SResponseError = 'Command %0:s response error %1:s';
   SResponseTimeout = 'Response timeout';
   SWrongSequenceCount = 'Receive wrong sequence number %d';
@@ -119,6 +135,58 @@ resourcestring
   SProtocolNotActive = 'Device protocol not active';
 
 implementation
+
+{ TRemoteBuffer }
+
+procedure TRemoteBuffer.Allocate(AValue: Integer);
+begin
+  try
+    Lock.Acquire;
+
+    // Wait for free remote buffer
+    while (Used + AValue) > Size do
+    try
+      Lock.Release;
+      Sleep(1);
+    finally
+      Lock.Acquire;
+    end;
+    Used := Used + AValue;
+  finally
+    Lock.Release;
+  end;
+end;
+
+procedure TRemoteBuffer.Release(AValue: Integer);
+begin
+  try
+    Lock.Acquire;
+    Used := Used - AValue;
+    if Used < 0 then
+      raise Exception.Create(SRemoteBufferInconsistency);
+  finally
+    Lock.Release;
+  end;
+end;
+
+procedure TRemoteBuffer.Assign(Source: TRemoteBuffer);
+begin
+  Used := Source.Used;
+  Size := Source.Size;
+end;
+
+constructor TRemoteBuffer.Create;
+begin
+  Lock := TCriticalSection.Create;
+  Size := 127;
+  Used := 0;
+end;
+
+destructor TRemoteBuffer.Destroy;
+begin
+  Lock.Free;
+  inherited Destroy;
+end;
 
 
 procedure TCommProtocol.DataReceive(Sender: TCommPin; Stream: TStream);
@@ -158,6 +226,7 @@ begin
                 if TestIndex(4) then CommandError := ReadVarUInt(4)
                   else CommandError := 0;
                 Latency := Now - TransmitTime;
+                Enabled := False;
                 ReceiveEvent.SetEvent;
               finally
                 Session.Lock.Release;
@@ -252,8 +321,6 @@ begin
 end;
 
 procedure TCommProtocol.SetActive(const AValue: Boolean);
-var
-  SessionCount: Integer;
 begin
   if FActive = AValue then Exit;
   FActive := AValue;
@@ -268,16 +335,18 @@ begin
     end;
   end else begin
     // Wait for empty session list
-    repeat
+    try
+      Sessions.Lock.Acquire;
+      while Sessions.Count > 0 do
       try
-        Sessions.Lock.Acquire;
-        SessionCount := Sessions.Count;
-      finally
         Sessions.Lock.Release;
+        Sleep(1);
+      finally
+        Sessions.Lock.Acquire;
       end;
-      Sleep(1);
-    until SessionCount = 0;
-
+    finally
+      Sessions.Lock.Release;
+    end;
     FreeAndNil(RetransmitThread);
   end;
 end;
@@ -291,6 +360,7 @@ var
 begin
   if FActive then begin
   try
+    //Lock.Acquire;
     Session := TDeviceProtocolSession.Create;
     Sessions.Add(Session);
     NewRequest := TVarBlockIndexed.Create;
@@ -312,24 +382,17 @@ begin
         RaiseError := ARaiseError;
         NewRequest.WriteToStream(Request);
 
-        // Wait for free remote buffer
-        while (RemoteBufferUsed + Request.Size) > RemoteBufferSize do
-          Sleep(1);
+        RemoteBuffer.Allocate(Request.Size);
 
         //StopWatch.Start;
         TransmitTime := Now;
         Pin.Send(Request);
+        Enabled := True;
       finally
         Lock.Release;
       end;
       try
-        try
-          Sessions.Lock.Acquire;
-          RemoteBufferUsed := RemoteBufferUsed + Request.Size;
-        finally
-          Sessions.Lock.Release;
-        end;
-        while ReceiveEvent.WaitFor(10) = wrTimeout do begin
+        while ReceiveEvent.WaitFor(1) = wrTimeout do begin
           if Timeouted then
             raise ECommTimeout.Create(SResponseTimeout);
         end;
@@ -341,34 +404,28 @@ begin
         LastCommandResponseTime := Now;
         LastLatency := Latency;
       finally
-        try
-          Sessions.Lock.Acquire;
-          RemoteBufferUsed := RemoteBufferUsed - Session.Request.Size;
-          if RemoteBufferUsed < 0 then RemoteBufferUsed := 0;
-        finally
-          Sessions.Lock.Release;
-        end;
+        RemoteBuffer.Release(Session.Request.Size);
         Sessions.Remove(Session);
       end;
     end;
   finally
     NewRequest.Free;
+    //Lock.Free;
   end;
   end else raise ENotActive.Create(SProtocolNotActive);
 end;
 
 constructor TCommProtocol.Create;
 begin
+  RemoteBuffer := TRemoteBuffer.Create;
+  Lock := TCriticalSection.Create;
   Pin := TCommPin.Create;
   Pin.OnReceive := DataReceive;
   Sessions := TDeviceProtocolSessionList.Create;
   Sessions.Parent := Self;
-  MaxSessionCount := 10;
-  MaxSequenceNumber := 127;
-  RetransmitTimeout := 2 * OneSecond;
+  RetransmitTimeout := 3 * OneSecond;
   RetransmitRepeatCount := 3;
   RetransmitTotalCount := 0;
-  RemoteBufferSize := 127;
 end;
 
 destructor TCommProtocol.Destroy;
@@ -376,17 +433,16 @@ begin
   Active := False;
   Sessions.Free;
   Pin.Free;
-  inherited Destroy;
+  Lock.Free;
+  RemoteBuffer.Free;
+  inherited;
 end;
 
 procedure TCommProtocol.Assign(Source: TCommProtocol);
 begin
   LastCommandResponseTime := Source.LastCommandResponseTime;
   LastLatency := Source.LastLatency;
-  MaxSequenceNumber := Source.MaxSequenceNumber;
-  MaxSessionCount := Source.MaxSessionCount;
-  RemoteBufferSize := Source.RemoteBufferSize;
-  RemoteBufferUsed := Source.RemoteBufferUsed;
+  RemoteBuffer.Assign(Source.RemoteBuffer);
   WrongSequenceCount := Source.WrongSequenceCount;
   RetransmitTimeout := Source.RetransmitTimeout;
   RetransmitRepeatCount := Source.RetransmitRepeatCount;
@@ -395,6 +451,7 @@ begin
   OnCommand := Source.OnCommand;
   OnAfterRequest := Source.OnAfterRequest;
   OnDebugLog := Source.OnDebugLog;
+  Sessions.Assign(Source.Sessions);
   Active := Source.Active;
 end;
 
@@ -430,7 +487,7 @@ begin
   try
     Lock.Acquire;
     Session.SequenceNumber := GetSequenceNumber;
-    while Count >= Parent.MaxSessionCount do
+    while Count >= MaxSessionCount do
     begin
       try
         Lock.Release;
@@ -473,6 +530,8 @@ constructor TDeviceProtocolSessionList.Create;
 begin
   inherited Create;
   Lock := TCriticalSection.Create;
+  MaxSessionCount := 100;
+  MaxSequenceNumber := 127;
 end;
 
 destructor TDeviceProtocolSessionList.Destroy;
@@ -490,12 +549,26 @@ begin
   inherited Destroy;
 end;
 
+procedure TDeviceProtocolSessionList.Assign(Source: TListObject);
+begin
+  MaxSequenceNumber := TDeviceProtocolSessionList(Source).MaxSequenceNumber;
+  MaxSessionCount := TDeviceProtocolSessionList(Source).MaxSessionCount;
+  SequenceNumber := TDeviceProtocolSessionList(Source).SequenceNumber;
+
+  inherited;
+end;
+
 function TDeviceProtocolSessionList.GetSequenceNumber: Integer;
 begin
-  Inc(SequenceNumber);
-  if SequenceNumber > Parent.MaxSequenceNumber then
-    SequenceNumber := 0;
-  Result := SequenceNumber;
+  try
+    //Lock.Acquire;
+    Inc(SequenceNumber);
+    if SequenceNumber > MaxSequenceNumber then
+      SequenceNumber := 0;
+    Result := SequenceNumber;
+  finally
+    //Lock.Release;
+  end;
 end;
 
 { TRetransmitCheckThread }
@@ -513,7 +586,8 @@ begin
       I := 0;
       while I < Sessions.Count do begin
         Session := TDeviceProtocolSession(Sessions[I]);
-        with TDeviceProtocolSession(Sessions[I]) do begin
+        with Session do
+        if Enabled then begin
           try
             Session.Lock.Acquire;
             if (TransmitTime > 0) and (Now > (TransmitTime + RetransmitTimeout)) then begin

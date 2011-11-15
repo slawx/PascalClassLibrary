@@ -19,7 +19,11 @@ msgstr "Chyba dekódování dat"
 
 #: ucommprotocol.sprotocolnotactive
 msgid "Device protocol not active"
-msgstr ""
+msgstr "Protokol zařízení není aktivní"
+
+#: ucommprotocol.sremotebufferinconsistency
+msgid "Remote buffer inconsistency"
+msgstr "Nekonzistentnost vzdálené vyrovnávací paměti"
 
 #: ucommprotocol.sresponseerror
 #| msgid "Command %s response error %s"

@@ -13,6 +13,10 @@ msgstr ""
 msgid "Device protocol not active"
 msgstr ""
 
+#: ucommprotocol.sremotebufferinconsistency
+msgid "Remote buffer inconsistency"
+msgstr ""
+
 #: ucommprotocol.sresponseerror
 msgid "Command %0:s response error %1:s"
 msgstr ""
