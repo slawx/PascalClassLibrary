@@ -10,6 +10,12 @@
         <OtherUnitFiles Value="WebServer;Persistence;Network;Modules;Common"/>
         <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
       </SearchPaths>
+      <Linking>
+        <Debugging>
+          <GenerateDebugInfo Value="True"/>
+          <DebugInfoType Value="dsAuto"/>
+        </Debugging>
+      </Linking>
       <Other>
         <CompilerMessages>
           <UseMsgFile Value="True"/>
@@ -20,7 +26,7 @@
     <Description Value="Unit set for generating CGI or server web application."/>
     <License Value="GNU/GPL"/>
     <Version Minor="2"/>
-    <Files Count="18">
+    <Files Count="16">
       <Item1>
         <Filename Value="WebServer/UHTTPServer.pas"/>
         <UnitName Value="UHTTPServer"/>
@@ -75,32 +81,24 @@
         <UnitName Value="UMIMEType"/>
       </Item12>
       <Item13>
-        <Filename Value="Common/UPool.pas"/>
-        <UnitName Value="UPool"/>
-      </Item13>
-      <Item14>
-        <Filename Value="Common/UResetableThread.pas"/>
-        <UnitName Value="UResetableThread"/>
-      </Item14>
-      <Item15>
         <Filename Value="Common/UXmlClasses.pas"/>
         <UnitName Value="UXmlClasses"/>
-      </Item15>
-      <Item16>
+      </Item13>
+      <Item14>
         <Filename Value="WebServer/UWebPage.pas"/>
         <HasRegisterProc Value="True"/>
         <UnitName Value="UWebPage"/>
-      </Item16>
-      <Item17>
+      </Item14>
+      <Item15>
         <Filename Value="WebServer/UWebApp.pas"/>
         <HasRegisterProc Value="True"/>
         <UnitName Value="UWebApp"/>
-      </Item17>
-      <Item18>
+      </Item15>
+      <Item16>
         <Filename Value="LazIDEReg.pas"/>
         <HasRegisterProc Value="True"/>
         <UnitName Value="LazIDEReg"/>
-      </Item18>
+      </Item16>
     </Files>
     <Type Value="RunAndDesignTime"/>
     <RequiredPkgs Count="6">

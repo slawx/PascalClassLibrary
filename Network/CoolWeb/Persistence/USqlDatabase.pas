@@ -38,6 +38,7 @@ type
     FEncoding: string;
     FHostName: string;
     FPassword: string;
+    FPort: Word;
     FSession: PMYSQL;
     FConnected: Boolean;
     FDatabase: string;
@@ -80,6 +81,7 @@ type
     property HostName: string read FHostName write FHostName;
     property UserName: string read FUserName write FUserName;
     property Password: string read FPassword write FPassword;
+    property Port: Word read FPort write FPort;
     property Encoding: string read FEncoding write FEncoding;
     property OnLogQuery: TLogEvent read FOnLogQuery write FOnLogQuery;
   end;
@@ -183,7 +185,7 @@ begin
   FSession := mysql_init(FSession);
 //  FSession.charset := 'latin2';
   NewSession := mysql_real_connect(FSession, PChar(HostName), PChar(UserName),
-    PChar(Password), PChar(Database), 3306, nil, CLIENT_LONG_PASSWORD + CLIENT_CONNECT_WITH_DB);
+    PChar(Password), PChar(Database), FPort, nil, CLIENT_LONG_PASSWORD + CLIENT_CONNECT_WITH_DB);
   if Assigned(NewSession) then begin
     FConnected := True;
     FSession := NewSession;
@@ -359,6 +361,7 @@ begin
   inherited;
   FSession := nil;
   Encoding := 'utf8';
+  FPort := 3306;
 end;
 
 function TSqlDatabase.LastInsertId: Integer;

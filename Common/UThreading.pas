@@ -44,6 +44,8 @@ type
     property ThreadId: Integer read GetThreadId;
   end;
 
+  TVirtualThreadClass = class of TVirtualThread;
+
   TListedThread = class;
 
   { TListedThreadExecute }
@@ -101,7 +103,7 @@ type
 
   TThreadList = class(TObjectList)
     function FindById(Id: Integer): TVirtualThread;
-    constructor Create;
+    constructor Create; virtual;
   end;
 
 var
@@ -186,7 +188,6 @@ end;
 constructor TThreadList.Create;
 begin
   inherited Create;
-  OwnsObjects := False;
 end;
 
 { TListedThreadExecute }
@@ -200,7 +201,7 @@ begin
       if Assigned(OnException) then
         OnException(Parent.FThread, E);
   end;
-                                                                                                                                                                                                                                                                                                                                    end;
+end;
 
 { TListedThread }
 
@@ -353,6 +354,7 @@ initialization
 
 ThreadListLock := TCriticalSection.Create;
 ThreadList := TThreadList.Create;
+ThreadList.OwnsObjects := False;
 
 finalization
 

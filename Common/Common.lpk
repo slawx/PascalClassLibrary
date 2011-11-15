@@ -11,6 +11,12 @@
       <SearchPaths>
         <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
       </SearchPaths>
+      <Linking>
+        <Debugging>
+          <GenerateDebugInfo Value="True"/>
+          <DebugInfoType Value="dsAuto"/>
+        </Debugging>
+      </Linking>
       <Other>
         <CompilerMessages>
           <UseMsgFile Value="True"/>
@@ -21,7 +27,7 @@
     <Description Value="Various libraries"/>
     <License Value="GNU/GPL"/>
     <Version Minor="3"/>
-    <Files Count="8">
+    <Files Count="10">
       <Item1>
         <Filename Value="StopWatch.pas"/>
         <UnitName Value="StopWatch"/>
@@ -55,6 +61,14 @@
         <Filename Value="UMemory.pas"/>
         <UnitName Value="UMemory"/>
       </Item8>
+      <Item9>
+        <Filename Value="UResetableThread.pas"/>
+        <UnitName Value="UResetableThread"/>
+      </Item9>
+      <Item10>
+        <Filename Value="UPool.pas"/>
+        <UnitName Value="UPool"/>
+      </Item10>
     </Files>
     <i18n>
       <EnableI18N Value="True"/>

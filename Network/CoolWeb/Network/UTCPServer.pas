@@ -1,6 +1,6 @@
 unit UTCPServer;
 
-{$mode objfpc}{$H+}
+{$mode Delphi}{$H+}
 
 interface
 
@@ -22,14 +22,14 @@ type
   TTCPClientThread = class(TResetableThread)
     Parent: TTCPServer;
     Socket: TTCPBlockSocket;
-    procedure Execute; override;
+    procedure Execute;
     constructor Create;
     destructor Destroy; override;
   end;
 
   { TClientThreadedPool }
 
-  TClientThreadedPool = class(TThreadedPool)
+  TClientThreadedPool = class(TThreadPool)
   private
     FActive: Boolean;
     procedure SetActive(const AValue: Boolean);
@@ -151,6 +151,7 @@ end;
 constructor TTCPClientThread.Create;
 begin
   inherited;
+  Method := Execute;
   Socket := TTCPBlockSocket.Create;
 end;
 
@@ -163,17 +164,7 @@ end;
 { TClientThreadedPool }
 
 procedure TClientThreadedPool.SetActive(const AValue: Boolean);
-var
-  I: Integer;
 begin
-  if not FActive and AValue then begin
-    for I := 0 to TotalCount - 1 do begin
-      TThreadedPoolItem(Items[I]).Item := TTCPClientThread.Create;
-    end;
-  end else
-  if FActive and not AValue then begin
-
-  end;
   FActive := AValue;
 end;
 

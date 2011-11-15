@@ -100,7 +100,8 @@ var
   LogFile: TFileStream;
 begin
   try
-    ForceDirectoriesUTF8(ExtractFileDir(FileName));
+    if ExtractFileDir(FileName) <> '' then
+      ForceDirectoriesUTF8(ExtractFileDir(FileName));
     if FileExistsUTF8(FileName) then LogFile := TFileStream.Create(UTF8Decode(FileName), fmOpenWrite)
       else LogFile := TFileStream.Create(UTF8Decode(FileName), fmCreate);
     LogFile.Seek(0, soFromEnd);

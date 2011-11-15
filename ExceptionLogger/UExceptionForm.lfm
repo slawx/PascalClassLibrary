@@ -1,11 +1,11 @@
 object ExceptionForm: TExceptionForm
   Left = 331
-  Height = 316
+  Height = 301
   Top = 184
-  Width = 506
+  Width = 457
   Caption = 'Exception info'
-  ClientHeight = 316
-  ClientWidth = 506
+  ClientHeight = 301
+  ClientWidth = 457
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
@@ -15,11 +15,11 @@ object ExceptionForm: TExceptionForm
     Left = 0
     Height = 80
     Top = 0
-    Width = 506
+    Width = 457
     Align = alTop
     BevelOuter = bvNone
     ClientHeight = 80
-    ClientWidth = 506
+    ClientWidth = 457
     TabOrder = 0
     object Image1: TImage
       Left = 8
@@ -134,9 +134,9 @@ object ExceptionForm: TExceptionForm
     end
     object Label1: TLabel
       Left = 69
-      Height = 18
+      Height = 14
       Top = 8
-      Width = 260
+      Width = 196
       Caption = 'Error occured during program execution:'
       ParentColor = False
     end
@@ -144,8 +144,8 @@ object ExceptionForm: TExceptionForm
       Left = 80
       Height = 46
       Top = 24
-      Width = 296
-      Anchors = [akTop, akLeft, akBottom]
+      Width = 370
+      Anchors = [akTop, akLeft, akRight, akBottom]
       AutoSize = False
       Caption = '   '
       ParentColor = False
@@ -154,19 +154,19 @@ object ExceptionForm: TExceptionForm
   end
   object PanelDescription: TPanel
     Left = 0
-    Height = 204
+    Height = 189
     Top = 80
-    Width = 506
+    Width = 457
     Align = alClient
     BevelOuter = bvNone
-    ClientHeight = 204
-    ClientWidth = 506
+    ClientHeight = 189
+    ClientWidth = 457
     TabOrder = 1
     object PageControl1: TPageControl
       Left = 8
-      Height = 202
+      Height = 187
       Top = 0
-      Width = 493
+      Width = 444
       ActivePage = TabSheet2
       Anchors = [akTop, akLeft, akRight, akBottom]
       TabIndex = 1
@@ -189,13 +189,13 @@ object ExceptionForm: TExceptionForm
       end
       object TabSheet2: TTabSheet
         Caption = 'Call stack'
-        ClientHeight = 167
-        ClientWidth = 487
+        ClientHeight = 161
+        ClientWidth = 436
         object ListView1: TListView
           Left = 4
-          Height = 157
+          Height = 151
           Top = 7
-          Width = 481
+          Width = 430
           Anchors = [akTop, akLeft, akRight, akBottom]
           Columns = <          
             item
@@ -233,15 +233,15 @@ object ExceptionForm: TExceptionForm
   object PanelButtons: TPanel
     Left = 0
     Height = 32
-    Top = 284
-    Width = 506
+    Top = 269
+    Width = 457
     Align = alBottom
     BevelOuter = bvNone
     ClientHeight = 32
-    ClientWidth = 506
+    ClientWidth = 457
     TabOrder = 2
     object ButtonKill: TButton
-      Left = 344
+      Left = 295
       Height = 25
       Top = 3
       Width = 83
@@ -251,7 +251,7 @@ object ExceptionForm: TExceptionForm
       TabOrder = 0
     end
     object ButtonClose: TButton
-      Left = 432
+      Left = 383
       Height = 25
       Top = 3
       Width = 67
@@ -262,15 +262,15 @@ object ExceptionForm: TExceptionForm
     end
     object CheckBoxIgnore: TCheckBox
       Left = 10
-      Height = 22
-      Top = 3
-      Width = 224
+      Height = 17
+      Top = 8
+      Width = 169
       Anchors = [akLeft, akBottom]
       Caption = 'Next time ignore this exception'
       TabOrder = 2
     end
     object ButtonDetails: TButton
-      Left = 264
+      Left = 215
       Height = 25
       Top = 3
       Width = 75
