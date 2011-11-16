@@ -8,13 +8,6 @@ uses
   Classes, UStreamHelper, Dialogs, SysUtils,
   UCommPin;
 
-const
-  SpecialChar = $fe;
-  ControlCodeFrameStart = $fd;
-  ControlCodeFrameEnd = $fc;
-  ControlCodeSpecialChar = $fb;
-  TimeoutRepeatCount = 3;
-
 type
   TFrameState = (fsOutside, fsStart, fsInside, fsEnd);
 
@@ -32,10 +25,15 @@ type
     RawDataPin: TCommPin;
     FrameDataPin: TCommPin;
     PacketLoss: Real;
+    SpecialChar: Byte;
+    ControlCodeFrameStart: Byte;
+    ControlCodeFrameEnd: Byte;
+    ControlCodeSpecialChar: Byte;
     procedure RawDataReceive(Sender: TCommPin; Stream: TStream);
     procedure RawSetStatus(Sender: TCommPin; Status: Integer);
     procedure FrameDataReceive(Sender: TCommPin; Stream: TStream);
     procedure FrameSetStatus(Sender: TCommPin; Status: Integer);
+    function ComputeRawSize(DataStream: TStream): Integer;
     constructor Create;
     destructor Destroy; override;
     property FrameErrorCount: Integer read FFrameErrorCount;
@@ -55,6 +53,10 @@ begin
   FrameDataPin := TCommPin.Create;
   FrameDataPin.OnReceive := FrameDataReceive;
   PacketLoss := 0.005;
+  SpecialChar := $fe;
+  ControlCodeFrameStart := $fd;
+  ControlCodeFrameEnd := $fc;
+  ControlCodeSpecialChar := $fb;
 end;
 
 destructor TCommFrame.Destroy;
@@ -98,7 +100,7 @@ begin
 
     RawData.WriteByte(SpecialChar);
     RawData.WriteByte(ControlCodeFrameEnd);
-    //if Random >= PacketLoss then
+    if Random >= PacketLoss then
       RawDataPin.Send(RawData);
 
   finally
@@ -109,6 +111,15 @@ end;
 procedure TCommFrame.FrameSetStatus(Sender: TCommPin; Status: Integer);
 begin
   RawDataPin.Status := Status;
+end;
+
+function TCommFrame.ComputeRawSize(DataStream: TStream): Integer;
+begin
+  Result := 5; // FrameStart + CRC + FrameEnd
+  DataStream.Position := 0;
+  while DataStream.Position < DataStream.Size do
+    if DataStream.ReadByte = SpecialChar then Inc(Result, 2)
+      else Inc(Result, 1);
 end;
 
 procedure TCommFrame.RawDataReceive(Sender: TCommPin; Stream: TStream);
@@ -169,6 +180,7 @@ var
 const
   Polynom: Byte = $18;
 begin
+  Pom := 0;
   Stream.Position := 0;
   Result := 0;
   for I := 0 to Stream.Size - 1 do begin

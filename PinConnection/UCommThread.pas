@@ -15,7 +15,7 @@ type
 
   { TCommThreadReceiveThread }
 
-  TCommThreadReceiveThread = class(TListedThread)
+  TCommThreadReceiveThread = class(TTermThread)
   public
     Parent: TCommThread;
     Stream: TStreamHelper;
@@ -102,8 +102,6 @@ begin
     FReceiveThread.Name := 'CommThread';
     FReceiveThread.Start;
   end else begin
-    FReceiveThread.Terminate;
-    FReceiveThread.WaitFor;
     FreeAndNil(FReceiveThread);
   end;
 end;
@@ -138,35 +136,37 @@ end;
 { TCommThreadReceiveThread }
 
 procedure TCommThreadReceiveThread.Execute;
+var
+  TempStatus: Integer;
 begin
-  try
-    with Parent do
-    repeat
-      // Check if new data arrived
-      if FDataAvailable.WaitFor(1) = wrSignaled then
+  with Parent do
+  repeat
+    // Check if new data arrived
+    if FDataAvailable.WaitFor(1) = wrSignaled then begin
       try
         FInputBufferLock.Acquire;
         Stream.Size := 0;
         Stream.WriteStream(FInputBuffer, FInputBuffer.Size);
-        Pin.Send(Stream);
-      finally
         FDataAvailable.ResetEvent;
         FInputBuffer.Clear;
+      finally
         FInputBufferLock.Release;
       end; // else Yield;
+      Pin.Send(Stream);
+    end;
 
-      // Check if state changed
-      if FStatusEvent.WaitFor(0) = wrSignaled then
+    // Check if state changed
+    if FStatusEvent.WaitFor(0) = wrSignaled then begin
       try
         FInputBufferLock.Acquire;
-        Pin.Status := FStatusValue;
+        TempStatus := FStatusValue;
       finally
         FStatusEvent.ResetEvent;
         FInputBufferLock.Release;
       end;
-    until Terminated;
-  finally
-  end;
+      Pin.Status := TempStatus;
+    end;
+  until Terminated;
 end;
 
 constructor TCommThreadReceiveThread.Create(CreateSuspended: Boolean;

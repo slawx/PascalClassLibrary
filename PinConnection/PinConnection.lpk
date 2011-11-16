@@ -6,17 +6,11 @@
     <AddToProjectUsesSection Value="True"/>
     <Author Value="Chronos"/>
     <CompilerOptions>
-      <Version Value="10"/>
+      <Version Value="11"/>
       <PathDelim Value="\"/>
       <SearchPaths>
         <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
       </SearchPaths>
-      <Linking>
-        <Debugging>
-          <GenerateDebugInfo Value="True"/>
-          <DebugInfoType Value="dsAuto"/>
-        </Debugging>
-      </Linking>
       <Other>
         <CompilerMessages>
           <UseMsgFile Value="True"/>
@@ -41,32 +35,32 @@
         <UnitName Value="UCommPin"/>
       </Item3>
       <Item4>
-        <Filename Value="UCommProtocol.pas"/>
-        <UnitName Value="UCommProtocol"/>
-      </Item4>
-      <Item5>
         <Filename Value="UCommSerialPort.pas"/>
         <UnitName Value="UCommSerialPort"/>
-      </Item5>
-      <Item6>
+      </Item4>
+      <Item5>
         <Filename Value="UCommSocket.pas"/>
         <UnitName Value="UCommSocket"/>
-      </Item6>
-      <Item7>
+      </Item5>
+      <Item6>
         <Filename Value="UCommThread.pas"/>
         <UnitName Value="UCommThread"/>
-      </Item7>
-      <Item8>
+      </Item6>
+      <Item7>
         <Filename Value="UPacketBurst.pas"/>
         <UnitName Value="UPacketBurst"/>
-      </Item8>
-      <Item9>
+      </Item7>
+      <Item8>
         <Filename Value="USerialPort.pas"/>
         <UnitName Value="USerialPort"/>
-      </Item9>
-      <Item10>
+      </Item8>
+      <Item9>
         <Filename Value="UCommConcentrator.pas"/>
         <UnitName Value="UCommConcentrator"/>
+      </Item9>
+      <Item10>
+        <Filename Value="UCommDelay.pas"/>
+        <UnitName Value="UCommDelay"/>
       </Item10>
     </Files>
     <i18n>
