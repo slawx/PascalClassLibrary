@@ -6,17 +6,11 @@
     <AddToProjectUsesSection Value="True"/>
     <Author Value="Chronos (robie@centrum.cz)"/>
     <CompilerOptions>
-      <Version Value="10"/>
+      <Version Value="11"/>
       <PathDelim Value="\"/>
       <SearchPaths>
         <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
       </SearchPaths>
-      <Linking>
-        <Debugging>
-          <GenerateDebugInfo Value="True"/>
-          <DebugInfoType Value="dsAuto"/>
-        </Debugging>
-      </Linking>
       <Other>
         <CompilerMessages>
           <UseMsgFile Value="True"/>
@@ -26,7 +20,7 @@
     </CompilerOptions>
     <Description Value="Various libraries"/>
     <License Value="GNU/GPL"/>
-    <Version Minor="3"/>
+    <Version Minor="4"/>
     <Files Count="10">
       <Item1>
         <Filename Value="StopWatch.pas"/>

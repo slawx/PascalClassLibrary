@@ -37,12 +37,12 @@
         <PackageName Value="LCL"/>
       </Item2>
     </RequiredPackages>
-    <Units Count="7">
+    <Units Count="8">
       <Unit0>
         <Filename Value="Demo.lpr"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="Demo"/>
-        <EditorIndex Value="1"/>
+        <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="14" Y="8"/>
@@ -58,8 +58,8 @@
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="34"/>
-        <CursorPos X="3" Y="47"/>
+        <TopLine Value="14"/>
+        <CursorPos X="1" Y="27"/>
         <UsageCount Value="20"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -67,12 +67,10 @@
       <Unit2>
         <Filename Value="/usr/lib64/lazarus/components/codetools/codetools.pas"/>
         <UnitName Value="CodeTools"/>
-        <EditorIndex Value="3"/>
         <WindowIndex Value="0"/>
         <TopLine Value="4"/>
         <CursorPos X="32" Y="15"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
       </Unit2>
       <Unit3>
         <Filename Value="../UExceptionForm.lfm"/>
@@ -88,7 +86,7 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UExceptionForm"/>
-        <EditorIndex Value="4"/>
+        <EditorIndex Value="3"/>
         <WindowIndex Value="0"/>
         <TopLine Value="83"/>
         <CursorPos X="31" Y="89"/>
@@ -99,7 +97,7 @@
       </Unit4>
       <Unit5>
         <Filename Value="../ReadMe.txt"/>
-        <EditorIndex Value="5"/>
+        <EditorIndex Value="4"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="39" Y="3"/>
@@ -109,15 +107,24 @@
       </Unit5>
       <Unit6>
         <Filename Value="/usr/share/fpcsrc/rtl/inc/objpash.inc"/>
-        <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
         <TopLine Value="171"/>
         <CursorPos X="23" Y="185"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
       </Unit6>
+      <Unit7>
+        <Filename Value="../UExceptionLogger.pas"/>
+        <UnitName Value="UExceptionLogger"/>
+        <EditorIndex Value="1"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="228"/>
+        <CursorPos X="23" Y="233"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit7>
     </Units>
-    <JumpHistory Count="17" HistoryIndex="16">
+    <JumpHistory Count="22" HistoryIndex="21">
       <Position1>
         <Filename Value="UMainForm.pas"/>
         <Caret Line="12" Column="21" TopLine="1"/>
@@ -127,69 +134,89 @@
         <Caret Line="17" Column="21" TopLine="1"/>
       </Position2>
       <Position3>
-        <Filename Value="/usr/lib64/lazarus/components/codetools/codetools.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="18" Column="28" TopLine="9"/>
       </Position3>
       <Position4>
-        <Filename Value="/usr/lib64/lazarus/components/codetools/codetools.pas"/>
-        <Caret Line="32" Column="1" TopLine="4"/>
+        <Filename Value="../UExceptionForm.pas"/>
+        <Caret Line="13" Column="1" TopLine="1"/>
       </Position4>
       <Position5>
         <Filename Value="UMainForm.pas"/>
-        <Caret Line="18" Column="28" TopLine="9"/>
+        <Caret Line="19" Column="65" TopLine="9"/>
       </Position5>
       <Position6>
         <Filename Value="../UExceptionForm.pas"/>
-        <Caret Line="13" Column="1" TopLine="1"/>
+        <Caret Line="88" Column="1" TopLine="83"/>
       </Position6>
       <Position7>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="19" Column="65" TopLine="9"/>
-      </Position7>
-      <Position8>
-        <Filename Value="../UExceptionForm.pas"/>
-        <Caret Line="88" Column="1" TopLine="83"/>
-      </Position8>
-      <Position9>
         <Filename Value="../UExceptionForm.pas"/>
         <Caret Line="89" Column="1" TopLine="83"/>
+      </Position7>
+      <Position8>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="19" Column="65" TopLine="9"/>
+      </Position8>
+      <Position9>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="21" Column="65" TopLine="9"/>
       </Position9>
       <Position10>
         <Filename Value="UMainForm.pas"/>
-        <Caret Line="19" Column="65" TopLine="9"/>
+        <Caret Line="16" Column="33" TopLine="1"/>
       </Position10>
       <Position11>
         <Filename Value="UMainForm.pas"/>
-        <Caret Line="21" Column="65" TopLine="9"/>
+        <Caret Line="57" Column="10" TopLine="33"/>
       </Position11>
       <Position12>
         <Filename Value="UMainForm.pas"/>
-        <Caret Line="16" Column="33" TopLine="1"/>
+        <Caret Line="56" Column="30" TopLine="34"/>
       </Position12>
       <Position13>
         <Filename Value="UMainForm.pas"/>
-        <Caret Line="57" Column="10" TopLine="33"/>
+        <Caret Line="54" Column="4" TopLine="34"/>
       </Position13>
       <Position14>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="56" Column="30" TopLine="34"/>
-      </Position14>
-      <Position15>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="54" Column="4" TopLine="34"/>
-      </Position15>
-      <Position16>
         <Filename Value="Demo.lpr"/>
         <Caret Line="6" Column="16" TopLine="1"/>
-      </Position16>
-      <Position17>
+      </Position14>
+      <Position15>
         <Filename Value="Demo.lpr"/>
         <Caret Line="8" Column="14" TopLine="1"/>
+      </Position15>
+      <Position16>
+        <Filename Value="../UExceptionLogger.pas"/>
+        <Caret Line="21" Column="43" TopLine="14"/>
+      </Position16>
+      <Position17>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="47" Column="44" TopLine="35"/>
       </Position17>
+      <Position18>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="48" Column="44" TopLine="36"/>
+      </Position18>
+      <Position19>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="67" Column="1" TopLine="45"/>
+      </Position19>
+      <Position20>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="24" Column="34" TopLine="1"/>
+      </Position20>
+      <Position21>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="39" Column="1" TopLine="32"/>
+      </Position21>
+      <Position22>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="38" Column="1" TopLine="31"/>
+      </Position22>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
-    <Version Value="10"/>
+    <Version Value="11"/>
     <Target>
       <Filename Value="Demo"/>
     </Target>
@@ -207,7 +234,6 @@
     </CodeGeneration>
     <Linking>
       <Debugging>
-        <GenerateDebugInfo Value="True"/>
         <DebugInfoType Value="dsStabs"/>
       </Debugging>
       <Options>

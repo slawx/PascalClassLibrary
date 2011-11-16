@@ -43,6 +43,10 @@ msgctxt "uexceptionlogger.sexceptionclass"
 msgid "Class"
 msgstr "Třída"
 
+#: uexceptionlogger.sexceptionhandlercannotbesynchronized
+msgid "Exception handler cannot be synchronized with main thread."
+msgstr "Obsluha vyjímky nemůže být synchronizována s hlavním vláknem."
+
 #: uexceptionlogger.sexceptioninfo
 msgid "Exception info"
 msgstr "Informace výjimky"

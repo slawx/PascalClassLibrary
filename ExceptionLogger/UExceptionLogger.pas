@@ -9,6 +9,7 @@ uses
   Classes, SysUtils, UStackTrace, CustomLineInfo, Forms;
 
 type
+  TThreadSynchronizeEvent = procedure (AObject: TObject; Method: TThreadMethod) of object;
 
   { TExceptionLogger }
 
@@ -16,6 +17,8 @@ type
   private
     FMaxCallStackDepth: Integer;
     FLogFileName: string;
+    FOnThreadSynchronize: TThreadSynchronizeEvent;
+    procedure ThreadSynchronize(AObject: TObject; Method: TThreadMethod);
     function GetAppVersion: string;
     procedure SetMaxCallStackDepth(const AValue: Integer);
     procedure MakeReport;
@@ -36,6 +39,8 @@ type
   published
     property LogFileName: string read FLogFileName write FLogFileName;
     property MaxCallStackDepth: Integer read FMaxCallStackDepth write SetMaxCallStackDepth;
+    property OnThreadSynchronize: TThreadSynchronizeEvent read FOnThreadSynchronize
+      write FOnThreadSynchronize;
   end;
 
 procedure Register;
@@ -62,6 +67,7 @@ resourcestring
   SClass = 'Class';
   SProcedureMethod = 'Procedure/method';
   SUnit = 'Unit';
+  SExceptionHandlerCannotBeSynchronized = 'Exception handler cannot be synchronized with main thread.';
 
 implementation
 
@@ -83,6 +89,7 @@ begin
   MaxCallStackDepth := 20;
   Application.OnException := ExceptionHandler;
   Application.Flags := Application.Flags - [AppNoExceptionMessages];
+  OnThreadSynchronize := ThreadSynchronize;
 end;
 
 destructor TExceptionLogger.Destroy;
@@ -161,9 +168,11 @@ begin
   StackTrace.GetExceptionBackTrace;
   LastException := E;
   ExceptionSender := Sender;
-  if ExceptionSender is TThread then
-    TThread.Synchronize(TThread(ExceptionSender), ShowForm)
-    else ShowForm;
+  if (MainThreadID <> ThreadID) then begin
+    if Assigned(FOnThreadSynchronize) then
+      FOnThreadSynchronize(Sender, ShowForm)
+      else raise Exception.Create(SExceptionHandlerCannotBeSynchronized);
+  end else ShowForm;
 end;
 
 procedure TExceptionLogger.MakeReport;
@@ -208,6 +217,13 @@ procedure TExceptionLogger.SetMaxCallStackDepth(const AValue: Integer);
 begin
   FMaxCallStackDepth := AValue;
   StackTrace.MaxDepth := AValue;
+end;
+
+procedure TExceptionLogger.ThreadSynchronize(AObject: TObject;
+  Method: TThreadMethod);
+begin
+  if AObject is TThread then TThread.Synchronize(TThread(AObject), Method)
+    else raise Exception.Create(SExceptionHandlerCannotBeSynchronized);
 end;
 
 function TExceptionLogger.GetAppVersion: string;

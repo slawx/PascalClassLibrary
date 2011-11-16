@@ -35,6 +35,10 @@ msgctxt "uexceptionlogger.sexceptionclass"
 msgid "Class"
 msgstr ""
 
+#: uexceptionlogger.sexceptionhandlercannotbesynchronized
+msgid "Exception handler cannot be synchronized with main thread."
+msgstr ""
+
 #: uexceptionlogger.sexceptioninfo
 msgid "Exception info"
 msgstr ""
