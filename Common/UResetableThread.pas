@@ -22,6 +22,7 @@ type
   TResetableThread = class
   private
     FLock: TCriticalSection;
+    FOnException: TExceptionEvent;
     FOnFinished: TNotifyEvent;
     FStartEvent: TEvent;
     FStopEvent: TEvent;
@@ -41,20 +42,30 @@ type
     property OnFinished: TNotifyEvent read FOnFinished write FOnFinished;
     property StopPending: Boolean read FStopPending;
     property Running: Boolean read GetRunning;
+    property OnException: TExceptionEvent read FOnException
+      write FOnException;
   end;
 
   { TThreadPool }
 
   TThreadPool = class(TThreadedPool)
   private
+    FOnException: TExceptionEvent;
     procedure MethodFinish(Sender: TObject);
+    procedure ThreadException(Sender: TObject; E: Exception);
   protected
     function NewItemObject: TObject; override;
   public
+    LastExceptionClass: TClass;
+    LastExceptionMessage: string;
+    procedure CheckException;
     procedure WaitForEmpty;
+    procedure Clear;
     procedure RunInThread(AMethod: TMethodCall);
     constructor Create; override;
     destructor Destroy; override;
+    property OnException: TExceptionEvent read FOnException
+      write FOnException;
   end;
 
 resourcestring
@@ -192,9 +203,18 @@ begin
           FRunningPending := False;
           try
             FLock.Release;
-            Method;
-            if Assigned(FOnFinished) then
-              FOnFinished(Parent);
+            try
+              try
+                Method;
+              finally
+                if Assigned(FOnFinished) then
+                  FOnFinished(Parent);
+              end;
+            except
+              on E: Exception do
+                if Assigned(FOnException) then
+                  FOnException(Self, E);
+            end;
           finally
             FLock.Acquire;
           end;
@@ -218,19 +238,41 @@ begin
   Release(Sender);
 end;
 
+procedure TThreadPool.ThreadException(Sender: TObject; E: Exception);
+begin
+  LastExceptionClass := E.ClassType;
+  LastExceptionMessage := E.Message;
+end;
+
+procedure TThreadPool.CheckException;
+begin
+  if Assigned(LastExceptionClass) then
+    raise Exception.Create(LastExceptionMessage);
+end;
+
 function TThreadPool.NewItemObject: TObject;
 begin
   Result := TResetableThread.Create;
+  TResetableThread(Result).OnException := ThreadException;
 end;
 
 procedure TThreadPool.WaitForEmpty;
 begin
-  while UsedCount > 0 do
+  while UsedCount > 0 do begin
     Sleep(1);
+  end;
+end;
+
+procedure TThreadPool.Clear;
+begin
+  TotalCount := 0;
+  LastExceptionClass := nil;
+  LastExceptionMessage := '';
 end;
 
 procedure TThreadPool.RunInThread(AMethod: TMethodCall);
 begin
+  CheckException;
   with TResetableThread(Acquire) do begin
     Method := AMethod;
     OnFinished := MethodFinish;
