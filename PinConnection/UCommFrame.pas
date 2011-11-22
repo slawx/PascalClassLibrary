@@ -52,7 +52,7 @@ begin
   RawDataPin.OnReceive := RawDataReceive;
   FrameDataPin := TCommPin.Create;
   FrameDataPin.OnReceive := FrameDataReceive;
-  PacketLoss := 0.005;
+  PacketLoss := 0;
   SpecialChar := $fe;
   ControlCodeFrameStart := $fd;
   ControlCodeFrameEnd := $fc;

@@ -287,6 +287,8 @@ end;
 
 destructor TThreadPool.Destroy;
 begin
+  TotalCount := 0;
+  WaitForEmpty;
   inherited Destroy;
 end;
 
