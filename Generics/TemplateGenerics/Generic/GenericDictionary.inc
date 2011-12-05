@@ -10,10 +10,10 @@
 {$DEFINE TGListIndex := TGDictionaryIndex}
 {$DEFINE TGListItem := TGPair}
 {$DEFINE TGList := TGDictionaryList}
-{$DEFINE TGListSortCompare := TDictionarySortCompare}
-{$DEFINE TGListToStringConverter := TDictionaryToStringConverter}
-{$DEFINE TGListFromStringConverter := TDictionaryFromStringConverter}
-{$DEFINE TGListItemArray := TDictionaryItemArray}
+{$DEFINE TGListSortCompare := TGDictionarySortCompare}
+{$DEFINE TGListToStringConverter := TGDictionaryToStringConverter}
+{$DEFINE TGListFromStringConverter := TGDictionaryFromStringConverter}
+{$DEFINE TGListItemArray := TGDictionaryItemArray}
 {$DEFINE INTERFACE}
 {$I 'GenericList.inc'}
 
@@ -36,19 +36,22 @@
 {$UNDEF INTERFACE}
 {$ENDIF}
 
-{$IFDEF IMPLEMENTATION}
 
-{$UNDEF IMPLEMENTATION}
-{$DEFINE IMPLEMENTATION_USES}
+{$IFDEF IMPLEMENTATION_USES}
 {$I '..\Generic\GenericList.inc'}
+{$UNDEF IMPLEMENTATION_USES}
+{$ENDIF}
+
+
+{$IFDEF IMPLEMENTATION}
 
 {$DEFINE TGListIndex := TGDictionaryIndex}
 {$DEFINE TGListItem := TGPair}
 {$DEFINE TGList := TGDictionaryList}
-{$DEFINE TGListSortCompare := TDictionarySortCompare}
-{$DEFINE TGListToStringConverter := TDictionaryToStringConverter}
-{$DEFINE TGListFromStringConverter := TDictionaryFromStringConverter}
-{$DEFINE TGListItemArray := TDictionaryItemArray}
+{$DEFINE TGListSortCompare := TGDictionarySortCompare}
+{$DEFINE TGListToStringConverter := TGDictionaryToStringConverter}
+{$DEFINE TGListFromStringConverter := TGDictionaryFromStringConverter}
+{$DEFINE TGListItemArray := TGDictionaryItemArray}
 {$DEFINE IMPLEMENTATION}
 {$I 'GenericList.inc'}
 
