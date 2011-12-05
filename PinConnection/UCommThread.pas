@@ -138,11 +138,14 @@ end;
 procedure TCommThreadReceiveThread.Execute;
 var
   TempStatus: Integer;
+  DoSleep: Boolean;
 begin
   with Parent do
   repeat
+    DoSleep := True;
     // Check if new data arrived
-    if FDataAvailable.WaitFor(1) = wrSignaled then begin
+    if FDataAvailable.WaitFor(0) = wrSignaled then begin
+      DoSleep := False;
       try
         FInputBufferLock.Acquire;
         Stream.Size := 0;
@@ -157,6 +160,7 @@ begin
 
     // Check if state changed
     if FStatusEvent.WaitFor(0) = wrSignaled then begin
+      DoSleep := False;
       try
         FInputBufferLock.Acquire;
         TempStatus := FStatusValue;
@@ -165,6 +169,9 @@ begin
         FInputBufferLock.Release;
       end;
       Pin.Status := TempStatus;
+    end;
+    if not Terminated and DoSleep then begin
+      Sleep(1);
     end;
   until Terminated;
 end;

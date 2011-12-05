@@ -23,6 +23,9 @@ type
 
   TCommDelayThread = class(TTermThread)
     Parent: TCommDelay;
+    PacketQueue: TListObject;
+    Pin: TCommPin;
+    Lock: TCriticalSection;
     procedure Execute; override;
   end;
 
@@ -34,12 +37,14 @@ type
     FDelay: TDateTime;
     PacketQueue1: TListObject; // TListObject<TDelayedPacket>
     PacketQueue2: TListObject; // TListObject<TDelayedPacket>
-    Thread: TCommDelayThread;
+    Thread1: TCommDelayThread;
+    Thread2: TCommDelayThread;
     procedure ReceiveData1(Sender: TCommPin; AStream: TStream);
     procedure ReceiveData2(Sender: TCommPin; AStream: TStream);
     procedure SetActive(AValue: Boolean);
   public
-    Lock: TCriticalSection;
+    Lock1: TCriticalSection;
+    Lock2: TCriticalSection;
     Pin1: TCommPin;
     Pin2: TCommPin;
     constructor Create;
@@ -57,44 +62,33 @@ var
   I: Integer;
   CurrentTime: TDateTime;
   SendData: TStreamHelper;
+  DoSleep: Boolean;
 begin
   try
     SendData := TStreamHelper.Create;
     repeat
-      with Parent do begin
+      DoSleep := True;
         try
           Lock.Acquire;
           CurrentTime := Now;
-          for I := PacketQueue1.Count - 1 downto 0 do
-            if TDelayedPacket(PacketQueue1[I]).ReceiveTime < (CurrentTime - Delay) then begin
+          I := 0;
+          while (I < PacketQueue.Count) do
+            if TDelayedPacket(PacketQueue[I]).ReceiveTime < (CurrentTime - Parent.Delay) then begin
+              DoSleep := False;
               SendData.Clear;
-              SendData.WriteStream(TDelayedPacket(PacketQueue1[I]).Data, TDelayedPacket(PacketQueue1[I]).Data.Size);
-              PacketQueue1.Delete(I);
+              SendData.WriteStream(TDelayedPacket(PacketQueue[I]).Data, TDelayedPacket(PacketQueue[I]).Data.Size);
+              PacketQueue.Delete(I);
               try
                 Lock.Release;
-                Pin1.Send(SendData.Stream);
+                Pin.Send(SendData.Stream);
               finally
                 Lock.Acquire;
               end;
-            end;
-
-          for I := PacketQueue2.Count - 1 downto 0 do
-            if TDelayedPacket(PacketQueue2[I]).ReceiveTime < (CurrentTime - Delay) then begin
-              SendData.Clear;
-              SendData.WriteStream(TDelayedPacket(PacketQueue2[I]).Data, TDelayedPacket(PacketQueue2[I]).Data.Size);
-              PacketQueue2.Delete(I);
-              try
-                Lock.Release;
-                Pin2.Send(SendData.Stream);
-              finally
-                Lock.Acquire;
-              end;
-            end;
+            end else Inc(I);
         finally
           Lock.Release;
         end;
-      end;
-      if not Terminated then Sleep(1);
+      if not Terminated and DoSleep then Sleep(1);
     until Terminated;
   finally
     SendData.Free;
@@ -119,7 +113,7 @@ end;
 procedure TCommDelay.ReceiveData1(Sender: TCommPin; AStream: TStream);
 begin
   try
-    Lock.Acquire;
+    Lock2.Acquire;
     if Delay = 0 then Pin2.Send(AStream)
     else
     with TDelayedPacket(PacketQueue2.AddNew(TDelayedPacket.Create)) do begin
@@ -127,14 +121,14 @@ begin
       Data.WriteStream(AStream, AStream.Size);
     end;
   finally
-    Lock.Release;
+    Lock2.Release;
   end;
 end;
 
 procedure TCommDelay.ReceiveData2(Sender: TCommPin; AStream: TStream);
 begin
   try
-    Lock.Acquire;
+    Lock1.Acquire;
     if Delay = 0 then Pin1.Send(AStream)
     else
     with TDelayedPacket(PacketQueue1.AddNew(TDelayedPacket.Create)) do begin
@@ -142,7 +136,7 @@ begin
       Data.WriteStream(AStream, AStream.Size);
     end;
   finally
-    Lock.Release;
+    Lock1.Release;
   end;
 end;
 
@@ -151,19 +145,33 @@ begin
   if FActive = AValue then Exit;
   FActive := AValue;
   if AValue then begin
-    Thread := TCommDelayThread.Create(True);
-    Thread.FreeOnTerminate := False;
-    Thread.Parent := Self;
-    Thread.Name := 'CommDelay';
-    Thread.Start;
+    Thread1 := TCommDelayThread.Create(True);
+    Thread1.FreeOnTerminate := False;
+    Thread1.Parent := Self;
+    Thread1.Name := 'CommDelay1';
+    Thread1.PacketQueue := PacketQueue1;
+    Thread1.Pin := Pin1;
+    Thread1.Lock := Lock1;
+    Thread1.Start;
+
+    Thread2 := TCommDelayThread.Create(True);
+    Thread2.FreeOnTerminate := False;
+    Thread2.Parent := Self;
+    Thread2.Name := 'CommDelay2';
+    Thread2.PacketQueue := PacketQueue2;
+    Thread2.Pin := Pin2;
+    Thread2.Lock := Lock2;
+    Thread2.Start;
   end else begin
-    FreeAndNil(Thread);
+    FreeAndNil(Thread1);
+    FreeAndNil(Thread2);
   end;
 end;
 
 constructor TCommDelay.Create;
 begin
-  Lock := TCriticalSection.Create;
+  Lock1 := TCriticalSection.Create;
+  Lock2 := TCriticalSection.Create;
   PacketQueue1 := TListObject.Create;
   PacketQueue2 := TListObject.Create;
   Pin1 := TCommPin.Create;
@@ -179,7 +187,8 @@ begin
   Pin1.Free;
   PacketQueue1.Free;
   PacketQueue2.Free;
-  Lock.Free;
+  Lock1.Free;
+  Lock2.Free;
   inherited Destroy;
 end;
 
