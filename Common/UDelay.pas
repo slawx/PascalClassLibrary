@@ -15,6 +15,7 @@ type
     FEnabled: Boolean;
     function GetEnabled:Boolean;
     function GetOwerflowed:Boolean;
+    function GetRunning: Boolean;
     procedure SetEnabled(const AValue: Boolean);
   public
     StartTime: TDateTime;
@@ -23,6 +24,7 @@ type
     procedure Stop;
     constructor Create;
     property Overflowed: Boolean read GetOwerflowed;
+    property Running: Boolean read GetRunning;
     property Enabled: Boolean read GetEnabled write SetEnabled;
   end;
 
@@ -39,6 +41,11 @@ end;
 function TDelay.GetOwerflowed: Boolean;
 begin
   Result := ((Now - StartTime) > (Duration * OneMillisecond)) and FEnabled;
+end;
+
+function TDelay.GetRunning: Boolean;
+begin
+  Result := ((Now - StartTime) <= (Duration * OneMillisecond)) and FEnabled;
 end;
 
 procedure TDelay.SetEnabled(const AValue:Boolean);
