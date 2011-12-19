@@ -89,6 +89,11 @@ type
 
 TListByte = class(TListByteBase)
   procedure WriteToStream(Stream: TStream);
+  procedure WriteToStreamPart(Stream: TStream; ItemIndex, ItemCount: TGListIndex);
+  procedure ReplaceStream(Stream: TStream);
+  procedure ReplaceStreamPart(Stream: TStream; ItemIndex, ItemCount: TGListIndex);
+  procedure AddStream(Stream: TStream);
+  procedure AddStreamPart(Stream: TStream; ItemCount: TGListIndex);
 end;
 
 // TListChar<Integer, Char>
@@ -337,14 +342,78 @@ begin
   end;
 end;
 
+{ TListByte }
+
 procedure TListByte.WriteToStream(Stream: TStream);
 var
   I: Integer;
 begin
+  Stream.Position := 0;
   I := 0;
-  while I < Count do
+  while I < Count do begin
     Stream.WriteByte(Items[I]);
+    I := I + 1;
+  end;
 end;
 
+procedure TListByte.WriteToStreamPart(Stream: TStream; ItemIndex, ItemCount: Integer);
+var
+  I: Integer;
+begin
+  I := ItemIndex;
+  while I < ItemCount do begin
+    Stream.WriteByte(Items[I]);
+    I := I + 1;
+  end;
+end;
+
+procedure TListByte.ReplaceStream(Stream: TStream);
+var
+  I: Integer;
+begin
+  Stream.Position := 0;
+  I := 0;
+  while I < Count do begin
+    Items[I] := Stream.ReadByte;
+    I := I + 1;
+  end;
+end;
+
+procedure TListByte.ReplaceStreamPart(Stream: TStream; ItemIndex,
+  ItemCount: Integer);
+var
+  I: Integer;
+begin
+  I := ItemIndex;
+  while I < ItemCount do begin
+    Items[I] := Stream.ReadByte;
+    I := I + 1;
+  end;
+end;
+
+procedure TListByte.AddStream(Stream: TStream);
+var
+  I: Integer;
+begin
+  Stream.Position := 0;
+  I := Count;
+  Count := Count + Stream.Size;
+  while I < Count do begin
+    Items[I] := Stream.ReadByte;
+    I := I + 1;
+  end;
+end;
+
+procedure TListByte.AddStreamPart(Stream: TStream; ItemCount: Integer);
+var
+  I: Integer;
+begin
+  I := Count;
+  Count := Count + ItemCount;
+  while I < Count do begin
+    Items[I] := Stream.ReadByte;
+    I := I + 1;
+  end;
+end;
 
 end.

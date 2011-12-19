@@ -28,6 +28,7 @@
     function Add(Item: TGListItem): TGListIndex;
     procedure AddArray(Values: array of TGListItem);
     procedure AddList(List: TGList);
+    procedure AddListPart(List: TGList; ItemIndex, ItemCount: TGListIndex);
     procedure Assign(Source: TGList); virtual;
     constructor Create; virtual;
     procedure Clear; virtual;
@@ -41,7 +42,7 @@
     procedure Fill(Start, Count: TGListIndex; Value: TGListItem);
     function GetArray: TGListItemArray;
     function Implode(Separator: string; Converter: TGListToStringConverter): string;
-    function IndexOf(Item: TGListItem; Start: TGListIndex = 0): TGListIndex; virtual;
+    function IndexOf(Item: TGListItem; Start: TGListIndex = 0): TGListIndex;
     function IndexOfList(List: TGList; Start: TGListIndex = 0): TGListIndex;
     procedure Insert(Index: TGListIndex; Item: TGListItem);
     procedure InsertList(Index: TGListIndex; List: TGList);
@@ -50,7 +51,9 @@
     procedure MoveItems(CurIndex, NewIndex, Count: TGListIndex);
     function Remove(Item: TGListItem): TGListIndex;
     procedure Reverse;
-    procedure Replace(Index: TGListIndex; Source: TGList);
+    procedure ReplaceList(Index: TGListIndex; Source: TGList);
+    procedure ReplaceListPart(Index: TGListIndex; Source: TGList;
+      SourceIndex, SourceCount: TGListIndex);
     procedure Sort(Compare: TGListSortCompare);
     procedure SetArray(Values: array of TGListItem);
     property Count: TGListIndex read FCount write SetCount;
@@ -79,13 +82,25 @@ begin
   FCount := 0;
 end;
 
-procedure TGList.Replace(Index: TGListIndex; Source: TGList);
+procedure TGList.ReplaceList(Index: TGListIndex; Source: TGList);
 var
   I: TGListIndex;
 begin
   I := 0;
   while I < Source.Count do begin
     Items[Index + I] := Source[I];
+    I := I + 1;
+  end;
+end;
+
+procedure TGList.ReplaceListPart(Index: TGListIndex; Source: TGList;
+  SourceIndex, SourceCount: TGListIndex);
+var
+  I: TGListIndex;
+begin
+  I := 0;
+  while I < SourceCount do begin
+    Items[Index + I] := Source[SourceIndex + I];
     I := I + 1;
   end;
 end;
@@ -373,7 +388,7 @@ begin
   if Result then begin
     I := 0;
     while I < Count do begin
-      if not CompareMem(@FItems[I], @List.FItems[I], SizeOf(TGListItem)) then begin
+      if not CompareMem(Addr(FItems[I]), Addr(List.FItems[I]), SizeOf(TGListItem)) then begin
         Result := False;
         Break;
       end;
@@ -468,11 +483,30 @@ end;
 procedure TGList.AddList(List: TGList);
 var
   I: TGListIndex;
+  J: TGListIndex;
 begin
-  I := 0;
-  while I < List.Count do begin
-    Add(List[I]);
+  I := Count;
+  J := 0;
+  Count := Count + List.Count;
+  while I < Count do begin
+    Items[I] := List[J];
     I := I + 1;
+    J := J + 1;
+  end;
+end;
+
+procedure TGList.AddListPart(List: TGList; ItemIndex, ItemCount: TGListIndex);
+var
+  I: TGListIndex;
+  J: TGListIndex;
+begin
+  I := Count;
+  J := ItemIndex;
+  Count := Count + ItemCount;
+  while I < Count do begin
+    Items[I] := List[J];
+    I := I + 1;
+    J := J + 1;
   end;
 end;
 
