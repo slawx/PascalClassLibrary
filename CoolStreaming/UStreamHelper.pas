@@ -22,6 +22,7 @@ type
     procedure SetEndianness(const AValue: TEndianness);
     procedure SetItem(Index: Integer; const AValue: Byte);
   public
+    procedure Assign(Source: TStreamHelper);
     procedure WriteByte(Data: Byte);
     procedure WriteWord(Data: Word);
     procedure WriteCardinal(Data: Cardinal);
@@ -278,6 +279,17 @@ procedure TStreamHelper.SetItem(Index: Integer; const AValue: Byte);
 begin
  Position := Index;
  WriteByte(AValue);
+end;
+
+procedure TStreamHelper.Assign(Source: TStreamHelper);
+var
+  OldPosition: Integer;
+begin
+  OldPosition := Source.Position;
+  Clear;
+  WriteStream(Source, Source.Size);
+  Source.Position := OldPosition;
+  Position := OldPosition;
 end;
 
 procedure TStreamHelper.WriteAnsiString(Data: string);

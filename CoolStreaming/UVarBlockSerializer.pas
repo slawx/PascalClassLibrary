@@ -55,9 +55,9 @@ type
     procedure ReadItemRefByMaskIndex(Index: Integer; Data: TSubStream);
     procedure BlockEnclose;
     procedure BlockUnclose;
+    procedure Assign(Source: TVarBlockSerializer);
     constructor Create;
     destructor Destroy; override;
-    procedure Assign(Source: TVarBlockSerializer);
     property Stream: TStream read FStream write SetStream;
   end;
 
@@ -69,6 +69,7 @@ type
     Items: TObjectList; // TObjectList<TVarBlockSerializer>
     Enclose: Boolean;
     procedure CheckItem(Index: Integer);
+    procedure Assign(Source: TVarBlockIndexed);
 
     // Base
     procedure WriteVarUInt(Index: Integer; Value: QWord);
@@ -100,7 +101,6 @@ type
     procedure ReadFromStream(Stream: TStream);
     constructor Create;
     destructor Destroy; override;
-    procedure Assign(Source: TVarBlockIndexed);
   end;
 
 implementation
@@ -567,6 +567,18 @@ begin
   end;
 end;
 
+procedure TVarBlockSerializer.Assign(Source: TVarBlockSerializer);
+var
+  OldPos: Integer;
+begin
+  OwnsStream := Source.OwnsStream;
+  FStream.Size := 0;
+  OldPos := Source.FStream.Position;
+  FStream.CopyFrom(Source.FStream, Source.FStream.Size);
+  Source.FStream.Position := OldPos;
+  FStream.Position := OldPos;
+end;
+
 constructor TVarBlockSerializer.Create;
 begin
   inherited Create;
@@ -583,25 +595,6 @@ begin
   inherited Destroy;
 end;
 
-procedure TVarBlockSerializer.Assign(Source: TVarBlockSerializer);
-var
-  Helper: TStreamHelper;
-  LastPos: Integer;
-begin
-  OwnsStream := Source.OwnsStream;
-  FStream.Size := 0;
-  try
-    Helper := TStreamHelper.Create(Source.FStream);
-    LastPos := Source.FStream.Position;
-    Source.FStream.Position := 0;
-    Helper.ReadStream(FStream, Source.FStream.Size);
-    Source.FStream.Position := LastPos;
-  finally
-    Helper.Free;
-  end;
-  FStream.Position := Source.FStream.Position;
-end;
-
 { TVarBlockIndexed }
 
 procedure TVarBlockIndexed.CheckItem(Index:Integer);
@@ -613,6 +606,19 @@ begin
   end else begin
     Items.Count := Index + 1;
     Items[Index] := TVarBlockSerializer.Create;
+  end;
+end;
+
+procedure TVarBlockIndexed.Assign(Source: TVarBlockIndexed);
+var
+  I: Integer;
+begin
+  Enclose := Source.Enclose;
+  Items.Count := 0;
+  Items.Count := Source.Items.Count;
+  for I := 0 to Items.Count - 1 do begin
+    Items[I] := TVarBlockSerializer.Create;
+    TVarBlockSerializer(Items[I]).Assign(TVarBlockSerializer(Source.Items[I]));
   end;
 end;
 
@@ -797,7 +803,7 @@ function TVarBlockIndexed.TestIndex(Index: Integer):Boolean;
 begin
   if (Index >= 0) and (Index < Items.Count) then
     Result := Assigned(Items[Index])
-    else Result := False;
+    else Result := False
 end;
 
 procedure TVarBlockIndexed.WriteToVarBlock(VarBlock: TVarBlockSerializer);
@@ -882,18 +888,6 @@ destructor TVarBlockIndexed.Destroy;
 begin
   Items.Free;
   inherited Destroy;
-end;
-
-procedure TVarBlockIndexed.Assign(Source: TVarBlockIndexed);
-var
-  I: Integer;
-begin
-  Enclose := Source.Enclose;
-  Items.Count := Source.Items.Count;
-  for I := 0 to Items.Count - 1 do begin
-    CheckItem(I);
-    TVarBlockSerializer(Items[I]).Assign(TVarBlockSerializer(Source.Items[I]));
-  end;
 end;
 
 end.
