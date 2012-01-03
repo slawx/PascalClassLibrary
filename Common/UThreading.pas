@@ -16,6 +16,7 @@ type
 
   TVirtualThread = class
   private
+    function GetFinished: Boolean; virtual; abstract;
     function GetFreeOnTerminate: Boolean; virtual; abstract;
     function GetPriority: TThreadPriority; virtual; abstract;
     function GetSuspended: Boolean; virtual; abstract;
@@ -41,6 +42,7 @@ type
       write SetSuspended;
     property Priority: TThreadPriority read GetPriority write SetPriority;
     property Terminated: Boolean read GetTerminated write SetTerminated;
+    property Finished: Boolean read GetFinished;
     property ThreadId: Integer read GetThreadId;
   end;
 
@@ -60,7 +62,9 @@ type
   TListedThread = class(TVirtualThread)
   private
     FTerminated: Boolean;
+    FFinished: Boolean;
     FThread: TListedThreadExecute;
+    function GetFinished: Boolean; override;
     function GetFreeOnTerminate: Boolean; override;
     function GetPriority: TThreadPriority; override;
     function GetSuspended: Boolean; override;
@@ -171,7 +175,6 @@ begin
   end;
 end;
 
-
 { TThreadList }
 
 function TThreadList.FindById(Id: Integer): TVirtualThread;
@@ -195,15 +198,24 @@ end;
 procedure TListedThreadExecute.Execute;
 begin
   try
-    Parent.Execute;
-  except
-    on E: Exception do
-      if Assigned(OnException) then
-        OnException(Parent.FThread, E);
+    try
+      Parent.Execute;
+    except
+      on E: Exception do
+        if Assigned(OnException) then
+          OnException(Parent.FThread, E);
+    end;
+  finally
+    Parent.FFinished := True;
   end;
 end;
 
 { TListedThread }
+
+function TListedThread.GetFinished: Boolean;
+begin
+  Result := FFinished;
+end;
 
 function TListedThread.GetFreeOnTerminate: Boolean;
 begin
@@ -254,6 +266,9 @@ end;
 constructor TListedThread.Create(CreateSuspended: Boolean;
   const StackSize: SizeUInt);
 begin
+  FFinished := False;
+  FTerminated := False;
+
   FThread := TListedThreadExecute.Create(True, StackSize);
   FThread.Parent := Self;
   try

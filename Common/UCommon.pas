@@ -60,6 +60,8 @@ function GetFileFilterItemExt(Filter: string; Index: Integer): string;
 procedure FileDialogUpdateFilterFileType(FileDialog: TOpenDialog);
 procedure DeleteFiles(APath, AFileSpec: string);
 procedure OpenWebPage(URL: string);
+procedure OpenFileInShell(FileName: string);
+procedure ExecuteProgram(CommandLine: string);
 
 
 implementation
@@ -284,9 +286,10 @@ var
 begin
   L := MAX_USERNAME_LENGTH + 2;
   SetLength(Result, L);
-  if Windows.GetUserName(PChar(Result), L) and (L > 0) then
-    SetLength(Result, StrLen(PChar(Result))) else
-    Result := '';
+  if Windows.GetUserName(PChar(Result), L) and (L > 0) then begin
+    SetLength(Result, StrLen(PChar(Result)));
+    Result := UTF8Encode(Result);
+  end else Result := '';
 end;
 
 function GetVersionInfo: TOSVersionInfo;
@@ -364,6 +367,20 @@ begin
   {$ENDIF}
 end;
 
+procedure ExecuteProgram(CommandLine: string);
+var
+  Process: TProcess;
+begin
+  try
+    Process := TProcess.Create(nil);
+    Process.CommandLine := CommandLine;
+    Process.Options := [poNoConsole];
+    Process.Execute;
+  finally
+    Process.Free;
+  end;
+end;
+
 procedure OpenWebPage(URL: string);
 var
   Process: TProcess;
@@ -375,10 +392,7 @@ begin
     //FindDefaultBrowser(Browser, Params);
     //Process.Executable := Browser;
     //Process.Parameters.Add(Format(Params, [ApplicationInfo.HomePage]);
-    Process.Executable := 'cmd.exe';
-    Process.Parameters.Add('/c');
-    Process.Parameters.Add('start');
-    Process.Parameters.Add(URL);
+    Process.CommandLine := 'cmd.exe /c start ' + URL;
     Process.Options := [poNoConsole];
     Process.Execute;
   finally
@@ -386,6 +400,10 @@ begin
   end;
 end;
 
+procedure OpenFileInShell(FileName: string);
+begin
+  ExecuteProgram('cmd.exe /c start ' + FileName);
+end;
 
 initialization
 

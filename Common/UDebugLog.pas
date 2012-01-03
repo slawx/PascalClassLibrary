@@ -45,6 +45,9 @@ procedure Register;
 
 implementation
 
+resourcestring
+  SFileNameNotDefined = 'Filename not defined';
+
 procedure Register;
 begin
   RegisterComponents('Samples', [TDebugLog]);
@@ -99,6 +102,7 @@ procedure TDebugLog.WriteToFile(Text: string);
 var
   LogFile: TFileStream;
 begin
+  if FileName = '' then raise Exception.Create(SFileNameNotDefined);
   try
     if ExtractFileDir(FileName) <> '' then
       ForceDirectoriesUTF8(ExtractFileDir(FileName));
@@ -130,7 +134,7 @@ begin
   for I := 0 to List.Count - 1 do
     TDebugLogItem(List[I]).Free;
   Items.Free;
-  inherited Destroy;
+  inherited;
 end;
 
 end.
