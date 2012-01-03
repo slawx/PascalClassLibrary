@@ -9,6 +9,8 @@ uses
   Translations, TypInfo, Dialogs, FileUtil, LCLProc, ULanguages, LCLType;
 
 type
+  THandleStringEvent = function (AValue: string): string of object;
+
   { TComponentExcludes }
 
   TComponentExcludes = class
@@ -30,6 +32,7 @@ type
   TCoolTranslator = class(TComponent)
   private
     FLanguage: TLanguage;
+    FOnAutomaticLanguage: THandleStringEvent;
     FOnTranslate: TNotifyEvent;
     FPOFilesFolder: string;
     FPOFiles: TObjectList; // TObjectList<TPOFile>;
@@ -60,6 +63,8 @@ type
     property POFilesFolder: string read FPOFilesFolder write SetPOFilesFolder;
     property Language: TLanguage read FLanguage write SetLanguage;
     property OnTranslate: TNotifyEvent read FOnTranslate write FOnTranslate;
+    property OnAutomaticLanguage: THandleStringEvent read FOnAutomaticLanguage
+      write FOnAutomaticLanguage;
   end;
 
 procedure Register;
@@ -130,7 +135,7 @@ begin
     with TPoFile(FPoFiles[I]) do
       for J := 0 to Items.Count - 1 do
       with TPoFileItem(Items[J]) do
-        Po.Add(Identifier, Original, Translation, Comments, Context,
+        Po.Add(IdentifierLow, Original, Translation, Comments, Context,
           Flags, PreviousID);
     Translations.TranslateResourceStrings(Po);
   finally
@@ -392,7 +397,12 @@ begin
   if Lang = '' then
     LCLGetLanguageIDs(Lang, T);
 
+  if Assigned(Language) and (Language.Code = '') and Assigned(FOnAutomaticLanguage) then begin
+    Lang := FOnAutomaticLanguage(Lang);
+  end;
+
   if Lang = 'en' then Lang := ''; // English files are without en code
+
   Result := Lang;
 end;
 
