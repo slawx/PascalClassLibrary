@@ -42,7 +42,7 @@
     procedure Fill(Start, Count: TGListIndex; Value: TGListItem);
     function GetArray: TGListItemArray;
     function Implode(Separator: string; Converter: TGListToStringConverter): string;
-    function IndexOf(Item: TGListItem; Start: TGListIndex = 0): TGListIndex;
+    function IndexOf(Item: TGListItem; Start: TGListIndex = 0): TGListIndex; virtual;
     function IndexOfList(List: TGList; Start: TGListIndex = 0): TGListIndex;
     procedure Insert(Index: TGListIndex; Item: TGListItem);
     procedure InsertList(Index: TGListIndex; List: TGList);
