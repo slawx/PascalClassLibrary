@@ -6,9 +6,11 @@ interface
 
 uses
   Classes, SysUtils, CustApp, SpecializedList, UWebPage, UHTTPSessionFile,
-  UHTTPServer, UHTTPServerCGI;
+  UHTTPServer;
 
 type
+  THTTPServerType = (stCGI, stTCP);
+
   TRegistredPage = class
     Name: string;
     Page: TWebPage;
@@ -24,10 +26,13 @@ type
 
   TWebApp = class(TCustomApplication)
   private
+    FOnBeforePageProduce: TOnProduceEvent;
     FOnInitialize: TNotifyEvent;
+    FServerType: THTTPServerType;
     procedure DoRun; override;
     function DumpExceptionCallStack(E: Exception): string;
     procedure HTTPServerRequest(HandlerData: THTTPHandlerData);
+    procedure SetServerType(AValue: THTTPServerType);
   public
     Pages: TRegistredPageList;
     HTTPServer: THTTPServer;
@@ -37,7 +42,9 @@ type
     procedure RegisterPage(PageClass: TWebPageClass; out Reference; Path: string);
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
+    property OnBeforePageProduce: TOnProduceEvent read FOnBeforePageProduce write FOnBeforePageProduce;
     property OnInitialize: TNotifyEvent read FOnInitialize write FOnInitialize;
+    property ServerType: THTTPServerType read FServerType write SetServerType;
   end;
 
 
@@ -48,6 +55,9 @@ var
 
 
 implementation
+
+uses
+  UHTTPServerCGI, UHTTPServerTCP;
 
 resourcestring
   SPageNotFound = 'Page not found';
@@ -124,14 +134,28 @@ begin
     //Request.QueryParts.Count := 2;
     //Request.QueryParts[0] := 'uzivatel';
     //Request.QueryParts[1] := 'prihlaseni';
+    if Assigned(FOnBeforePageProduce) then
+      FOnBeforePageProduce(HandlerData);
 
     if Request.QueryParts.Count > 0 then PageName := Request.QueryParts[0]
       else PageName := '';
     Page := Pages.FindByName(PageName);
     if Assigned(Page) then begin
       Page.Page.OnProduce(HandlerData);
-    end else Response.Stream.WriteString(SPageNotFound);
+    end else Response.Content.WriteString(SPageNotFound);
   end;
+end;
+
+procedure TWebApp.SetServerType(AValue: THTTPServerType);
+begin
+  if FServerType = AValue then Exit;
+  FServerType := AValue;
+  HTTPServer.Free;
+  case FServerType of
+    stCGI: HTTPServer := THTTPServerCGI.Create(nil);
+    stTCP: HTTPServer := THTTPServerTCP.Create(nil);
+  end;
+  HTTPServer.OnRequest := HTTPServerRequest;
 end;
 
 procedure TWebApp.ShowException(E: Exception);
@@ -151,7 +175,7 @@ begin
     WriteLn(hstdout^, 'Error occured during page generation.');
     hstdout := @stderr;
     Writeln(hstdout^, 'An unhandled exception occurred: ' + E.Message + '<br>');
-    WriteLn(hstdout^, StringReplace(DumpExceptionCallStack(E), LineEnding, '<br>', [rfReplaceAll]));
+    WriteLn(hstdout^, DumpExceptionCallStack(E));
   end;
 end;
 

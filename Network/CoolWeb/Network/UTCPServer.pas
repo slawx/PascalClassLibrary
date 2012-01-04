@@ -30,6 +30,8 @@ type
   { TClientThreadedPool }
 
   TClientThreadedPool = class(TThreadPool)
+  protected
+    function NewItemObject: TObject; override;
   private
     FActive: Boolean;
     procedure SetActive(const AValue: Boolean);
@@ -162,6 +164,12 @@ begin
 end;
 
 { TClientThreadedPool }
+
+function TClientThreadedPool.NewItemObject: TObject;
+begin
+  Result := TTCPClientThread.Create;
+  TResetableThread(Result).OnException := ThreadException;
+end;
 
 procedure TClientThreadedPool.SetActive(const AValue: Boolean);
 begin

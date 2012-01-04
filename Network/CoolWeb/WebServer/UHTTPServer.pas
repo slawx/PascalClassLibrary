@@ -27,12 +27,16 @@ type
   { THTTPRequest }
 
   THTTPRequest = class
+    ContentType: string;
+    Content: TMemoryStreamEx;
     Query: TQueryParameterList;
     QueryParts: TListString;
     Path: string;
     Method: string;
     Headers: TStringList;
     Cookies: TCookieList;
+    Post: TQueryParameterList;
+    procedure Clear;
     constructor Create;
     destructor Destroy; override;
   end;
@@ -41,9 +45,10 @@ type
 
   THTTPResponse = class
     ContentType: string;
-    Stream: TMemoryStreamEx;
+    Content: TMemoryStreamEx;
     Headers: TStringList;
     Cookies: TCookieList;
+    procedure Clear;
     constructor Create;
     destructor Destroy; override;
   end;
@@ -125,7 +130,7 @@ procedure THTTPServer.ServerInfo(HandlerData: THTTPHandlerData);
 var
   I: Integer;
 begin
-  with HandlerData, Response.Stream do begin
+  with HandlerData, Response.Content do begin
     //Response.Cookies.Values['Test'] := 'Halo';
     //Response.Cookies.Values['Test2'] := 'Halo2';
 
@@ -133,6 +138,9 @@ begin
     //HTTPServer.SessionHandler.Variables.Values['Session2'] := 'Value2';
 
     WriteString('<a href="?ServerInfo">Refresh</a>');
+
+    WriteString('<h5>Request HTTP content:</h5>');
+    WriteStream(Request.Content, Request.Content.Size);
 
     WriteString('<h5>Request HTTP headers</h5>');
     for I := 0 to Request.Headers.Count - 1 do begin;
@@ -150,8 +158,17 @@ begin
       WriteString(Session.Strings[I] + '<br/>');
     end;
 
+    WriteString('<h5>Request HTTP POST</h5>');
+    for I := 0 to Request.Post.Count - 1 do begin;
+      WriteString(Request.Post.Strings[I] + '<br/>');
+    end;
+
+
+    WriteString('<h5>Response HTTP content:</h5>');
+    WriteStream(Response.Content, Response.Content.Size);
+
     WriteString('<h5>Response HTTP headers</h5>');
-    with Response.Stream do
+    with Response.Content do
     for I := 0 to Response.Headers.Count - 1 do begin;
       WriteString(Response.Headers.Strings[I] + '<br/>');
     end;
@@ -165,7 +182,7 @@ end;
 
 procedure THTTPServer.ErrorResponse(HandlerData: THTTPHandlerData);
 begin
-  with HandlerData, Response.Stream do begin
+  with HandlerData, Response.Content do begin
     WriteString('<html><body>' + Format(SPageNotFound, [Request.Path]) + '</body></html>');
   end;
 end;
@@ -192,10 +209,10 @@ begin
     if FileExists(FileName) then begin
       Response.Headers.Values['Content-Type'] := GetMIMEType(Copy(ExtractFileExt(FileName), 2, 255));
       BinaryFile := TFileStream.Create(FileName, fmOpenRead);
-      Response.Stream.WriteStream(BinaryFile, BinaryFile.Size);
+      Response.Content.WriteStream(BinaryFile, BinaryFile.Size);
       BinaryFile.Destroy;
     end else
-    with Response.Stream do begin
+    with Response.Content do begin
       WriteLn(Format(SFileNotFound, [Request.Path]));
       WriteString('<html><body>' + Format(SFileNotFound, [Request.Path]) + '</body></html>');
     end;
@@ -216,16 +233,23 @@ end;
 
 { THTTPResponse }
 
+procedure THTTPResponse.Clear;
+begin
+  Content.Clear;
+  Cookies.Clear;
+  Headers.Clear;
+end;
+
 constructor THTTPResponse.Create;
 begin
-  Stream := TMemoryStreamEx.Create;
+  Content := TMemoryStreamEx.Create;
   Cookies := TCookieList.Create;
   Headers := TStringList.Create;
 end;
 
 destructor THTTPResponse.Destroy;
 begin
-  Stream.Free;
+  Content.Free;
   Headers.Free;
   Cookies.Free;
   inherited Destroy;
@@ -252,16 +276,30 @@ end;
 
 { THTTPRequest }
 
+procedure THTTPRequest.Clear;
+begin
+  Post.Clear;
+  Content.Clear;
+  QueryParts.Clear;
+  Cookies.Clear;
+  Headers.Clear;
+  Query.Clear;
+end;
+
 constructor THTTPRequest.Create;
 begin
+  Post := TQueryParameterList.Create;
   Query := TQueryParameterList.Create;
   QueryParts := TListString.Create;
   Headers := TStringList.Create;
   Cookies := TCookieList.Create;
+  Content := TMemoryStreamEx.Create;
 end;
 
 destructor THTTPRequest.Destroy;
 begin
+  Content.Free;
+  Post.Free;
   Query.Free;
   QueryParts.Free;
   Headers.Free;

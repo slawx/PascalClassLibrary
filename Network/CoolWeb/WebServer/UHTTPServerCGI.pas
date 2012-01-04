@@ -5,7 +5,7 @@ unit UHTTPServerCGI;
 interface
 
 uses
-  Classes, SysUtils, UHTTPServer, SpecializedList;
+  Classes, SysUtils, UHTTPServer, SpecializedList, IOStream;
 
 type
 
@@ -52,9 +52,38 @@ procedure THTTPServerCGI.Run;
 var
   I: Integer;
   HandlerData: THTTPHandlerData;
+  InputStream: TIOStream;
+  Line: string;
+  Buffer: string;
+  Count: Integer;
 begin
   HandlerData := THTTPHandlerData.Create;
   with HandlerData do try
+    // Load headers
+    try
+      InputStream := TIOStream.Create(iosInput);
+      SetLength(Buffer, 1000);
+      repeat
+        Count := InputStream.Read(Buffer[1], Length(Buffer));
+        if Count > 0 then Request.Content.Write(Buffer[1], Count);
+      until Count = 0;
+    finally
+      InputStream.Free;
+    end;
+
+    //repeat
+    //  ReadLn(Line);
+    //until Line = '';
+
+    // Load data
+    (*if Request.Headers.IndexOfName('Content-length') <> -1 then
+    try
+      InputStream := TIOStream.Create(iosInput);
+      Request.Content.CopyFrom(InputStream, StrToInt(Request.Headers.Values['Content-length']));
+    finally
+      InputStream.Free;
+    end;  *)
+
     // Load environment variables
     for I := 0 to GetEnvironmentVariableCount - 1 do begin
       EnvVars.Add(GetEnvironmentString(I));
@@ -79,7 +108,16 @@ begin
     if Assigned(SessionStorage) then
       SessionStorage.Load(HandlerData);
 
-    Response.Stream.Clear;
+    // Load post data
+    if EnvVars.IndexOfName('REQUEST_METHOD') <> -1 then begin
+      if EnvVars.Values['REQUEST_METHOD'] = 'POST' then begin
+        Request.Content.Position := 0;
+        Buffer := Request.Content.ReadString;
+        Request.Post.Parse(Buffer);
+      end;
+    end;
+
+    Response.Content.Clear;
     Response.Headers.Values['Content-type'] := 'text/html';
 
     // Execute content handler
@@ -104,8 +142,8 @@ begin
       WriteLn; // Empty line header separator
 
       // Emit page content
-      Stream.Position := 0;
-      WriteLn(Stream.ReadString);
+      Content.Position := 0;
+      WriteLn(Content.ReadString);
     end;
   finally
     HandlerData.Free;
@@ -117,7 +155,7 @@ var
   I: Integer;
 begin
   inherited;
-  with HandlerData, Response.Stream do begin
+  with HandlerData, Response.Content do begin
     WriteString('<h5>' + SEnvironmentVariables + '</h5>');
     WriteString('<table border="1">');
     for I := 0 to EnvVars.Count - 1 do begin

@@ -20,6 +20,7 @@ type
     RequestHandlerList: TRequestHandlerList;
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
+    procedure Run; override;
   published
     property MaxConnection: Integer read FMaxConnection write FMaxConnection;
   end;
@@ -87,7 +88,7 @@ begin
     if Assigned(SessionStorage) then
       SessionStorage.Load(HandlerData);
 
-    Response.Stream.Clear;
+    Response.Content.Clear;
     Response.Headers.Values['Content-Type'] := 'text/html';
 
     if Assigned(OnRequest) then OnRequest(HandlerData)
@@ -99,7 +100,7 @@ begin
 
     with Response do begin
       SendString('HTTP/1.0 200 OK'#13#10);
-      Headers.Values['Content-Length'] := IntToStr(Stream.Size);
+      Headers.Values['Content-Length'] := IntToStr(Content.Size);
       Headers.Values['Connection'] := 'close';
       Headers.Values['Date'] := RFC822DateTime(Now);
 
@@ -114,7 +115,7 @@ begin
         SendString(Headers.Names[I] + ': ' + Headers.ValueFromIndex[I] + #13#10);
       end;
       SendString(#13#10);
-      SendBuffer(Stream.Memory, Stream.Size);
+      SendBuffer(Content.Memory, Content.Size);
       SendString(#13#10);
     end;
     finally
@@ -140,6 +141,18 @@ begin
   Socket.Free;
   RequestHandlerList.Free;
   inherited Destroy;
+end;
+
+procedure THTTPServerTCP.Run;
+begin
+  inherited Run;
+  WriteLn('HTTP Server started in TCP mode.');
+  WriteLn('Listen on ' + Socket.Address + ':' + IntToStr(Socket.Port));
+  WriteLn('Press any key to terminate...');
+  Socket.ThreadPool.TotalCount := MaxConnection;
+  Socket.Active := True;
+  ReadLn;
+  WriteLn('Exiting');
 end;
 
 end.
