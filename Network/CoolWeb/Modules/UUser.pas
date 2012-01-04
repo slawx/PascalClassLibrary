@@ -17,13 +17,17 @@ type
   { TWebUser }
 
   TWebUser = class
+    Id: Integer;
+    Name: string;
     FullName: string;
+    Email: string;
     Database: TSqlDatabase;
     HandlerData: THTTPHandlerData;
     procedure Delete(Id: Integer);
     procedure Add(Name, Password, Email: string);
     function GetIdByName(Name: string): Integer;
     function GetIdByNamePassword(Name: string; PassWord: string): Integer;
+    procedure Load;
   end;
 
   { TWebOnlineUser }
@@ -41,7 +45,9 @@ type
 implementation
 
 resourcestring
-  SDuplicateUserItem = 'User name already used.';
+  SDuplicateUserItem = 'User name "%s" already used.';
+  SEmptyUserParameters = 'Missing user parameters';
+  SUserNotFound = 'User "%s" not found';
 
 { TOnlineUser }
 
@@ -122,6 +128,7 @@ var
   Salt: string;
   DbRows: TDbRows;
 begin
+  if (Name = '') or (Password = '') or (Email = '') then raise Exception.Create(SEmptyUserParameters);
   try
     DbRows := TDbRows.Create;
     Database.Query(DbRows, 'SELECT `Id` FROM `User` WHERE `Name`="' + Name + '"');
@@ -130,7 +137,7 @@ begin
       Database.Query(DbRows, 'INSERT INTO `User` (`Name`, `Password`, `Salt`, `Email`, `RegistrationTime`) VALUES ("' +
         Name + '", SHA1(CONCAT("' + Password + '", "' + Salt + '")), "' + Salt +
         '", "' + Email + '", NOW())');
-    end else raise EDuplicateItem.Create(SDuplicateUserItem);
+    end else raise EDuplicateItem.Create(Format(SDuplicateUserItem, [Name]));
   finally
     DbRows.Free;
   end;
@@ -144,7 +151,7 @@ begin
     DbRows := TDbRows.Create;
     Database.Query(DbRows, 'SELECT `Id` FROM `User` WHERE `Name`="' + Name + '"');
     if DbRows.Count = 1 then Result := StrToInt(DbRows[0].Items[0].Value)
-      else raise ENotFound.Create('User "' + Name + '" not found');
+      else raise ENotFound.Create(Format(SUserNotFound, [Name]));
   finally
     DBRows.Free;
   end;
@@ -159,7 +166,24 @@ begin
     Database.Query(DbRows, 'SELECT `Id` FROM `User` WHERE `Name`="' + Name + '" AND ' +
       '`Password` = SHA1(CONCAT("' + Password + '", Salt))');
     if DbRows.Count = 1 then Result := StrToInt(DbRows[0].Items[0].Value)
-      else raise ENotFound.Create('User "' + Name + '" not found');
+      else raise ENotFound.Create(Format(SUserNotFound, [Name]));
+  finally
+    DBRows.Free;
+  end;
+end;
+
+procedure TWebUser.Load;
+var
+  DbRows: TDbRows;
+begin
+  try
+    DbRows := TDbRows.Create;
+    Database.Query(DbRows, 'SELECT * FROM `User` WHERE `Id`="' + IntToStr(Id) + '"');
+    if DbRows.Count = 1 then begin
+      Name := DbRows[0].Values['Name'];
+      FullName := DbRows[0].Values['FullName'];
+      Email := DbRows[0].Values['Email'];
+    end else raise ENotFound.Create(Format(SUserNotFound, [IntToStr(Id)]));
   finally
     DBRows.Free;
   end;
