@@ -8,16 +8,23 @@ uses
   UXmlClasses, Classes, SysUtils, SpecializedList;
 
 type
+
+  { TDomainAddress }
+
   TDomainAddress = class(TPersistent)
   private
     function GetAsString: string;
     procedure SetAsString(const Value: string);
   public
-    Levels: array of string;
+    Levels: TListString;
+    constructor Create;
+    destructor Destroy; override;
     property AsString: string read GetAsString write SetAsString;
   end;
 
   TAddrClass = (acA, acB, acC, acD, acE);
+
+  { TIpAddress }
 
   TIpAddress = class(TPersistent)
   private
@@ -31,6 +38,7 @@ type
   public
     Octets: array[0..3] of Byte;
     procedure Assign(Source: TPersistent); override;
+    function IsAddressString(Value: string): Boolean;
     property AsCardinal: Cardinal read GetAsCardinal write SetAsCardinal;
     property AsString: string read GetAsString write SetAsString;
     property AddrClass: TAddrClass read GetAddrClass;
@@ -69,24 +77,30 @@ type
     property AsString: string read GetAsString write SetAsString;
   end;
 
+  { THtmlElement }
+
   THtmlElement = class
-  private
+  protected
     function GetAsXmlElement: TXmlElement; virtual;
   public
     Id: string;
     Name: string;
     ClassId: string;
     Style: string;
+    procedure Assign(Source: THtmlElement); virtual;
     property AsXmlElement: TXmlElement read GetAsXmlElement;
   end;
 
   TBlockType = (btNoTag, btBlockLevel, btInline);
+
+  { THtmlString }
 
   THtmlString = class(THtmlElement)
   private
     function GetAsXmlElement: TXmlElement; override;
   public
     Text: string;
+    procedure Assign(Source: THtmlElement); override;
   end;
 
   { THtmlLineBreak }
@@ -99,7 +113,7 @@ type
   end;
 
   THtmlBlock = class(THtmlElement)
-  private
+  protected
     function GetAsXmlElement: TXmlElement; override;
   public
     BlockType: TBlockType;
@@ -148,6 +162,8 @@ type
   public
     InputType: THtmlInputType;
     Value: Variant;
+    ItemName: string;
+    procedure Assign(Source: THtmlElement); override;
     constructor Create;
     destructor Destroy; override;
   end;
@@ -155,11 +171,11 @@ type
   { THtmlForm }
 
   THtmlForm = class(THtmlBlock)
-  private
+  protected
+    function GetAsXmlElement: TXmlElement; override;
   public
     Method: string;
     Action: TURL;
-    function GetAsXmlElement: TXmlElement; override;
     constructor Create;
     destructor Destroy; override;
   end;
@@ -175,6 +191,41 @@ type
     Styles: TStringList;
     Scripts: TStringList;
     property AsXmlDocument: TXmlDocument read GetAsXmlDocument;
+    constructor Create;
+    destructor Destroy; override;
+  end;
+
+  { THtmlCell }
+
+  THtmlCell = class(THtmlElement)
+  private
+    function GetAsXmlElement: TXmlElement; override;
+  public
+    RowSpan: Integer;
+    ColSpan: Integer;
+    Value: THtmlElement;
+    constructor Create;
+    destructor Destroy; override;
+  end;
+
+  { THtmlRow }
+
+  THtmlRow = class(THtmlElement)
+  private
+    function GetAsXmlElement: TXmlElement; override;
+  public
+    Cells: TListObject; // TListObject<THtmlCell>
+    constructor Create;
+    destructor Destroy; override;
+  end;
+
+  { THtmlTable }
+
+  THtmlTable = class(THtmlElement)
+  protected
+    function GetAsXmlElement: TXmlElement; override;
+  public
+    Rows: TListObject; // TListObject<THtmlRow>
     constructor Create;
     destructor Destroy; override;
   end;
@@ -248,6 +299,79 @@ begin
   end;
 end;
 
+{ THtmlCell }
+
+function THtmlCell.GetAsXmlElement: TXmlElement;
+begin
+  Result := inherited GetAsXmlElement;
+  TXmlTag(Result).Name := 'td';
+  with TXmlTag(Result).Attributes do begin
+    if ColSpan > 1 then Add('colspan', IntToStr(ColSpan));
+    if RowSpan > 1 then Add('rowspan', IntToStr(RowSpan));
+  end;
+  TXmlTag(Result).SubElements.Add(Value.AsXmlElement);
+end;
+
+constructor THtmlCell.Create;
+begin
+  ColSpan := 1;
+  RowSpan := 1;
+end;
+
+destructor THtmlCell.Destroy;
+begin
+  Value.Free;
+  inherited Destroy;
+end;
+
+{ THtmlRow }
+
+function THtmlRow.GetAsXmlElement: TXmlElement;
+var
+  Column: Integer;
+begin
+  Result := inherited GetAsXmlElement;
+  TXmlTag(Result).Name := 'tr';
+  for Column := 0 to Cells.Count - 1 do
+    TXmlTag(Result).SubElements.AddNew(THtmlCell(Cells[Column]).AsXmlElement);
+end;
+
+constructor THtmlRow.Create;
+begin
+  Cells := TListObject.Create;
+end;
+
+destructor THtmlRow.Destroy;
+begin
+  Cells.Free;
+  inherited Destroy;
+end;
+
+{ THtmlTable }
+
+function THtmlTable.GetAsXmlElement: TXmlElement;
+var
+  Row, Column: Integer;
+begin
+  Result := inherited;
+  with TXmlTag(Result) do begin
+    Name := 'table';
+    for Row := 0 to Rows.Count - 1 do
+      SubElements.AddNew(THtmlRow(Rows[Row]).AsXmlElement);
+  end;
+end;
+
+constructor THtmlTable.Create;
+begin
+  Rows := TListObject.Create;
+end;
+
+destructor THtmlTable.Destroy;
+begin
+  Rows.Free;
+  inherited Destroy;
+end;
+
 { THtmlLineBreak }
 
 function THtmlLineBreak.GetAsXmlElement: TXmlElement;
@@ -281,8 +405,17 @@ begin
     end;
     Attributes.Add('type', InputTypeString);
     Attributes.Add('value', Value);
-    Attributes.Add('name', Name);
+    if Self.ItemName <> '' then
+      Attributes.Add('name', Self.ItemName);
   end;
+end;
+
+procedure THtmlInput.Assign(Source: THtmlElement);
+begin
+  inherited Assign(Source);
+  InputType := THtmlInput(Source).InputType;
+  Value := THtmlInput(Source).Value;
+  ItemName := THtmlInput(Source).ItemName;
 end;
 
 constructor THtmlInput.Create;
@@ -441,6 +574,14 @@ begin
   end;
 end;
 
+procedure THtmlElement.Assign(Source: THtmlElement);
+begin
+  Id := Source.Id;
+  Name := Source.Name;
+  ClassId := Source.ClassId;
+  Style := Source.Style;
+end;
+
 { TIpAddress }
 
 procedure TIpAddress.Assign(Source: TPersistent);
@@ -453,6 +594,25 @@ begin
         Octets[I] := TIpAddress(Source).Octets[I];
     end else inherited;
   end else inherited;
+end;
+
+function TIpAddress.IsAddressString(Value: string): Boolean;
+var
+  Parts: TListString;
+begin
+  Result := True;
+  try
+    Parts := TListString.Create;
+    Parts.Explode(Value, '.', StrToStr);
+    if Parts.Count = 4 then begin
+      if (StrToInt(Parts[3]) < 0) or (StrToInt(Parts[3]) > 255) then Result := False;
+      if (StrToInt(Parts[2]) < 0) or (StrToInt(Parts[2]) > 255) then Result := False;
+      if (StrToInt(Parts[1]) < 0) or (StrToInt(Parts[1]) > 255) then Result := False;
+      if (StrToInt(Parts[0]) < 0) or (StrToInt(Parts[0]) > 255) then Result := False;
+    end else Result := False;
+  finally
+    Parts.Free;
+  end;
 end;
 
 function TIpAddress.GetAddrClass: TAddrClass;
@@ -570,28 +730,30 @@ end;
 { TDomainAddress }
 
 function TDomainAddress.GetAsString: string;
-var
-  I: Integer;
 begin
-  Result := '';
-  for I := High(Levels) downto 0 do Result := Result + '.' + Levels[I];
-  Delete(Result, 1, 1);
+  try
+    Levels.Reverse;
+    Result := Levels.Implode('.', StrToStr);
+  finally
+    Levels.Reverse;
+  end;
 end;
 
 procedure TDomainAddress.SetAsString(const Value: string);
-var
-  StrArray: TListString;
-  I: Integer;
 begin
-  try
-    StrArray := TListString.Create;
-    StrArray.Explode(Value, '.', StrToStr);
-    SetLength(Levels, StrArray.Count);
-    for I := 0 to StrArray.Count - 1 do
-      Levels[StrArray.Count - 1 - I] := StrArray[I];
-  finally
-    StrArray.Free;
-  end;
+  Levels.Explode(Value, '.', StrToStr);
+  Levels.Reverse;
+end;
+
+constructor TDomainAddress.Create;
+begin
+  Levels := TListString.Create;
+end;
+
+destructor TDomainAddress.Destroy;
+begin
+  Levels.Free;
+  inherited Destroy;
 end;
 
 { THtmlLink }
@@ -625,6 +787,12 @@ begin
   TXmlString(Result).Text := Text;
 end;
 
+procedure THtmlString.Assign(Source: THtmlElement);
+begin
+  inherited Assign(Source);
+  Text := THtmlString(Source).Text;
+end;
+
 { THostAddress }
 
 constructor THostAddress.Create;
@@ -652,13 +820,13 @@ end;
 
 procedure THostAddress.SetAsString(const Value: string);
 begin
-  State := asIpAddress;
-  try
+  if IpAddress.IsAddressString(Value) then begin
+    State := asIpAddress;
     IpAddress.AsString := Value;
-  except
-    on EConvertError do State := asDomainName;
+  end else begin
+    State := asDomainName;
+    DomainName.AsString := Value;
   end;
-  if State = asDomainName then DomainName.AsString := Value;
 end;
 
 { THtmlImage }
