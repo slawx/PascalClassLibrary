@@ -9,7 +9,7 @@ interface
 uses
   SpecializedList, SpecializedDictionary, SpecializedStack, SpecializedTree, 
   SpecializedQueue, SpecializedSet, SpecializedPoint, SpecializedMatrix, 
-  SpecializedBitmap, LazarusPackageIntf;
+  SpecializedBitmap, SpecializedStream, LazarusPackageIntf;
 
 implementation
 

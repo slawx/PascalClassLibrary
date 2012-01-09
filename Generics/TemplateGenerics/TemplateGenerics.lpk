@@ -1,11 +1,12 @@
 <?xml version="1.0"?>
 <CONFIG>
-  <Package Version="3">
+  <Package Version="4">
     <PathDelim Value="\"/>
     <Name Value="TemplateGenerics"/>
+    <AddToProjectUsesSection Value="True"/>
     <Author Value="Chronos (robie@centrum.cz)"/>
     <CompilerOptions>
-      <Version Value="10"/>
+      <Version Value="11"/>
       <PathDelim Value="\"/>
       <SearchPaths>
         <IncludeFiles Value="Generic"/>
@@ -27,7 +28,7 @@
     </CompilerOptions>
     <Description Value="Generic classes implemented as templates."/>
     <Version Minor="3"/>
-    <Files Count="23">
+    <Files Count="24">
       <Item1>
         <Filename Value="ReadMe.txt"/>
         <Type Value="Text"/>
@@ -120,6 +121,10 @@
         <Filename Value="Specialized\SpecializedBitmap.pas"/>
         <UnitName Value="SpecializedBitmap"/>
       </Item23>
+      <Item24>
+        <Filename Value="Specialized\SpecializedStream.pas"/>
+        <UnitName Value="SpecializedStack"/>
+      </Item24>
     </Files>
     <Type Value="RunAndDesignTime"/>
     <RequiredPkgs Count="2">
@@ -138,4 +143,4 @@
       <Version Value="2"/>
     </PublishOptions>
   </Package>
-</CONFIG>
+</CONFIG>

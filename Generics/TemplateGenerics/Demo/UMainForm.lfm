@@ -47,16 +47,16 @@ object MainForm: TMainForm
     TabOrder = 3
   end
   object ButtonCharList: TButton
-    Left = 7
+    Left = 8
     Height = 25
     Top = 134
-    Width = 129
+    Width = 128
     Caption = 'TListChar(TString)'
     OnClick = ButtonCharListClick
     TabOrder = 4
   end
   object ButtonBenchmarkListString: TButton
-    Left = 10
+    Left = 8
     Height = 24
     Top = 456
     Width = 128
@@ -66,29 +66,29 @@ object MainForm: TMainForm
     TabOrder = 5
   end
   object ButtonListObject: TButton
-    Left = 7
+    Left = 8
     Height = 25
     Top = 163
-    Width = 129
+    Width = 128
     Caption = 'TListObject'
     OnClick = ButtonListObjectClick
     TabOrder = 6
   end
   object ButtonBenchmarkDictionary: TButton
-    Left = 10
+    Left = 8
     Height = 25
     Top = 424
-    Width = 126
+    Width = 128
     Anchors = [akLeft, akBottom]
     Caption = 'TDictionaryStringString'
     OnClick = ButtonBenchmarkDictionaryClick
     TabOrder = 7
   end
   object ButtonMatrixInteger: TButton
-    Left = 7
+    Left = 8
     Height = 25
     Top = 192
-    Width = 129
+    Width = 128
     Caption = 'TMatrixInteger'
     OnClick = ButtonMatrixIntegerClick
     TabOrder = 8
@@ -138,5 +138,14 @@ object MainForm: TMainForm
     Caption = 'TListPointer'
     OnClick = ButtonBenchmarkListPointerClick
     TabOrder = 10
+  end
+  object ButtonStreamByte: TButton
+    Left = 10
+    Height = 25
+    Top = 224
+    Width = 128
+    Caption = 'TMemoryStreamByte'
+    OnClick = ButtonStreamByteClick
+    TabOrder = 11
   end
 end

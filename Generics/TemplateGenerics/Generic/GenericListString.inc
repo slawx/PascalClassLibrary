@@ -18,7 +18,7 @@
     procedure Clear; override;
     procedure Assign(Source: TGList); override;
     function IndexOf(Item: TGListItem; Start: TGListIndex = 0): TGListIndex; override;
-    constructor Create;
+    constructor Create; override;
     destructor Destroy; override;
   end;
 

@@ -21,7 +21,7 @@
     procedure Delete(Index: TGListObjectIndex); override;
     procedure Clear; override;
     procedure Assign(Source: TGList); override;
-    constructor Create;
+    constructor Create; override;
     destructor Destroy; override;
   end;
 
@@ -111,4 +111,4 @@ begin
 end;
 
 {$UNDEF IMPLEMENTATION}
-{$ENDIF}
+{$ENDIF}
