@@ -8,7 +8,8 @@ interface
 
 uses
   GenericList, GenericTree, GenericDictionary, GenericQueue, GenericRange, 
-  GenericSet, GenericStack, LazarusPackageIntf;
+  GenericSet, GenericStack, GenericMatrix, GenericStream, SpecializedList, 
+  LazarusPackageIntf;
 
 implementation
 

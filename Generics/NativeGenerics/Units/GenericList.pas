@@ -11,55 +11,55 @@ type
   TGList<TItem> = class
   private
   type
-    TGListIndex = Integer;
+    TIndex = NativeInt;
     TSortCompare = function(Item1, Item2: TItem): Integer of object;
     TToStringConverter = function(Item: TItem): string;
     TFromStringConverter = function(Text: string): TItem;
     TItemArray = array of TItem;
   var
     FItems: array of TItem;
-    FCount: TGListIndex;
-    function Get(Index: TGListIndex): TItem;
-    function GetCapacity: TGListIndex;
+    FCount: TIndex;
+    function Get(Index: TIndex): TItem;
+    function GetCapacity: TIndex;
     function GetLast: TItem;
     function GetFirst: TItem;
-    procedure SetCapacity(const AValue: TGListIndex);
-    procedure SetCapacityOptimized(const NewCapacity: TGListIndex);
+    procedure SetCapacity(const AValue: TIndex);
+    procedure SetCapacityOptimized(const NewCapacity: TIndex);
     procedure SetLast(AValue: TItem);
     procedure SetFirst(AValue: TItem);
-    procedure Put(Index: TGListIndex; const AValue: TItem); virtual;
-    procedure SetCount(const AValue: TGListIndex); virtual;
-    procedure QuickSort(L, R : TGListIndex; Compare: TSortCompare);
+    procedure Put(Index: TIndex; const AValue: TItem); virtual;
+    procedure SetCount(const AValue: TIndex); virtual;
+    procedure QuickSort(L, R : TIndex; Compare: TSortCompare);
   public
-    function Add(Item: TItem): TGListIndex;
+    function Add(Item: TItem): TIndex;
     procedure AddArray(Values: array of TItem);
     procedure AddList(List: TGList);
     procedure Assign(Source: TGList); virtual;
     procedure Clear; virtual;
-    procedure Delete(Index: TGListIndex); virtual;
-    procedure DeleteItems(Index, Count: TGListIndex);
+    procedure Delete(Index: TIndex); virtual;
+    procedure DeleteItems(Index, Count: TIndex);
     function EqualTo(List: TGList): Boolean;
-    procedure Exchange(Index1, Index2: TGListIndex);
+    procedure Exchange(Index1, Index2: TIndex);
     procedure Explode(Text, Separator: string; Converter: TFromStringConverter; SlicesCount: Integer = -1);
     function Extract(Item: TItem): TItem;
     property First: TItem read GetFirst write SetFirst;
-    procedure Fill(Start, Count: TGListIndex; Value: TItem);
+    procedure Fill(Start, Count: TIndex; Value: TItem);
     function GetArray: TItemArray;
     function Implode(Separator: string; Converter: TToStringConverter): string;
-    function IndexOf(Item: TItem; Start: TGListIndex = 0): TGListIndex;
-    function IndexOfList(List: TGList; Start: TGListIndex = 0): TGListIndex;
-    procedure Insert(Index: TGListIndex; Item: TItem);
-    procedure InsertList(Index: TGListIndex; List: TGList);
-    procedure InsertArray(Index: TGListIndex; Values: array of TItem);
-    procedure Move(CurIndex, NewIndex: TGListIndex);
-    procedure MoveItems(CurIndex, NewIndex, Count: TGListIndex);
-    function Remove(Item: TItem): TGListIndex;
+    function IndexOf(Item: TItem; Start: TIndex = 0): TIndex;
+    function IndexOfList(List: TGList; Start: TIndex = 0): TIndex;
+    procedure Insert(Index: TIndex; Item: TItem);
+    procedure InsertList(Index: TIndex; List: TGList);
+    procedure InsertArray(Index: TIndex; Values: array of TItem);
+    procedure Move(CurIndex, NewIndex: TIndex);
+    procedure MoveItems(CurIndex, NewIndex, Count: TIndex);
+    function Remove(Item: TItem): TIndex;
     procedure Reverse;
     procedure Sort(Compare: TSortCompare);
-    procedure SetArray(Values: TItemArray);
-    property Count: TGListIndex read FCount write SetCount;
-    property Capacity: TGListIndex read GetCapacity write SetCapacity;
-    property Items[Index: TGListIndex]: TItem read Get write Put; default;
+    procedure SetArray(Values: array of TItem);
+    property Count: TIndex read FCount write SetCount;
+    property Capacity: TIndex read GetCapacity write SetCapacity;
+    property Items[Index: TIndex]: TItem read Get write Put; default;
     property Last: TItem read GetLast write SetLast;
   end;
 
@@ -83,6 +83,7 @@ type
     procedure Assign(Source: TGList<TItem>); override;
     constructor Create;
     destructor Destroy; override;
+
   end;
 
 
@@ -93,21 +94,21 @@ uses
 
 { TGList }
 
-function TGList<TItem>.GetCapacity: TGListIndex;
+function TGList<TItem>.GetCapacity: TIndex;
 begin
   Result := Length(FItems);
 end;
 
-procedure TGList<TItem>.SetCapacity(const AValue: TGListIndex);
+procedure TGList<TItem>.SetCapacity(const AValue: TIndex);
 begin
   if (AValue < FCount) then
     raise EListError.CreateFmt(SListCapacityError, [AValue]);
   SetLength(FItems, AValue);
 end;
 
-procedure TGList<TItem>.SetCapacityOptimized(const NewCapacity: TGListIndex);
+procedure TGList<TItem>.SetCapacityOptimized(const NewCapacity: TIndex);
 var
-  IncSize: TGListIndex;
+  IncSize: TIndex;
 begin
   if NewCapacity > Capacity then begin
     IncSize := NewCapacity - Capacity;
@@ -129,21 +130,21 @@ begin
   end;
 end;
 
-function TGList<TItem>.Get(Index: TGListIndex): TItem;
+function TGList<TItem>.Get(Index: TIndex): TItem;
 begin
   if (Index < 0) or (Index >= Count) then
     raise EListError.CreateFmt(SListIndexError, [Index]);
   Result := FItems[Index];
 end;
 
-procedure TGList<TItem>.Put(Index: TGListIndex; const AValue: TItem);
+procedure TGList<TItem>.Put(Index: TIndex; const AValue: TItem);
 begin
   if (Index < 0) or (Index >= Count) then
     raise EListError.CreateFmt(SListIndexError, [Index]);
   FItems[Index] := AValue;
 end;
 
-procedure TGList<TItem>.SetCount(const AValue: TGListIndex);
+procedure TGList<TItem>.SetCount(const AValue: TIndex);
 begin
   if (AValue < 0) then
     raise EListError.CreateFmt(SListCountError, [AValue]);
@@ -164,9 +165,9 @@ begin
   end;
 end;
 
-procedure TGList<TItem>.QuickSort(L, R: TGListIndex; Compare: TSortCompare);
+procedure TGList<TItem>.QuickSort(L, R: TIndex; Compare: TSortCompare);
 var
-  I, J: TGListIndex;
+  I, J: TIndex;
   P, Q: TItem;
 begin
  repeat
@@ -195,7 +196,7 @@ end;
 
 procedure TGList<TItem>.Assign(Source: TGList);
 var
-  I: TGListIndex;
+  I: TIndex;
 begin
   Count := Source.Count;
   I := 0;
@@ -207,7 +208,7 @@ end;
 
 function TGList<TItem>.Extract(Item: TItem): TItem;
 var
-  I: TGListIndex;
+  I: TIndex;
 begin
   I := IndexOf(Item);
   if I >= 0 then begin
@@ -217,7 +218,7 @@ begin
     raise EListError.CreateFmt(SListIndexError, [0]);
 end;
 
-function TGList<TItem>.IndexOf(Item: TItem; Start: TGListIndex): TGListIndex;
+function TGList<TItem>.IndexOf(Item: TItem; Start: TIndex): TIndex;
 begin
   Result := Start;
   while (Result < FCount) and
@@ -226,7 +227,7 @@ begin
   if Result = FCount then Result := -1;
 end;
 
-procedure TGList<TItem>.Insert(Index: TGListIndex; Item: TItem);
+procedure TGList<TItem>.Insert(Index: TIndex; Item: TItem);
 begin
   if (Index < 0) or (Index > FCount ) then
     raise EListError.CreateFmt(SListIndexError, [Index]);
@@ -237,9 +238,9 @@ begin
   FCount := FCount + 1;
 end;
 
-procedure TGList<TItem>.InsertList(Index: TGListIndex; List: TGList);
+procedure TGList<TItem>.InsertList(Index: TIndex; List: TGList);
 var
-  I: TGListIndex;
+  I: TIndex;
 begin
   I := 0;
   while (I < List.Count) do begin
@@ -248,9 +249,9 @@ begin
   end;
 end;
 
-function TGList<TItem>.IndexOfList(List: TGList; Start: TGListIndex): TGListIndex;
+function TGList<TItem>.IndexOfList(List: TGList; Start: TIndex): TIndex;
 var
-  I: TGListIndex;
+  I: TIndex;
 begin
   if List.Count > 0 then begin
     Result := IndexOf(List[0], Start);
@@ -299,7 +300,7 @@ begin
     FItems[0] := AValue;
 end;
 
-procedure TGList<TItem>.Move(CurIndex, NewIndex: TGListIndex);
+procedure TGList<TItem>.Move(CurIndex, NewIndex: TIndex);
 var
   Temp: TItem;
 begin
@@ -319,7 +320,7 @@ begin
   //Insert(NewIndex, Temp);
 end;
 
-procedure TGList<TItem>.MoveItems(CurIndex, NewIndex, Count: TGListIndex);
+procedure TGList<TItem>.MoveItems(CurIndex, NewIndex, Count: TIndex);
 var
   S: Integer;
   D: Integer;
@@ -344,7 +345,7 @@ begin
   end;
 end;
 
-function TGList<TItem>.Remove(Item: TItem): TGListIndex;
+function TGList<TItem>.Remove(Item: TItem): TIndex;
 begin
   Result := IndexOf(Item);
   if Result <> -1 then
@@ -353,7 +354,7 @@ end;
 
 function TGList<TItem>.EqualTo(List: TGList): Boolean;
 var
-  I: TGListIndex;
+  I: TIndex;
 begin
   Result := Count = List.Count;
   if Result then begin
@@ -370,7 +371,7 @@ end;
 
 procedure TGList<TItem>.Reverse;
 var
-  I: TGListIndex;
+  I: TIndex;
 begin
   I := 0;
   while I < (Count div 2) do begin
@@ -387,7 +388,7 @@ end;
 
 procedure TGList<TItem>.AddArray(Values: array of TItem);
 var
-  I: TGListIndex;
+  I: TIndex;
 begin
   I := 0;
   while I <= High(Values) do begin
@@ -396,9 +397,9 @@ begin
   end;
 end;
 
-procedure TGList<TItem>.SetArray(Values: TItemArray);
+procedure TGList<TItem>.SetArray(Values: array of TItem);
 var
-  I: TGListIndex;
+  I: TIndex;
 begin
   Clear;
   I := 0;
@@ -408,9 +409,9 @@ begin
   end;
 end;
 
-procedure TGList<TItem>.InsertArray(Index: TGListIndex; Values: array of TItem);
+procedure TGList<TItem>.InsertArray(Index: TIndex; Values: array of TItem);
 var
-  I: TGListIndex;
+  I: TIndex;
 begin
   I := 0;
   while I <= High(Values) do begin
@@ -421,7 +422,7 @@ end;
 
 function TGList<TItem>.Implode(Separator: string; Converter: TToStringConverter): string;
 var
-  I: TGListIndex;
+  I: TIndex;
 begin
   Result := '';
   I := 0;
@@ -444,7 +445,7 @@ begin
   Add(Converter(Text));
 end;
 
-function TGList<TItem>.Add(Item: TItem): TGListIndex;
+function TGList<TItem>.Add(Item: TItem): TIndex;
 begin
   Count := Count + 1;
   Result := FCount - 1;
@@ -453,7 +454,7 @@ end;
 
 procedure TGList<TItem>.AddList(List: TGList);
 var
-  I: TGListIndex;
+  I: TIndex;
 begin
   I := 0;
   while I < List.Count do begin
@@ -468,7 +469,7 @@ begin
   Capacity := 0;
 end;
 
-procedure TGList<TItem>.Delete(Index: TGListIndex);
+procedure TGList<TItem>.Delete(Index: TIndex);
 begin
   if (Index < 0) or (Index >= FCount) then
     raise EListError.CreateFmt(SListIndexError, [Index]);
@@ -477,9 +478,9 @@ begin
   SetCapacityOptimized(Capacity - 1);
 end;
 
-procedure TGList<TItem>.DeleteItems(Index, Count: TGListIndex);
+procedure TGList<TItem>.DeleteItems(Index, Count: TIndex);
 var
-  I: TGListIndex;
+  I: TIndex;
 begin
   I := Index;
   while I < (Index + Count) do begin
@@ -488,9 +489,9 @@ begin
   end;
 end;
 
-procedure TGList<TItem>.Fill(Start, Count: TGListIndex; Value: TItem);
+procedure TGList<TItem>.Fill(Start, Count: TIndex; Value: TItem);
 var
-  I: TGListIndex;
+  I: TIndex;
 begin
   I := Start;
   while I < Count do begin
@@ -499,7 +500,7 @@ begin
   end;
 end;
 
-procedure TGList<TItem>.Exchange(Index1, Index2: TGListIndex);
+procedure TGList<TItem>.Exchange(Index1, Index2: TIndex);
 var
   Temp: TItem;
 begin

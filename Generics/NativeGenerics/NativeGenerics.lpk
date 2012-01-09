@@ -1,15 +1,16 @@
 <?xml version="1.0"?>
 <CONFIG>
-  <Package Version="3">
+  <Package Version="4">
     <PathDelim Value="\"/>
     <Name Value="NativeGenerics"/>
+    <AddToProjectUsesSection Value="True"/>
     <Author Value="Chronos"/>
     <CompilerOptions>
-      <Version Value="9"/>
+      <Version Value="11"/>
       <PathDelim Value="\"/>
       <SearchPaths>
         <OtherUnitFiles Value="Units"/>
-        <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)\"/>
+        <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
       </SearchPaths>
       <CodeGeneration>
         <Checks>
@@ -26,7 +27,7 @@
     <Description Value="Native generics library."/>
     <License Value="GNU/GPL"/>
     <Version Minor="1"/>
-    <Files Count="8">
+    <Files Count="11">
       <Item1>
         <Filename Value="ReadMe.txt"/>
         <Type Value="Text"/>
@@ -59,6 +60,18 @@
         <Filename Value="Units\GenericStack.pas"/>
         <UnitName Value="GenericStack"/>
       </Item8>
+      <Item9>
+        <Filename Value="Units\GenericMatrix.pas"/>
+        <UnitName Value="GenericMatrix"/>
+      </Item9>
+      <Item10>
+        <Filename Value="Units\GenericStream.pas"/>
+        <UnitName Value="GenericStream"/>
+      </Item10>
+      <Item11>
+        <Filename Value="Units\SpecializedList.pas"/>
+        <UnitName Value="SpecializedList"/>
+      </Item11>
     </Files>
     <Type Value="RunAndDesignTime"/>
     <RequiredPkgs Count="2">
