@@ -1,0 +1,163 @@
+<?xml version="1.0"?>
+<CONFIG>
+  <ProjectSession>
+    <PathDelim Value="\"/>
+    <Version Value="9"/>
+    <BuildModes Active="Default"/>
+    <Units Count="9">
+      <Unit0>
+        <Filename Value="project1.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="project1"/>
+        <UsageCount Value="24"/>
+      </Unit0>
+      <Unit1>
+        <Filename Value="UMainForm.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="MainForm"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="UMainForm"/>
+        <EditorIndex Value="0"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="106"/>
+        <CursorPos X="50" Y="117"/>
+        <UsageCount Value="24"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="UModularSystem.pas"/>
+        <UnitName Value="UModularSystem"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="99"/>
+        <CursorPos X="66" Y="106"/>
+        <UsageCount Value="24"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="UModuleUser.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="UModuleUser"/>
+        <EditorIndex Value="5"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="11"/>
+        <CursorPos X="27" Y="28"/>
+        <UsageCount Value="24"/>
+        <Loaded Value="True"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="UModuleBase.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="UModuleBase"/>
+        <EditorIndex Value="4"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="36" Y="8"/>
+        <UsageCount Value="22"/>
+        <Loaded Value="True"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="H:\Lazarus\0.9.31_2.6.0\lcl\include\control.inc"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="3339"/>
+        <CursorPos X="1" Y="3352"/>
+        <UsageCount Value="10"/>
+      </Unit5>
+      <Unit6>
+        <Filename Value="H:\Lazarus\0.9.31_2.6.0\lcl\include\customlistview.inc"/>
+        <EditorIndex Value="3"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="984"/>
+        <CursorPos X="1" Y="1003"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit6>
+      <Unit7>
+        <Filename Value="H:\Lazarus\0.9.31_2.6.0\lcl\dialogs.pp"/>
+        <UnitName Value="Dialogs"/>
+        <EditorIndex Value="2"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="487"/>
+        <CursorPos X="10" Y="500"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit7>
+      <Unit8>
+        <Filename Value="..\UModularSystem.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="UModularSystem"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="1"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="142"/>
+        <CursorPos X="8" Y="156"/>
+        <UsageCount Value="20"/>
+        <Loaded Value="True"/>
+      </Unit8>
+    </Units>
+    <General>
+      <ActiveWindowIndexAtStart Value="0"/>
+    </General>
+    <JumpHistory Count="15" HistoryIndex="14">
+      <Position1>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="57" Column="36" TopLine="49"/>
+      </Position1>
+      <Position2>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="99" Column="1" TopLine="94"/>
+      </Position2>
+      <Position3>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="100" Column="1" TopLine="94"/>
+      </Position3>
+      <Position4>
+        <Filename Value="H:\Lazarus\0.9.31_2.6.0\lcl\include\customlistview.inc"/>
+        <Caret Line="977" Column="1" TopLine="964"/>
+      </Position4>
+      <Position5>
+        <Filename Value="H:\Lazarus\0.9.31_2.6.0\lcl\include\customlistview.inc"/>
+        <Caret Line="997" Column="1" TopLine="984"/>
+      </Position5>
+      <Position6>
+        <Filename Value="H:\Lazarus\0.9.31_2.6.0\lcl\include\customlistview.inc"/>
+        <Caret Line="998" Column="1" TopLine="984"/>
+      </Position6>
+      <Position7>
+        <Filename Value="H:\Lazarus\0.9.31_2.6.0\lcl\include\customlistview.inc"/>
+        <Caret Line="999" Column="1" TopLine="984"/>
+      </Position7>
+      <Position8>
+        <Filename Value="H:\Lazarus\0.9.31_2.6.0\lcl\include\customlistview.inc"/>
+        <Caret Line="1003" Column="1" TopLine="984"/>
+      </Position8>
+      <Position9>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="101" Column="1" TopLine="94"/>
+      </Position9>
+      <Position10>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="99" Column="1" TopLine="94"/>
+      </Position10>
+      <Position11>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="100" Column="1" TopLine="94"/>
+      </Position11>
+      <Position12>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="99" Column="1" TopLine="94"/>
+      </Position12>
+      <Position13>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="120" Column="77" TopLine="98"/>
+      </Position13>
+      <Position14>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="121" Column="38" TopLine="98"/>
+      </Position14>
+      <Position15>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="112" Column="32" TopLine="106"/>
+      </Position15>
+    </JumpHistory>
+  </ProjectSession>
+</CONFIG>

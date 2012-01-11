@@ -1,0 +1,75 @@
+object MainForm: TMainForm
+  Left = 463
+  Height = 316
+  Top = 182
+  Width = 398
+  Caption = 'Module test'
+  ClientHeight = 316
+  ClientWidth = 398
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  OnShow = FormShow
+  LCLVersion = '0.9.31'
+  object ListViewModules: TListView
+    Left = 8
+    Height = 265
+    Top = 8
+    Width = 381
+    Anchors = [akTop, akLeft, akRight, akBottom]
+    Columns = <    
+      item
+        Caption = 'Name'
+        Width = 70
+      end    
+      item
+        Caption = 'Version'
+      end    
+      item
+        Caption = 'State'
+        Width = 80
+      end    
+      item
+        Caption = 'Dependencies'
+        Width = 150
+      end>
+    OwnerData = True
+    RowSelect = True
+    TabOrder = 0
+    ViewStyle = vsReport
+    OnData = ListViewModulesData
+    OnSelectItem = ListViewModulesSelectItem
+  end
+  object ButtonInstall: TButton
+    Left = 8
+    Height = 25
+    Top = 281
+    Width = 75
+    Anchors = [akLeft, akBottom]
+    Caption = 'Install'
+    Enabled = False
+    OnClick = ButtonInstallClick
+    TabOrder = 1
+  end
+  object ButtonUninstall: TButton
+    Left = 88
+    Height = 25
+    Top = 281
+    Width = 75
+    Anchors = [akLeft, akBottom]
+    Caption = 'Uninstall'
+    Enabled = False
+    OnClick = ButtonUninstallClick
+    TabOrder = 2
+  end
+  object ButtonUpdate: TButton
+    Left = 168
+    Height = 25
+    Top = 281
+    Width = 75
+    Anchors = [akLeft, akBottom]
+    Caption = 'Update'
+    Enabled = False
+    OnClick = ButtonUpdateClick
+    TabOrder = 3
+  end
+end
