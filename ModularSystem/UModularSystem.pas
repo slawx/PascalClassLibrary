@@ -20,6 +20,8 @@ type
     Version: string;
     Name: string;
     Dependencies: TStringList;
+    Author: string;
+    Description: string;
     procedure Install; virtual;
     procedure Uninstall; virtual;
     procedure Update; virtual;
