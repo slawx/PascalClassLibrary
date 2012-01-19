@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, ComCtrls,
-  StdCtrls, UModularSystem, UModuleUser, UModuleBase;
+  StdCtrls, Menus, ActnList, UModularSystem, UModuleUser, UModuleBase;
 
 type
 
@@ -14,10 +14,18 @@ type
 
   TMainForm = class(TForm)
   published
+    AModuleInstall: TAction;
+    AModuleUninstall: TAction;
+    AModuleUpdate: TAction;
+    ActionList1: TActionList;
     ButtonUpdate: TButton;
     ButtonUninstall: TButton;
     ButtonInstall: TButton;
     ListViewModules: TListView;
+    MenuItem1: TMenuItem;
+    MenuItem2: TMenuItem;
+    MenuItem3: TMenuItem;
+    PopupMenu1: TPopupMenu;
     procedure ButtonInstallClick(Sender: TObject);
     procedure ButtonUninstallClick(Sender: TObject);
     procedure ButtonUpdateClick(Sender: TObject);
@@ -63,10 +71,10 @@ procedure TMainForm.ListViewModulesSelectItem(Sender: TObject; Item: TListItem;
 var
   Installed: Boolean;
 begin
-  if Assigned(Item) then Installed := TModule(Item.Data).Installed;
-  ButtonInstall.Enabled := Selected and not Installed;
-  ButtonUninstall.Enabled := Selected and Installed;
-  ButtonUpdate.Enabled := Selected and Installed;
+  if Assigned(ListViewModules.Selected) then Installed := TModule(ListViewModules.Selected.Data).Installed;
+  AModuleInstall.Enabled := Assigned(ListViewModules.Selected) and not Installed;
+  AModuleUninstall.Enabled := Assigned(ListViewModules.Selected) and Installed;
+  AModuleUpdate.Enabled := Assigned(ListViewModules.Selected) and Installed;
 end;
 
 procedure TMainForm.RefreshList;
@@ -152,4 +160,4 @@ begin
 end;
 
 end.
-
+

@@ -30,9 +30,10 @@ object MainForm: TMainForm
       end    
       item
         Caption = 'Dependencies'
-        Width = 150
+        Width = 162
       end>
     OwnerData = True
+    PopupMenu = PopupMenu1
     RowSelect = True
     TabOrder = 0
     ViewStyle = vsReport
@@ -44,10 +45,8 @@ object MainForm: TMainForm
     Height = 25
     Top = 281
     Width = 75
+    Action = AModuleInstall
     Anchors = [akLeft, akBottom]
-    Caption = 'Install'
-    Enabled = False
-    OnClick = ButtonInstallClick
     TabOrder = 1
   end
   object ButtonUninstall: TButton
@@ -55,10 +54,8 @@ object MainForm: TMainForm
     Height = 25
     Top = 281
     Width = 75
+    Action = AModuleUninstall
     Anchors = [akLeft, akBottom]
-    Caption = 'Uninstall'
-    Enabled = False
-    OnClick = ButtonUninstallClick
     TabOrder = 2
   end
   object ButtonUpdate: TButton
@@ -66,10 +63,37 @@ object MainForm: TMainForm
     Height = 25
     Top = 281
     Width = 75
+    Action = AModuleUpdate
     Anchors = [akLeft, akBottom]
-    Caption = 'Update'
-    Enabled = False
-    OnClick = ButtonUpdateClick
     TabOrder = 3
   end
-end
+  object PopupMenu1: TPopupMenu
+    left = 183
+    top = 67
+    object MenuItem1: TMenuItem
+      Action = AModuleInstall
+    end
+    object MenuItem2: TMenuItem
+      Action = AModuleUninstall
+    end
+    object MenuItem3: TMenuItem
+      Action = AModuleUpdate
+    end
+  end
+  object ActionList1: TActionList
+    left = 137
+    top = 165
+    object AModuleInstall: TAction
+      Caption = 'Install'
+      OnExecute = ButtonInstallClick
+    end
+    object AModuleUninstall: TAction
+      Caption = 'Uninstall'
+      OnExecute = ButtonUninstallClick
+    end
+    object AModuleUpdate: TAction
+      Caption = 'Update'
+      OnExecute = ButtonUpdateClick
+    end
+  end
+end
