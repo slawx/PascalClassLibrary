@@ -1,33 +1,34 @@
 object MainForm: TMainForm
-  Left = 214
-  Height = 393
-  Top = 106
-  Width = 680
+  Left = 187
+  Height = 421
+  Top = 68
+  Width = 735
   Caption = 'Graphic test'
-  ClientHeight = 393
-  ClientWidth = 680
+  ClientHeight = 421
+  ClientWidth = 735
   OnClose = FormClose
   OnCreate = FormCreate
   OnDestroy = FormDestroy
+  OnShow = FormShow
   LCLVersion = '0.9.31'
   object PageControl1: TPageControl
-    Left = 312
-    Height = 373
+    Left = 360
+    Height = 401
     Top = 16
-    Width = 365
-    ActivePage = TabSheet3
+    Width = 372
+    ActivePage = TabSheet1
     Anchors = [akTop, akLeft, akRight, akBottom]
-    TabIndex = 2
+    TabIndex = 0
     TabOrder = 0
     object TabSheet1: TTabSheet
       Caption = 'TImage'
-      ClientHeight = 346
-      ClientWidth = 361
+      ClientHeight = 375
+      ClientWidth = 364
       object Image1: TImage
         Left = 6
-        Height = 278
+        Height = 307
         Top = 7
-        Width = 351
+        Width = 354
         Anchors = [akTop, akLeft, akRight, akBottom]
       end
     end
@@ -47,67 +48,16 @@ object MainForm: TMainForm
       Caption = 'OpenGL'
     end
   end
-  object ButtonStart: TButton
-    Left = 7
-    Height = 25
-    Top = 9
-    Width = 75
-    Caption = 'Start'
-    OnClick = ButtonStartClick
-    TabOrder = 1
-  end
-  object Label1: TLabel
-    Left = 9
-    Height = 14
-    Top = 95
-    Width = 24
-    Caption = 'FPS:'
-    ParentColor = False
-  end
-  object Label2: TLabel
-    Left = 128
-    Height = 14
-    Top = 95
-    Width = 10
-    Caption = '   '
-    ParentColor = False
-  end
-  object ButtonStop: TButton
-    Left = 95
-    Height = 25
-    Top = 9
-    Width = 75
-    Caption = 'Stop'
-    Enabled = False
-    OnClick = ButtonStopClick
-    TabOrder = 2
-  end
-  object Label3: TLabel
-    Left = 9
-    Height = 14
-    Top = 112
-    Width = 83
-    Caption = 'Frame duration'
-    ParentColor = False
-  end
-  object Label4: TLabel
-    Left = 128
-    Height = 14
-    Top = 112
-    Width = 10
-    Caption = '   '
-    ParentColor = False
-  end
-  object ListView1: TListView
+  object ListViewMethods: TListView
     Left = 8
-    Height = 253
-    Top = 136
-    Width = 296
+    Height = 345
+    Top = 8
+    Width = 344
     Anchors = [akTop, akLeft, akBottom]
     Columns = <    
       item
         Caption = 'Method'
-        Width = 140
+        Width = 200
       end    
       item
         Caption = 'Duration'
@@ -117,50 +67,78 @@ object MainForm: TMainForm
         Caption = 'FPS'
         Width = 75
       end>
-    TabOrder = 3
+    OwnerData = True
+    ReadOnly = True
+    RowSelect = True
+    TabOrder = 1
     ViewStyle = vsReport
+    OnData = ListViewMethodsData
+    OnSelectItem = ListViewMethodsSelectItem
+  end
+  object ButtonSingleTest: TButton
+    Left = 8
+    Height = 25
+    Top = 360
+    Width = 115
+    Anchors = [akLeft, akBottom]
+    Caption = 'Test one method'
+    OnClick = ButtonSingleTestClick
+    TabOrder = 2
   end
   object ButtonBenchmark: TButton
-    Left = 229
+    Left = 136
     Height = 25
-    Top = 101
-    Width = 75
-    Caption = 'Benchmark'
+    Top = 360
+    Width = 112
+    Anchors = [akLeft, akBottom]
+    Caption = 'Test all methods'
     OnClick = ButtonBenchmarkClick
-    TabOrder = 4
-  end
-  object ComboBox1: TComboBox
-    Left = 7
-    Height = 25
-    Top = 64
-    Width = 297
-    ItemHeight = 0
-    Style = csDropDownList
-    TabOrder = 5
-  end
-  object Label5: TLabel
-    Left = 9
-    Height = 14
-    Top = 47
-    Width = 46
-    Caption = 'Method:'
-    ParentColor = False
+    TabOrder = 3
   end
   object FloatSpinEdit1: TFloatSpinEdit
-    Left = 175
+    Left = 160
     Height = 21
-    Top = 103
-    Width = 50
+    Top = 392
+    Width = 58
+    Anchors = [akLeft, akBottom]
     Increment = 1
     MaxValue = 100
     MinValue = 0
-    TabOrder = 6
+    TabOrder = 4
     Value = 1
+  end
+  object ButtonStop: TButton
+    Left = 256
+    Height = 25
+    Top = 360
+    Width = 75
+    Anchors = [akLeft, akBottom]
+    Caption = 'Stop'
+    OnClick = ButtonStopClick
+    TabOrder = 5
+  end
+  object Label1: TLabel
+    Left = 8
+    Height = 14
+    Top = 395
+    Width = 137
+    Anchors = [akLeft, akBottom]
+    Caption = 'Single method test duration:'
+    ParentColor = False
+  end
+  object Label2: TLabel
+    Left = 224
+    Height = 14
+    Top = 395
+    Width = 6
+    Anchors = [akLeft, akBottom]
+    Caption = 's'
+    ParentColor = False
   end
   object Timer1: TTimer
     Interval = 500
     OnTimer = Timer1Timer
-    left = 209
-    top = 16
+    left = 238
+    top = 136
   end
 end

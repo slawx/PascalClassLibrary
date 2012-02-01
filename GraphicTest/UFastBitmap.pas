@@ -30,6 +30,7 @@ type
     procedure RandomImage;
     property Size: TPoint read FSize write SetSize;
     property Pixels[X, Y: Integer]: TFastBitmapPixel read GetPixel write SetPixel;
+    property PixelsData: PByte read FPixelsData;
   end;
 
   { TFastBitmap3 }
@@ -206,4 +207,4 @@ end;
 
 
 end.
-
+

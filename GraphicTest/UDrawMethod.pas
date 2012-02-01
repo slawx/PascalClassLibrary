@@ -40,6 +40,13 @@ type
 
   TDrawMethodClass = class of TDrawMethod;
 
+  { TDummyMethod }
+
+  TDummyMethod = class(TDrawMethod)
+    constructor Create; override;
+    procedure DrawFrame(FastBitmap: TFastBitmap); override;
+  end;
+
   { TCanvasPixels }
 
   TCanvasPixels = class(TDrawMethod)
@@ -87,6 +94,13 @@ type
     procedure DrawFrame(FastBitmap: TFastBitmap); override;
   end;
 
+  { TBitmapRawImageDataMove }
+
+  TBitmapRawImageDataMove = class(TDrawMethod)
+    constructor Create; override;
+    procedure DrawFrame(FastBitmap: TFastBitmap); override;
+  end;
+
   { TBGRABitmapPaintBox }
 
   TBGRABitmapPaintBox = class(TDrawMethod)
@@ -120,12 +134,76 @@ type
   end;
 
 const
-  DrawMethodClasses: array[0..8] of TDrawMethodClass = (
+  DrawMethodClasses: array[0..10] of TDrawMethodClass = (
     TCanvasPixels, TCanvasPixelsUpdateLock, TLazIntfImageColorsCopy,
     TLazIntfImageColorsNoCopy, TBitmapRawImageData, TBitmapRawImageDataPaintBox,
-    TBGRABitmapPaintBox, TOpenGLMethod, TOpenGLPBOMethod);
+    TBitmapRawImageDataMove, TBGRABitmapPaintBox, TOpenGLMethod, TOpenGLPBOMethod,
+    TDummyMethod);
 
 implementation
+
+{ TDummyMethod }
+
+constructor TDummyMethod.Create;
+begin
+  inherited Create;
+  Caption := 'Dummy';
+end;
+
+procedure TDummyMethod.DrawFrame(FastBitmap: TFastBitmap);
+var
+  Y, X: Integer;
+  PixelPtr: PInteger;
+  RowPtr: PInteger;
+  P: TPixelFormat;
+  RawImage: TRawImage;
+  BytePerPixel: Integer;
+  BytePerRow: Integer;
+begin
+  P := Bitmap.PixelFormat;
+    with FastBitmap do
+    try
+      //Bitmap.BeginUpdate(False);
+      RawImage := Bitmap.RawImage;
+      RowPtr := PInteger(RawImage.Data);
+      BytePerPixel := RawImage.Description.BitsPerPixel div 8;
+      BytePerRow := RawImage.Description.BytesPerLine;
+    finally
+      //Bitmap.EndUpdate(False);
+    end;
+end;
+
+{ TBitmapRawImageDataMove }
+
+constructor TBitmapRawImageDataMove.Create;
+begin
+  inherited;
+  Caption := 'TBitmap.RawImage.Data Move';
+end;
+
+procedure TBitmapRawImageDataMove.DrawFrame(FastBitmap: TFastBitmap);
+var
+  Y, X: Integer;
+  PixelPtr: PInteger;
+  RowPtr: PInteger;
+  P: TPixelFormat;
+  RawImage: TRawImage;
+  BytePerPixel: Integer;
+  BytePerRow: Integer;
+begin
+  P := Bitmap.PixelFormat;
+    with FastBitmap do
+    try
+      Bitmap.BeginUpdate(False);
+      RawImage := Bitmap.RawImage;
+      RowPtr := PInteger(RawImage.Data);
+      BytePerPixel := RawImage.Description.BitsPerPixel div 8;
+      BytePerRow := RawImage.Description.BytesPerLine;
+      Move(FastBitmap.PixelsData^, RowPtr^, Size.Y * BytePerRow);
+    finally
+      Bitmap.EndUpdate(False);
+    end;
+end;
 
 { TOpenGLPBOMethod }
 
@@ -454,9 +532,6 @@ begin
 end;
 
 procedure TBitmapRawImageData.DrawFrame(FastBitmap: TFastBitmap);
-type
-  TFastBitmapPixelComponents = packed record
-  end;
 var
   Y, X: Integer;
   PixelPtr: PInteger;
@@ -637,4 +712,4 @@ begin
 end;
 
 end.
-
+

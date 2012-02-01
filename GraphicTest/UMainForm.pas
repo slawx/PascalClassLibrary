@@ -19,18 +19,14 @@ type
   { TMainForm }
 
   TMainForm = class(TForm)
-    ButtonBenchmark: TButton;
-    ButtonStart: TButton;
     ButtonStop: TButton;
-    ComboBox1: TComboBox;
+    ButtonBenchmark: TButton;
+    ButtonSingleTest: TButton;
     FloatSpinEdit1: TFloatSpinEdit;
     Image1: TImage;
     Label1: TLabel;
     Label2: TLabel;
-    Label3: TLabel;
-    Label4: TLabel;
-    Label5: TLabel;
-    ListView1: TListView;
+    ListViewMethods: TListView;
     PageControl1: TPageControl;
     PaintBox1: TPaintBox;
     TabSheet1: TTabSheet;
@@ -38,19 +34,27 @@ type
     TabSheet3: TTabSheet;
     Timer1: TTimer;
     procedure ButtonBenchmarkClick(Sender: TObject);
-    procedure ButtonStartClick(Sender: TObject);
+    procedure ButtonSingleTestClick(Sender: TObject);
     procedure ButtonStopClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
+    procedure FormShow(Sender: TObject);
+    procedure ListViewMethodsData(Sender: TObject; Item: TListItem);
+    procedure ListViewMethodsSelectItem(Sender: TObject; Item: TListItem;
+      Selected: Boolean);
     procedure Timer1Timer(Sender: TObject);
   private
     OpenGLControl1: TOpenGLControl;
     TextureId: GLuint;
     TextureData: Pointer;
     MethodIndex: Integer;
+    SingleTestActive: Boolean;
+    AllTestActive: Boolean;
     procedure OpenGLControl1Resize(Sender: TObject);
     procedure InitGL;
+    procedure UpdateMethodList;
+    procedure UpdateInterface;
   public
     DrawMethods: TObjectList; // TObjectList<TDrawMethod>
     Bitmap: TBitmap;
@@ -85,6 +89,7 @@ begin
   Bitmap := TBitmap.Create;
   Bitmap.PixelFormat := pf24bit;
   Image1.Picture.Bitmap.SetSize(TFastBitmap(Scenes[0]).Size.X, TFastBitmap(Scenes[0]).Size.Y);
+  Image1.Picture.Bitmap.PixelFormat := pf32bit;
   Bitmap.SetSize(TFastBitmap(Scenes[0]).Size.X, TFastBitmap(Scenes[0]).Size.Y);
 
   OpenGLControl1 := TOpenGLControl.Create(Self);
@@ -99,7 +104,6 @@ begin
   GetMem(TextureData, OpenGLControl1.Width * OpenGLControl1.Height * SizeOf(Integer));
 
   DrawMethods := TObjectList.Create;
-  ComboBox1.Clear;
   for I := 0 to High(DrawMethodClasses) do begin
     NewDrawMethod := DrawMethodClasses[I].Create;
     NewDrawMethod.Bitmap := Image1.Picture.Bitmap;
@@ -108,42 +112,45 @@ begin
     NewDrawMethod.OpenGLControl := OpenGLControl1;
     NewDrawMethod.Init;
     DrawMethods.Add(NewDrawMethod);
-    ComboBox1.Items.Add(NewDrawMethod.Caption);
   end;
-  ComboBox1.ItemIndex := DrawMethods.Count - 1;
 end;
 
-procedure TMainForm.ButtonStartClick(Sender: TObject);
+procedure TMainForm.ButtonSingleTestClick(Sender: TObject);
 begin
-  MethodIndex := ComboBox1.ItemIndex;
-  ButtonStop.Enabled := True;
-  ButtonStart.Enabled := False;
-  Timer1.Enabled := True;
-  if MethodIndex >= 0 then
-  with TDrawMethod(DrawMethods[MethodIndex]) do begin
-    PageControl1.TabIndex := Integer(PaintObject);
-    Application.ProcessMessages;
-    repeat
-      DrawFrameTiming(TFastBitmap(Scenes[SceneIndex]));
-      SceneIndex := (SceneIndex + 1) mod Scenes.Count;
+  try
+    SingleTestActive := True;
+    UpdateInterface;
+    Timer1.Enabled := True;
+    MethodIndex := ListViewMethods.Selected.Index;
+    Timer1.Enabled := True;
+    if MethodIndex >= 0 then
+    with TDrawMethod(DrawMethods[MethodIndex]) do begin
+      PageControl1.TabIndex := Integer(PaintObject);
       Application.ProcessMessages;
-    until not ButtonStop.Enabled;
+      repeat
+        DrawFrameTiming(TFastBitmap(Scenes[SceneIndex]));
+        SceneIndex := (SceneIndex + 1) mod Scenes.Count;
+        Application.ProcessMessages;
+      until not SingleTestActive;
+    end;
+  finally
+    Timer1.Enabled := False;
+    SingleTestActive := False;
+    UpdateInterface;
   end;
-  ButtonStopClick(Self);
 end;
 
 procedure TMainForm.ButtonBenchmarkClick(Sender: TObject);
 var
-  NewItem: TListItem;
   I: Integer;
   C: Integer;
   StartTime: TDateTime;
 begin
-  Timer1.Enabled := True;
-  with ListView1, Items do
   try
-    //BeginUpdate;
-    Clear;
+    AllTestActive := True;
+    UpdateInterface;
+    Timer1.Enabled := True;
+    with ListViewMethods, Items do
     for I := 0 to DrawMethods.Count - 1 do
     with TDrawMethod(DrawMethods[I]) do begin
       MethodIndex := I;
@@ -153,21 +160,19 @@ begin
         DrawFrameTiming(TFastBitmap(Scenes[SceneIndex]));
         SceneIndex := (SceneIndex + 1) mod Scenes.Count;
         Application.ProcessMessages;
-      until (NowPrecise - StartTime) > OneSecond * FloatSpinEdit1.Value;
-      NewItem := Add;
-      NewItem.Caption := Caption;
-      NewItem.SubItems.Add(FloatToStr(RoundTo(FrameDuration / OneMillisecond, -3)));
-      NewItem.SubItems.Add(FloatToStr(RoundTo(1 / (FrameDuration / OneSecond), -3)));
+      until ((NowPrecise - StartTime) > OneSecond * FloatSpinEdit1.Value) or not AllTestActive;
     end;
   finally
-    //EndUpdate;
+    Timer1.Enabled := False;
+    AllTestActive := False;
+    UpdateInterface;
   end;
 end;
 
 procedure TMainForm.ButtonStopClick(Sender: TObject);
 begin
-  ButtonStart.Enabled := True;
-  ButtonStop.Enabled := False;
+  SingleTestActive := False;
+  AllTestActive := False;
 end;
 
 procedure TMainForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
@@ -183,15 +188,33 @@ begin
   Bitmap.Free;
 end;
 
+procedure TMainForm.FormShow(Sender: TObject);
+begin
+  UpdateMethodList;
+  UpdateInterface;
+end;
+
+procedure TMainForm.ListViewMethodsData(Sender: TObject; Item: TListItem);
+begin
+  if (Item.Index >= 0) and (Item.Index < DrawMethods.Count) then
+  with TDrawMethod(DrawMethods[Item.Index]) do begin
+    Item.Caption := Caption;
+    if FrameDuration > 0 then
+      Item.SubItems.Add(FloatToStr(RoundTo(1 / (FrameDuration / OneSecond), -3)))
+      else Item.SubItems.Add('0');
+    Item.SubItems.Add(FloatToStr(RoundTo(FrameDuration / OneMillisecond, -3)) + ' ms');
+  end;
+end;
+
+procedure TMainForm.ListViewMethodsSelectItem(Sender: TObject; Item: TListItem;
+  Selected: Boolean);
+begin
+  UpdateInterface;
+end;
+
 procedure TMainForm.Timer1Timer(Sender: TObject);
 begin
-  if (MethodIndex >= 0) then
-  with TDrawMethod(DrawMethods[MethodIndex]) do begin
-    if (FrameDuration > 0) then
-      Label2.Caption := FloatToStr(RoundTo(1 / (FrameDuration / OneSecond), -3))
-      else Label2.Caption := '0';
-    Label4.Caption := FloatToStr(RoundTo(FrameDuration / OneMillisecond, -3)) + ' ms';
-  end;
+  UpdateMethodList;
 end;
 
 procedure TMainForm.OpenGLControl1Resize(Sender: TObject);
@@ -217,6 +240,19 @@ begin
 
   glGenTextures(1, @TextureId);
   glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+end;
+
+procedure TMainForm.UpdateMethodList;
+begin
+  ListViewMethods.Items.Count := DrawMethods.Count;
+  ListViewMethods.Refresh;
+end;
+
+procedure TMainForm.UpdateInterface;
+begin
+  ButtonSingleTest.Enabled := not SingleTestActive and not AllTestActive and Assigned(ListViewMethods.Selected);
+  ButtonBenchmark.Enabled := not AllTestActive and not SingleTestActive;
+  ButtonStop.Enabled := SingleTestActive or AllTestActive;
 end;
 
 end.

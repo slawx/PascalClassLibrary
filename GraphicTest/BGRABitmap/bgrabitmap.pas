@@ -40,6 +40,9 @@ unit BGRABitmap;
 
 interface
 
+{ Compiler directives are used to include the best version according
+  to the platform }
+
 uses
   Classes, SysUtils,
 {$IFDEF LCLwin32}
@@ -80,46 +83,72 @@ type
   {$ENDIF}
 {$ENDIF}
 
-
+// draw a bitmap from pure data
 procedure BGRABitmapDraw(ACanvas: TCanvas; Rect: TRect; AData: Pointer;
   VerticalFlip: boolean; AWidth, AHeight: integer; Opaque: boolean);
-procedure BGRAReplace(var Source: TBGRABitmap; Temp: TObject);
+  
+{ Replace the content of the variable Destination with the variable
+  Temp and frees previous object contained in Destination.
+  
+  This function is useful as a shortcut for :
+ 
+  var
+    temp: TBGRABitmap;
+  begin
+    ...
+    temp := someBmp.Filter... as TBGRABitmap;
+    someBmp.Free;
+    someBmp := temp;
+  end;
+  
+  which becomes :
+  
+  begin
+    ...
+    BGRAReplace(temp, someBmp.Filter... );
+  end;
+}
+procedure BGRAReplace(var Destination: TBGRABitmap; Temp: TObject);
 
 implementation
 
-uses GraphType, BGRAAnimatedGif;
+uses GraphType, BGRABitmapTypes;
 
 var
-  bmp: TBGRABitmap;
+  tempBmp: TBGRABitmap;
 
 procedure BGRABitmapDraw(ACanvas: TCanvas; Rect: TRect; AData: Pointer;
   VerticalFlip: boolean; AWidth, AHeight: integer; Opaque: boolean);
 var
   LineOrder: TRawImageLineOrder;
 begin
+  if tempBmp = nil then
+    tempBmp := TBGRABitmap.Create;
   if VerticalFlip then
     LineOrder := riloBottomToTop
   else
     LineOrder := riloTopToBottom;
   if Opaque then
-    bmp.DataDrawOpaque(ACanvas, Rect, AData, LineOrder, AWidth, AHeight)
+    tempBmp.DataDrawOpaque(ACanvas, Rect, AData, LineOrder, AWidth, AHeight)
   else
-    bmp.DataDrawTransparent(ACanvas, Rect, AData, LineOrder, AWidth, AHeight);
+    tempBmp.DataDrawTransparent(ACanvas, Rect, AData, LineOrder, AWidth, AHeight);
 end;
 
-procedure BGRAReplace(var Source: TBGRABitmap; Temp: TObject);
+procedure BGRAReplace(var Destination: TBGRABitmap; Temp: TObject);
 begin
-  Source.Free;
-  Source := Temp as TBGRABitmap;
+  Destination.Free;
+  Destination := Temp as TBGRABitmap;
 end;
 
 initialization
 
-  bmp := TBGRABitmap.Create(0, 0);
+  //this variable is assigned to access appropriate functions
+  //depending on the platform
+  BGRABitmapFactory := TBGRABitmap;
 
 finalization
 
-  bmp.Free;
+  tempBmp.Free;
 
 end.
 

@@ -36,12 +36,13 @@ type
   TBGRAGtkBitmap = class(TBGRADefaultBitmap)
   private
     FPixBuf: Pointer;
-    procedure SlowDrawTransparent(ABitmap: TBGRADefaultBitmap;
-      ACanvas: TCanvas; ARect: TRect);
+{    procedure SlowDrawTransparent(ABitmap: TBGRADefaultBitmap;
+      ACanvas: TCanvas; ARect: TRect);}
+    procedure DrawTransparent(ACanvas: TCanvas; Rect: TRect);
+    procedure DrawOpaque(ACanvas: TCanvas; Rect: TRect);
   protected
     procedure ReallocData; override;
     procedure FreeData; override;
-    procedure DrawOpaque(ACanvas: TCanvas; Rect: TRect);
   public
     procedure DataDrawTransparent(ACanvas: TCanvas; Rect: TRect;
       AData: Pointer; ALineOrder: TRawImageLineOrder; AWidth, AHeight: integer);
@@ -49,8 +50,7 @@ type
     procedure Draw(ACanvas: TCanvas; x, y: integer; Opaque: boolean = True); override;
     procedure Draw(ACanvas: TCanvas; Rect: TRect; Opaque: boolean = True); override;
     procedure DataDrawOpaque(ACanvas: TCanvas; Rect: TRect; AData: Pointer;
-      ALineOrder: TRawImageLineOrder; AWidth, AHeight: integer);
-      override;
+      ALineOrder: TRawImageLineOrder; AWidth, AHeight: integer); override;
     procedure GetImageFromCanvas(CanvasSource: TCanvas; x, y: integer); override;
   end;
 
@@ -70,10 +70,10 @@ uses BGRABitmapTypes, LCLType,
 type TGtkDeviceContext = TGtk2DeviceContext;
 {$ENDIF}
 
-procedure TBGRAGtkBitmap.SlowDrawTransparent(ABitmap: TBGRADefaultBitmap;
+{procedure TBGRAGtkBitmap.SlowDrawTransparent(ABitmap: TBGRADefaultBitmap;
   ACanvas: TCanvas; ARect: TRect);
 var
-  background, temp: TBGRADefaultBitmap;
+  background, temp: TBGRACustomBitmap;
   w, h: integer;
 
 begin
@@ -91,15 +91,24 @@ begin
   end;
   background.Draw(ACanvas, ARect.Left, ARect.Top, True);
   background.Free;
-end;
+end;}
 
 procedure TBGRAGtkBitmap.ReallocData;
 begin
+  {$IFDEF LCLgtk2}
+  If FPixBuf <> nil then g_object_unref(FPixBuf);
+  {$ELSE}
+  If FPixBuf <> nil then gdk_pixbuf_unref(FPixBuf);
+  {$ENDIF}
+  FPixBuf := nil;  
   inherited ReallocData;
-  FPixbuf := gdk_pixbuf_new_from_data(pguchar(FData),
-    GDK_COLORSPACE_RGB, True, 8, Width, Height, Width*Sizeof(TBGRAPixel), nil, nil);
-  if FPixbuf = nil then
-    raise Exception.Create('Error initializing Pixbuf');
+  if (FWidth <> 0) and (FHeight <> 0) then
+  begin  
+    FPixbuf := gdk_pixbuf_new_from_data(pguchar(FData),
+      GDK_COLORSPACE_RGB, True, 8, Width, Height, Width*Sizeof(TBGRAPixel), nil, nil);
+    if FPixbuf = nil then
+      raise Exception.Create('Error initializing Pixbuf');
+  end;
 end;
 
 procedure TBGRAGtkBitmap.FreeData;
@@ -113,7 +122,7 @@ begin
   inherited FreeData;
 end;
 
-procedure TBGRAGtkBitmap.DrawOpaque(ACanvas: TCanvas; Rect: TRect);
+procedure TBGRAGtkBitmap.DrawTransparent(ACanvas: TCanvas; Rect: TRect);
 var DrawWidth,DrawHeight: integer;
     stretched: TBGRAGtkBitmap;
 begin
@@ -125,12 +134,12 @@ begin
   if (DrawWidth <> Width) or (DrawHeight <> Height) then
   begin
     stretched := Resample(DrawWidth,DrawHeight,rmSimpleStretch) as TBGRAGtkBitmap;
-    stretched.DrawOpaque(ACanvas,Rect);
+    stretched.DrawTransparent(ACanvas,Rect);
     stretched.Free;
     exit;
   end;
 
-  //SwapRedBlue;
+  SwapRedBlue;
   gdk_pixbuf_render_to_drawable(FPixBuf,
     TGtkDeviceContext(ACanvas.Handle).Drawable,
     TGtkDeviceContext(ACanvas.Handle).GC,
@@ -139,18 +148,43 @@ begin
     TGtkDeviceContext(ACanvas.Handle).Offset.Y+Rect.Top,
     Width,Height,
     GDK_RGB_DITHER_NORMAL,0,0);
-  //SwapRedBlue;
+  SwapRedBlue;
+end;
+
+procedure TBGRAGtkBitmap.DrawOpaque(ACanvas: TCanvas; Rect: TRect);
+begin
+  DataDrawOpaque(ACanvas,Rect,Data,LineOrder,Width,Height);
 end;
 
 procedure TBGRAGtkBitmap.DataDrawTransparent(ACanvas: TCanvas; Rect: TRect;
   AData: Pointer; ALineOrder: TRawImageLineOrder; AWidth, AHeight: integer);
 var
-  Temp: TBGRAPtrBitmap;
+  TempGtk: TBGRAGtkBitmap;
+  temp: integer;
 begin
-  Temp := TBGRAPtrBitmap.Create(AWidth, AHeight, AData);
-  Temp.LineOrder := ALineOrder;
-  SlowDrawTransparent(Temp, ACanvas, Rect);
-  Temp.Free;
+  if (AHeight = 0) or (AWidth = 0) or (Rect.Left = Rect.Right) or
+    (Rect.Top = Rect.Bottom) then
+    exit;
+
+  if Rect.Right < Rect.Left then
+  begin
+    temp := Rect.Left;
+    Rect.Left := Rect.Right;
+    Rect.Right := temp;
+  end;
+
+  if Rect.Bottom < Rect.Top then
+  begin
+    temp := Rect.Top;
+    Rect.Top := Rect.Bottom;
+    Rect.Bottom := temp;
+  end;
+
+  TempGtk := TBGRAGtkBitmap.Create(AWidth, AHeight);
+  Move(AData^,TempGtk.Data^,TempGtk.NbPixels*sizeof(TBGRAPixel));
+  if ALineOrder <> TempGtk.LineOrder then TempGtk.VerticalFlip;
+  TempGtk.DrawTransparent(ACanvas,Rect);
+  TempGtk.Free;
 end;
 
 procedure TBGRAGtkBitmap.Draw(ACanvas: TCanvas; x, y: integer; Opaque: boolean);
@@ -160,7 +194,7 @@ begin
   if Opaque then
     DrawOpaque(ACanvas, Rect(X, Y, X + Width, Y + Height))
   else
-    SlowDrawTransparent(Self, ACanvas, Rect(X, Y, X + Width, Y + Height));
+    DrawTransparent(ACanvas, Rect(X, Y, X + Width, Y + Height));
 end;
 
 procedure TBGRAGtkBitmap.Draw(ACanvas: TCanvas; Rect: TRect; Opaque: boolean);
@@ -170,36 +204,63 @@ begin
   if Opaque then
     DrawOpaque(ACanvas, Rect)
   else
-    SlowDrawTransparent(Self, ACanvas, Rect);
+    DrawTransparent(ACanvas, Rect);
 end;
 
 procedure TBGRAGtkBitmap.DataDrawOpaque(ACanvas: TCanvas; Rect: TRect;
   AData: Pointer; ALineOrder: TRawImageLineOrder; AWidth, AHeight: integer);
-var stretched: TBGRADefaultBitmap;
+var ptr: TBGRAPtrBitmap;
+    stretched: TBGRACustomBitmap;
+    temp: integer;
+    pos: TPoint;
+    dest: HDC;
 begin
-  if (AHeight = 0) or (AWidth = 0) then
+  if (AHeight = 0) or (AWidth = 0) or (Rect.Left = Rect.Right) or
+    (Rect.Top = Rect.Bottom) then
     exit;
 
-  if (AWidth <> Width) or (AHeight <> Height) then
+  if Rect.Right < Rect.Left then
   begin
-    stretched := Resample(AWidth,AHeight,rmSimpleStretch);
-    stretched.DataDrawOpaque(ACanvas,Rect,AData,stretched.LineOrder,AWidth,AHeight)
+    temp := Rect.Left;
+    Rect.Left := Rect.Right;
+    Rect.Right := temp;
   end;
 
+  if Rect.Bottom < Rect.Top then
+  begin
+    temp := Rect.Top;
+    Rect.Top := Rect.Bottom;
+    Rect.Bottom := temp;
+  end;
+
+  if (AWidth <> Rect.Right-Rect.Left) or (AHeight <> Rect.Bottom-Rect.Top) then
+  begin
+    ptr := TBGRAPtrBitmap.Create(AWidth,AHeight,AData);
+    ptr.LineOrder := ALineOrder;
+    stretched := ptr.Resample(Rect.Right-Rect.Left,Rect.Bottom-Rect.Top);
+    ptr.free;
+    DataDrawOpaque(ACanvas,Rect,AData,stretched.LineOrder,stretched.Width,stretched.Height);
+    stretched.Free;
+    exit;
+  end;
+
+  dest := ACanvas.Handle;
+  pos := TGtkDeviceContext(dest).Offset;
+  pos.X += rect.Left;
+  pos.Y += rect.Top;
   If ALineOrder = riloBottomToTop then VerticalFlip;
   SwapRedBlue;
-  gdk_pixbuf_render_to_drawable(FPixBuf,
-    TGtkDeviceContext(ACanvas.Handle).Drawable,
-    TGtkDeviceContext(ACanvas.Handle).GC,
-    0,0,Rect.Left,Rect.Top,AWidth,AHeight,
-    GDK_RGB_DITHER_NORMAL,0,0);
+  gdk_draw_rgb_32_image(TGtkDeviceContext(dest).Drawable,
+    TGtkDeviceContext(Dest).GC, pos.X,pos.Y,
+    AWidth,AHeight, GDK_RGB_DITHER_NORMAL,
+    AData, AWidth*sizeof(TBGRAPixel));
   SwapRedBlue;
   If ALineOrder = riloBottomToTop then VerticalFlip;
 end;
 
 procedure TBGRAGtkBitmap.GetImageFromCanvas(CanvasSource: TCanvas; x, y: integer);
 var
-  subBmp: TBGRADefaultBitmap;
+  subBmp: TBGRACustomBitmap;
   subRect: TRect;
   cw,ch: integer;
 begin
@@ -238,4 +299,5 @@ end;
 
 
 end.
+
 

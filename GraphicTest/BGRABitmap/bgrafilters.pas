@@ -4,41 +4,91 @@ unit BGRAFilters;
 
 interface
 
-uses
-  Classes, SysUtils, BGRADefaultBitmap, BGRABitmapTypes;
+{ Here are some filters that can be applied to a bitmap. The filters
+  take a source image as a parameter and gives a filtered image as
+  a result. }
 
-function FilterMedian(bmp: TBGRADefaultBitmap;
-  Option: TMedianOption): TBGRADefaultBitmap;
-function FilterSmartZoom3(bmp: TBGRADefaultBitmap;
-  Option: TMedianOption): TBGRADefaultBitmap;
-function FilterSharpen(bmp: TBGRADefaultBitmap): TBGRADefaultBitmap;
-function FilterBlurRadialPrecise(bmp: TBGRADefaultBitmap;
-  radius: single): TBGRADefaultBitmap;
-function FilterBlurRadial(bmp: TBGRADefaultBitmap; radius: integer;
-  blurType: TRadialBlurType): TBGRADefaultBitmap;
-function FilterBlurMotion(bmp: TBGRADefaultBitmap; distance: single;
-  angle: single; oriented: boolean): TBGRADefaultBitmap;
-function FilterBlur(bmp: TBGRADefaultBitmap;
-  blurMask: TBGRADefaultBitmap): TBGRADefaultBitmap;
-function FilterEmboss(bmp: TBGRADefaultBitmap; angle: single): TBGRADefaultBitmap;
-function FilterEmbossHighlight(bmp: TBGRADefaultBitmap;
-  FillSelection: boolean): TBGRADefaultBitmap;
-function FilterNormalize(bmp: TBGRADefaultBitmap;
-  eachChannel: boolean = True): TBGRADefaultBitmap;
-function FilterRotate(bmp: TBGRADefaultBitmap; origin: TPointF;
-  angle: single): TBGRADefaultBitmap;
-function FilterGrayscale(bmp: TBGRADefaultBitmap): TBGRADefaultBitmap;
-function FilterContour(bmp: TBGRADefaultBitmap): TBGRADefaultBitmap;
-function FilterSphere(bmp: TBGRADefaultBitmap): TBGRADefaultBitmap;
-function FilterCylinder(bmp: TBGRADefaultBitmap): TBGRADefaultBitmap;
-function FilterPlane(bmp: TBGRADefaultBitmap): TBGRADefaultBitmap;
+uses
+  Classes, SysUtils, BGRABitmapTypes;
+
+{ The median filter consist in calculating the median value of pixels. Here
+  a square of 9x9 pixel is considered. The median allow to select the most
+  representative colors. The option parameter allow to choose to smooth the
+  result or not. }
+function FilterMedian(bmp: TBGRACustomBitmap;
+  Option: TMedianOption): TBGRACustomBitmap;
+
+{ SmartZoom x3 is a filter that upsizes 3 times the picture and add
+  pixels that could be logically expected (horizontal, vertical, diagonal lines) }
+function FilterSmartZoom3(bmp: TBGRACustomBitmap;
+  Option: TMedianOption): TBGRACustomBitmap;
+
+{ Sharpen filter add more contrast between pixels }
+function FilterSharpen(bmp: TBGRACustomBitmap): TBGRACustomBitmap;
+
+{ A radial blur applies a blur with a circular influence, i.e, each pixel
+  is merged with pixels within the specified radius. There is an exception
+  with rbFast blur, the optimization entails an hyperbolic shape. }
+function FilterBlurRadial(bmp: TBGRACustomBitmap; radius: integer;
+  blurType: TRadialBlurType): TBGRACustomBitmap;
+
+{ The precise blur allow to specify the blur radius with subpixel accuracy }
+function FilterBlurRadialPrecise(bmp: TBGRACustomBitmap;
+  radius: single): TBGRACustomBitmap;
+
+{ Motion blur merge pixels in a direction. The oriented parameter specifies
+  if the weights of the pixels are the same along the line or not. }
+function FilterBlurMotion(bmp: TBGRACustomBitmap; distance: single;
+  angle: single; oriented: boolean): TBGRACustomBitmap;
+
+function FilterPixelate(bmp: TBGRACustomBitmap; pixelSize: integer; useResample: boolean; filter: TResampleFilter = rfLinear): TBGRACustomBitmap;
+
+{ General purpose blur filter, with a blur mask as parameter to describe
+  how pixels influence each other }
+function FilterBlur(bmp: TBGRACustomBitmap;
+  blurMask: TBGRACustomBitmap): TBGRACustomBitmap;
+
+{ Emboss filter compute a color difference in the angle direction }
+function FilterEmboss(bmp: TBGRACustomBitmap; angle: single): TBGRACustomBitmap;
+
+{ Emboss highlight computes a sort of emboss with 45 degrees angle and
+  with standard selection color (white/black and filled with blue) }
+function FilterEmbossHighlight(bmp: TBGRACustomBitmap;
+  FillSelection: boolean): TBGRACustomBitmap;
+
+{ Normalize use the whole available range of values, making dark colors darkest possible
+  and light colors lightest possible }
+function FilterNormalize(bmp: TBGRACustomBitmap;
+  eachChannel: boolean = True): TBGRACustomBitmap;
+
+{ Rotate filter rotate the image and clip it in the bounding rectangle }
+function FilterRotate(bmp: TBGRACustomBitmap; origin: TPointF;
+  angle: single): TBGRACustomBitmap;
+
+{ Grayscale converts colored pixel into grayscale with same luminosity }
+function FilterGrayscale(bmp: TBGRACustomBitmap): TBGRACustomBitmap;
+
+{ Compute a contour, as if the image was drawn with a 2 pixels-wide black pencil }
+function FilterContour(bmp: TBGRACustomBitmap): TBGRACustomBitmap;
+
+{ Distort the image as if it were on a sphere }
+function FilterSphere(bmp: TBGRACustomBitmap): TBGRACustomBitmap;
+
+{ Twirl distortion, i.e. a progressive rotation }
+function FilterTwirl(bmp: TBGRACustomBitmap; ACenter: TPoint; ARadius: Single; ATurn: Single=1; AExponent: Single=3): TBGRACustomBitmap;
+
+{ Distort the image as if it were on a vertical cylinder }
+function FilterCylinder(bmp: TBGRACustomBitmap): TBGRACustomBitmap;
+
+{ Compute a plane projection towards infinity (SLOW) }
+function FilterPlane(bmp: TBGRACustomBitmap): TBGRACustomBitmap;
 
 implementation
 
-uses Math;
+uses Math, GraphType, Dialogs, BGRATransform;
 
-function FilterSmartZoom3(bmp: TBGRADefaultBitmap;
-  Option: TMedianOption): TBGRADefaultBitmap;
+function FilterSmartZoom3(bmp: TBGRACustomBitmap;
+  Option: TMedianOption): TBGRACustomBitmap;
 type
   TSmartDiff = record
     d, cd, sd, b, a: single;
@@ -47,8 +97,8 @@ type
 var
   xb, yb: integer;
   diag1, diag2, h1, h2, v1, v2: TSmartDiff;
-  c:      TBGRAPixel;
-  temp, median: TBGRADefaultBitmap;
+  c,c1,c2:      TBGRAPixel;
+  temp, median: TBGRACustomBitmap;
 
   function ColorDiff(c1, c2: TBGRAPixel): single;
   var
@@ -155,10 +205,12 @@ begin
         //same color?
         if diag1.cd < 0.3 then
         begin
-          c := MergeBGRA(bmp.GetPixel(xb, yb), bmp.GetPixel(xb + 1, yb + 1));
+          c1 := bmp.GetPixel(xb, yb);
+          c2 := bmp.GetPixel(integer(xb + 1), integer(yb + 1));
+          c := MergeBGRA(c1, c2);
           //restore
           Result.SetPixel(xb * 3 + 2, yb * 3 + 2, bmp.GetPixel(xb, yb));
-          Result.SetPixel(xb * 3 + 3, yb * 3 + 3, bmp.GetPixel(xb + 1, yb + 1));
+          Result.SetPixel(xb * 3 + 3, yb * 3 + 3, bmp.GetPixel(integer(xb + 1), integer(yb + 1)));
 
           if (diag1.sd < h1.sd) and (diag1.sd < v2.sd) then
             Result.SetPixel(xb * 3 + 3, yb * 3 + 2, c);
@@ -172,7 +224,9 @@ begin
         //same color?
         if diag2.cd < 0.3 then
         begin
-          c := MergeBGRA(bmp.GetPixel(xb, yb + 1), bmp.GetPixel(xb + 1, yb));
+          c1 := bmp.GetPixel(xb, yb + 1);
+          c2 := bmp.GetPixel(xb + 1, yb);
+          c := MergeBGRA(c1, c2);
           //restore
           Result.SetPixel(xb * 3 + 3, yb * 3 + 2, bmp.GetPixel(xb + 1, yb));
           Result.SetPixel(xb * 3 + 2, yb * 3 + 3, bmp.GetPixel(xb, yb + 1));
@@ -189,7 +243,11 @@ begin
   median.Free;
 end;
 
-function FilterSharpen(bmp: TBGRADefaultBitmap): TBGRADefaultBitmap;
+{ This filter compute for each pixel the mean of the eight surrounding pixels,
+  then the difference between this average pixel and the pixel at the center
+  of the square. Finally the difference is added to the new pixel, exagerating
+  its difference with its neighbours. }
+function FilterSharpen(bmp: TBGRACustomBitmap): TBGRACustomBitmap;
 const
   nbpix = 8;
 var
@@ -203,6 +261,7 @@ var
 begin
   Result := bmp.NewBitmap(bmp.Width, bmp.Height);
 
+  //determine where pixels are in the bitmap
   bounds := bmp.GetImageBounds;
   if (bounds.Right <= bounds.Left) or (bounds.Bottom <= Bounds.Top) then
     exit;
@@ -211,20 +270,23 @@ begin
   bounds.Right  := min(bmp.Width, bounds.Right + 1);
   bounds.Bottom := min(bmp.Height, bounds.Bottom + 1);
 
+  //loop through the destination bitmap
   for yb := bounds.Top to bounds.Bottom - 1 do
   begin
     pdest := Result.scanline[yb] + bounds.Left;
     for xb := bounds.Left to bounds.Right - 1 do
     begin
+      //for each pixel, read eight surrounding pixels in the source bitmap
       n := 0;
       for dy := -1 to 1 do
         for dx := -1 to 1 do
           if (dx <> 0) or (dy <> 0) then
           begin
-            a_pixels[n] := bmp.GetPixel(xb + dx, yb + dy);
+            a_pixels[n] := bmp.GetPixel(integer(xb + dx), integer(yb + dy));
             Inc(n);
           end;
 
+      //compute sum
       sumR   := 0;
       sumG   := 0;
       sumB   := 0;
@@ -245,6 +307,7 @@ begin
       end;
        {$hints on}
 
+      //we finally have an average pixel
       if (RGBdiv = 0) then
         refPixel := BGRAPixelTransparent
       else
@@ -255,9 +318,11 @@ begin
         refPixel.alpha := (sumA + nbA shr 1) div nbA;
       end;
 
+      //read the pixel at the center of the square
       tempPixel := bmp.GetPixel(xb, yb);
       if refPixel <> BGRAPixelTransparent then
       begin
+        //compute sharpened pixel by adding the difference
         tempPixel.red   := max(0, min(255, tempPixel.red +
           integer(tempPixel.red - refPixel.red)));
         tempPixel.green := max(0, min(255, tempPixel.green +
@@ -274,14 +339,21 @@ begin
   Result.InvalidateBitmap;
 end;
 
-function FilterBlurRadialPrecise(bmp: TBGRADefaultBitmap;
-  radius: single): TBGRADefaultBitmap;
+{ Precise blur builds a blur mask with a gradient fill and use
+  general purpose blur }
+function FilterBlurRadialPrecise(bmp: TBGRACustomBitmap;
+  radius: single): TBGRACustomBitmap;
 var
-  blurShape: TBGRADefaultBitmap;
+  blurShape: TBGRACustomBitmap;
   intRadius: integer;
 begin
+  if radius = 0 then
+  begin
+    result := bmp.Duplicate;
+    exit;
+  end;
   intRadius := ceil(radius);
-  blurShape := TBGRADefaultBitmap.Create(2 * intRadius + 1, 2 * intRadius + 1);
+  blurShape := bmp.NewBitmap(2 * intRadius + 1, 2 * intRadius + 1);
   blurShape.GradientFill(0, 0, blurShape.Width, blurShape.Height, BGRAWhite,
     BGRABlack, gtRadial, pointF(intRadius, intRadius), pointF(
     intRadius - radius - 1, intRadius), dmSet);
@@ -289,62 +361,112 @@ begin
   blurShape.Free;
 end;
 
-function FilterBlurRadialNormal(bmp: TBGRADefaultBitmap;
-  radius: integer): TBGRADefaultBitmap;
+{ This is a clever solution for fast computing of the blur
+  effect : it stores an array of vertical sums forming a square
+  around the pixel which moves with it. For each new pixel,
+  the vertical sums are kept except for the last column of
+  the square }
+function FilterBlurFast(bmp: TBGRACustomBitmap;
+  radius: integer): TBGRACustomBitmap;
+
+  type
+    TRowSum = record
+      sumR,sumG,sumB,rgbDiv,sumA,aDiv: cardinal;
+    end;
+
+  function ComputeAverage(sum: TRowSum): TBGRAPixel;
+  begin
+    result.alpha:= (sum.sumA+sum.aDiv shr 1) div sum.aDiv;
+    result.red := (sum.sumR+sum.rgbDiv shr 1) div sum.rgbDiv;
+    result.green := (sum.sumG+sum.rgbDiv shr 1) div sum.rgbDiv;
+    result.blue := (sum.sumB+sum.rgbDiv shr 1) div sum.rgbDiv;
+  end;
+
+  {$I blurfast.inc}
+
+{ Normal radial blur compute a blur mask with a GradientFill and
+  then posterize to optimize general purpose blur }
+function FilterBlurRadialNormal(bmp: TBGRACustomBitmap;
+  radius: integer): TBGRACustomBitmap;
 var
-  blurShape: TBGRADefaultBitmap;
+  blurShape: TBGRACustomBitmap;
+  n: Integer;
+  p: PBGRAPixel;
 begin
-  blurShape := TBGRADefaultBitmap.Create(2 * radius + 1, 2 * radius + 1);
+  blurShape := bmp.NewBitmap(2 * radius + 1, 2 * radius + 1);
   blurShape.GradientFill(0, 0, blurShape.Width, blurShape.Height, BGRAWhite,
     BGRABlack, gtRadial, pointF(radius, radius), pointF(-0.5, radius), dmSet);
+  p := blurShape.Data;
+  for n := 0 to blurShape.NbPixels-1 do
+  begin
+    p^.red := p^.red and $F0;
+    p^.green := p^.red;
+    p^.blue := p^.red;
+    inc(p);
+  end;
   Result := FilterBlur(bmp, blurShape);
   blurShape.Free;
 end;
 
-function FilterBlurDisk(bmp: TBGRADefaultBitmap; radius: integer): TBGRADefaultBitmap;
+{ Blur disk creates a disk mask with a FillEllipse }
+function FilterBlurDisk(bmp: TBGRACustomBitmap; radius: integer): TBGRACustomBitmap;
 var
-  blurShape: TBGRADefaultBitmap;
+  blurShape: TBGRACustomBitmap;
 begin
-  blurShape := TBGRADefaultBitmap.Create(2 * radius + 1, 2 * radius + 1);
+  blurShape := bmp.NewBitmap(2 * radius + 1, 2 * radius + 1);
   blurShape.Fill(BGRABlack);
   blurShape.FillEllipseAntialias(radius, radius, radius + 0.5, radius + 0.5, BGRAWhite);
   Result := FilterBlur(bmp, blurShape);
   blurShape.Free;
 end;
 
-function FilterBlurCorona(bmp: TBGRADefaultBitmap; radius: integer): TBGRADefaultBitmap;
+{ Corona blur use a circle as mask }
+function FilterBlurCorona(bmp: TBGRACustomBitmap; radius: integer): TBGRACustomBitmap;
 var
-  blurShape: TBGRADefaultBitmap;
+  blurShape: TBGRACustomBitmap;
 begin
-  blurShape := TBGRADefaultBitmap.Create(2 * radius + 1, 2 * radius + 1);
+  blurShape := bmp.NewBitmap(2 * radius + 1, 2 * radius + 1);
   blurShape.Fill(BGRABlack);
   blurShape.EllipseAntialias(radius, radius, radius, radius, BGRAWhite, 1);
   Result := FilterBlur(bmp, blurShape);
   blurShape.Free;
 end;
 
-function FilterBlurRadial(bmp: TBGRADefaultBitmap; radius: integer;
-  blurType: TRadialBlurType): TBGRADefaultBitmap;
+function FilterBlurRadial(bmp: TBGRACustomBitmap; radius: integer;
+  blurType: TRadialBlurType): TBGRACustomBitmap;
 begin
+  if radius = 0 then
+  begin
+    result := bmp.Duplicate;
+    exit;
+  end;
   case blurType of
     rbCorona: Result  := FilterBlurCorona(bmp, radius);
     rbDisk: Result    := FilterBlurDisk(bmp, radius);
     rbNormal: Result  := FilterBlurRadialNormal(bmp, radius);
+    rbFast: Result  := FilterBlurFast(bmp, radius);
     rbPrecise: Result := FilterBlurRadialPrecise(bmp, radius / 10);
     else
       Result := nil;
   end;
 end;
 
-function FilterBlurMotion(bmp: TBGRADefaultBitmap; distance: single;
-  angle: single; oriented: boolean): TBGRADefaultBitmap;
+{ This filter draws an antialiased line to make the mask, and
+  if the motion blur is oriented, does a GradientFill to orient it }
+function FilterBlurMotion(bmp: TBGRACustomBitmap; distance: single;
+  angle: single; oriented: boolean): TBGRACustomBitmap;
 var
-  blurShape: TBGRADefaultBitmap;
+  blurShape: TBGRACustomBitmap;
   intRadius: integer;
   dx, dy, d: single;
 begin
+  if distance = 0 then
+  begin
+    result := bmp.Duplicate;
+    exit;
+  end;
   intRadius := ceil(distance / 2);
-  blurShape := TBGRADefaultBitmap.Create(2 * intRadius + 1, 2 * intRadius + 1);
+  blurShape := bmp.NewBitmap(2 * intRadius + 1, 2 * intRadius + 1);
   d  := distance / 2;
   dx := cos(angle * Pi / 180);
   dy := sin(angle * Pi / 180);
@@ -361,120 +483,185 @@ begin
   blurShape.Free;
 end;
 
-function FilterBlur(bmp: TBGRADefaultBitmap;
-  blurMask: TBGRADefaultBitmap): TBGRADefaultBitmap;
-var
-  yb, xb:      integer;
-  dx, dy, mindx, maxdx, mindy, maxdy, n, j: integer;
-  a_pixels:    array of TBGRAPixel;
-  weights:     array of integer;
-  sumR, sumG, sumB, sumA, Adiv, RGBdiv: cardinal;
-  RGBweight:   byte;
-  tempPixel, refPixel: TBGRAPixel;
-  shapeMatrix: array of array of byte;
-  pdest, psrc: PBGRAPixel;
-  blurOfs:     TPoint;
-  bounds:      TRect;
+{ General purpose blur : compute pixel sum according to the mask and then
+  compute only difference while scanning from the left to the right }
+function FilterBlurSmallMask(bmp: TBGRACustomBitmap;
+  blurMask: TBGRACustomBitmap): TBGRACustomBitmap; forward;
+function FilterBlurSmallMaskWithShift(bmp: TBGRACustomBitmap;
+  blurMask: TBGRACustomBitmap; maskShift: integer): TBGRACustomBitmap; forward;
+function FilterBlurBigMask(bmp: TBGRACustomBitmap;
+  blurMask: TBGRACustomBitmap): TBGRACustomBitmap; forward;
+
+//make sure value is in the range 0..255
+function clampByte(value: integer): byte; inline;
 begin
-  blurOfs := point(blurMask.Width shr 1, blurMask.Height shr 1);
-
-  setlength(shapeMatrix, blurMask.Width, blurMask.Height);
-  n := 0;
-  for yb := 0 to blurMask.Height - 1 do
-    for xb := 0 to blurMask.Width - 1 do
-    begin
-      shapeMatrix[yb, xb] := blurMask.GetPixel(xb, yb).red;
-      if shapeMatrix[yb, xb] <> 0 then
-        Inc(n);
-    end;
-
-  setlength(a_pixels, n);
-  setlength(weights, n);
-
-  Result := bmp.NewBitmap(bmp.Width, bmp.Height);
-  bounds := bmp.GetImageBounds;
-  if (bounds.Right <= bounds.Left) or (bounds.Bottom <= Bounds.Top) then
-    exit;
-  bounds.Left   := max(0, bounds.Left - blurOfs.X);
-  bounds.Top    := max(0, bounds.Top - blurOfs.Y);
-  bounds.Right  := min(bmp.Width, bounds.Right + blurMask.Width - 1 - blurOfs.X);
-  bounds.Bottom := min(bmp.Height, bounds.Bottom + blurMask.Height - 1 - blurOfs.Y);
-
-  for yb := bounds.Top to bounds.Bottom - 1 do
-  begin
-    pdest := Result.ScanLine[yb] + bounds.Left;
-    for xb := bounds.Left to Bounds.Right - 1 do
-    begin
-      n     := 0;
-      mindx := max(-blurOfs.X, -xb);
-      mindy := max(-blurOfs.Y, -yb);
-      maxdx := min(blurMask.Width - 1 - blurOfs.X, bmp.Width - 1 - xb);
-      maxdy := min(blurMask.Height - 1 - blurOfs.Y, bmp.Height - 1 - yb);
-      for dy := mindy to maxdy do
-      begin
-        psrc := bmp.scanline[yb + dy] + (xb + mindx);
-        for dx := mindx to maxdx do
-        begin
-          j := shapeMatrix[dy + blurOfs.Y, dx + blurOfs.X];
-          if j <> 0 then
-          begin
-            a_pixels[n] := psrc^;
-            weights[n]  := (a_pixels[n].alpha * j + 127) shr 8;
-            Inc(n);
-          end;
-          Inc(psrc);
-        end;
-      end;
-      sumR   := 0;
-      sumG   := 0;
-      sumB   := 0;
-      sumA   := 0;
-      Adiv   := 0;
-      RGBdiv := 0;
-
-       {$hints off}
-      for j := 0 to n - 1 do
-      begin
-        tempPixel := a_pixels[j];
-        RGBweight := (weights[j] * tempPixel.alpha + 128) div 255;
-        sumR      += tempPixel.red * RGBweight;
-        sumG      += tempPixel.green * RGBweight;
-        sumB      += tempPixel.blue * RGBweight;
-        RGBdiv    += RGBweight;
-        sumA      += tempPixel.alpha;
-        Adiv      += 1;
-      end;
-       {$hints on}
-
-      if (Adiv = 0) or (RGBdiv = 0) then
-        refPixel := BGRAPixelTransparent
-      else
-      begin
-        refPixel.alpha := (sumA + Adiv shr 1) div Adiv;
-        if refPixel.alpha = 0 then
-          refPixel := BGRAPixelTransparent
-        else
-        begin
-          refPixel.red   := (sumR + RGBdiv shr 1) div RGBdiv;
-          refPixel.green := (sumG + RGBdiv shr 1) div RGBdiv;
-          refPixel.blue  := (sumB + RGBdiv shr 1) div RGBdiv;
-        end;
-      end;
-
-      pdest^ := refPixel;
-      Inc(pdest);
-    end;
-  end;
-  Result.InvalidateBitmap;
+  if value < 0 then result := 0 else
+  if value > 255 then result := 255 else
+    result := value;
 end;
 
-function FilterEmboss(bmp: TBGRADefaultBitmap; angle: single): TBGRADefaultBitmap;
+function FilterPixelate(bmp: TBGRACustomBitmap; pixelSize: integer;
+  useResample: boolean; filter: TResampleFilter): TBGRACustomBitmap;
+var yb,xb, xs,ys, tx,ty: integer;
+    psrc,pdest: PBGRAPixel;
+    temp,stretched: TBGRACustomBitmap;
+    oldfilter: TResampleFilter;
+begin
+  if pixelSize < 1 then
+  begin
+    result := bmp.Duplicate;
+    exit;
+  end;
+  result := bmp.NewBitmap(bmp.Width,bmp.Height);
+
+  tx := (bmp.Width+pixelSize-1) div pixelSize;
+  ty := (bmp.Height+pixelSize-1) div pixelSize;
+  if not useResample then
+  begin
+    temp := bmp.NewBitmap(tx,ty);
+
+    xs := (bmp.Width mod pixelSize) div 2;
+    ys := (bmp.Height mod pixelSize) div 2;
+
+    for yb := 0 to temp.height-1 do
+    begin
+      pdest := temp.ScanLine[yb];
+      psrc := bmp.scanline[ys]+xs;
+      inc(ys,pixelSize);
+      for xb := 0 to temp.width-1 do
+      begin
+        pdest^ := psrc^;
+        inc(pdest);
+        inc(psrc,pixelSize);
+      end;
+    end;
+    temp.InvalidateBitmap;
+  end else
+  begin
+    oldfilter := bmp.ResampleFilter;
+    bmp.ResampleFilter := filter;
+    temp := bmp.Resample(tx,ty,rmFineResample);
+    bmp.ResampleFilter := oldfilter;
+  end;
+  stretched := temp.Resample(temp.Width*pixelSize,temp.Height*pixelSize,rmSimpleStretch);
+  temp.free;
+  if bmp.Width mod pixelSize = 0 then
+    xs := 0
+  else
+    xs := (-pixelSize+(bmp.Width mod pixelSize)) div 2;
+  if bmp.Height mod pixelSize = 0 then
+    ys := 0
+  else
+    ys := (-pixelSize+(bmp.Height mod pixelSize)) div 2;
+  result.PutImage(xs,ys,stretched,dmSet);
+  stretched.Free;
+end;
+
+function FilterBlur(bmp: TBGRACustomBitmap;
+  blurMask: TBGRACustomBitmap): TBGRACustomBitmap;
+var
+  maskSum: int64;
+  i: Integer;
+  p: PBGRAPixel;
+  maskShift: integer;
+begin
+  maskSum := 0;
+  p := blurMask.data;
+  for i := 0 to blurMask.NbPixels-1 do
+  begin
+    inc(maskSum,p^.red);
+    inc(p);
+  end;
+  maskShift := 0;
+  while maskSum > 32768 do
+  begin
+    inc(maskShift);
+    maskSum := maskSum shr 1;
+  end;
+  //check if sum can be stored in a 32-bit signed integer
+  if maskShift = 0 then
+    result := FilterBlurSmallMask(bmp,blurMask) else
+  if maskShift < 8 then
+    result := FilterBlurSmallMaskWithShift(bmp,blurMask,maskShift) else
+    result := FilterBlurBigMask(bmp,blurMask);
+end;
+
+//32-bit blur with shift
+function FilterBlurSmallMaskWithShift(bmp: TBGRACustomBitmap;
+  blurMask: TBGRACustomBitmap; maskShift: integer): TBGRACustomBitmap;
+
+  var
+    sumR, sumG, sumB, sumA, Adiv, RGBdiv : integer;
+
+  function ComputeAverage: TBGRAPixel; inline;
+  begin
+    result.alpha := (sumA + Adiv shr 1) div Adiv;
+    if result.alpha = 0 then
+      result := BGRAPixelTransparent
+    else
+    begin
+      result.red   := clampByte((sumR + RGBdiv shr 1) div RGBdiv);
+      result.green := clampByte((sumG + RGBdiv shr 1) div RGBdiv);
+      result.blue  := clampByte((sumB + RGBdiv shr 1) div RGBdiv);
+    end;
+  end;
+
+  {$define PARAM_MASKSHIFT}
+  {$I blurnormal.inc}
+
+//32-bit blur
+function FilterBlurSmallMask(bmp: TBGRACustomBitmap;
+  blurMask: TBGRACustomBitmap): TBGRACustomBitmap;
+
+  var
+    sumR, sumG, sumB, sumA, Adiv : integer;
+
+  function ComputeAverage: TBGRAPixel; inline;
+  begin
+    result.alpha := (sumA + Adiv shr 1) div Adiv;
+    if result.alpha = 0 then
+      result := BGRAPixelTransparent
+    else
+    begin
+      result.red   := clampByte((sumR + sumA shr 1) div sumA);
+      result.green := clampByte((sumG + sumA shr 1) div sumA);
+      result.blue  := clampByte((sumB + sumA shr 1) div sumA);
+    end;
+  end;
+
+  {$I blurnormal.inc}
+
+//floating point blur
+function FilterBlurBigMask(bmp: TBGRACustomBitmap;
+  blurMask: TBGRACustomBitmap): TBGRACustomBitmap;
+
+  var
+    sumR, sumG, sumB, sumA, Adiv : single;
+
+  function ComputeAverage: TBGRAPixel; inline;
+  begin
+    result.alpha := round(sumA/Adiv);
+    if result.alpha = 0 then
+      result := BGRAPixelTransparent
+    else
+    begin
+      result.red   := clampByte(round(sumR/sumA));
+      result.green := clampByte(round(sumG/sumA));
+      result.blue  := clampByte(round(sumB/sumA));
+    end;
+  end;
+
+  {$I blurnormal.inc}
+
+{ Emboss filter computes the difference between each pixel and the surrounding pixels
+  in the specified direction. }
+function FilterEmboss(bmp: TBGRACustomBitmap; angle: single): TBGRACustomBitmap;
 var
   yb, xb: integer;
   dx, dy: single;
   idx1, idy1, idx2, idy2, idx3, idy3, idx4, idy4: integer;
   w:      array[1..4] of single;
-  iw:     integer;
+  iw:     cardinal;
   c:      array[0..4] of TBGRAPixel;
 
   i:     integer;
@@ -484,6 +671,7 @@ var
 
   bounds: TRect;
 begin
+  //compute pixel position and weight
   dx   := cos(angle * Pi / 180);
   dy   := sin(angle * Pi / 180);
   idx1 := floor(dx);
@@ -500,6 +688,7 @@ begin
   w[3] := (1 - abs(idx3 - dx)) * (1 - abs(idy3 - dy));
   w[4] := (1 - abs(idx4 - dx)) * (1 - abs(idy4 - dy));
 
+  //fill with gray
   Result := bmp.NewBitmap(bmp.Width, bmp.Height);
   Result.Fill(BGRA(128, 128, 128, 255));
 
@@ -511,16 +700,17 @@ begin
   bounds.Right  := min(bmp.Width, bounds.Right + 1);
   bounds.Bottom := min(bmp.Height, bounds.Bottom + 1);
 
+  //loop through destination
   for yb := bounds.Top to bounds.bottom - 1 do
   begin
     pdest := Result.scanline[yb] + bounds.Left;
     for xb := bounds.Left to bounds.Right - 1 do
     begin
       c[0] := bmp.getPixel(xb, yb);
-      c[1] := bmp.getPixel(xb + idx1, yb + idy1);
-      c[2] := bmp.getPixel(xb + idx2, yb + idy2);
-      c[3] := bmp.getPixel(xb + idx3, yb + idy3);
-      c[4] := bmp.getPixel(xb + idx4, yb + idy4);
+      c[1] := bmp.getPixel(integer(xb + idx1), integer(yb + idy1));
+      c[2] := bmp.getPixel(integer(xb + idx2), integer(yb + idy2));
+      c[3] := bmp.getPixel(integer(xb + idx3), integer(yb + idy3));
+      c[4] := bmp.getPixel(integer(xb + idx4), integer(yb + idy4));
 
       sumR   := 0;
       sumG   := 0;
@@ -529,6 +719,7 @@ begin
       Adiv   := 0;
       RGBdiv := 0;
 
+      //compute sum
        {$hints off}
       for i := 1 to 4 do
       begin
@@ -545,6 +736,7 @@ begin
       end;
        {$hints on}
 
+      //average
       if (Adiv = 0) or (RGBdiv = 0) then
         refPixel := c[0]
       else
@@ -554,6 +746,8 @@ begin
         refPixel.blue  := (sumB + RGBdiv shr 1) div RGBdiv;
         refPixel.alpha := (sumA * 255 + Adiv shr 1) div Adiv;
       end;
+
+      //difference with center pixel
        {$hints off}
       tempPixel.red := max(0, min(512 * 255, 65536 + refPixel.red *
         refPixel.alpha - c[0].red * c[0].alpha)) shr 9;
@@ -570,8 +764,9 @@ begin
   Result.InvalidateBitmap;
 end;
 
-function FilterEmbossHighlight(bmp: TBGRADefaultBitmap;
-  FillSelection: boolean): TBGRADefaultBitmap;
+{ Like general emboss, but with fixed direction and automatic color with transparency }
+function FilterEmbossHighlight(bmp: TBGRACustomBitmap;
+  FillSelection: boolean): TBGRACustomBitmap;
 var
   yb, xb: integer;
   w:      array[1..6] of integer;
@@ -709,8 +904,10 @@ begin
   Result.InvalidateBitmap;
 end;
 
-function FilterNormalize(bmp: TBGRADefaultBitmap;
-  eachChannel: boolean = True): TBGRADefaultBitmap;
+{ Normalize compute min-max of specified channel and apply an affine transformation
+  to make it use the full range of values }
+function FilterNormalize(bmp: TBGRACustomBitmap;
+  eachChannel: boolean = True): TBGRACustomBitmap;
 var
   psrc, pdest: PBGRAPixel;
   c: TExpandedPixel;
@@ -830,8 +1027,10 @@ begin
   Result.InvalidateBitmap;
 end;
 
-function FilterRotate(bmp: TBGRADefaultBitmap; origin: TPointF;
-  angle: single): TBGRADefaultBitmap;
+{ Rotates the image. To do this, loop through the destination and
+  calculates the position in the source bitmap with an affine transformation }
+function FilterRotate(bmp: TBGRACustomBitmap; origin: TPointF;
+  angle: single): TBGRACustomBitmap;
 var
   bounds:     TRect;
   pdest:      PBGRAPixel;
@@ -925,7 +1124,8 @@ begin
   Result.InvalidateBitmap;
 end;
 
-function FilterGrayscale(bmp: TBGRADefaultBitmap): TBGRADefaultBitmap;
+{ Filter grayscale applies BGRAToGrayscale function to all pixels }
+function FilterGrayscale(bmp: TBGRACustomBitmap): TBGRACustomBitmap;
 var
   bounds:      TRect;
   pdest, psrc: PBGRAPixel;
@@ -951,7 +1151,10 @@ begin
   Result.InvalidateBitmap;
 end;
 
-function FilterContour(bmp: TBGRADefaultBitmap): TBGRADefaultBitmap;
+{ Filter contour compute a grayscale image, then for each pixel
+  calculates the difference with surrounding pixels (in intensity and alpha)
+  and draw black pixels when there is a difference }
+function FilterContour(bmp: TBGRACustomBitmap): TBGRACustomBitmap;
 var
   yb, xb: integer;
   c:      array[0..8] of TBGRAPixel;
@@ -963,7 +1166,7 @@ var
   pdest, psrcUp, psrc, psrcDown: PBGRAPixel;
 
   bounds: TRect;
-  gray:   TBGRADefaultBitmap;
+  gray:   TBGRACustomBitmap;
 begin
   bmpWidth  := bmp.Width;
   bmpHeight := bmp.Height;
@@ -1065,11 +1268,14 @@ begin
   gray.Free;
 end;
 
-function FilterSphere(bmp: TBGRADefaultBitmap): TBGRADefaultBitmap;
+{ Compute the distance for each pixel to the center of the bitmap,
+  calculate the corresponding angle with arcsin, use this angle
+  to determine a distance from the center in the source bitmap }
+function FilterSphere(bmp: TBGRACustomBitmap): TBGRACustomBitmap;
 var
   cx, cy, x, y, len, fact: single;
   xb, yb: integer;
-  mask:   TBGRADefaultBitmap;
+  mask:   TBGRACustomBitmap;
 begin
   Result := bmp.NewBitmap(bmp.Width, bmp.Height);
   cx     := bmp.Width / 2 - 0.5;
@@ -1098,7 +1304,20 @@ begin
   Mask.Free;
 end;
 
-function FilterCylinder(bmp: TBGRADefaultBitmap): TBGRADefaultBitmap;
+{ Applies twirl scanner. See TBGRATwirlScanner }
+function FilterTwirl(bmp: TBGRACustomBitmap; ACenter: TPoint; ARadius: Single; ATurn: Single=1; AExponent: Single=3): TBGRACustomBitmap;
+var twirl: TBGRATwirlScanner;
+begin
+  twirl := TBGRATwirlScanner.Create(bmp,ACenter,ARadius,ATurn,AExponent);
+  Result := bmp.NewBitmap(bmp.Width, bmp.Height);
+  result.Fill(twirl);
+  twirl.free;
+end;
+
+{ Compute the distance for each pixel to the vertical axis of the bitmap,
+  calculate the corresponding angle with arcsin, use this angle
+  to determine a distance from the vertical axis in the source bitmap }
+function FilterCylinder(bmp: TBGRACustomBitmap): TBGRACustomBitmap;
 var
   cx, cy, x, y, len, fact: single;
   xb, yb: integer;
@@ -1124,15 +1343,15 @@ begin
     end;
 end;
 
-function FilterPlane(bmp: TBGRADefaultBitmap): TBGRADefaultBitmap;
+function FilterPlane(bmp: TBGRACustomBitmap): TBGRACustomBitmap;
 const resampleGap=0.6;
 var
   cy, x1, x2, y1, y2, z1, z2, h: single;
   yb: integer;
-  resampledBmp: TBGRADefaultBitmap;
+  resampledBmp: TBGRACustomBitmap;
   resampledBmpWidth: integer;
   resampledFactor,newResampleFactor: single;
-  sub,resampledSub: TBGRADefaultBitmap;
+  sub,resampledSub: TBGRACustomBitmap;
   partRect: TRect;
   resampleSizeY : integer;
 begin
@@ -1190,8 +1409,9 @@ begin
   end;
 end;
 
-function FilterMedian(bmp: TBGRADefaultBitmap;
-  Option: TMedianOption): TBGRADefaultBitmap;
+{ For each component, sort values to get the median }
+function FilterMedian(bmp: TBGRACustomBitmap;
+  Option: TMedianOption): TBGRACustomBitmap;
 
   function ComparePixLt(p1, p2: TBGRAPixel): boolean;
   begin
@@ -1235,7 +1455,7 @@ begin
       for dy := -1 to 1 do
         for dx := -1 to 1 do
         begin
-          a_pixels[n] := bmp.GetPixel(xb + dx, yb + dy);
+          a_pixels[n] := bmp.GetPixel(integer(xb + dx), integer(yb + dy));
           if a_pixels[n].alpha = 0 then
             a_pixels[n] := BGRAPixelTransparent;
           Inc(n);
