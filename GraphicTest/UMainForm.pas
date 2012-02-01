@@ -116,6 +116,8 @@ begin
 end;
 
 procedure TMainForm.ButtonSingleTestClick(Sender: TObject);
+var
+  StepStartTime: TDateTime;
 begin
   try
     SingleTestActive := True;
@@ -128,9 +130,11 @@ begin
       PageControl1.TabIndex := Integer(PaintObject);
       Application.ProcessMessages;
       repeat
+        StepStartTime := NowPrecise;
         DrawFrameTiming(TFastBitmap(Scenes[SceneIndex]));
         SceneIndex := (SceneIndex + 1) mod Scenes.Count;
         Application.ProcessMessages;
+        StepDuration := NowPrecise - StepStartTime;
       until not SingleTestActive;
     end;
   finally
@@ -145,6 +149,7 @@ var
   I: Integer;
   C: Integer;
   StartTime: TDateTime;
+  StepStartTime: TDateTime;
 begin
   try
     AllTestActive := True;
@@ -157,9 +162,11 @@ begin
       PageControl1.TabIndex := Integer(PaintObject);
       StartTime := NowPrecise;
       repeat
+        StepStartTime := NowPrecise;
         DrawFrameTiming(TFastBitmap(Scenes[SceneIndex]));
         SceneIndex := (SceneIndex + 1) mod Scenes.Count;
         Application.ProcessMessages;
+        StepDuration := NowPrecise - StepStartTime;
       until ((NowPrecise - StartTime) > OneSecond * FloatSpinEdit1.Value) or not AllTestActive;
     end;
   finally
@@ -203,6 +210,10 @@ begin
     Item.SubItems.Add(FloatToStr(RoundTo(FrameDuration / OneMillisecond, -3)));
     if FrameDuration > 0 then
       Item.SubItems.Add(FloatToStr(RoundTo(1 / (FrameDuration / OneSecond), -3)))
+      else Item.SubItems.Add('0');
+    Item.SubItems.Add(FloatToStr(RoundTo(StepDuration / OneMillisecond, -3)));
+    if FrameDuration > 0 then
+      Item.SubItems.Add(FloatToStr(RoundTo(1 / (StepDuration / OneSecond), -3)))
       else Item.SubItems.Add('0');
   end;
 end;

@@ -25,6 +25,7 @@ type
     Caption: string;
     Terminated: Boolean;
     FrameDuration: TDateTime;
+    StepDuration: TDateTime;
     PaintObject: TPaintObject;
     OpenGLBitmap: Pointer;
     OpenGLControl: TOpenGLControl;
