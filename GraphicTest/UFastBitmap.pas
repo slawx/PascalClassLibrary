@@ -8,14 +8,24 @@ uses
   Classes, SysUtils, Dialogs;
 
 type
- TFastBitmapPixel = Integer;
- PFastBitmapPixel = ^TFastBitmapPixel;
 
- TFastBitmapPixelComponents = packed record
-   B, G, R, A: Byte;
- end;
+  TFastBitmapPixel = Integer;
+  (*TFastBitmapPixel = record
+    Blue: Byte;
+    Green: Byte;
+    Red: Byte;
+  end;*)
+  PFastBitmapPixel = ^TFastBitmapPixel;
 
- { TFastBitmap }
+  TFastBitmapPixelComponents = packed record
+    B, G, R, A: Byte;
+  end;
+
+const
+  FastPixelSize = SizeOf(TFastBitmapPixel);
+
+type
+  { TFastBitmap }
 
   TFastBitmap = class
   private
@@ -165,19 +175,19 @@ end;
 
 function TFastBitmap.GetPixel(X, Y: Integer): TFastBitmapPixel;
 begin
-  Result := PFastBitmapPixel(FPixelsData + (Y * FSize.X + X) * SizeOf(TFastBitmapPixel))^;
+  Result := PFastBitmapPixel(FPixelsData + (Y * FSize.X + X) * FastPixelSize)^;
 end;
 
 procedure TFastBitmap.SetPixel(X, Y: Integer; const AValue: TFastBitmapPixel);
 begin
-  PFastBitmapPixel(FPixelsData + (Y * FSize.X + X) * SizeOf(TFastBitmapPixel))^ := AValue;
+  PFastBitmapPixel(FPixelsData + (Y * FSize.X + X) * FastPixelSize)^ := AValue;
 end;
 
 procedure TFastBitmap.SetSize(const AValue: TPoint);
 begin
   if (FSize.X = AValue.X) and (FSize.Y = AValue.X) then Exit;
   FSize := AValue;
-  FPixelsData := ReAllocMem(FPixelsData, FSize.X * FSize.Y * SizeOf(TFastBitmapPixel));
+  FPixelsData := ReAllocMem(FPixelsData, FSize.X * FSize.Y * FastPixelSize);
 end;
 
 constructor TFastBitmap.Create;

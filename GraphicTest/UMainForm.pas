@@ -87,7 +87,7 @@ begin
     Scenes.Add(NewScene);
   end;
   Bitmap := TBitmap.Create;
-  Bitmap.PixelFormat := pf24bit;
+  Bitmap.PixelFormat := pf32bit;
   Image1.Picture.Bitmap.SetSize(TFastBitmap(Scenes[0]).Size.X, TFastBitmap(Scenes[0]).Size.Y);
   Image1.Picture.Bitmap.PixelFormat := pf32bit;
   Bitmap.SetSize(TFastBitmap(Scenes[0]).Size.X, TFastBitmap(Scenes[0]).Size.Y);
@@ -182,6 +182,7 @@ end;
 
 procedure TMainForm.FormDestroy(Sender: TObject);
 begin
+  ListViewMethods.Clear;
   FreeMem(TextureData, OpenGLControl1.Width * OpenGLControl1.Height);
   DrawMethods.Free;
   Scenes.Free;
@@ -199,10 +200,10 @@ begin
   if (Item.Index >= 0) and (Item.Index < DrawMethods.Count) then
   with TDrawMethod(DrawMethods[Item.Index]) do begin
     Item.Caption := Caption;
+    Item.SubItems.Add(FloatToStr(RoundTo(FrameDuration / OneMillisecond, -3)));
     if FrameDuration > 0 then
       Item.SubItems.Add(FloatToStr(RoundTo(1 / (FrameDuration / OneSecond), -3)))
       else Item.SubItems.Add('0');
-    Item.SubItems.Add(FloatToStr(RoundTo(FrameDuration / OneMillisecond, -3)) + ' ms');
   end;
 end;
 
