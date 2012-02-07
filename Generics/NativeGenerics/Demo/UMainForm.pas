@@ -14,6 +14,7 @@ type
   { TMainForm }
 
   TMainForm = class(TForm)
+    ButtonStreamByte: TButton;
     ButtonBenchmarkDictionary: TButton;
     ButtonBenchmarkListPointer: TButton;
     ButtonListObject: TButton;
@@ -36,6 +37,7 @@ type
     procedure ButtonMatrixIntegerClick(Sender: TObject);
     procedure ButtonListObjectClick(Sender: TObject);
     procedure ButtonQueueIntegerClick(Sender: TObject);
+    procedure ButtonStreamByteClick(Sender: TObject);
     procedure ButtonStringListClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -93,6 +95,10 @@ begin
     WriteOutput('EqualTo([6, 11])', BoolToStr(EqualTo(List2)));
     List2.SetArray([2, 0]);
     WriteOutput('EqualTo([7, 11])', BoolToStr(EqualTo(List2)));
+    InsertCount(0, 3);
+    WriteOutput('InsertCount(0, 3)', Implode(',', IntToStr));
+    Fill(0, 3, 9);
+    WriteOutput('Fill(0, 3, 9)', Implode(',', IntToStr));
   finally
     Free;
     List2.Free;
@@ -169,6 +175,43 @@ begin
     WriteOutput('Enqueue(4)', List.Implode(',', IntToStr));
     WriteOutput('Dequeued item', IntToStr(Dequeue));
     WriteOutput('Dequeue', List.Implode(',', IntToStr));
+  finally
+    Free;
+  end;
+end;
+
+procedure TMainForm.ButtonStreamByteClick(Sender: TObject);
+var
+  Stream: TMemoryStreamByte;
+  I: Integer;
+  ByteArray: array of Byte;
+  ByteArrayText: string;
+begin
+  ListViewOutput.Clear;
+  LabelTestName.Caption := 'TStreamByte test';
+  Stream := TMemoryStreamByte.Create;
+  with Stream do try
+    WriteOutput('Size := ', IntToStr(Stream.Size));
+    Write(1);
+    WriteOutput('Write(1)', '');
+    WriteOutput('Size, Position', IntToStr(Stream.Size) + ', ' + IntToStr(Stream.Position));
+    WriteArray([2, 3, 4]);
+    WriteOutput('WriteArray([2, 3, 4])', '');
+    WriteOutput('Size, Position', IntToStr(Stream.Size) + ', ' + IntToStr(Stream.Position));
+    Position := 1;
+    WriteOutput('Position := 1', '');
+    WriteOutput('Size, Position', IntToStr(Stream.Size) + ', ' + IntToStr(Stream.Position));
+    WriteOutput('Read', IntToStr(Read));
+    WriteOutput('Size, Position', IntToStr(Stream.Size) + ', ' + IntToStr(Stream.Position));
+    ByteArray := ReadArray(2);
+    ByteArrayText := '[';
+    for I := 0 to Length(ByteArray) - 1 do begin
+      ByteArrayText := ByteArrayText + IntToStr(ByteArray[I]);
+      if I < Length(ByteArray) - 1 then ByteArrayText := ByteArrayText + ', ';
+    end;
+    ByteArrayText := ByteArrayText + ']';
+    WriteOutput('ReadArray', ByteArrayText);
+    WriteOutput('Size, Position', IntToStr(Stream.Size) + ', ' + IntToStr(Stream.Position));
   finally
     Free;
   end;
@@ -704,6 +747,10 @@ begin
     WriteOutput('Last', Last);
     MoveItems(2, 3, 3);
     WriteOutput('Implode', Implode(',', StrToStr));
+    InsertCount(0, 3);
+    WriteOutput('InsertCount(0, 3)', Implode(',', StrToStr));
+    Fill(0, 3, 'Zero');
+    WriteOutput('Fill(0, 3, ''Zero'')', Implode(',', StrToStr));
   finally
     Free;
   end;

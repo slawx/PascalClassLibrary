@@ -27,7 +27,7 @@
     <Description Value="Native generics library."/>
     <License Value="GNU/GPL"/>
     <Version Minor="1"/>
-    <Files Count="10">
+    <Files Count="11">
       <Item1>
         <Filename Value="ReadMe.txt"/>
         <Type Value="Text"/>
@@ -68,6 +68,10 @@
         <Filename Value="Units\SpecializedList.pas"/>
         <UnitName Value="SpecializedList"/>
       </Item10>
+      <Item11>
+        <Filename Value="Units\GenericMatrix.pas"/>
+        <UnitName Value="GenericMatrix"/>
+      </Item11>
     </Files>
     <Type Value="RunAndDesignTime"/>
     <RequiredPkgs Count="2">
