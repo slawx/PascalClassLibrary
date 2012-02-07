@@ -10,17 +10,15 @@ uses
 type
   TGQueue<TItem> = class
   private
-  type
-    TGQueueList = TGList<TItem>;
   var
-    FList: TGQueueList;
+    FList: TGList<TItem>;
   public
     procedure Enqueue(Value: TItem);
     function Dequeue: TItem;
     function Peek: TItem;
     constructor Create;
     destructor Destroy; override;
-    property List: TGQueueList read FList;
+    property List: TGList<TItem> read FList;
   end;
 
 implementation
@@ -39,7 +37,7 @@ end;
 
 constructor TGQueue<TItem>.Create;
 begin
-  FList := TGList.Create;
+  FList := TGList<TItem>.Create;
 end;
 
 destructor TGQueue<TItem>.Destroy;

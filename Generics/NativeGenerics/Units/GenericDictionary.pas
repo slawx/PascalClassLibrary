@@ -13,79 +13,94 @@ type
     Value: TValue;
   end;
 
-  TGDictionary<TPair> = class(TGList<TPair>)
+  TGDictionary<TKey, TValue> = class
   private
   type
-    TGDictionaryIndex = Integer;
+    TIndex = NativeInt;
+    TDictionaryPair = TGPair<TKey, TValue>;
   var
-    function GetKey(Index: TGDictionaryIndex): TPair.TKey;
-    function GetValue(Key: TPair.TKey): TPair.TValue;
-    procedure PutKey(Index: TGDictionaryIndex; const AValue: TPair.TKey);
-    procedure PutValue(Key: TPair.TKey; const AValue: TPair.TValue);
+    FList: TGList<TDictionaryPair>;
+    function GetKey(Index: TIndex): TKey;
+    function GetValue(Key: TKey): TValue;
+    procedure PutKey(Index: TIndex; const AValue: TKey);
+    procedure PutValue(Key: TKey; const AValue: TValue);
   public
-    function SearchKey(Key: TPair.TKey): TGDictionaryIndex;
-    procedure Add(Key: TPair.TKey; Value: TPair.TValue);
-    property Values[Index: TPair.TKey]: TPair.TValue
+    constructor Create;
+    destructor Destroy; override;
+    function SearchKey(Key: TKey): TIndex;
+    procedure Add(Key: TKey; Value: TValue);
+    property Values[Index: TKey]: TValue
       read GetValue write PutValue;
-    property Keys[Index: TGDictionaryIndex]: TPair.TKey
+    property Keys[Index: TIndex]: TKey
       read GetKey write PutKey;
+    property List: TGList<TDictionaryPair> read FList;
   end;
 
 implementation
 
 
-function TGDictionary<TPair>.GetKey(Index: TGDictionaryIndex): TPair.TKey;
+constructor TGDictionary<TKey, TValue>.Create;
 begin
-  Result := Items[Index].Key;
+  FList := TGList<TDictionaryPair>.Create;
 end;
 
-function TGDictionary<TPair>.GetValue(Key: TPair.TKey): TPair.TValue;
+destructor TGDictionary<TKey, TValue>.Destroy;
 begin
-  Result := Items[SearchKey(Key)].Value;
+  FList.Free;
 end;
 
-procedure TGDictionary<TPair>.PutKey(Index: TGDictionaryIndex;
-  const AValue: TPair.TKey);
+function TGDictionary<TKey, TValue>.GetKey(Index: TIndex): TKey;
+begin
+  Result := FList.Items[Index].Key;
+end;
+
+function TGDictionary<TKey, TValue>.GetValue(Key: TKey): TValue;
+begin
+  Result := FList.Items[SearchKey(Key)].Value;
+end;
+
+procedure TGDictionary<TKey, TValue>.PutKey(Index: TIndex;
+  const AValue: TKey);
 var
-  Item: TPair;
+  Item: TDictionaryPair;
 begin
   //Items[Index].Key := AValue;
-  Item := Items[Index];
+  Item := FList.Items[Index];
   Item.Key := AValue;
-  Items[Index] := Item;
+  FList.Items[Index] := Item;
 end;
 
-procedure TGDictionary<TPair>.PutValue(Key: TPair.TKey;
-  const AValue: TPair.TValue);
+procedure TGDictionary<TKey, TValue>.PutValue(Key: TKey;
+  const AValue: TValue);
 var
-  Item: TPair;
-  Index: TGDictionaryIndex;
+  Item: TDictionaryPair;
+  Index: TIndex;
 begin
   //Items[SearchKey(Index)].Value := AValue;
   Index := SearchKey(Key);
-  Item := Items[Index];
+  Item := FList.Items[Index];
   Item.Value := AValue;
-  Items[Index] := Item;
+  FList.Items[Index] := Item;
 end;
 
-function TGDictionary<TPair>.SearchKey(Key: TPair.TKey): TGDictionaryIndex;
+function TGDictionary<TKey, TValue>.SearchKey(Key: TKey): TIndex;
 begin
   Result := 0;
-  while Result < Count do begin
-    if Items[Result].Key = Key then begin
+  while Result < FList.Count do begin
+    if FList.Items[Result].Key = Key then begin
       Break;
     end;
     Result := Result + 1;
   end;
 end;
 
-procedure TGDictionary<TPair>.Add(Key: TPair.TKey; Value: TPair.TValue);
+procedure TGDictionary<TKey, TValue>.Add(Key: TKey; Value: TValue);
 var
-  NewPair: TPair;
+  NewPair: TDictionaryPair;
 begin
   NewPair.Key := Key;
   NewPair.Value := Value;
-  inherited Add(NewPair);
+  FList.Add(NewPair);
 end;
 
 end.

@@ -33,12 +33,12 @@ type
   public
     function Add(Item: TItem): TIndex;
     procedure AddArray(Values: array of TItem);
-    procedure AddList(List: TGList);
-    procedure Assign(Source: TGList); virtual;
+    procedure AddList(List: TGList<TItem>);
+    procedure Assign(Source: TGList<TItem>); virtual;
     procedure Clear; virtual;
     procedure Delete(Index: TIndex); virtual;
     procedure DeleteItems(Index, Count: TIndex);
-    function EqualTo(List: TGList): Boolean;
+    function EqualTo(List: TGList<TItem>): Boolean;
     procedure Exchange(Index1, Index2: TIndex);
     procedure Explode(Text, Separator: string; Converter: TFromStringConverter; SlicesCount: Integer = -1);
     function Extract(Item: TItem): TItem;
@@ -47,9 +47,9 @@ type
     function GetArray: TItemArray;
     function Implode(Separator: string; Converter: TToStringConverter): string;
     function IndexOf(Item: TItem; Start: TIndex = 0): TIndex;
-    function IndexOfList(List: TGList; Start: TIndex = 0): TIndex;
+    function IndexOfList(List: TGList<TItem>; Start: TIndex = 0): TIndex;
     procedure Insert(Index: TIndex; Item: TItem);
-    procedure InsertList(Index: TIndex; List: TGList);
+    procedure InsertList(Index: TIndex; List: TGList<TItem>);
     procedure InsertArray(Index: TIndex; Values: array of TItem);
     procedure Move(CurIndex, NewIndex: TIndex);
     procedure MoveItems(CurIndex, NewIndex, Count: TIndex);
@@ -63,7 +63,7 @@ type
     property Last: TItem read GetLast write SetLast;
   end;
 
-  TGListObject<TItem> = class(TGList<TItem>)
+  TListObject<TItem> = class(TGList<TItem>)
   private
     procedure Put(Index: Integer; const AValue: TItem); override;
   public
@@ -75,7 +75,7 @@ type
     destructor Destroy; override;
   end;
 
-  TGListString<TItem> = class(TGList<TItem>)
+  TListString<TItem> = class(TGList<TItem>)
   private
   public
     procedure Delete(Index: Integer); override;
@@ -92,7 +92,7 @@ implementation
 uses
   RtlConsts;
 
-{ TGList }
+{ TGList<TItem> }
 
 function TGList<TItem>.GetCapacity: TIndex;
 begin
@@ -194,7 +194,7 @@ begin
   until I >= R;
 end;
 
-procedure TGList<TItem>.Assign(Source: TGList);
+procedure TGList<TItem>.Assign(Source: TGList<TItem>);
 var
   I: TIndex;
 begin
@@ -238,7 +238,7 @@ begin
   FCount := FCount + 1;
 end;
 
-procedure TGList<TItem>.InsertList(Index: TIndex; List: TGList);
+procedure TGList<TItem>.InsertList(Index: TIndex; List: TGList<TItem>);
 var
   I: TIndex;
 begin
@@ -249,7 +249,7 @@ begin
   end;
 end;
 
-function TGList<TItem>.IndexOfList(List: TGList; Start: TIndex): TIndex;
+function TGList<TItem>.IndexOfList(List: TGList<TItem>; Start: TIndex): TIndex;
 var
   I: TIndex;
 begin
@@ -352,7 +352,7 @@ begin
     Delete(Result);
 end;
 
-function TGList<TItem>.EqualTo(List: TGList): Boolean;
+function TGList<TItem>.EqualTo(List: TGList<TItem>): Boolean;
 var
   I: TIndex;
 begin
@@ -452,7 +452,7 @@ begin
   FItems[Result] := Item;
 end;
 
-procedure TGList<TItem>.AddList(List: TGList);
+procedure TGList<TItem>.AddList(List: TGList<TItem>);
 var
   I: TIndex;
 begin
@@ -513,28 +513,28 @@ begin
   FItems[Index2] := Temp;
 end;
 
-{ TGListObject }
+{ TListObject }
 
-procedure TGListObject<TItem>.Assign(Source: TGList<TItem>);
+procedure TListObject<TItem>.Assign(Source: TGList<TItem>);
 begin
   Clear;
   OwnsObjects := False;
   inherited;
 end;
 
-procedure TGListObject<TItem>.Put(Index: Integer; const AValue: TItem);
+procedure TListObject<TItem>.Put(Index: Integer; const AValue: TItem);
 begin
   if OwnsObjects then FItems[Index].Free;
   inherited Put(Index, AValue);
 end;
 
-procedure TGListObject<TItem>.Delete(Index: Integer);
+procedure TListObject<TItem>.Delete(Index: Integer);
 begin
   if OwnsObjects then FItems[Index].Free;
   inherited Delete(Index);
 end;
 
-procedure TGListObject<TItem>.Clear;
+procedure TListObject<TItem>.Clear;
 var
   I: Integer;
 begin
@@ -548,33 +548,33 @@ begin
   inherited Clear;
 end;
 
-constructor TGListObject<TItem>.Create;
+constructor TListObject<TItem>.Create;
 begin
   inherited;
   OwnsObjects := True;
 end;
 
-destructor TGListObject<TItem>.Destroy;
+destructor TListObject<TItem>.Destroy;
 begin
   Clear;
   inherited Destroy;
 end;
 
-{ TGListString }
+{ TListString }
 
-procedure TGListString<TItem>.Assign(Source: TGList<TItem>);
+procedure TListString<TItem>.Assign(Source: TGList<TItem>);
 begin
   Clear;
   inherited;
 end;
 
-procedure TGListString<TItem>.Delete(Index: Integer);
+procedure TListString<TItem>.Delete(Index: Integer);
 begin
   FItems[Index] := '';
   inherited Delete(Index);
 end;
 
-procedure TGListString<TItem>.Clear;
+procedure TListString<TItem>.Clear;
 var
   I: Integer;
 begin
@@ -586,12 +586,12 @@ begin
   inherited Clear;
 end;
 
-constructor TGListString<TItem>.Create;
+constructor TListString<TItem>.Create;
 begin
   inherited;
 end;
 
-destructor TGListString<TItem>.Destroy;
+destructor TListString<TItem>.Destroy;
 begin
   Clear;
   inherited Destroy;

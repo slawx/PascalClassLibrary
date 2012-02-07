@@ -2,21 +2,20 @@
   This source is only used to compile and install the package.
  }
 
-unit NativeGenerics; 
+unit NativeGenerics;
 
 interface
 
 uses
   GenericList, GenericTree, GenericDictionary, GenericQueue, GenericRange, 
-  GenericSet, GenericStack, GenericMatrix, GenericStream, SpecializedList, 
-  LazarusPackageIntf;
+  GenericSet, GenericStack, GenericStream, SpecializedList, LazarusPackageIntf;
 
 implementation
 
-procedure Register; 
+procedure Register;
 begin
-end; 
+end;
 
 initialization
-  RegisterPackage('NativeGenerics', @Register); 
+  RegisterPackage('NativeGenerics', @Register);
 end.

@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  ComCtrls, GenericList, GenericDictionary, GenericQueue, GenericMatrix,
+  ComCtrls, GenericList, GenericDictionary, GenericQueue,
   DateUtils, SpecializedList;
 
 type
@@ -100,11 +100,10 @@ begin
 end;
 
 procedure TMainForm.ButtonMatrixIntegerClick(Sender: TObject);
-var
-  Matrix: TGMatrix<Integer, Integer, Integer>;
-  I: Integer;
+//var
+//  Matrix: TGMatrix<Integer, Integer, Integer>;
 begin
-  ListViewOutput.Clear;
+  (*  ListViewOutput.Clear;
   LabelTestName.Caption := 'TMatrixInteger test';
   Matrix := TGMatrix<Integer, Integer, Integer>.Create;
   with Matrix do try
@@ -120,7 +119,7 @@ begin
     WriteOutput('Count [Y, X]', IntToStr(Count.Y) + ', ' + IntToStr(Count.X));
   finally
     Free;
-  end;
+  end; *)
 end;
 
 function ObjectToStr(Obj: TObject): string;
@@ -129,9 +128,9 @@ begin
 end;
 
 procedure TMainForm.ButtonListObjectClick(Sender: TObject);
-var
-  List: TGListObject<TObject>;
-  I: Integer;
+//var
+  //List: TListObject<TObject>;
+  //I: Integer;
 begin
   (*ListViewOutput.Clear;
   LabelTestName.Caption := 'TListObject test';
@@ -181,19 +180,19 @@ begin
 end;
 
 procedure TMainForm.ButtonDictionaryStringClick(Sender: TObject);
-type
-  TPairStringString = TGPair<String, String>;
+//type
+//  TPairStringString = TGPair<string, string>;
 var
-  Dictionary: TGDictionary<TPairStringString>;
+  Dictionary: TGDictionary<string, string>;
 begin
   ListViewOutput.Clear;
   LabelTestName.Caption := 'TDictionaryString test';
-  Dictionary := TGDictionary<TPairStringString>.Create;
+  Dictionary := TGDictionary<string, string>.Create;
   with Dictionary do try
     Add('Key1', 'Value1');
     Add('Key2', 'Value2');
     Add('Key3', 'Value3');
-    WriteOutput('Add(''Key1'', ''Value1''),Add(''Key1'', ''Value1''),Add(''Key1'', ''Value1'')', Implode(',', StringPairToStr));
+    WriteOutput('Add(''Key1'', ''Value1''),Add(''Key1'', ''Value1''),Add(''Key1'', ''Value1'')', List.Implode(',', StringPairToStr));
     WriteOutput('Values[Key2]', Values['Key2']);
     WriteOutput('Values[Key2] = None');
     Values['Key2'] := 'None';
@@ -391,10 +390,10 @@ begin
 end;
 
 procedure TMainForm.ButtonBenchmarkDictionaryClick(Sender: TObject);
-type
-  TPairStringString = TGPair<String, String>;
+//type
+//  TPairStringString = TGPair<String, String>;
 var
-  Dictionary: TGDictionary<TPairStringString>;
+  Dictionary: TGDictionary<string, string>;
   Dictionary2: TStringList;
   StartTime: TDateTime;
   I: Integer;
@@ -404,7 +403,7 @@ begin
   ListViewOutput.Clear;
   try
     UpdateButtonState(False);
-    Dictionary := TGDictionary<TPairStringString>.Create;
+    Dictionary := TGDictionary<string, string>.Create;
     Dictionary2 := TStringList.Create;
     Dictionary2.NameValueSeparator := '|';
 
@@ -414,7 +413,7 @@ begin
       Dictionary.Add(IntToStr(I), IntToStr(I));
       I := I + 1;
     until (Now - StartTime) > MeasureDuration;
-    WriteOutput('TDictionaryStringString.Add', IntToStr(Dictionary.Count) + ' ops');
+    WriteOutput('TDictionaryStringString.Add', IntToStr(Dictionary.List.Count) + ' ops');
     Application.ProcessMessages;
 
     I := 0;
@@ -429,7 +428,7 @@ begin
     I := 0;
     StartTime := Now;
     repeat
-      R := Dictionary.Values[IntToStr(I mod Dictionary.Count)];
+      R := Dictionary.Values[IntToStr(I mod Dictionary.List.Count)];
       I := I + 1;
     until (Now - StartTime) > MeasureDuration;
     WriteOutput('TDictionaryStringString.Values', IntToStr(I) + ' ops');
@@ -447,7 +446,7 @@ begin
     I := 0;
     StartTime := Now;
     repeat
-      R := Dictionary.Keys[I mod Dictionary.Count];
+      R := Dictionary.Keys[I mod Dictionary.List.Count];
       I := I + 1;
     until (Now - StartTime) > MeasureDuration;
     WriteOutput('TDictionaryStringString.Keys', IntToStr(I) + ' ops');
@@ -465,7 +464,7 @@ begin
     I := 0;
     StartTime := Now;
     repeat
-      R := Dictionary.Items[I mod Dictionary.Count].Value;
+      R := Dictionary.List.Items[I mod Dictionary.List.Count].Value;
       I := I + 1;
     until (Now - StartTime) > MeasureDuration;
     WriteOutput('TDictionaryStringString.Items', IntToStr(I) + ' ops');

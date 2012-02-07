@@ -10,15 +10,13 @@ uses
 type
   TGSet<TItem> = class
   private
-  type
-    TGSetList = TGList<TItem>;
   var
-    FList: TGSetList;
+    FList: TGList<TItem>;
   public
     function IsIn(Item: TItem): Boolean;
     constructor Create;
     destructor Destroy; override;
-    property List: TGSetList read FList;
+    property List: TGList<TItem> read FList;
   end;
 
 implementation
@@ -32,7 +30,7 @@ end;
 
 constructor TGSet<TItem>.Create;
 begin
-  FList := TGList.Create;
+  FList := TGList<TItem>.Create;
 end;
 
 destructor TGSet<TItem>.Destroy;

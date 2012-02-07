@@ -10,16 +10,14 @@ uses
 type
   TGStack<TItem> = class
   private
-  type
-    TGStackList = TGList<TItem>;
   var
-    FList: TGStackList;
+    FList: TGList<TItem>;
   public
     procedure Push(Value: TItem);
     function Pop: TItem;
     constructor Create;
     destructor Destroy; override;
-    property List: TGStackList read FList;
+    property List: TGList<TItem> read FList;
   end;
 
 implementation
@@ -37,7 +35,7 @@ end;
 
 constructor TGStack<TItem>.Create;
 begin
-  FList := TGList.Create;
+  FList := TGList<TItem>.Create;
 end;
 
 destructor TGStack<TItem>.Destroy;
