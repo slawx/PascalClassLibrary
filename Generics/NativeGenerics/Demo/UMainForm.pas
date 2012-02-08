@@ -44,7 +44,6 @@ type
   private
   public
     MeasureDuration: TDateTime;
-    Bitmap: TBitmap;
     procedure UpdateButtonState(Enabled: Boolean);
     procedure WriteOutput(Text1: string = ''; Text2: string = '');
   end;

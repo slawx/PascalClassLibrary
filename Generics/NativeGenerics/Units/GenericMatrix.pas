@@ -8,7 +8,7 @@ uses
   SysUtils, Classes;
 
 type
-  TGMatrix<TItem> = class
+  TGAbstractMatrix<TItem> = class
   public
     type
       TIndexX = NativeInt;
@@ -23,20 +23,47 @@ type
         X: TIndexX;
         Y: TIndexY;
       end;
+  protected
+    function GetItemXY(X: TIndexX; Y: TIndexY): TItem; virtual; abstract;
+    procedure PutItemXY(X: TIndexX; Y: TIndexY; const AValue: TItem); virtual; abstract;
+    function GetItem(Index: TIndex): TItem; virtual; abstract;
+    function GetCapacity: TIndex; virtual; abstract;
+    function GetLast: TItem; virtual; abstract;
+    function GetFirst: TItem; virtual; abstract;
+    function GetCount: TIndex; virtual; abstract;
+    procedure SetLast(AValue: TItem); virtual; abstract;
+    procedure SetFirst(AValue: TItem); virtual; abstract;
+    procedure PutItem(Index: TIndex; const AValue: TItem);  virtual; abstract;
+    procedure SetCount(const AValue: TIndex); virtual; abstract;
+  public
+    property Count: TIndex read GetCount write SetCount;
+    property ItemsXY[X: TIndexX; Y: TIndexY]: TItem
+      read GetItemXY write PutItemXY; default;
+    property Items[Index: TIndex]: TItem
+      read GetItem write PutItem;
+    property Last: TItem read GetLast write SetLast;
+  end;
+
+  TGMatrix<TItem> = class(TGAbstractMatrix<TItem>)
+  public
+    type
+      TIndex = TGAbstractMatrix<TItem>.TIndex;
+  protected
+    function GetItemXY(X: TIndexX; Y: TIndexY): TItem; override;
+    procedure PutItemXY(X: TIndexX; Y: TIndexY; const AValue: TItem); override;
+    function GetItem(Index: TIndex): TItem; override;
+    function GetLast: TItem; override;
+    function GetFirst: TItem; override;
+    function GetCount: TIndex; override;
+    procedure SetLast(AValue: TItem); override;
+    procedure SetFirst(AValue: TItem); override;
+    procedure PutItem(Index: TIndex; const AValue: TItem);  override;
+    procedure SetCount(const AValue: TIndex); override;
   private
     FItems: array of array of TItem;
     FCount: TIndex;
-    function GetItemXY(X: TIndexX; Y: TIndexY): TItem;
-    function GetItem(Index: TIndex): TItem;
-    function GetCapacity: TIndex;
-    function GetLast: TItem;
-    function GetFirst: TItem;
+    function GetCapacity: TIndex; override;
     procedure SetCapacity(const AValue: TIndex);
-    procedure SetLast(AValue: TItem);
-    procedure SetFirst(AValue: TItem);
-    procedure PutItemXY(X: TIndexX; Y: TIndexY; const AValue: TItem); virtual;
-    procedure PutItem(Index: TIndex; const AValue: TItem); virtual;
-    procedure SetCount(const AValue: TIndex);
   public
     function Add(Item: TItem): TIndex;
     procedure AddMatrix(Values: array of TRow);
@@ -71,13 +98,16 @@ type
     procedure ReverseVertical;
     procedure Sort(Compare: TSortCompare);
     procedure SetArray(Values: array of TItem);
-    property Count: TIndex read FCount write SetCount;
     property Capacity: TIndex read GetCapacity write SetCapacity;
-    property ItemsXY[X: TIndexX; Y: TIndexY]: TItem
-      read GetItemXY write PutItemXY; default;
-    property Items[Index: TIndex]: TItem
-      read GetItem write PutItem;
-    property Last: TItem read GetLast write SetLast;
+  end;
+
+  TGRawMatrix<TItem> = class(TGAbstractMatrix<TItem>)
+  public
+    type
+      TIndex = TGAbstractMatrix<TItem>.TIndex;
+  private
+    FData: Pointer;
+    FCount: TIndex;
   end;
 
 resourcestring
@@ -618,5 +648,11 @@ begin
   FItems[Index1.Y, Index1.X] := FItems[Index2.Y, Index2.X];
   FItems[Index2.Y, Index2.X] := Temp;
 end;
+
+function TGMatrix<TItem>.GetCount: TIndex;
+begin
+  Result := FCount;
+end;
+
 
 end.

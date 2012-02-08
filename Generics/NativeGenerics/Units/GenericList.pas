@@ -9,9 +9,9 @@ uses
 
 type
 
-  { TGList }
+  { TGAbstractList }
 
-  TGList<TItem> = class
+  TGAbstractList<TItem> = class
   public
   type
     TIndex = NativeInt;
@@ -20,18 +20,42 @@ type
     TFromStringConverter = function(Text: string): TItem;
     TItemArray = array of TItem;
   private
+    function GetLast: TItem; virtual; abstract;
+    procedure SetLast(AValue: TItem); virtual; abstract;
+    function GetFirst: TItem; virtual; abstract;
+    procedure SetFirst(AValue: TItem); virtual; abstract;
+    function GetCount: TIndex; virtual; abstract;
+    procedure SetCount(const AValue: TIndex); virtual; abstract;
+    procedure SetCapacity(const AValue: TIndex); virtual; abstract;
+    function GetCapacity: TIndex; virtual; abstract;
+    function Get(Index: TIndex): TItem; virtual; abstract;
+    procedure Put(Index: TIndex; const AValue: TItem); virtual; abstract;
+  public
+    constructor Create; virtual;
+    property Count: TIndex read GetCount write SetCount;
+    property Capacity: TIndex read GetCapacity write SetCapacity;
+    property Items[Index: TIndex]: TItem read Get write Put; default;
+    property First: TItem read GetFirst write SetFirst;
+    property Last: TItem read GetLast write SetLast;
+  end;
+
+  { TGList }
+
+  TGList<TItem> = class(TGAbstractList<TItem>)
+  private
     FCount: TIndex;
     FItems: array of TItem;
-    function Get(Index: TIndex): TItem;
-    function GetCapacity: TIndex;
-    function GetFirst: TItem;
-    function GetLast: TItem;
-    procedure SetCapacity(const AValue: TIndex);
+    function Get(Index: TIndex): TItem; override;
+    function GetCapacity: TIndex; override;
+    function GetFirst: TItem; override;
+    function GetLast: TItem; override;
+    function GetCount: TIndex; override;
+    procedure SetCapacity(const AValue: TIndex); override;
     procedure SetCapacityOptimized(const NewCapacity: TIndex);
-    procedure SetCount(const AValue: TIndex);
-    procedure SetFirst(AValue: TItem);
-    procedure SetLast(AValue: TItem);
-    procedure Put(Index: TIndex; const AValue: TItem); virtual;
+    procedure SetCount(const AValue: TIndex); override;
+    procedure SetFirst(AValue: TItem); override;
+    procedure SetLast(AValue: TItem); override;
+    procedure Put(Index: TIndex; const AValue: TItem); override;
     procedure QuickSort(L, R : TIndex; Compare: TSortCompare);
   public
     function Add(Item: TItem): TIndex;
@@ -46,7 +70,6 @@ type
     procedure Exchange(Index1, Index2: TIndex);
     procedure Explode(Text, Separator: string; Converter: TFromStringConverter; SlicesCount: Integer = -1);
     function Extract(Item: TItem): TItem;
-    property First: TItem read GetFirst write SetFirst;
     procedure Fill(Start, Count: TIndex; Value: TItem);
     function GetArray(Index, ACount: TIndex): TItemArray;
     procedure GetList(List: TGList<TItem>; Index, ACount: TIndex);
@@ -67,10 +90,6 @@ type
       SourceIndex, SourceCount: TIndex);
     procedure Sort(Compare: TSortCompare);
     procedure SetArray(Values: array of TItem);
-    property Count: TIndex read FCount write SetCount;
-    property Capacity: TIndex read GetCapacity write SetCapacity;
-    property Items[Index: TIndex]: TItem read Get write Put; default;
-    property Last: TItem read GetLast write SetLast;
   end;
 
   TListObject<TItem> = class(TGList<TItem>)
@@ -81,7 +100,7 @@ type
     procedure Delete(Index: Integer); override;
     procedure Clear; override;
     procedure Assign(Source: TGList<TItem>); override;
-    constructor Create;
+    constructor Create; override;
     destructor Destroy; override;
   end;
 
@@ -283,6 +302,11 @@ begin
     raise EListError.CreateFmt(SListIndexError, [0])
   else
     Result := FItems[FCount - 1];
+end;
+
+function TGList<TItem>.GetCount: TIndex;
+begin
+  Result := FCount;
 end;
 
 procedure TGList<TItem>.SetLast(AValue: TItem);
@@ -660,6 +684,12 @@ destructor TListString<TItem>.Destroy;
 begin
   Clear;
   inherited Destroy;
+end;
+
+{ TGAbstractList<TItem> }
+
+constructor TGAbstractList<TItem>.Create;
+begin
 end;
 
 end.

@@ -37,12 +37,12 @@
         <PackageName Value="LCL"/>
       </Item2>
     </RequiredPackages>
-    <Units Count="59">
+    <Units Count="69">
       <Unit0>
         <Filename Value="Demo.lpr"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="Demo"/>
-        <EditorIndex Value="9"/>
+        <EditorIndex Value="17"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="26" Y="8"/>
@@ -56,14 +56,13 @@
         <ComponentName Value="MainForm"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UMainForm"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="178"/>
-        <CursorPos X="15" Y="191"/>
+        <TopLine Value="166"/>
+        <CursorPos X="1" Y="179"/>
         <UsageCount Value="233"/>
         <Bookmarks Count="1">
-          <Item0 X="65" Y="276" ID="2"/>
+          <Item0 X="65" Y="275" ID="2"/>
         </Bookmarks>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -439,31 +438,32 @@
       <Unit46>
         <Filename Value="../Units/GenericList.pas"/>
         <UnitName Value="GenericList"/>
-        <EditorIndex Value="3"/>
+        <EditorIndex Value="11"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="516"/>
-        <CursorPos X="1" Y="528"/>
-        <UsageCount Value="37"/>
+        <TopLine Value="7"/>
+        <CursorPos X="3" Y="8"/>
+        <UsageCount Value="40"/>
         <Loaded Value="True"/>
       </Unit46>
       <Unit47>
         <Filename Value="../Units/GenericMatrix.pas"/>
         <UnitName Value="GenericMatrix"/>
-        <EditorIndex Value="8"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="16"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="77"/>
-        <CursorPos X="1" Y="85"/>
-        <UsageCount Value="15"/>
+        <TopLine Value="92"/>
+        <CursorPos X="5" Y="106"/>
+        <UsageCount Value="18"/>
         <Loaded Value="True"/>
       </Unit47>
       <Unit48>
         <Filename Value="../Units/GenericStream.pas"/>
         <UnitName Value="GenericStream"/>
-        <EditorIndex Value="1"/>
+        <EditorIndex Value="9"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="102"/>
-        <CursorPos X="20" Y="117"/>
-        <UsageCount Value="15"/>
+        <TopLine Value="34"/>
+        <CursorPos X="18" Y="48"/>
+        <UsageCount Value="18"/>
         <Loaded Value="True"/>
       </Unit48>
       <Unit49>
@@ -477,40 +477,40 @@
       <Unit50>
         <Filename Value="../Units/GenericDictionary.pas"/>
         <UnitName Value="GenericDictionary"/>
-        <EditorIndex Value="7"/>
+        <EditorIndex Value="15"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
-        <UsageCount Value="16"/>
+        <UsageCount Value="19"/>
         <Loaded Value="True"/>
       </Unit50>
       <Unit51>
         <Filename Value="../../../../../Lazarus/0.9.31_2.6.0/fpc/2.6.0/source/rtl/objpas/sysutils/sysunih.inc"/>
-        <EditorIndex Value="6"/>
+        <EditorIndex Value="14"/>
         <WindowIndex Value="0"/>
         <TopLine Value="9"/>
         <CursorPos X="10" Y="22"/>
-        <UsageCount Value="16"/>
+        <UsageCount Value="19"/>
         <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit51>
       <Unit52>
         <Filename Value="../Units/SpecializedList.pas"/>
         <UnitName Value="SpecializedList"/>
-        <EditorIndex Value="10"/>
+        <EditorIndex Value="18"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="1"/>
-        <CursorPos X="23" Y="11"/>
-        <UsageCount Value="16"/>
+        <TopLine Value="45"/>
+        <CursorPos X="1" Y="68"/>
+        <UsageCount Value="19"/>
         <Loaded Value="True"/>
       </Unit52>
       <Unit53>
         <Filename Value="../../../../../Lazarus/0.9.31_2.7.1/fpc/2.7.1/source/rtl/objpas/classes/classesh.inc"/>
-        <EditorIndex Value="2"/>
+        <EditorIndex Value="10"/>
         <WindowIndex Value="0"/>
         <TopLine Value="257"/>
         <CursorPos X="3" Y="270"/>
-        <UsageCount Value="13"/>
+        <UsageCount Value="16"/>
         <Loaded Value="True"/>
       </Unit53>
       <Unit54>
@@ -532,11 +532,11 @@
       <Unit56>
         <Filename Value="../Units/GenericRange.pas"/>
         <UnitName Value="GenericRange"/>
-        <EditorIndex Value="4"/>
+        <EditorIndex Value="12"/>
         <WindowIndex Value="0"/>
         <TopLine Value="4"/>
         <CursorPos X="33" Y="8"/>
-        <UsageCount Value="16"/>
+        <UsageCount Value="19"/>
         <Loaded Value="True"/>
       </Unit56>
       <Unit57>
@@ -549,134 +549,229 @@
       <Unit58>
         <Filename Value="../Units/GenericTree.pas"/>
         <UnitName Value="GenericTree"/>
-        <EditorIndex Value="5"/>
+        <EditorIndex Value="13"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
-        <CursorPos X="33" Y="8"/>
-        <UsageCount Value="16"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="19"/>
         <Loaded Value="True"/>
       </Unit58>
+      <Unit59>
+        <Filename Value="../Units/GenericString.pas"/>
+        <UnitName Value="GenericString"/>
+        <EditorIndex Value="19"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="35"/>
+        <CursorPos X="23" Y="40"/>
+        <UsageCount Value="12"/>
+        <Loaded Value="True"/>
+      </Unit59>
+      <Unit60>
+        <Filename Value="../Units/GenericBitmap.pas"/>
+        <UnitName Value="GenericBitmap"/>
+        <EditorIndex Value="20"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="22"/>
+        <CursorPos X="18" Y="46"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+      </Unit60>
+      <Unit61>
+        <Filename Value="../../../../../Lazarus/0.9.31_2.7.1/lcl/graphics.pp"/>
+        <UnitName Value="Graphics"/>
+        <EditorIndex Value="1"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1151"/>
+        <CursorPos X="22" Y="1165"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+      </Unit61>
+      <Unit62>
+        <Filename Value="../../../../../Lazarus/0.9.31_2.7.1/lcl/include/rasterimage.inc"/>
+        <EditorIndex Value="8"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="310"/>
+        <CursorPos X="22" Y="314"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+      </Unit62>
+      <Unit63>
+        <Filename Value="../../../../../Lazarus/0.9.31_2.7.1/lcl/include/bitmapcanvas.inc"/>
+        <EditorIndex Value="7"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="53"/>
+        <CursorPos X="3" Y="46"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+      </Unit63>
+      <Unit64>
+        <Filename Value="../../../../../Lazarus/0.9.31_2.7.1/fpc/2.7.1/source/packages/fcl-image/src/fpcanvas.pp"/>
+        <UnitName Value="FPCanvas"/>
+        <EditorIndex Value="4"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="347"/>
+        <CursorPos X="15" Y="360"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+      </Unit64>
+      <Unit65>
+        <Filename Value="../../../../../Lazarus/0.9.31_2.7.1/fpc/2.7.1/source/packages/fcl-image/src/fpcanvas.inc"/>
+        <EditorIndex Value="6"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="308"/>
+        <CursorPos X="3" Y="310"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+      </Unit65>
+      <Unit66>
+        <Filename Value="../../../../../Lazarus/0.9.31_2.7.1/fpc/2.7.1/source/packages/fcl-image/src/fpcdrawh.inc"/>
+        <EditorIndex Value="5"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="54"/>
+        <CursorPos X="3" Y="63"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+      </Unit66>
+      <Unit67>
+        <Filename Value="../../../../../Lazarus/0.9.31_2.7.1/lcl/include/canvas.inc"/>
+        <EditorIndex Value="2"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="147"/>
+        <CursorPos X="3" Y="152"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+      </Unit67>
+      <Unit68>
+        <Filename Value="../../../../../Lazarus/0.9.31_2.7.1/lcl/interfacebase.pp"/>
+        <UnitName Value="InterfaceBase"/>
+        <EditorIndex Value="3"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="153"/>
+        <CursorPos X="15" Y="166"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+      </Unit68>
     </Units>
     <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="443" Column="1" TopLine="429"/>
+        <Filename Value="../../../../../Lazarus/0.9.31_2.7.1/lcl/graphics.pp"/>
+        <Caret Line="2342" Column="15" TopLine="2329"/>
       </Position1>
       <Position2>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="442" Column="3" TopLine="429"/>
+        <Filename Value="../../../../../Lazarus/0.9.31_2.7.1/lcl/graphics.pp"/>
+        <Caret Line="1008" Column="3" TopLine="995"/>
       </Position2>
       <Position3>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="656" Column="20" TopLine="643"/>
+        <Filename Value="../../../../../Lazarus/0.9.31_2.7.1/lcl/graphics.pp"/>
+        <Caret Line="1182" Column="17" TopLine="1169"/>
       </Position3>
       <Position4>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="189" Column="3" TopLine="182"/>
+        <Filename Value="../../../../../Lazarus/0.9.31_2.7.1/lcl/graphics.pp"/>
+        <Caret Line="1176" Column="67" TopLine="1169"/>
       </Position4>
       <Position5>
-        <Filename Value="../Units/GenericStream.pas"/>
-        <Caret Line="43" Column="15" TopLine="30"/>
+        <Filename Value="../Units/GenericMatrix.pas"/>
+        <Caret Line="35" Column="14" TopLine="73"/>
       </Position5>
       <Position6>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="191" Column="1" TopLine="182"/>
+        <Filename Value="../Units/GenericMatrix.pas"/>
+        <Caret Line="28" Column="51" TopLine="17"/>
       </Position6>
       <Position7>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="192" Column="1" TopLine="182"/>
+        <Filename Value="../Units/GenericMatrix.pas"/>
+        <Caret Line="13" Column="6" TopLine="18"/>
       </Position7>
       <Position8>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="193" Column="1" TopLine="182"/>
+        <Filename Value="../Units/GenericMatrix.pas"/>
+        <Caret Line="30" Column="43" TopLine="9"/>
       </Position8>
       <Position9>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="194" Column="1" TopLine="182"/>
+        <Filename Value="../Units/GenericMatrix.pas"/>
+        <Caret Line="34" Column="36" TopLine="21"/>
       </Position9>
       <Position10>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="195" Column="1" TopLine="182"/>
+        <Filename Value="../Units/GenericMatrix.pas"/>
+        <Caret Line="30" Column="45" TopLine="22"/>
       </Position10>
       <Position11>
         <Filename Value="UMainForm.pas"/>
-        <Caret Line="196" Column="1" TopLine="182"/>
+        <Caret Line="47" Column="1" TopLine="34"/>
       </Position11>
       <Position12>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="197" Column="1" TopLine="182"/>
+        <Filename Value="../Units/GenericMatrix.pas"/>
+        <Caret Line="57" Column="21" TopLine="44"/>
       </Position12>
       <Position13>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="198" Column="1" TopLine="182"/>
+        <Filename Value="../Units/GenericMatrix.pas"/>
+        <Caret Line="81" Column="1" TopLine="78"/>
       </Position13>
       <Position14>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="199" Column="1" TopLine="182"/>
+        <Filename Value="../Units/GenericMatrix.pas"/>
+        <Caret Line="55" Column="56" TopLine="30"/>
       </Position14>
       <Position15>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="200" Column="1" TopLine="182"/>
+        <Filename Value="../Units/GenericMatrix.pas"/>
+        <Caret Line="98" Column="1" TopLine="75"/>
       </Position15>
       <Position16>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="201" Column="1" TopLine="182"/>
+        <Filename Value="../Units/GenericMatrix.pas"/>
+        <Caret Line="59" Column="40" TopLine="36"/>
       </Position16>
       <Position17>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="202" Column="1" TopLine="191"/>
+        <Filename Value="../Units/GenericMatrix.pas"/>
+        <Caret Line="48" Column="39" TopLine="35"/>
       </Position17>
       <Position18>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="203" Column="1" TopLine="191"/>
+        <Filename Value="../Units/GenericMatrix.pas"/>
+        <Caret Line="67" Column="1" TopLine="46"/>
       </Position18>
       <Position19>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="204" Column="1" TopLine="191"/>
+        <Filename Value="../Units/GenericMatrix.pas"/>
+        <Caret Line="104" Column="53" TopLine="91"/>
       </Position19>
       <Position20>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="205" Column="1" TopLine="191"/>
+        <Filename Value="../Units/GenericMatrix.pas"/>
+        <Caret Line="181" Column="26" TopLine="168"/>
       </Position20>
       <Position21>
-        <Filename Value="../Units/GenericStream.pas"/>
-        <Caret Line="11" Column="19" TopLine="1"/>
+        <Filename Value="../Units/GenericMatrix.pas"/>
+        <Caret Line="53" Column="80" TopLine="40"/>
       </Position21>
       <Position22>
-        <Filename Value="../Units/GenericStream.pas"/>
-        <Caret Line="23" Column="32" TopLine="10"/>
+        <Filename Value="../Units/GenericMatrix.pas"/>
+        <Caret Line="57" Column="14" TopLine="44"/>
       </Position22>
       <Position23>
-        <Filename Value="../Units/GenericStream.pas"/>
-        <Caret Line="38" Column="43" TopLine="25"/>
+        <Filename Value="../Units/GenericMatrix.pas"/>
+        <Caret Line="50" Column="39" TopLine="37"/>
       </Position23>
       <Position24>
-        <Filename Value="../Units/GenericStream.pas"/>
-        <Caret Line="43" Column="40" TopLine="30"/>
+        <Filename Value="../Units/GenericMatrix.pas"/>
+        <Caret Line="57" Column="14" TopLine="44"/>
       </Position24>
       <Position25>
-        <Filename Value="../Units/GenericStream.pas"/>
-        <Caret Line="64" Column="52" TopLine="51"/>
+        <Filename Value="../Units/GenericMatrix.pas"/>
+        <Caret Line="49" Column="3" TopLine="37"/>
       </Position25>
       <Position26>
-        <Filename Value="../Units/GenericStream.pas"/>
-        <Caret Line="105" Column="23" TopLine="90"/>
+        <Filename Value="../Units/GenericMatrix.pas"/>
+        <Caret Line="54" Column="35" TopLine="41"/>
       </Position26>
       <Position27>
-        <Filename Value="../Units/GenericStream.pas"/>
-        <Caret Line="38" Column="11" TopLine="25"/>
+        <Filename Value="../Units/GenericMatrix.pas"/>
+        <Caret Line="49" Column="1" TopLine="41"/>
       </Position27>
       <Position28>
-        <Filename Value="../Units/GenericStream.pas"/>
-        <Caret Line="199" Column="15" TopLine="174"/>
+        <Filename Value="../Units/GenericMatrix.pas"/>
+        <Caret Line="56" Column="1" TopLine="44"/>
       </Position28>
       <Position29>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="744" Column="81" TopLine="1"/>
+        <Filename Value="../Units/GenericMatrix.pas"/>
+        <Caret Line="639" Column="28" TopLine="628"/>
       </Position29>
       <Position30>
-        <Filename Value="UMainForm.pas"/>
-        <Caret Line="184" Column="13" TopLine="171"/>
+        <Filename Value="../Units/GenericMatrix.pas"/>
+        <Caret Line="107" Column="18" TopLine="91"/>
       </Position30>
     </JumpHistory>
   </ProjectOptions>
@@ -731,7 +826,7 @@
         <WatchScope Value="wpsLocal"/>
         <WatchKind Value="wpkWrite"/>
         <Source Value="UMainForm.pas"/>
-        <Line Value="205"/>
+        <Line Value="204"/>
       </Item1>
     </BreakPoints>
     <Exceptions Count="3">
