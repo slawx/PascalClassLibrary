@@ -7,40 +7,42 @@ interface
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
   ComCtrls, GenericList, GenericDictionary, GenericQueue, GenericStream,
-  DateUtils, SpecializedList;
+  DateUtils, GenericString, GenericTree;
 
 type
 
   { TMainForm }
 
   TMainForm = class(TForm)
-    ButtonStreamByte: TButton;
+    TreeButton: TButton;
+    StreamByteButton: TButton;
     ButtonBenchmarkDictionary: TButton;
     ButtonBenchmarkListPointer: TButton;
-    ButtonListObject: TButton;
+    ListObjectButton: TButton;
     ButtonBenchmarkListString: TButton;
-    ButtonCharList: TButton;
-    ButtonMatrixInteger: TButton;
-    ButtonQueueInteger: TButton;
-    ButtonDictionaryString: TButton;
-    ButtonIntegerList: TButton;
-    ButtonStringList: TButton;
+    CharListButton: TButton;
+    MatrixIntegerButton: TButton;
+    QueueIntegerButton: TButton;
+    DictionaryStringButton: TButton;
+    IntegerListButton: TButton;
+    StringListButton: TButton;
     Label1: TLabel;
     LabelTestName: TLabel;
     ListViewOutput: TListView;
     procedure ButtonBenchmarkDictionaryClick(Sender: TObject);
     procedure ButtonBenchmarkListPointerClick(Sender: TObject);
     procedure ButtonBenchmarkListStringClick(Sender: TObject);
-    procedure ButtonCharListClick(Sender: TObject);
-    procedure ButtonDictionaryStringClick(Sender: TObject);
-    procedure ButtonIntegerListClick(Sender: TObject);
-    procedure ButtonMatrixIntegerClick(Sender: TObject);
-    procedure ButtonListObjectClick(Sender: TObject);
-    procedure ButtonQueueIntegerClick(Sender: TObject);
-    procedure ButtonStreamByteClick(Sender: TObject);
-    procedure ButtonStringListClick(Sender: TObject);
+    procedure CharListButtonClick(Sender: TObject);
+    procedure DictionaryStringButtonClick(Sender: TObject);
+    procedure IntegerListButtonClick(Sender: TObject);
+    procedure MatrixIntegerButtonClick(Sender: TObject);
+    procedure ListObjectButtonClick(Sender: TObject);
+    procedure QueueIntegerButtonClick(Sender: TObject);
+    procedure StreamByteButtonClick(Sender: TObject);
+    procedure StringListButtonClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
+    procedure TreeButtonClick(Sender: TObject);
   private
   public
     MeasureDuration: TDateTime;
@@ -62,14 +64,14 @@ begin
   MeasureDuration := 100 * OneMillisecond;
 end;
 
-procedure TMainForm.ButtonIntegerListClick(Sender: TObject);
+procedure TMainForm.IntegerListButtonClick(Sender: TObject);
 var
   List: TGList<Integer>;
   List2: TGList<Integer>;
   I: Integer;
 begin
   ListViewOutput.Clear;
-  LabelTestName.Caption := 'TListInteger test';
+  LabelTestName.Caption := 'TGList<Integer> test';
   List := TGList<Integer>.Create;
   List2 := TGList<Integer>.Create;
   with List do try
@@ -104,12 +106,12 @@ begin
   end;
 end;
 
-procedure TMainForm.ButtonMatrixIntegerClick(Sender: TObject);
+procedure TMainForm.MatrixIntegerButtonClick(Sender: TObject);
 //var
 //  Matrix: TGMatrix<Integer, Integer, Integer>;
 begin
   (*  ListViewOutput.Clear;
-  LabelTestName.Caption := 'TMatrixInteger test';
+  LabelTestName.Caption := 'TGMatrix<Integer> test';
   Matrix := TGMatrix<Integer, Integer, Integer>.Create;
   with Matrix do try
     Count := CreateIndex(2, 2);
@@ -132,14 +134,14 @@ begin
   Result := Obj.ClassName;
 end;
 
-procedure TMainForm.ButtonListObjectClick(Sender: TObject);
-//var
-  //List: TListObject<TObject>;
-  //I: Integer;
+procedure TMainForm.ListObjectButtonClick(Sender: TObject);
+var
+  List: TGObjectList<TObject>;
+  I: Integer;
 begin
-  (*ListViewOutput.Clear;
-  LabelTestName.Caption := 'TListObject test';
-  List := TGListObject<TObject>.Create;
+  ListViewOutput.Clear;
+  LabelTestName.Caption := 'TObjectList<TObject> test';
+  List := TGObjectList<TObject>.Create;
   with List do try
     AddArray([TObject.Create, TObject.Create, TObject.Create, TObject.Create]);
     WriteOutput('AddArray([TObject.Create, TObject.Create, TObject.Create, TObject.Create])', Implode(',', ObjectToStr));
@@ -154,15 +156,15 @@ begin
     WriteOutput('MoveItems(3, 2, 3)', Implode(',', ObjectToStr));
   finally
     Free;
-  end;*)
+  end;
 end;
 
-procedure TMainForm.ButtonQueueIntegerClick(Sender: TObject);
+procedure TMainForm.QueueIntegerButtonClick(Sender: TObject);
 var
   Queue: TGQueue<Integer>;
 begin
   ListViewOutput.Clear;
-  LabelTestName.Caption := 'TQueueInteger test';
+  LabelTestName.Caption := 'TGQueue<Integer> test';
   Queue := TGQueue<Integer>.Create;
   with Queue do try
     Enqueue(1);
@@ -178,7 +180,7 @@ begin
   end;
 end;
 
-procedure TMainForm.ButtonStreamByteClick(Sender: TObject);
+procedure TMainForm.StreamByteButtonClick(Sender: TObject);
 var
   Stream: TGStream<Byte>;
   I: Integer;
@@ -186,7 +188,7 @@ var
   ByteArrayText: string;
 begin
   ListViewOutput.Clear;
-  LabelTestName.Caption := 'TStreamByte test';
+  LabelTestName.Caption := 'TGStream<Byte> test';
   Stream := TGStream<Byte>.Create;
   with Stream do try
     WriteOutput('Size := ', IntToStr(Stream.Size));
@@ -220,14 +222,14 @@ begin
   Result := Pair.Key + ':' + Pair.Value;
 end;
 
-procedure TMainForm.ButtonDictionaryStringClick(Sender: TObject);
+procedure TMainForm.DictionaryStringButtonClick(Sender: TObject);
 //type
 //  TPairStringString = TGPair<string, string>;
 var
   Dictionary: TGDictionary<string, string>;
 begin
   ListViewOutput.Clear;
-  LabelTestName.Caption := 'TDictionaryString test';
+  LabelTestName.Caption := 'TGDictionary<string, string> test';
   Dictionary := TGDictionary<string, string>.Create;
   with Dictionary do try
     Add('Key1', 'Value1');
@@ -250,15 +252,15 @@ begin
   Result := Value;
 end;
 
-procedure TMainForm.ButtonCharListClick(Sender: TObject);
+procedure TMainForm.CharListButtonClick(Sender: TObject);
 var
-  List: TListChar;
-  List2: TListChar;
+  List: TGString<Char>;
+  List2: TGString<Char>;
 begin
   ListViewOutput.Clear;
-  LabelTestName.Caption := 'TListChar test';
-  List := TListChar.Create;
-  List2 := TListChar.Create;
+  LabelTestName.Caption := 'TGString<Char> test';
+  List := TGString<Char>.Create;
+  List2 := TGString<Char>.Create;
   with List do try
     AddArray([' ', ' ', 'A', 'b', 'c', 'd', ' ']);
     WriteOutput('AddArray(['' '', '' '', ''A'', ''b'', ''c'', ''d'', '' ''])',
@@ -292,7 +294,7 @@ const
   SampleText: string = 'text';
   SampleCount: Integer = 100000;
 begin
-  LabelTestName.Caption := 'Generic specialized TListString vs. classic non-generic TStringList benchmark';
+  LabelTestName.Caption := 'Generic specialized TGStringList<string> vs. classic non-generic TStringList benchmark';
   ListViewOutput.Clear;
   try
     UpdateButtonState(False);
@@ -440,7 +442,7 @@ var
   I: Integer;
   R: string;
 begin
-  LabelTestName.Caption := 'Generic specialized TDictionaryStringString vs. classic non-generic TStringList benchmark';
+  LabelTestName.Caption := 'Generic specialized TGDictionary<string,string> vs. classic non-generic TStringList benchmark';
   ListViewOutput.Clear;
   try
     UpdateButtonState(False);
@@ -536,7 +538,7 @@ var
 const
   SampleCount: Integer = 100000;
 begin
-  LabelTestName.Caption := 'Generic specialized TListObject vs. classic non-generic TFPList benchmark';
+  LabelTestName.Caption := 'Generic specialized TGObjectList<Object> vs. classic non-generic TFPList benchmark';
   ListViewOutput.Clear;
   try
     UpdateButtonState(False);
@@ -727,12 +729,12 @@ begin
   Result := Value;
 end;
 
-procedure TMainForm.ButtonStringListClick(Sender: TObject);
+procedure TMainForm.StringListButtonClick(Sender: TObject);
 var
   List: TGList<String>;
 begin
   ListViewOutput.Clear;
-  WriteOutput('TListString test');
+  WriteOutput('TGList<string> test');
   List := TGList<String>.Create;
   with List do try
     AddArray(['One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven']);
@@ -758,17 +760,59 @@ procedure TMainForm.FormDestroy(Sender: TObject);
 begin
 end;
 
+procedure TMainForm.TreeButtonClick(Sender: TObject);
+var
+  Tree: TGTree<string>;
+  //Tree2: TGTree<string>;
+  I: Integer;
+begin
+  {ListViewOutput.Clear;
+  LabelTestName.Caption := 'TGTree<string> test';
+  Tree := TGTree<Integer>.Create;
+  Tree2 := TGTree<Integer>.Create;
+  with Tree do try
+(*    AddArray([10, 20, 30, 40]);
+    WriteOutput('AddArray([10, 20, 30, 40])', Implode(',', IntToStr));
+    Clear;
+    WriteOutput('Clear', Implode(',', IntToStr));
+    for I := 0 to 10 do Add(I);
+    WriteOutput('for I := 0 to 10 do Add(I)', Implode(',', IntToStr));
+    WriteOutput('Count', IntToStr(Count));
+    Reverse;
+    WriteOutput('Reverse', Implode(',', IntToStr));
+    WriteOutput('First', IntToStr(First));
+    WriteOutput('Last', IntToStr(Last));
+    MoveItems(3, 2, 3);
+    WriteOutput('MoveItems(3, 2, 3)', Implode(',', IntToStr));
+    Insert(5, 11);
+    WriteOutput('Insert(5, 11)', Implode(',', IntToStr));
+    DeleteItems(0, 10);
+    WriteOutput('Delete(0, 10)', Implode(',', IntToStr));
+    List2.SetArray([1, 0]);
+    WriteOutput('EqualTo([6, 11])', BoolToStr(EqualTo(List2)));
+    List2.SetArray([2, 0]);
+    WriteOutput('EqualTo([7, 11])', BoolToStr(EqualTo(List2)));
+    InsertCount(0, 3);
+    WriteOutput('InsertCount(0, 3)', Implode(',', IntToStr));
+    Fill(0, 3, 9);
+    WriteOutput('Fill(0, 3, 9)', Implode(',', IntToStr));*)
+  finally
+    Free;
+    Tree2.Free;
+  end;}
+end;
+
 procedure TMainForm.UpdateButtonState(Enabled: Boolean);
 begin
   ButtonBenchmarkDictionary.Enabled := Enabled;
   ButtonBenchmarkListString.Enabled := Enabled;
-  ButtonCharList.Enabled := Enabled;
-  ButtonDictionaryString.Enabled := Enabled;
-  ButtonIntegerList.Enabled := Enabled;
-  ButtonListObject.Enabled := Enabled;
-  ButtonMatrixInteger.Enabled := Enabled;
-  ButtonQueueInteger.Enabled := Enabled;
-  ButtonStringList.Enabled := Enabled;
+  CharListButton.Enabled := Enabled;
+  DictionaryStringButton.Enabled := Enabled;
+  IntegerListButton.Enabled := Enabled;
+  ListObjectButton.Enabled := Enabled;
+  MatrixIntegerButton.Enabled := Enabled;
+  QueueIntegerButton.Enabled := Enabled;
+  StringListButton.Enabled := Enabled;
 end;
 
 procedure TMainForm.WriteOutput(Text1: string = ''; Text2: string = '');

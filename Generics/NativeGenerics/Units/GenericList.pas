@@ -92,7 +92,7 @@ type
     procedure SetArray(Values: array of TItem);
   end;
 
-  TListObject<TItem> = class(TGList<TItem>)
+  TGObjectList<TItem> = class(TGList<TItem>)
   private
     procedure Put(Index: Integer; const AValue: TItem); override;
   public
@@ -104,7 +104,7 @@ type
     destructor Destroy; override;
   end;
 
-  TListString<TItem> = class(TGList<TItem>)
+  TGStringList<TItem> = class(TGList<TItem>)
   private
   public
     procedure Delete(Index: Integer); override;
@@ -602,28 +602,28 @@ begin
   FItems[Index2] := Temp;
 end;
 
-{ TListObject }
+{ TGObjectList }
 
-procedure TListObject<TItem>.Assign(Source: TGList<TItem>);
+procedure TGObjectList<TItem>.Assign(Source: TGList<TItem>);
 begin
   Clear;
   OwnsObjects := False;
   inherited;
 end;
 
-procedure TListObject<TItem>.Put(Index: Integer; const AValue: TItem);
+procedure TGObjectList<TItem>.Put(Index: Integer; const AValue: TItem);
 begin
   if OwnsObjects then FItems[Index].Free;
   inherited Put(Index, AValue);
 end;
 
-procedure TListObject<TItem>.Delete(Index: Integer);
+procedure TGObjectList<TItem>.Delete(Index: Integer);
 begin
   if OwnsObjects then FItems[Index].Free;
   inherited Delete(Index);
 end;
 
-procedure TListObject<TItem>.Clear;
+procedure TGObjectList<TItem>.Clear;
 var
   I: Integer;
 begin
@@ -637,33 +637,33 @@ begin
   inherited Clear;
 end;
 
-constructor TListObject<TItem>.Create;
+constructor TGObjectList<TItem>.Create;
 begin
   inherited;
   OwnsObjects := True;
 end;
 
-destructor TListObject<TItem>.Destroy;
+destructor TGObjectList<TItem>.Destroy;
 begin
   Clear;
   inherited Destroy;
 end;
 
-{ TListString }
+{ TGStringList }
 
-procedure TListString<TItem>.Assign(Source: TGList<TItem>);
+procedure TGStringList<TItem>.Assign(Source: TGList<TItem>);
 begin
   Clear;
   inherited;
 end;
 
-procedure TListString<TItem>.Delete(Index: Integer);
+procedure TGStringList<TItem>.Delete(Index: Integer);
 begin
   FItems[Index] := '';
   inherited Delete(Index);
 end;
 
-procedure TListString<TItem>.Clear;
+procedure TGStringList<TItem>.Clear;
 var
   I: Integer;
 begin
@@ -675,12 +675,12 @@ begin
   inherited Clear;
 end;
 
-constructor TListString<TItem>.Create;
+constructor TGStringList<TItem>.Create;
 begin
   inherited;
 end;
 
-destructor TListString<TItem>.Destroy;
+destructor TGStringList<TItem>.Destroy;
 begin
   Clear;
   inherited Destroy;

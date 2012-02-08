@@ -3,101 +3,101 @@ object MainForm: TMainForm
   Height = 520
   Top = 104
   Width = 692
-  ActiveControl = ButtonIntegerList
+  ActiveControl = IntegerListButton
   Caption = 'Template generics demo'
   ClientHeight = 520
   ClientWidth = 692
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   LCLVersion = '0.9.31'
-  object ButtonIntegerList: TButton
+  object IntegerListButton: TButton
     Left = 8
     Height = 25
     Top = 8
-    Width = 128
-    Caption = 'TListInteger'
-    OnClick = ButtonIntegerListClick
+    Width = 152
+    Caption = 'TList<Integer>'
+    OnClick = IntegerListButtonClick
     TabOrder = 0
   end
-  object ButtonStringList: TButton
+  object StringListButton: TButton
     Left = 8
     Height = 25
     Top = 40
-    Width = 128
-    Caption = 'TListString'
-    OnClick = ButtonStringListClick
+    Width = 152
+    Caption = 'TStringList<string>'
+    OnClick = StringListButtonClick
     TabOrder = 1
   end
-  object ButtonDictionaryString: TButton
+  object DictionaryStringButton: TButton
     Left = 8
     Height = 25
     Top = 72
-    Width = 128
-    Caption = 'TDictionaryString'
-    OnClick = ButtonDictionaryStringClick
+    Width = 152
+    Caption = 'TDictionary<string,string>'
+    OnClick = DictionaryStringButtonClick
     TabOrder = 2
   end
-  object ButtonQueueInteger: TButton
+  object QueueIntegerButton: TButton
     Left = 8
     Height = 25
     Top = 102
-    Width = 128
-    Caption = 'TQueueInteger'
-    OnClick = ButtonQueueIntegerClick
+    Width = 152
+    Caption = 'TQueue<Integer>'
+    OnClick = QueueIntegerButtonClick
     TabOrder = 3
   end
-  object ButtonCharList: TButton
+  object CharListButton: TButton
     Left = 8
     Height = 25
     Top = 134
-    Width = 128
-    Caption = 'TListChar(TString)'
-    OnClick = ButtonCharListClick
+    Width = 152
+    Caption = 'TString<Char>'
+    OnClick = CharListButtonClick
     TabOrder = 4
   end
   object ButtonBenchmarkListString: TButton
     Left = 8
     Height = 24
     Top = 456
-    Width = 128
+    Width = 152
     Anchors = [akLeft, akBottom]
-    Caption = 'TListString'
+    Caption = 'TStringList<string>'
     OnClick = ButtonBenchmarkListStringClick
     TabOrder = 5
   end
-  object ButtonListObject: TButton
+  object ListObjectButton: TButton
     Left = 8
     Height = 25
     Top = 163
-    Width = 128
-    Caption = 'TListObject'
-    OnClick = ButtonListObjectClick
+    Width = 152
+    Caption = 'TObjectList<Object>'
+    OnClick = ListObjectButtonClick
     TabOrder = 6
   end
   object ButtonBenchmarkDictionary: TButton
     Left = 8
     Height = 25
     Top = 424
-    Width = 128
+    Width = 152
     Anchors = [akLeft, akBottom]
-    Caption = 'TDictionaryStringString'
+    Caption = 'TDictionary<string,string>'
     OnClick = ButtonBenchmarkDictionaryClick
     TabOrder = 7
   end
-  object ButtonMatrixInteger: TButton
+  object MatrixIntegerButton: TButton
     Left = 8
     Height = 25
     Top = 192
-    Width = 128
-    Caption = 'TMatrixInteger'
-    OnClick = ButtonMatrixIntegerClick
+    Width = 152
+    Caption = 'TMatrix<Integer>'
+    OnClick = MatrixIntegerButtonClick
     TabOrder = 8
   end
   object ListViewOutput: TListView
-    Left = 144
+    Left = 168
     Height = 491
     Top = 24
-    Width = 542
+    Width = 518
     Anchors = [akTop, akLeft, akRight, akBottom]
     Columns = <    
       item
@@ -113,7 +113,7 @@ object MainForm: TMainForm
     ViewStyle = vsReport
   end
   object LabelTestName: TLabel
-    Left = 144
+    Left = 168
     Height = 14
     Top = 8
     Width = 10
@@ -133,19 +133,28 @@ object MainForm: TMainForm
     Left = 8
     Height = 24
     Top = 488
-    Width = 128
+    Width = 152
     Anchors = [akLeft, akBottom]
-    Caption = 'TListPointer'
+    Caption = 'TList<Pointer>'
     OnClick = ButtonBenchmarkListPointerClick
     TabOrder = 10
   end
-  object ButtonStreamByte: TButton
+  object StreamByteButton: TButton
     Left = 8
     Height = 25
     Top = 224
-    Width = 128
-    Caption = 'TStreamByte'
-    OnClick = ButtonStreamByteClick
+    Width = 152
+    Caption = 'TStream<Byte>'
+    OnClick = StreamByteButtonClick
     TabOrder = 11
+  end
+  object TreeButton: TButton
+    Left = 8
+    Height = 25
+    Top = 256
+    Width = 152
+    Caption = 'TTree<string>'
+    OnClick = TreeButtonClick
+    TabOrder = 12
   end
 end

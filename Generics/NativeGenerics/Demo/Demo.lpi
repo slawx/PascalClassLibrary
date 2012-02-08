@@ -37,12 +37,12 @@
         <PackageName Value="LCL"/>
       </Item2>
     </RequiredPackages>
-    <Units Count="69">
+    <Units Count="71">
       <Unit0>
         <Filename Value="Demo.lpr"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="Demo"/>
-        <EditorIndex Value="17"/>
+        <EditorIndex Value="19"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="26" Y="8"/>
@@ -56,13 +56,14 @@
         <ComponentName Value="MainForm"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UMainForm"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="166"/>
-        <CursorPos X="1" Y="179"/>
+        <TopLine Value="753"/>
+        <CursorPos X="3" Y="765"/>
         <UsageCount Value="233"/>
         <Bookmarks Count="1">
-          <Item0 X="65" Y="275" ID="2"/>
+          <Item0 X="65" Y="277" ID="2"/>
         </Bookmarks>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -74,7 +75,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="47"/>
         <CursorPos X="20" Y="60"/>
-        <UsageCount Value="5"/>
+        <UsageCount Value="4"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit2>
       <Unit3>
@@ -82,7 +83,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="25" Y="13"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="9"/>
         <DefaultSyntaxHighlighter Value="None"/>
       </Unit3>
       <Unit4>
@@ -90,7 +91,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="21" Y="4"/>
-        <UsageCount Value="1"/>
+        <UsageCount Value="0"/>
         <DefaultSyntaxHighlighter Value="None"/>
       </Unit4>
       <Unit5>
@@ -99,7 +100,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="25"/>
-        <UsageCount Value="1"/>
+        <UsageCount Value="0"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit5>
       <Unit6>
@@ -107,7 +108,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="3"/>
-        <UsageCount Value="1"/>
+        <UsageCount Value="0"/>
         <DefaultSyntaxHighlighter Value="None"/>
       </Unit6>
       <Unit7>
@@ -115,7 +116,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="7" Y="4"/>
-        <UsageCount Value="1"/>
+        <UsageCount Value="0"/>
         <DefaultSyntaxHighlighter Value="None"/>
       </Unit7>
       <Unit8>
@@ -124,7 +125,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="14" Y="15"/>
-        <UsageCount Value="1"/>
+        <UsageCount Value="0"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit8>
       <Unit9>
@@ -132,7 +133,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="14" Y="18"/>
-        <UsageCount Value="1"/>
+        <UsageCount Value="0"/>
         <DefaultSyntaxHighlighter Value="None"/>
       </Unit9>
       <Unit10>
@@ -141,7 +142,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="2"/>
         <CursorPos X="30" Y="8"/>
-        <UsageCount Value="1"/>
+        <UsageCount Value="0"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit10>
       <Unit11>
@@ -150,7 +151,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="13"/>
         <CursorPos X="15" Y="12"/>
-        <UsageCount Value="3"/>
+        <UsageCount Value="2"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit11>
       <Unit12>
@@ -158,7 +159,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="359"/>
         <CursorPos X="62" Y="376"/>
-        <UsageCount Value="102"/>
+        <UsageCount Value="101"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit12>
       <Unit13>
@@ -166,7 +167,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="31"/>
         <CursorPos X="44" Y="47"/>
-        <UsageCount Value="89"/>
+        <UsageCount Value="88"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit13>
       <Unit14>
@@ -174,7 +175,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="36" Y="48"/>
-        <UsageCount Value="89"/>
+        <UsageCount Value="88"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit14>
       <Unit15>
@@ -182,7 +183,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="3"/>
         <CursorPos X="1" Y="3"/>
-        <UsageCount Value="89"/>
+        <UsageCount Value="88"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit15>
       <Unit16>
@@ -190,7 +191,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="11"/>
         <CursorPos X="42" Y="11"/>
-        <UsageCount Value="89"/>
+        <UsageCount Value="88"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit16>
       <Unit17>
@@ -198,7 +199,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="3"/>
         <CursorPos X="1" Y="3"/>
-        <UsageCount Value="89"/>
+        <UsageCount Value="88"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit17>
       <Unit18>
@@ -206,7 +207,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="22" Y="30"/>
-        <UsageCount Value="89"/>
+        <UsageCount Value="88"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit18>
       <Unit19>
@@ -215,7 +216,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="6"/>
         <CursorPos X="56" Y="36"/>
-        <UsageCount Value="88"/>
+        <UsageCount Value="87"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit19>
       <Unit20>
@@ -224,7 +225,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="27"/>
         <CursorPos X="50" Y="59"/>
-        <UsageCount Value="87"/>
+        <UsageCount Value="86"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit20>
       <Unit21>
@@ -233,7 +234,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="57"/>
         <CursorPos X="48" Y="85"/>
-        <UsageCount Value="87"/>
+        <UsageCount Value="86"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit21>
       <Unit22>
@@ -241,7 +242,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="33" Y="14"/>
-        <UsageCount Value="87"/>
+        <UsageCount Value="86"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit22>
       <Unit23>
@@ -250,7 +251,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="52"/>
         <CursorPos X="1" Y="81"/>
-        <UsageCount Value="87"/>
+        <UsageCount Value="86"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit23>
       <Unit24>
@@ -259,7 +260,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="29"/>
         <CursorPos X="1" Y="62"/>
-        <UsageCount Value="87"/>
+        <UsageCount Value="86"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit24>
       <Unit25>
@@ -268,7 +269,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="9"/>
         <CursorPos X="60" Y="36"/>
-        <UsageCount Value="86"/>
+        <UsageCount Value="85"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit25>
       <Unit26>
@@ -276,7 +277,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="9"/>
         <CursorPos X="28" Y="23"/>
-        <UsageCount Value="98"/>
+        <UsageCount Value="97"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit26>
       <Unit27>
@@ -285,7 +286,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="2624"/>
         <CursorPos X="37" Y="2636"/>
-        <UsageCount Value="85"/>
+        <UsageCount Value="84"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit27>
       <Unit28>
@@ -293,7 +294,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="94"/>
         <CursorPos X="1" Y="1"/>
-        <UsageCount Value="1"/>
+        <UsageCount Value="0"/>
         <DefaultSyntaxHighlighter Value="XML"/>
       </Unit28>
       <Unit29>
@@ -301,7 +302,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="199"/>
         <CursorPos X="14" Y="213"/>
-        <UsageCount Value="23"/>
+        <UsageCount Value="22"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit29>
       <Unit30>
@@ -309,7 +310,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="199"/>
         <CursorPos X="3" Y="201"/>
-        <UsageCount Value="23"/>
+        <UsageCount Value="22"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit30>
       <Unit31>
@@ -317,7 +318,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="21" Y="20"/>
-        <UsageCount Value="14"/>
+        <UsageCount Value="13"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit31>
       <Unit32>
@@ -326,7 +327,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="27" Y="26"/>
-        <UsageCount Value="23"/>
+        <UsageCount Value="22"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit32>
       <Unit33>
@@ -334,7 +335,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="381"/>
         <CursorPos X="3" Y="398"/>
-        <UsageCount Value="23"/>
+        <UsageCount Value="22"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit33>
       <Unit34>
@@ -342,7 +343,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="475"/>
         <CursorPos X="10" Y="503"/>
-        <UsageCount Value="2"/>
+        <UsageCount Value="1"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit34>
       <Unit35>
@@ -350,7 +351,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="2270"/>
         <CursorPos X="22" Y="2273"/>
-        <UsageCount Value="14"/>
+        <UsageCount Value="13"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit35>
       <Unit36>
@@ -359,7 +360,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="25" Y="41"/>
-        <UsageCount Value="14"/>
+        <UsageCount Value="13"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit36>
       <Unit37>
@@ -367,7 +368,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="28" Y="10"/>
-        <UsageCount Value="4"/>
+        <UsageCount Value="3"/>
         <DefaultSyntaxHighlighter Value="None"/>
       </Unit37>
       <Unit38>
@@ -375,7 +376,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="38"/>
         <CursorPos X="3" Y="50"/>
-        <UsageCount Value="6"/>
+        <UsageCount Value="5"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit38>
       <Unit39>
@@ -383,7 +384,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="649"/>
         <CursorPos X="38" Y="671"/>
-        <UsageCount Value="5"/>
+        <UsageCount Value="4"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit39>
       <Unit40>
@@ -391,7 +392,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1185"/>
         <CursorPos X="22" Y="1196"/>
-        <UsageCount Value="5"/>
+        <UsageCount Value="4"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit40>
       <Unit41>
@@ -400,7 +401,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="112"/>
         <CursorPos X="3" Y="124"/>
-        <UsageCount Value="5"/>
+        <UsageCount Value="4"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit41>
       <Unit42>
@@ -408,7 +409,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="71"/>
         <CursorPos X="10" Y="84"/>
-        <UsageCount Value="5"/>
+        <UsageCount Value="4"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit42>
       <Unit43>
@@ -416,7 +417,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="148"/>
         <CursorPos X="11" Y="169"/>
-        <UsageCount Value="5"/>
+        <UsageCount Value="4"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit43>
       <Unit44>
@@ -424,7 +425,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="511"/>
         <CursorPos X="11" Y="524"/>
-        <UsageCount Value="5"/>
+        <UsageCount Value="4"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit44>
       <Unit45>
@@ -432,38 +433,37 @@
         <WindowIndex Value="0"/>
         <TopLine Value="411"/>
         <CursorPos X="10" Y="424"/>
-        <UsageCount Value="5"/>
+        <UsageCount Value="4"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit45>
       <Unit46>
         <Filename Value="../Units/GenericList.pas"/>
         <UnitName Value="GenericList"/>
-        <EditorIndex Value="11"/>
+        <EditorIndex Value="13"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="7"/>
-        <CursorPos X="3" Y="8"/>
-        <UsageCount Value="40"/>
+        <TopLine Value="666"/>
+        <CursorPos X="24" Y="691"/>
+        <UsageCount Value="41"/>
         <Loaded Value="True"/>
       </Unit46>
       <Unit47>
         <Filename Value="../Units/GenericMatrix.pas"/>
         <UnitName Value="GenericMatrix"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="16"/>
+        <EditorIndex Value="18"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="92"/>
-        <CursorPos X="5" Y="106"/>
-        <UsageCount Value="18"/>
+        <TopLine Value="37"/>
+        <CursorPos X="34" Y="48"/>
+        <UsageCount Value="19"/>
         <Loaded Value="True"/>
       </Unit47>
       <Unit48>
         <Filename Value="../Units/GenericStream.pas"/>
         <UnitName Value="GenericStream"/>
-        <EditorIndex Value="9"/>
+        <EditorIndex Value="11"/>
         <WindowIndex Value="0"/>
         <TopLine Value="34"/>
         <CursorPos X="18" Y="48"/>
-        <UsageCount Value="18"/>
+        <UsageCount Value="19"/>
         <Loaded Value="True"/>
       </Unit48>
       <Unit49>
@@ -472,45 +472,45 @@
         <WindowIndex Value="0"/>
         <TopLine Value="18"/>
         <CursorPos X="24" Y="28"/>
-        <UsageCount Value="13"/>
+        <UsageCount Value="12"/>
       </Unit49>
       <Unit50>
         <Filename Value="../Units/GenericDictionary.pas"/>
         <UnitName Value="GenericDictionary"/>
-        <EditorIndex Value="15"/>
+        <EditorIndex Value="17"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
-        <UsageCount Value="19"/>
+        <UsageCount Value="20"/>
         <Loaded Value="True"/>
       </Unit50>
       <Unit51>
         <Filename Value="../../../../../Lazarus/0.9.31_2.6.0/fpc/2.6.0/source/rtl/objpas/sysutils/sysunih.inc"/>
-        <EditorIndex Value="14"/>
+        <EditorIndex Value="16"/>
         <WindowIndex Value="0"/>
         <TopLine Value="9"/>
         <CursorPos X="10" Y="22"/>
-        <UsageCount Value="19"/>
+        <UsageCount Value="20"/>
         <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit51>
       <Unit52>
         <Filename Value="../Units/SpecializedList.pas"/>
         <UnitName Value="SpecializedList"/>
-        <EditorIndex Value="18"/>
+        <EditorIndex Value="20"/>
         <WindowIndex Value="0"/>
         <TopLine Value="45"/>
         <CursorPos X="1" Y="68"/>
-        <UsageCount Value="19"/>
+        <UsageCount Value="20"/>
         <Loaded Value="True"/>
       </Unit52>
       <Unit53>
         <Filename Value="../../../../../Lazarus/0.9.31_2.7.1/fpc/2.7.1/source/rtl/objpas/classes/classesh.inc"/>
-        <EditorIndex Value="10"/>
+        <EditorIndex Value="12"/>
         <WindowIndex Value="0"/>
         <TopLine Value="257"/>
         <CursorPos X="3" Y="270"/>
-        <UsageCount Value="16"/>
+        <UsageCount Value="17"/>
         <Loaded Value="True"/>
       </Unit53>
       <Unit54>
@@ -519,7 +519,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
-        <UsageCount Value="13"/>
+        <UsageCount Value="12"/>
       </Unit54>
       <Unit55>
         <Filename Value="../Units/GenericStack.pas"/>
@@ -527,16 +527,16 @@
         <WindowIndex Value="0"/>
         <TopLine Value="22"/>
         <CursorPos X="14" Y="38"/>
-        <UsageCount Value="13"/>
+        <UsageCount Value="12"/>
       </Unit55>
       <Unit56>
         <Filename Value="../Units/GenericRange.pas"/>
         <UnitName Value="GenericRange"/>
-        <EditorIndex Value="12"/>
+        <EditorIndex Value="14"/>
         <WindowIndex Value="0"/>
         <TopLine Value="4"/>
-        <CursorPos X="33" Y="8"/>
-        <UsageCount Value="19"/>
+        <CursorPos X="6" Y="16"/>
+        <UsageCount Value="20"/>
         <Loaded Value="True"/>
       </Unit56>
       <Unit57>
@@ -544,234 +544,253 @@
         <WindowIndex Value="0"/>
         <TopLine Value="958"/>
         <CursorPos X="11" Y="971"/>
-        <UsageCount Value="13"/>
+        <UsageCount Value="12"/>
       </Unit57>
       <Unit58>
         <Filename Value="../Units/GenericTree.pas"/>
         <UnitName Value="GenericTree"/>
-        <EditorIndex Value="13"/>
+        <EditorIndex Value="15"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="1"/>
-        <CursorPos X="1" Y="1"/>
-        <UsageCount Value="19"/>
+        <TopLine Value="124"/>
+        <CursorPos X="6" Y="125"/>
+        <UsageCount Value="20"/>
         <Loaded Value="True"/>
       </Unit58>
       <Unit59>
         <Filename Value="../Units/GenericString.pas"/>
         <UnitName Value="GenericString"/>
-        <EditorIndex Value="19"/>
+        <EditorIndex Value="21"/>
         <WindowIndex Value="0"/>
         <TopLine Value="35"/>
         <CursorPos X="23" Y="40"/>
-        <UsageCount Value="12"/>
+        <UsageCount Value="13"/>
         <Loaded Value="True"/>
       </Unit59>
       <Unit60>
         <Filename Value="../Units/GenericBitmap.pas"/>
         <UnitName Value="GenericBitmap"/>
-        <EditorIndex Value="20"/>
+        <EditorIndex Value="22"/>
         <WindowIndex Value="0"/>
         <TopLine Value="22"/>
         <CursorPos X="18" Y="46"/>
-        <UsageCount Value="11"/>
+        <UsageCount Value="12"/>
         <Loaded Value="True"/>
       </Unit60>
       <Unit61>
         <Filename Value="../../../../../Lazarus/0.9.31_2.7.1/lcl/graphics.pp"/>
         <UnitName Value="Graphics"/>
-        <EditorIndex Value="1"/>
+        <EditorIndex Value="3"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1151"/>
         <CursorPos X="22" Y="1165"/>
-        <UsageCount Value="11"/>
+        <UsageCount Value="12"/>
         <Loaded Value="True"/>
       </Unit61>
       <Unit62>
         <Filename Value="../../../../../Lazarus/0.9.31_2.7.1/lcl/include/rasterimage.inc"/>
-        <EditorIndex Value="8"/>
+        <EditorIndex Value="10"/>
         <WindowIndex Value="0"/>
         <TopLine Value="310"/>
         <CursorPos X="22" Y="314"/>
-        <UsageCount Value="11"/>
+        <UsageCount Value="12"/>
         <Loaded Value="True"/>
       </Unit62>
       <Unit63>
         <Filename Value="../../../../../Lazarus/0.9.31_2.7.1/lcl/include/bitmapcanvas.inc"/>
-        <EditorIndex Value="7"/>
+        <EditorIndex Value="9"/>
         <WindowIndex Value="0"/>
         <TopLine Value="53"/>
         <CursorPos X="3" Y="46"/>
-        <UsageCount Value="11"/>
+        <UsageCount Value="12"/>
         <Loaded Value="True"/>
       </Unit63>
       <Unit64>
         <Filename Value="../../../../../Lazarus/0.9.31_2.7.1/fpc/2.7.1/source/packages/fcl-image/src/fpcanvas.pp"/>
         <UnitName Value="FPCanvas"/>
-        <EditorIndex Value="4"/>
+        <EditorIndex Value="6"/>
         <WindowIndex Value="0"/>
         <TopLine Value="347"/>
         <CursorPos X="15" Y="360"/>
-        <UsageCount Value="11"/>
+        <UsageCount Value="12"/>
         <Loaded Value="True"/>
       </Unit64>
       <Unit65>
         <Filename Value="../../../../../Lazarus/0.9.31_2.7.1/fpc/2.7.1/source/packages/fcl-image/src/fpcanvas.inc"/>
-        <EditorIndex Value="6"/>
+        <EditorIndex Value="8"/>
         <WindowIndex Value="0"/>
         <TopLine Value="308"/>
         <CursorPos X="3" Y="310"/>
-        <UsageCount Value="11"/>
+        <UsageCount Value="12"/>
         <Loaded Value="True"/>
       </Unit65>
       <Unit66>
         <Filename Value="../../../../../Lazarus/0.9.31_2.7.1/fpc/2.7.1/source/packages/fcl-image/src/fpcdrawh.inc"/>
-        <EditorIndex Value="5"/>
+        <EditorIndex Value="7"/>
         <WindowIndex Value="0"/>
         <TopLine Value="54"/>
         <CursorPos X="3" Y="63"/>
-        <UsageCount Value="11"/>
+        <UsageCount Value="12"/>
         <Loaded Value="True"/>
       </Unit66>
       <Unit67>
         <Filename Value="../../../../../Lazarus/0.9.31_2.7.1/lcl/include/canvas.inc"/>
-        <EditorIndex Value="2"/>
+        <EditorIndex Value="4"/>
         <WindowIndex Value="0"/>
         <TopLine Value="147"/>
         <CursorPos X="3" Y="152"/>
-        <UsageCount Value="11"/>
+        <UsageCount Value="12"/>
         <Loaded Value="True"/>
       </Unit67>
       <Unit68>
         <Filename Value="../../../../../Lazarus/0.9.31_2.7.1/lcl/interfacebase.pp"/>
         <UnitName Value="InterfaceBase"/>
-        <EditorIndex Value="3"/>
+        <EditorIndex Value="5"/>
         <WindowIndex Value="0"/>
         <TopLine Value="153"/>
         <CursorPos X="15" Y="166"/>
-        <UsageCount Value="11"/>
+        <UsageCount Value="12"/>
         <Loaded Value="True"/>
       </Unit68>
+      <Unit69>
+        <Filename Value="../../../../../Lazarus/0.9.31_2.7.1/lcl/comctrls.pp"/>
+        <UnitName Value="ComCtrls"/>
+        <EditorIndex Value="1"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="2962"/>
+        <CursorPos X="3" Y="2975"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+      </Unit69>
+      <Unit70>
+        <Filename Value="../../../../../Lazarus/0.9.31_2.7.1/lcl/include/treeview.inc"/>
+        <EditorIndex Value="2"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="5239"/>
+        <CursorPos X="3" Y="5243"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+      </Unit70>
     </Units>
     <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
-        <Filename Value="../../../../../Lazarus/0.9.31_2.7.1/lcl/graphics.pp"/>
-        <Caret Line="2342" Column="15" TopLine="2329"/>
+        <Filename Value="../Units/GenericList.pas"/>
+        <Caret Line="107" Column="15" TopLine="94"/>
       </Position1>
       <Position2>
-        <Filename Value="../../../../../Lazarus/0.9.31_2.7.1/lcl/graphics.pp"/>
-        <Caret Line="1008" Column="3" TopLine="995"/>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="138" Column="17" TopLine="125"/>
       </Position2>
       <Position3>
-        <Filename Value="../../../../../Lazarus/0.9.31_2.7.1/lcl/graphics.pp"/>
-        <Caret Line="1182" Column="17" TopLine="1169"/>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="143" Column="23" TopLine="130"/>
       </Position3>
       <Position4>
-        <Filename Value="../../../../../Lazarus/0.9.31_2.7.1/lcl/graphics.pp"/>
-        <Caret Line="1176" Column="67" TopLine="1169"/>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="257" Column="24" TopLine="243"/>
       </Position4>
       <Position5>
-        <Filename Value="../Units/GenericMatrix.pas"/>
-        <Caret Line="35" Column="14" TopLine="73"/>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="10" Column="27" TopLine="1"/>
       </Position5>
       <Position6>
-        <Filename Value="../Units/GenericMatrix.pas"/>
-        <Caret Line="28" Column="51" TopLine="17"/>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="35" Column="15" TopLine="22"/>
       </Position6>
       <Position7>
-        <Filename Value="../Units/GenericMatrix.pas"/>
-        <Caret Line="13" Column="6" TopLine="18"/>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="160" Column="1" TopLine="137"/>
       </Position7>
       <Position8>
-        <Filename Value="../Units/GenericMatrix.pas"/>
-        <Caret Line="30" Column="43" TopLine="9"/>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="45" Column="15" TopLine="32"/>
       </Position8>
       <Position9>
-        <Filename Value="../Units/GenericMatrix.pas"/>
-        <Caret Line="34" Column="36" TopLine="21"/>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="190" Column="3" TopLine="183"/>
       </Position9>
       <Position10>
-        <Filename Value="../Units/GenericMatrix.pas"/>
-        <Caret Line="30" Column="45" TopLine="22"/>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="107" Column="1" TopLine="90"/>
       </Position10>
       <Position11>
         <Filename Value="UMainForm.pas"/>
-        <Caret Line="47" Column="1" TopLine="34"/>
+        <Caret Line="801" Column="9" TopLine="782"/>
       </Position11>
       <Position12>
-        <Filename Value="../Units/GenericMatrix.pas"/>
-        <Caret Line="57" Column="21" TopLine="44"/>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="10" Column="40" TopLine="1"/>
       </Position12>
       <Position13>
-        <Filename Value="../Units/GenericMatrix.pas"/>
-        <Caret Line="81" Column="1" TopLine="78"/>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="67" Column="15" TopLine="54"/>
       </Position13>
       <Position14>
-        <Filename Value="../Units/GenericMatrix.pas"/>
-        <Caret Line="55" Column="56" TopLine="30"/>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="45" Column="30" TopLine="33"/>
       </Position14>
       <Position15>
-        <Filename Value="../Units/GenericMatrix.pas"/>
-        <Caret Line="98" Column="1" TopLine="75"/>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="67" Column="15" TopLine="54"/>
       </Position15>
       <Position16>
-        <Filename Value="../Units/GenericMatrix.pas"/>
-        <Caret Line="59" Column="40" TopLine="36"/>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="798" Column="60" TopLine="781"/>
       </Position16>
       <Position17>
-        <Filename Value="../Units/GenericMatrix.pas"/>
-        <Caret Line="48" Column="39" TopLine="35"/>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="67" Column="15" TopLine="54"/>
       </Position17>
       <Position18>
-        <Filename Value="../Units/GenericMatrix.pas"/>
-        <Caret Line="67" Column="1" TopLine="46"/>
+        <Filename Value="../Units/GenericTree.pas"/>
+        <Caret Line="52" Column="27" TopLine="16"/>
       </Position18>
       <Position19>
-        <Filename Value="../Units/GenericMatrix.pas"/>
-        <Caret Line="104" Column="53" TopLine="91"/>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="67" Column="15" TopLine="54"/>
       </Position19>
       <Position20>
-        <Filename Value="../Units/GenericMatrix.pas"/>
-        <Caret Line="181" Column="26" TopLine="168"/>
+        <Filename Value="../Units/GenericTree.pas"/>
+        <Caret Line="42" Column="1" TopLine="20"/>
       </Position20>
       <Position21>
-        <Filename Value="../Units/GenericMatrix.pas"/>
-        <Caret Line="53" Column="80" TopLine="40"/>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="56" Column="17" TopLine="16"/>
       </Position21>
       <Position22>
-        <Filename Value="../Units/GenericMatrix.pas"/>
-        <Caret Line="57" Column="14" TopLine="44"/>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="68" Column="15" TopLine="55"/>
       </Position22>
       <Position23>
-        <Filename Value="../Units/GenericMatrix.pas"/>
-        <Caret Line="50" Column="39" TopLine="37"/>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="69" Column="17" TopLine="56"/>
       </Position23>
       <Position24>
-        <Filename Value="../Units/GenericMatrix.pas"/>
-        <Caret Line="57" Column="14" TopLine="44"/>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="68" Column="15" TopLine="55"/>
       </Position24>
       <Position25>
-        <Filename Value="../Units/GenericMatrix.pas"/>
-        <Caret Line="49" Column="3" TopLine="37"/>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="69" Column="17" TopLine="56"/>
       </Position25>
       <Position26>
-        <Filename Value="../Units/GenericMatrix.pas"/>
-        <Caret Line="54" Column="35" TopLine="41"/>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="68" Column="15" TopLine="55"/>
       </Position26>
       <Position27>
-        <Filename Value="../Units/GenericMatrix.pas"/>
-        <Caret Line="49" Column="1" TopLine="41"/>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="69" Column="17" TopLine="56"/>
       </Position27>
       <Position28>
-        <Filename Value="../Units/GenericMatrix.pas"/>
-        <Caret Line="56" Column="1" TopLine="44"/>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="771" Column="17" TopLine="758"/>
       </Position28>
       <Position29>
-        <Filename Value="../Units/GenericMatrix.pas"/>
-        <Caret Line="639" Column="28" TopLine="628"/>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="776" Column="27" TopLine="758"/>
       </Position29>
       <Position30>
-        <Filename Value="../Units/GenericMatrix.pas"/>
-        <Caret Line="107" Column="18" TopLine="91"/>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="32" Column="15" TopLine="19"/>
       </Position30>
     </JumpHistory>
   </ProjectOptions>
@@ -826,7 +845,7 @@
         <WatchScope Value="wpsLocal"/>
         <WatchKind Value="wpkWrite"/>
         <Source Value="UMainForm.pas"/>
-        <Line Value="204"/>
+        <Line Value="206"/>
       </Item1>
     </BreakPoints>
     <Exceptions Count="3">
