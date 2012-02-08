@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  ComCtrls, GenericList, GenericDictionary, GenericQueue,
+  ComCtrls, GenericList, GenericDictionary, GenericQueue, GenericStream,
   DateUtils, SpecializedList;
 
 type
@@ -161,7 +161,6 @@ end;
 procedure TMainForm.ButtonQueueIntegerClick(Sender: TObject);
 var
   Queue: TGQueue<Integer>;
-  I: Integer;
 begin
   ListViewOutput.Clear;
   LabelTestName.Caption := 'TQueueInteger test';
@@ -182,14 +181,14 @@ end;
 
 procedure TMainForm.ButtonStreamByteClick(Sender: TObject);
 var
-  Stream: TMemoryStreamByte;
+  Stream: TGMemoryStream<Byte>;
   I: Integer;
   ByteArray: array of Byte;
   ByteArrayText: string;
 begin
   ListViewOutput.Clear;
   LabelTestName.Caption := 'TStreamByte test';
-  Stream := TMemoryStreamByte.Create;
+  Stream := TGMemoryStream<Byte>.Create;
   with Stream do try
     WriteOutput('Size := ', IntToStr(Stream.Size));
     Write(1);

@@ -37,6 +37,7 @@ type
     function Add(Item: TItem): TIndex;
     procedure AddArray(Values: array of TItem);
     procedure AddList(List: TGList<TItem>);
+    procedure AddListPart(List: TGList<TItem>; ItemIndex, ItemCount: TIndex);
     procedure Assign(Source: TGList<TItem>); virtual;
     procedure Clear; virtual;
     procedure Delete(Index: TIndex); virtual;
@@ -47,7 +48,8 @@ type
     function Extract(Item: TItem): TItem;
     property First: TItem read GetFirst write SetFirst;
     procedure Fill(Start, Count: TIndex; Value: TItem);
-    function GetArray: TItemArray;
+    function GetArray(Index, ACount: TIndex): TItemArray;
+    procedure GetList(List: TGList<TItem>; Index, ACount: TIndex);
     function Implode(Separator: string; Converter: TToStringConverter): string;
     function IndexOf(Item: TItem; Start: TIndex = 0): TIndex;
     function IndexOfList(List: TGList<TItem>; Start: TIndex = 0): TIndex;
@@ -160,16 +162,22 @@ begin
   if AValue < Capacity then SetCapacityOptimized(AValue); // After FCount change
 end;
 
-function TGList<TItem>.GetArray: TItemArray;
+function TGList<TItem>.GetArray(Index, ACount: TIndex): TItemArray;
 var
   I: Integer;
 begin
-  SetLength(Result, Count);
+  SetLength(Result, ACount);
   I := 0;
   while I < Count do begin
-    Result[I] := FItems[I];
+    Result[I] := FItems[Index + I];
     I := I + 1;
   end;
+end;
+
+procedure TGList<TItem>.GetList(List: TGList; Index, ACount: TIndex);
+begin
+ List.Clear;
+ List.AddListPart(Self, Index, ACount);
 end;
 
 procedure TGList<TItem>.QuickSort(L, R: TIndex; Compare: TSortCompare);
@@ -502,6 +510,21 @@ begin
   while I < List.Count do begin
     Add(List[I]);
     I := I + 1;
+  end;
+end;
+
+procedure TGList<TItem>.AddListPart(List: TGList; ItemIndex, ItemCount: TIndex);
+var
+  I: TIndex;
+  J: TIndex;
+begin
+  I := Count;
+  J := ItemIndex;
+  Count := Count + ItemCount;
+  while I < Count do begin
+    Items[I] := List[J];
+    I := I + 1;
+    J := J + 1;
   end;
 end;
 
