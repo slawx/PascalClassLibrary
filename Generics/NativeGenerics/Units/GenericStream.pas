@@ -8,7 +8,7 @@ uses
   SysUtils, Classes, GenericList;
 
 type
-  TGStream<TItem> = class
+  TGAbstractStream<TItem> = class
   public
     type
       TIndex = NativeInt;
@@ -20,7 +20,7 @@ type
     procedure SetPosition(AValue: TIndex);
     function GetPosition: TIndex;
   public
-    procedure Assign(Source: TGStream<TItem>); virtual;
+    procedure Assign(Source: TGAbstractStream<TItem>); virtual;
     procedure Write(Item: TItem); virtual; abstract;
     procedure WriteArray(Item: array of TItem); virtual; abstract;
     procedure WriteList(List: TGList<TItem>); virtual; abstract;
@@ -35,12 +35,12 @@ type
     property Size: TIndex read GetSize write SetSize;
   end;
 
-  TGMemoryStream<TItem> = class(TGStream<TItem>)
+  TGStream<TItem> = class(TGAbstractStream<TItem>)
   private
     FList: TGList<TItem>;
     FPosition: TIndex;
   public
-    procedure Assign(Source: TGStream<TItem>); override;
+    procedure Assign(Source: TGAbstractStream<TItem>); override;
     procedure Write(Item: TItem); override;
     procedure WriteArray(Values: array of TItem); override;
     procedure WriteList(List: TGList<TItem>); override;
@@ -61,21 +61,21 @@ implementation
 
 { TGStream }
 
-procedure TGStream<TItem>.Assign(Source: TGStream<TItem>);
+procedure TGAbstractStream<TItem>.Assign(Source: TGAbstractStream<TItem>);
 begin
 end;
 
-procedure TGStream<TItem>.SetPosition(AValue: TIndex);
+procedure TGAbstractStream<TItem>.SetPosition(AValue: TIndex);
 begin
   Seek(AValue, soBeginning);
 end;
 
-function TGStream<TItem>.GetPosition: TIndex;
+function TGAbstractStream<TItem>.GetPosition: TIndex;
 begin
   Result := Seek(0, soCurrent);
 end;
 
-procedure TGStream<TItem>.SetSize(AValue: TIndex);
+procedure TGAbstractStream<TItem>.SetSize(AValue: TIndex);
 var
   StreamSize: TIndex;
   OldPosition: TIndex;
@@ -93,7 +93,7 @@ begin
   Position := OldPosition;
 end;
 
-function TGStream<TItem>.GetSize: TIndex;
+function TGAbstractStream<TItem>.GetSize: TIndex;
 var
   OldPosition: Integer;
 begin
@@ -102,23 +102,23 @@ begin
   Position := OldPosition;
 end;
 
-constructor TGStream<TItem>.Create;
+constructor TGAbstractStream<TItem>.Create;
 begin
   inherited;
 end;
 
-{ TMemoryStreamByte }
+{ TGStream }
 
-procedure TGMemoryStream<TItem>.Assign(Source: TGStream<TItem>);
+procedure TGStream<TItem>.Assign(Source: TGAbstractStream<TItem>);
 begin
   inherited;
-  if Source is TGMemoryStream<TItem> then begin
-    FList.Assign(TGMemoryStream<TItem>(Source).FList);
-    FPosition := TGMemoryStream<TItem>(Source).FPosition;
+  if Source is TGStream<TItem> then begin
+    FList.Assign(TGStream<TItem>(Source).FList);
+    FPosition := TGStream<TItem>(Source).FPosition;
   end;
 end;
 
-procedure TGMemoryStream<TItem>.Write(Item: TItem);
+procedure TGStream<TItem>.Write(Item: TItem);
 begin
   if FList.Count < (FPosition + 1) then
     FList.Count := FPosition + 1;
@@ -126,7 +126,7 @@ begin
   Inc(FPosition);
 end;
 
-procedure TGMemoryStream<TItem>.WriteArray(Values: array of TItem);
+procedure TGStream<TItem>.WriteArray(Values: array of TItem);
 begin
   if FList.Count < (FPosition + Length(Values)) then
     FList.Count := FPosition + Length(Values);
@@ -134,23 +134,23 @@ begin
   Inc(FPosition, Length(Values));
 end;
 
-procedure TGMemoryStream<TItem>.WriteList(List: TGList<TItem>);
+procedure TGStream<TItem>.WriteList(List: TGList<TItem>);
 begin
   FList.ReplaceList(FPosition, List);
 end;
 
-function TGMemoryStream<TItem>.Read: TItem;
+function TGStream<TItem>.Read: TItem;
 begin
   Result := FList[FPosition];
   Inc(FPosition);
 end;
 
-function TGMemoryStream<TItem>.ReadArray(Count: TIndex): TItemArray;
+function TGStream<TItem>.ReadArray(Count: TIndex): TItemArray;
 begin
   Result := FList.GetArray(FPosition, Count);
 end;
 
-function TGMemoryStream<TItem>.ReadList(List: TGList<TItem>; Count: TIndex): TIndex;
+function TGStream<TItem>.ReadList(List: TGList<TItem>; Count: TIndex): TIndex;
 begin
   if (FPosition + Count) > FList.Count then
     Count := FList.Count - FPosition;
@@ -158,20 +158,20 @@ begin
   Result := Count;
 end;
 
-function TGMemoryStream<TItem>.Insert(Count: TIndex): TIndex;
+function TGStream<TItem>.Insert(Count: TIndex): TIndex;
 begin
   FList.InsertCount(FPosition, Count);
   Result := Count;
 end;
 
-function TGMemoryStream<TItem>.Remove(Count: TIndex): TIndex;
+function TGStream<TItem>.Remove(Count: TIndex): TIndex;
 begin
   Result := FList.Count - FPosition;
   if Count < Result then Result := Count;
   FList.DeleteItems(FPosition, Count);
 end;
 
-function TGMemoryStream<TItem>.Seek(Offset: TIndex; Origin: TSeekOrigin): TIndex;
+function TGStream<TItem>.Seek(Offset: TIndex; Origin: TSeekOrigin): TIndex;
 begin
   case Origin of
     soBeginning: FPosition := Offset;
@@ -183,13 +183,13 @@ begin
   Result := FPosition;
 end;
 
-constructor TGMemoryStream<TItem>.Create;
+constructor TGStream<TItem>.Create;
 begin
   inherited;
   FList := TGList<TItem>.Create;
 end;
 
-destructor TGMemoryStream<TItem>.Destroy;
+destructor TGStream<TItem>.Destroy;
 begin
   FList.Free;
   inherited Destroy;

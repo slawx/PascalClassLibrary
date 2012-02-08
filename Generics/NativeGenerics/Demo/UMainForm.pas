@@ -181,14 +181,14 @@ end;
 
 procedure TMainForm.ButtonStreamByteClick(Sender: TObject);
 var
-  Stream: TGMemoryStream<Byte>;
+  Stream: TGStream<Byte>;
   I: Integer;
   ByteArray: array of Byte;
   ByteArrayText: string;
 begin
   ListViewOutput.Clear;
   LabelTestName.Caption := 'TStreamByte test';
-  Stream := TGMemoryStream<Byte>.Create;
+  Stream := TGStream<Byte>.Create;
   with Stream do try
     WriteOutput('Size := ', IntToStr(Stream.Size));
     Write(1);
