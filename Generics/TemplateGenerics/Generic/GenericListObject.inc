@@ -74,7 +74,7 @@ end;
 
 procedure TGListObject.Put(Index: TGListIndex; const AValue: TGListItem);
 begin
-  if OwnsObjects then FItems[Index].Free;
+  if OwnsObjects and (FItems[Index] <> AValue) then FItems[Index].Free;
   inherited Put(Index, AValue);
 end;
 

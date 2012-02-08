@@ -82,7 +82,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="47"/>
         <CursorPos X="20" Y="60"/>
-        <UsageCount Value="13"/>
+        <UsageCount Value="15"/>
         <Loaded Value="True"/>
       </Unit3>
       <Unit4>
@@ -462,7 +462,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="11"/>
         <CursorPos X="34" Y="24"/>
-        <UsageCount Value="19"/>
+        <UsageCount Value="21"/>
         <Loaded Value="True"/>
       </Unit51>
       <Unit52>
@@ -582,12 +582,11 @@
       <Unit66>
         <Filename Value="../Specialized/SpecializedStream.pas"/>
         <UnitName Value="SpecializedStream"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="8"/>
         <WindowIndex Value="0"/>
         <TopLine Value="106"/>
         <CursorPos X="48" Y="107"/>
-        <UsageCount Value="13"/>
+        <UsageCount Value="15"/>
         <Loaded Value="True"/>
       </Unit66>
       <Unit67>
@@ -622,11 +621,12 @@
       </Unit70>
       <Unit71>
         <Filename Value="../Generic/GenericStream.inc"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="7"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="1"/>
-        <CursorPos X="13" Y="12"/>
-        <UsageCount Value="13"/>
+        <TopLine Value="40"/>
+        <CursorPos X="18" Y="20"/>
+        <UsageCount Value="15"/>
         <Loaded Value="True"/>
       </Unit71>
       <Unit72>
@@ -635,7 +635,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="891"/>
         <CursorPos X="18" Y="908"/>
-        <UsageCount Value="11"/>
+        <UsageCount Value="13"/>
         <Loaded Value="True"/>
       </Unit72>
       <Unit73>
@@ -644,7 +644,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="739"/>
         <CursorPos X="18" Y="750"/>
-        <UsageCount Value="11"/>
+        <UsageCount Value="13"/>
         <Loaded Value="True"/>
       </Unit73>
       <Unit74>
@@ -653,7 +653,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="8"/>
         <CursorPos X="34" Y="21"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="12"/>
         <Loaded Value="True"/>
       </Unit74>
     </Units>
