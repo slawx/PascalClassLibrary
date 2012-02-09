@@ -762,16 +762,17 @@ end;
 
 procedure TMainForm.TreeButtonClick(Sender: TObject);
 var
-  Tree: TGTree<string>;
+  //Tree: TGTree<string>;
   //Tree2: TGTree<string>;
   I: Integer;
 begin
-  {ListViewOutput.Clear;
+ (* ListViewOutput.Clear;
   LabelTestName.Caption := 'TGTree<string> test';
-  Tree := TGTree<Integer>.Create;
-  Tree2 := TGTree<Integer>.Create;
+  Tree := TGTree<string>.Create;
+  Tree2 := TGTree<string>.Create;
   with Tree do try
-(*    AddArray([10, 20, 30, 40]);
+    Tree.TopItem.Add('test');
+    AddArray([10, 20, 30, 40]);
     WriteOutput('AddArray([10, 20, 30, 40])', Implode(',', IntToStr));
     Clear;
     WriteOutput('Clear', Implode(',', IntToStr));
@@ -795,11 +796,11 @@ begin
     InsertCount(0, 3);
     WriteOutput('InsertCount(0, 3)', Implode(',', IntToStr));
     Fill(0, 3, 9);
-    WriteOutput('Fill(0, 3, 9)', Implode(',', IntToStr));*)
+    WriteOutput('Fill(0, 3, 9)', Implode(',', IntToStr));
   finally
     Free;
     Tree2.Free;
-  end;}
+  end;   *)
 end;
 
 procedure TMainForm.UpdateButtonState(Enabled: Boolean);

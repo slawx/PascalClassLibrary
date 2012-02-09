@@ -32,6 +32,7 @@ type
     procedure Put(Index: TIndex; const AValue: TItem); virtual; abstract;
   public
     constructor Create; virtual;
+    function Add(Item: TItem): TIndex; virtual; abstract;
     property Count: TIndex read GetCount write SetCount;
     property Capacity: TIndex read GetCapacity write SetCapacity;
     property Items[Index: TIndex]: TItem read Get write Put; default;
@@ -58,7 +59,7 @@ type
     procedure Put(Index: TIndex; const AValue: TItem); override;
     procedure QuickSort(L, R : TIndex; Compare: TSortCompare);
   public
-    function Add(Item: TItem): TIndex;
+    function Add(Item: TItem): TIndex; override;
     procedure AddArray(Values: array of TItem);
     procedure AddList(List: TGList<TItem>);
     procedure AddListPart(List: TGList<TItem>; ItemIndex, ItemCount: TIndex);
