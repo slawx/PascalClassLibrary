@@ -5,7 +5,7 @@ unit ULastOpenedList;
 interface
 
 uses
-  Classes, SysUtils, Windows, URegistry, Menus;
+  Classes, SysUtils, Registry, URegistry, Menus;
 
 type
 
@@ -21,7 +21,7 @@ type
     procedure ReloadMenu;
     procedure LoadFromRegistry(Root: HKEY; Key: string);
     procedure SaveToRegistry(Root: HKEY; Key: string);
-    procedure Add(FileName: string);
+    procedure AddItem(FileName: string);
   end;
 
 implementation
@@ -67,14 +67,13 @@ begin
     OpenKey(Key + '\LastOpenedFiles', True);
     Clear;
     I := 0;
-    repeat
+    while ValueExists('File' + IntToStr(I)) and (I < MaxCount) do begin
       inherited Add(UTF8Encode(ReadStringWithDefault('File' + IntToStr(I), '')));
       Inc(I);
-    until (Strings[I - 1] = '') or (I > MaxCount);
-    Delete(Count - 1);
+    end;
     ReloadMenu;
   finally
-    Destroy;
+    Free;
   end;
 end;
 
@@ -90,11 +89,11 @@ begin
     for I := 0 to Count - 1 do
       WriteString('File' + IntToStr(I), UTF8Decode(Strings[I]));
   finally
-    Destroy;
+    Free;
   end;
 end;
 
-procedure TLastOpenedList.Add(FileName:string);
+procedure TLastOpenedList.AddItem(FileName:string);
 begin
   if IndexOf(FileName) <> -1 then Delete(IndexOf(FileName));
   Insert(0, FileName);
@@ -105,4 +104,4 @@ begin
 end;
 
 end.
-
+

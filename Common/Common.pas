@@ -2,21 +2,22 @@
   This source is only used to compile and install the package.
  }
 
-unit Common; 
+unit Common;
 
 interface
 
 uses
   StopWatch, UCommon, UDebugLog, UDelay, UPrefixMultiplier, UURI, UThreading, 
-  UMemory, UResetableThread, UPool, LazarusPackageIntf;
+  UMemory, UResetableThread, UPool, ULastOpenedList, URegistry, 
+  LazarusPackageIntf;
 
 implementation
 
-procedure Register; 
+procedure Register;
 begin
-  RegisterUnit('UDebugLog', @UDebugLog.Register); 
-end; 
+  RegisterUnit('UDebugLog', @UDebugLog.Register);
+end;
 
 initialization
-  RegisterPackage('Common', @Register); 
+  RegisterPackage('Common', @Register);
 end.

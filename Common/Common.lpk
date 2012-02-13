@@ -21,7 +21,7 @@
     <Description Value="Various libraries"/>
     <License Value="GNU/GPL"/>
     <Version Minor="4"/>
-    <Files Count="10">
+    <Files Count="12">
       <Item1>
         <Filename Value="StopWatch.pas"/>
         <UnitName Value="StopWatch"/>
@@ -63,6 +63,14 @@
         <Filename Value="UPool.pas"/>
         <UnitName Value="UPool"/>
       </Item10>
+      <Item11>
+        <Filename Value="ULastOpenedList.pas"/>
+        <UnitName Value="ULastOpenedList"/>
+      </Item11>
+      <Item12>
+        <Filename Value="URegistry.pas"/>
+        <UnitName Value="URegistry"/>
+      </Item12>
     </Files>
     <i18n>
       <EnableI18N Value="True"/>
@@ -88,4 +96,4 @@
       <Version Value="2"/>
     </PublishOptions>
   </Package>
-</CONFIG>
+</CONFIG>
