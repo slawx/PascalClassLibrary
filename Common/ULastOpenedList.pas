@@ -64,7 +64,7 @@ begin
   with Registry do
   try
     RootKey := Root;
-    OpenKey(Key + '\LastOpenedFiles', True);
+    OpenKey(Key, True);
     Clear;
     I := 0;
     while ValueExists('File' + IntToStr(I)) and (I < MaxCount) do begin
@@ -85,7 +85,7 @@ begin
   Registry := TRegistryEx.Create;
   with Registry do
   try
-    OpenKey(Key + '\LastOpenedFiles', True);
+    OpenKey(Key, True);
     for I := 0 to Count - 1 do
       WriteString('File' + IntToStr(I), UTF8Decode(Strings[I]));
   finally
@@ -104,4 +104,4 @@ begin
 end;
 
 end.
-
+

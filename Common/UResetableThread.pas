@@ -52,12 +52,12 @@ type
   private
     FOnException: TExceptionEvent;
     procedure MethodFinish(Sender: TObject);
-    procedure ThreadException(Sender: TObject; E: Exception);
   protected
     function NewItemObject: TObject; override;
   public
     LastExceptionClass: TClass;
     LastExceptionMessage: string;
+    procedure ThreadException(Sender: TObject; E: Exception);
     procedure CheckException;
     procedure WaitForEmpty;
     procedure Clear;
