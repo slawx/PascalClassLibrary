@@ -27,7 +27,7 @@
       </Other>
     </CompilerOptions>
     <Description Value="Generic classes implemented as templates."/>
-    <Version Minor="3"/>
+    <Version Minor="4"/>
     <Files Count="26">
       <Item1>
         <Filename Value="ReadMe.txt"/>
