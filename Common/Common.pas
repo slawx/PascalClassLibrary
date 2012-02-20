@@ -8,7 +8,7 @@ interface
 
 uses
   StopWatch, UCommon, UDebugLog, UDelay, UPrefixMultiplier, UURI, UThreading, 
-  UMemory, UResetableThread, UPool, ULastOpenedList, URegistry, 
+  UMemory, UResetableThread, UPool, ULastOpenedList, URegistry, URectangle, 
   LazarusPackageIntf;
 
 implementation
