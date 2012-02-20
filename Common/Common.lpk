@@ -20,7 +20,7 @@
     </CompilerOptions>
     <Description Value="Various libraries"/>
     <License Value="GNU/GPL"/>
-    <Version Minor="4"/>
+    <Version Minor="5"/>
     <Files Count="12">
       <Item1>
         <Filename Value="StopWatch.pas"/>
@@ -96,4 +96,4 @@
       <Version Value="2"/>
     </PublishOptions>
   </Package>
-</CONFIG>
+</CONFIG>
