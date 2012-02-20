@@ -2,26 +2,26 @@
   This source is only used to compile and install the package.
  }
 
-unit CoolDocking; 
+unit CoolDocking;
 
 interface
 
 uses
   UCDClient, UCDCustomize, UCDWindowList, UCDManagerTabs, UCDManagerRegions, 
-  UCDManagerTabsPopup, UCDManagerRegionsPopup, URectangle, UCDPopupMenu, 
-  UCDLayout, UCDCommon, UCDManager, UCDConjoinForm, UCDMaster, UCDResource, 
+  UCDManagerTabsPopup, UCDManagerRegionsPopup, UCDPopupMenu, UCDLayout, 
+  UCDCommon, UCDManager, UCDConjoinForm, UCDMaster, UCDResource, 
   LazarusPackageIntf;
 
 implementation
 
-procedure Register; 
+procedure Register;
 begin
-  RegisterUnit('UCDClient', @UCDClient.Register); 
-  RegisterUnit('UCDWindowList', @UCDWindowList.Register); 
-  RegisterUnit('UCDLayout', @UCDLayout.Register); 
-  RegisterUnit('UCDMaster', @UCDMaster.Register); 
-end; 
+  RegisterUnit('UCDClient', @UCDClient.Register);
+  RegisterUnit('UCDWindowList', @UCDWindowList.Register);
+  RegisterUnit('UCDLayout', @UCDLayout.Register);
+  RegisterUnit('UCDMaster', @UCDMaster.Register);
+end;
 
 initialization
-  RegisterPackage('CoolDocking', @Register); 
+  RegisterPackage('CoolDocking', @Register);
 end.

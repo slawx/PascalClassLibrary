@@ -3,7 +3,7 @@ msgstr "Content-Type: text/plain; charset=UTF-8"
 
 #: ucdpopupmenu.scloseform
 msgid "Close"
-msgstr ""
+msgstr "Content-Type: text/plain; charset=UTF-8"
 
 #: ucdpopupmenu.scustomize
 msgid "Customize..."

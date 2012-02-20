@@ -3,7 +3,7 @@ msgstr "Content-Type: text/plain; charset=UTF-8"
 
 #: ucdcustomize.senternewname
 msgid "Enter new name"
-msgstr ""
+msgstr "Content-Type: text/plain; charset=UTF-8"
 
 #: ucdcustomize.snewlayout
 msgid "New Layout"
