@@ -28,7 +28,7 @@
     </CompilerOptions>
     <Description Value="Generic classes implemented as templates."/>
     <Version Minor="3"/>
-    <Files Count="24">
+    <Files Count="26">
       <Item1>
         <Filename Value="ReadMe.txt"/>
         <Type Value="Text"/>
@@ -86,45 +86,52 @@
         <UnitName Value="GenericStream"/>
       </Item14>
       <Item15>
-        <Filename Value="Specialized\SpecializedList.pas"/>
-        <UnitName Value="SpecializedList"/>
+        <Filename Value="Generic\GenericRectangle.inc"/>
       </Item15>
       <Item16>
-        <Filename Value="Specialized\SpecializedDictionary.pas"/>
-        <UnitName Value="SpecializedDictionary"/>
+        <Filename Value="Specialized\SpecializedList.pas"/>
+        <UnitName Value="SpecializedList"/>
       </Item16>
       <Item17>
-        <Filename Value="Specialized\SpecializedStack.pas"/>
-        <UnitName Value="SpecializedStack"/>
+        <Filename Value="Specialized\SpecializedDictionary.pas"/>
+        <UnitName Value="SpecializedDictionary"/>
       </Item17>
       <Item18>
-        <Filename Value="Specialized\SpecializedTree.pas"/>
-        <UnitName Value="SpecializedTree"/>
+        <Filename Value="Specialized\SpecializedStack.pas"/>
+        <UnitName Value="SpecializedStack"/>
       </Item18>
       <Item19>
-        <Filename Value="Specialized\SpecializedQueue.pas"/>
-        <UnitName Value="SpecializedQueue"/>
+        <Filename Value="Specialized\SpecializedTree.pas"/>
+        <UnitName Value="SpecializedTree"/>
       </Item19>
       <Item20>
-        <Filename Value="Specialized\SpecializedSet.pas"/>
-        <UnitName Value="SpecializedSet"/>
+        <Filename Value="Specialized\SpecializedQueue.pas"/>
+        <UnitName Value="SpecializedQueue"/>
       </Item20>
       <Item21>
-        <Filename Value="Specialized\SpecializedPoint.pas"/>
-        <UnitName Value="SpecializedPoint"/>
+        <Filename Value="Specialized\SpecializedSet.pas"/>
+        <UnitName Value="SpecializedSet"/>
       </Item21>
       <Item22>
-        <Filename Value="Specialized\SpecializedMatrix.pas"/>
-        <UnitName Value="SpecializedMatrix"/>
+        <Filename Value="Specialized\SpecializedPoint.pas"/>
+        <UnitName Value="SpecializedPoint"/>
       </Item22>
       <Item23>
-        <Filename Value="Specialized\SpecializedBitmap.pas"/>
-        <UnitName Value="SpecializedBitmap"/>
+        <Filename Value="Specialized\SpecializedMatrix.pas"/>
+        <UnitName Value="SpecializedMatrix"/>
       </Item23>
       <Item24>
-        <Filename Value="Specialized\SpecializedStream.pas"/>
-        <UnitName Value="SpecializedStack"/>
+        <Filename Value="Specialized\SpecializedBitmap.pas"/>
+        <UnitName Value="SpecializedBitmap"/>
       </Item24>
+      <Item25>
+        <Filename Value="Specialized\SpecializedStream.pas"/>
+        <UnitName Value="SpecializedStream"/>
+      </Item25>
+      <Item26>
+        <Filename Value="Specialized\SpecializedRectangle.pas"/>
+        <UnitName Value="SpecializedRectangle"/>
+      </Item26>
     </Files>
     <Type Value="RunAndDesignTime"/>
     <RequiredPkgs Count="2">

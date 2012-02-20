@@ -2,21 +2,22 @@
   This source is only used to compile and install the package.
  }
 
-unit TemplateGenerics; 
+unit TemplateGenerics;
 
 interface
 
 uses
   SpecializedList, SpecializedDictionary, SpecializedStack, SpecializedTree, 
   SpecializedQueue, SpecializedSet, SpecializedPoint, SpecializedMatrix, 
-  SpecializedBitmap, SpecializedStream, LazarusPackageIntf;
+  SpecializedBitmap, SpecializedStream, SpecializedRectangle, 
+  LazarusPackageIntf;
 
 implementation
 
-procedure Register; 
+procedure Register;
 begin
-end; 
+end;
 
 initialization
-  RegisterPackage('TemplateGenerics', @Register); 
+  RegisterPackage('TemplateGenerics', @Register);
 end.

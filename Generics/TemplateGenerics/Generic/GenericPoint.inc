@@ -1,9 +1,10 @@
 {$IFDEF INTERFACE}
 
-// TGPoint<TPointCoord, TPointType> = class
+// TGPoint<TPointType> = class
 TGPoint = class
-  Coordinate: array[TGPointIndex] of TGPointType;
-  //procedure SetArray(Items: array[TGPointIndex] of TGPointType);
+  X: TGPointType;
+  Y: TGPointType;
+  procedure Add(Point: TGPoint);
 end;
 
 {$UNDEF INTERFACE}
@@ -11,6 +12,11 @@ end;
 
 {$IFDEF IMPLEMENTATION}
 
+procedure TGPoint.Add(Point: TGPoint);
+begin
+  X := X + Point.X;
+  Y := Y + Point.Y;
+end;
 
 {$UNDEF IMPLEMENTATION}
 {$ENDIF}
