@@ -103,8 +103,8 @@
     <Type Value="RunAndDesignTime"/>
     <RequiredPkgs Count="3">
       <Item1>
-        <PackageName Value="Common"/>
-        <MinVersion Minor="5" Valid="True"/>
+        <PackageName Value="TemplateGenerics"/>
+        <MinVersion Minor="4" Valid="True"/>
       </Item1>
       <Item2>
         <PackageName Value="LCL"/>

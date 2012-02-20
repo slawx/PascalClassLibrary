@@ -5,7 +5,7 @@ unit UCDLayout;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, Contnrs, URectangle, Forms, UCDCommon,
+  Classes, SysUtils, FileUtil, Contnrs, SpecializedRectangle, Forms, UCDCommon,
   DOM, XMLWrite, XMLRead, Controls, Dialogs;
 
 type
