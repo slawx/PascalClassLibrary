@@ -126,7 +126,7 @@ begin
   else
     s := '-unknown-';
   end;
-  s := inttohex(integer(Sender), 8) + s + ': ' + value + CRLF;
+  s := inttohex(integer(Pointer(Sender)), 8) + s + ': ' + value + CRLF;
   AppendToLog(s);
 end;
 
@@ -140,7 +140,7 @@ begin
     d := '-> '
   else
     d := '<- ';
-  s :=inttohex(integer(Sender), 8) + d + s + CRLF;
+  s :=inttohex(integer(Pointer(Sender)), 8) + d + s + CRLF;
   AppendToLog(s);
 end;
 
@@ -149,4 +149,4 @@ begin
   Logfile := changefileext(paramstr(0), '.slog');
 end;
 
-end.
+end.
