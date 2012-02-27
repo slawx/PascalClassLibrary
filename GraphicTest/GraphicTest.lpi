@@ -8,8 +8,47 @@
       <Icon Value="0"/>
       <ActiveWindowIndexAtStart Value="0"/>
     </General>
-    <BuildModes Count="1">
-      <Item1 Name="default" Default="True"/>
+    <BuildModes Count="2" Active="Release">
+      <Item1 Name="Debug" Default="True"/>
+      <Item2 Name="Release">
+        <CompilerOptions>
+          <Version Value="11"/>
+          <Target>
+            <Filename Value="GraphicTest"/>
+          </Target>
+          <SearchPaths>
+            <IncludeFiles Value="$(ProjOutDir)"/>
+            <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
+          </SearchPaths>
+          <Parsing>
+            <SyntaxOptions>
+              <SyntaxMode Value="Delphi"/>
+              <UseAnsiStrings Value="False"/>
+            </SyntaxOptions>
+          </Parsing>
+          <CodeGeneration>
+            <Optimizations>
+              <OptimizationLevel Value="3"/>
+            </Optimizations>
+          </CodeGeneration>
+          <Linking>
+            <Debugging>
+              <GenerateDebugInfo Value="False"/>
+            </Debugging>
+            <Options>
+              <Win32>
+                <GraphicApplication Value="True"/>
+              </Win32>
+            </Options>
+          </Linking>
+          <Other>
+            <CompilerMessages>
+              <UseMsgFile Value="True"/>
+            </CompilerMessages>
+            <CompilerPath Value="$(CompPath)"/>
+          </Other>
+        </CompilerOptions>
+      </Item2>
     </BuildModes>
     <PublishOptions>
       <Version Value="2"/>
@@ -41,6 +80,7 @@
         <TopLine Value="1"/>
         <CursorPos X="51" Y="15"/>
         <UsageCount Value="60"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit0>
       <Unit1>
         <Filename Value="UMainForm.pas"/>
@@ -51,11 +91,12 @@
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="114"/>
-        <CursorPos X="12" Y="120"/>
+        <TopLine Value="74"/>
+        <CursorPos X="44" Y="92"/>
         <UsageCount Value="60"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit1>
       <Unit2>
         <Filename Value="StopWatch.pas"/>
@@ -63,6 +104,7 @@
         <TopLine Value="1"/>
         <CursorPos X="42" Y="22"/>
         <UsageCount Value="15"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit2>
       <Unit3>
         <Filename Value="UPlatform.pas"/>
@@ -71,6 +113,7 @@
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
         <UsageCount Value="60"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit3>
       <Unit4>
         <Filename Value="../../lazarus/lcl/intfgraphics.pas"/>
@@ -164,6 +207,7 @@
         <CursorPos X="3" Y="710"/>
         <UsageCount Value="54"/>
         <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit17>
       <Unit18>
         <Filename Value="UFastBitmap.pas"/>
@@ -175,22 +219,23 @@
         <CursorPos X="19" Y="25"/>
         <UsageCount Value="54"/>
         <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit18>
       <Unit19>
         <Filename Value="../../FreePascalManager/trunk/Instance/1/Lazarus/lcl/include/rasterimage.inc"/>
         <TopLine Value="292"/>
         <CursorPos X="1" Y="308"/>
         <UsageCount Value="12"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit19>
       <Unit20>
         <Filename Value="BGRABitmap/bgradefaultbitmap.pas"/>
         <UnitName Value="BGRADefaultBitmap"/>
-        <EditorIndex Value="3"/>
         <WindowIndex Value="0"/>
         <TopLine Value="655"/>
         <CursorPos X="22" Y="667"/>
         <UsageCount Value="12"/>
-        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit20>
       <Unit21>
         <Filename Value="bgrabitmap/bgrawinbitmap.pas"/>
@@ -198,6 +243,7 @@
         <TopLine Value="133"/>
         <CursorPos X="1" Y="146"/>
         <UsageCount Value="10"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit21>
       <Unit22>
         <Filename Value="../../FreePascalManager/trunk/Instance/1/Lazarus/lcl/extctrls.pp"/>
@@ -205,18 +251,21 @@
         <TopLine Value="584"/>
         <CursorPos X="3" Y="597"/>
         <UsageCount Value="9"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit22>
       <Unit23>
         <Filename Value="../../FreePascalManager/trunk/Instance/1/Lazarus/lcl/include/winapih.inc"/>
         <TopLine Value="32"/>
         <CursorPos X="10" Y="45"/>
         <UsageCount Value="11"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit23>
       <Unit24>
         <Filename Value="../../FreePascalManager/trunk/Instance/1/Lazarus/lcl/include/winapi.inc"/>
         <TopLine Value="51"/>
         <CursorPos X="3" Y="53"/>
         <UsageCount Value="11"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit24>
       <Unit25>
         <Filename Value="../../FreePascalManager/trunk/Instance/1/Lazarus/lcl/graphics.pp"/>
@@ -224,24 +273,28 @@
         <TopLine Value="1314"/>
         <CursorPos X="31" Y="1327"/>
         <UsageCount Value="11"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit25>
       <Unit26>
         <Filename Value="../../FreePascalManager/trunk/Instance/1/FPC/rtl/objpas/classes/classesh.inc"/>
         <TopLine Value="1883"/>
         <CursorPos X="10" Y="1896"/>
         <UsageCount Value="11"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit26>
       <Unit27>
         <Filename Value="../../FreePascalManager/trunk/Instance/1/FPC/rtl/inc/heaph.inc"/>
         <TopLine Value="75"/>
         <CursorPos X="31" Y="88"/>
         <UsageCount Value="9"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit27>
       <Unit28>
         <Filename Value="../../FreePascalManager/trunk/Instance/1/FPC/rtl/inc/heap.inc"/>
         <TopLine Value="309"/>
         <CursorPos X="3" Y="311"/>
         <UsageCount Value="8"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit28>
       <Unit29>
         <Filename Value="bgrabitmap/bgrabitmaptypes.pas"/>
@@ -249,6 +302,7 @@
         <TopLine Value="24"/>
         <CursorPos X="3" Y="37"/>
         <UsageCount Value="10"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit29>
       <Unit30>
         <Filename Value="../../FreePascalManager/trunk/Instance/1/Lazarus/lcl/graphtype.pp"/>
@@ -256,6 +310,7 @@
         <TopLine Value="271"/>
         <CursorPos X="23" Y="292"/>
         <UsageCount Value="9"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit30>
       <Unit31>
         <Filename Value="UBitmaps.pas"/>
@@ -263,6 +318,7 @@
         <TopLine Value="1"/>
         <CursorPos X="41" Y="62"/>
         <UsageCount Value="18"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit31>
       <Unit32>
         <Filename Value="../../FreePascalManager/trunk/Instance/1/FPC/packages/fcl-image/src/fpimage.pp"/>
@@ -270,18 +326,21 @@
         <TopLine Value="23"/>
         <CursorPos X="4" Y="35"/>
         <UsageCount Value="8"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit32>
       <Unit33>
         <Filename Value="../../FreePascalManager/trunk/Instance/1/Lazarus/lcl/include/canvas.inc"/>
         <TopLine Value="1456"/>
         <CursorPos X="1" Y="1471"/>
         <UsageCount Value="8"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit33>
       <Unit34>
         <Filename Value="../../FreePascalManager/trunk/Instance/1/FPC/rtl/win/wininc/func.inc"/>
         <TopLine Value="780"/>
         <CursorPos X="10" Y="793"/>
         <UsageCount Value="8"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit34>
       <Unit35>
         <Filename Value="bgrabitmap/bgrablend.pas"/>
@@ -289,6 +348,7 @@
         <TopLine Value="217"/>
         <CursorPos X="3" Y="219"/>
         <UsageCount Value="8"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit35>
       <Unit36>
         <Filename Value="BGRABitmap/bgrabitmap.pas"/>
@@ -296,6 +356,7 @@
         <TopLine Value="52"/>
         <CursorPos X="23" Y="72"/>
         <UsageCount Value="18"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit36>
       <Unit37>
         <Filename Value="BGRABitmap/bgragtkbitmap.pas"/>
@@ -303,6 +364,7 @@
         <TopLine Value="29"/>
         <CursorPos X="36" Y="36"/>
         <UsageCount Value="18"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit37>
       <Unit38>
         <Filename Value="BGRABitmap/bgraresample.pas"/>
@@ -310,6 +372,7 @@
         <TopLine Value="629"/>
         <CursorPos X="30" Y="638"/>
         <UsageCount Value="18"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit38>
       <Unit39>
         <Filename Value="../../../lazarus/components/opengl/glqtcontext.pas"/>
@@ -317,6 +380,7 @@
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
         <UsageCount Value="18"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit39>
       <Unit40>
         <Filename Value="../../../lazarus/components/opengl/openglcontext.pas"/>
@@ -324,6 +388,7 @@
         <TopLine Value="135"/>
         <CursorPos X="34" Y="152"/>
         <UsageCount Value="18"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit40>
       <Unit41>
         <Filename Value="../../../lazarus/components/opengl/glgtkglxcontext.pas"/>
@@ -331,6 +396,7 @@
         <TopLine Value="699"/>
         <CursorPos X="3" Y="704"/>
         <UsageCount Value="18"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit41>
       <Unit42>
         <Filename Value="/usr/share/fpcsrc/2.4.0/packages/opengl/src/gl.pp"/>
@@ -344,6 +410,7 @@
         <TopLine Value="898"/>
         <CursorPos X="38" Y="928"/>
         <UsageCount Value="17"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit43>
       <Unit44>
         <Filename Value="/usr/share/fpcsrc/2.4.0/rtl/inc/heaph.inc"/>
@@ -356,6 +423,7 @@
         <TopLine Value="21"/>
         <CursorPos X="1" Y="38"/>
         <UsageCount Value="9"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit45>
       <Unit46>
         <Filename Value="/usr/share/fpcsrc/2.4.0/packages/opengl/src/glext.pp"/>
@@ -388,6 +456,7 @@
         <TopLine Value="65"/>
         <CursorPos X="14" Y="78"/>
         <UsageCount Value="11"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit50>
       <Unit51>
         <Filename Value="../../../Lazarus/0.9.31_2.6.0/components/opengl/openglcontext.pas"/>
@@ -396,6 +465,7 @@
         <TopLine Value="387"/>
         <CursorPos X="3" Y="389"/>
         <UsageCount Value="11"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit51>
       <Unit52>
         <Filename Value="../../../Lazarus/0.9.31_2.6.0/components/opengl/glwin32wglcontext.pas"/>
@@ -404,6 +474,7 @@
         <TopLine Value="236"/>
         <CursorPos X="3" Y="240"/>
         <UsageCount Value="11"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit52>
       <Unit53>
         <Filename Value="../../../Lazarus/0.9.31_2.6.0/fpc/2.6.0/source/rtl/win/wininc/func.inc"/>
@@ -411,6 +482,7 @@
         <TopLine Value="988"/>
         <CursorPos X="10" Y="1001"/>
         <UsageCount Value="11"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit53>
       <Unit54>
         <Filename Value="../../../Lazarus/0.9.31_2.6.0/fpc/2.6.0/source/rtl/win/wininc/ascdef.inc"/>
@@ -418,6 +490,7 @@
         <TopLine Value="236"/>
         <CursorPos X="10" Y="249"/>
         <UsageCount Value="11"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit54>
       <Unit55>
         <Filename Value="../../../Lazarus/0.9.31_2.6.0/fpc/2.6.0/source/rtl/objpas/objpas.pp"/>
@@ -426,6 +499,7 @@
         <TopLine Value="15"/>
         <CursorPos X="8" Y="28"/>
         <UsageCount Value="11"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit55>
       <Unit56>
         <Filename Value="../../../Lazarus/0.9.31_2.6.0/lcl/graphics.pp"/>
@@ -434,6 +508,7 @@
         <TopLine Value="1292"/>
         <CursorPos X="15" Y="1305"/>
         <UsageCount Value="11"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit56>
       <Unit57>
         <Filename Value="../../../Lazarus/0.9.31_2.6.0/lcl/include/rasterimage.inc"/>
@@ -441,6 +516,7 @@
         <TopLine Value="247"/>
         <CursorPos X="61" Y="251"/>
         <UsageCount Value="11"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit57>
       <Unit58>
         <Filename Value="../../../Lazarus/0.9.31_2.6.0/fpc/2.6.0/source/rtl/inc/systemh.inc"/>
@@ -448,6 +524,7 @@
         <TopLine Value="501"/>
         <CursorPos X="11" Y="514"/>
         <UsageCount Value="11"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit58>
       <Unit59>
         <Filename Value="../../../Lazarus/0.9.31_2.6.0/lcl/include/custombitmap.inc"/>
@@ -455,6 +532,7 @@
         <TopLine Value="403"/>
         <CursorPos X="1" Y="416"/>
         <UsageCount Value="10"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit59>
       <Unit60>
         <Filename Value="../../../Lazarus/0.9.31_2.6.0/lcl/include/bitmapcanvas.inc"/>
@@ -462,6 +540,7 @@
         <TopLine Value="90"/>
         <CursorPos X="1" Y="103"/>
         <UsageCount Value="10"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit60>
     </Units>
     <JumpHistory Count="29" HistoryIndex="28">
@@ -594,9 +673,19 @@
     </SearchPaths>
     <Parsing>
       <SyntaxOptions>
+        <SyntaxMode Value="Delphi"/>
         <UseAnsiStrings Value="False"/>
       </SyntaxOptions>
     </Parsing>
+    <CodeGeneration>
+      <Checks>
+        <IOChecks Value="True"/>
+        <RangeChecks Value="True"/>
+        <OverflowChecks Value="True"/>
+        <StackChecks Value="True"/>
+      </Checks>
+      <VerifyObjMethodCallValidity Value="True"/>
+    </CodeGeneration>
     <Linking>
       <Options>
         <Win32>

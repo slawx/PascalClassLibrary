@@ -87,9 +87,9 @@ begin
     Scenes.Add(NewScene);
   end;
   Bitmap := TBitmap.Create;
-  Bitmap.PixelFormat := pf32bit;
+  Bitmap.PixelFormat := pf24bit;
   Image1.Picture.Bitmap.SetSize(TFastBitmap(Scenes[0]).Size.X, TFastBitmap(Scenes[0]).Size.Y);
-  Image1.Picture.Bitmap.PixelFormat := pf32bit;
+  Image1.Picture.Bitmap.PixelFormat := pf24bit;
   Bitmap.SetSize(TFastBitmap(Scenes[0]).Size.X, TFastBitmap(Scenes[0]).Size.Y);
 
   OpenGLControl1 := TOpenGLControl.Create(Self);
