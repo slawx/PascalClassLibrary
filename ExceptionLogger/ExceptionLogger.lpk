@@ -6,7 +6,7 @@
     <AddToProjectUsesSection Value="True"/>
     <Author Value="Chronos (robie@centrum.cz)"/>
     <CompilerOptions>
-      <Version Value="10"/>
+      <Version Value="11"/>
       <PathDelim Value="\"/>
       <SearchPaths>
         <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
@@ -16,12 +16,6 @@
           <SyntaxMode Value="Delphi"/>
         </SyntaxOptions>
       </Parsing>
-      <Linking>
-        <Debugging>
-          <GenerateDebugInfo Value="True"/>
-          <DebugInfoType Value="dsAuto"/>
-        </Debugging>
-      </Linking>
       <Other>
         <CompilerMessages>
           <UseMsgFile Value="True"/>
@@ -32,7 +26,7 @@
     <Description Value="Component for detailed exception debugging."/>
     <License Value="GNU/GPL"/>
     <Version Major="1"/>
-    <Files Count="6">
+    <Files Count="5">
       <Item1>
         <Filename Value="CustomLineInfo.pas"/>
         <UnitName Value="CustomLineInfo"/>
@@ -42,22 +36,18 @@
         <UnitName Value="UStackTrace"/>
       </Item2>
       <Item3>
-        <Filename Value="UExceptionForm.lfm"/>
-        <Type Value="LFM"/>
-      </Item3>
-      <Item4>
         <Filename Value="UExceptionForm.pas"/>
         <UnitName Value="UExceptionForm"/>
-      </Item4>
-      <Item5>
+      </Item3>
+      <Item4>
         <Filename Value="UExceptionLogger.pas"/>
         <HasRegisterProc Value="True"/>
         <UnitName Value="UExceptionLogger"/>
-      </Item5>
-      <Item6>
+      </Item4>
+      <Item5>
         <Filename Value="ReadMe.txt"/>
         <Type Value="Binary"/>
-      </Item6>
+      </Item5>
     </Files>
     <i18n>
       <EnableI18N Value="True"/>
@@ -80,4 +70,4 @@
       <Version Value="2"/>
     </PublishOptions>
   </Package>
-</CONFIG>
+</CONFIG>

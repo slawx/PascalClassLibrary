@@ -55,11 +55,10 @@
         <ComponentName Value="MainForm"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UMainForm"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
         <TopLine Value="14"/>
-        <CursorPos X="1" Y="27"/>
+        <CursorPos X="26" Y="34"/>
         <UsageCount Value="20"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -88,8 +87,8 @@
         <UnitName Value="UExceptionForm"/>
         <EditorIndex Value="3"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="83"/>
-        <CursorPos X="31" Y="89"/>
+        <TopLine Value="42"/>
+        <CursorPos X="33" Y="85"/>
         <UsageCount Value="10"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -115,10 +114,11 @@
       <Unit7>
         <Filename Value="../UExceptionLogger.pas"/>
         <UnitName Value="UExceptionLogger"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="228"/>
-        <CursorPos X="23" Y="233"/>
+        <TopLine Value="46"/>
+        <CursorPos X="29" Y="59"/>
         <UsageCount Value="10"/>
         <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>

@@ -56,8 +56,8 @@ resourcestring
   SCallStack = 'Call stack';
   SGeneral = 'General';
   SErrorOccured = 'Error occured during program execution:';
-  STerminate = 'Terminate';
-  SClose = 'Close';
+  STerminate = 'Exit program';
+  SClose = 'Continue';
   SDetails = 'Details';
   SIgnoreNextTime = 'Next time ignore this exception';
   SExceptionInfo = 'Exception info';

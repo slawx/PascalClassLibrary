@@ -3,5 +3,5 @@ msgstr "Content-Type: text/plain; charset=UTF-8"
 
 #: ucdclient.swrongowner
 msgid "Owner of TCoolDockClient have to be TForm"
-msgstr "Content-Type: text/plain; charset=UTF-8Content-Type: text/plain; charset=UTF-8Content-Type: text/plain; charset=UTF-8Content-Type: text/plain; charset=UTF-8Content-Type: text/plain; charset=UTF-8Content-Type: text/plain; charset=UTF-8Content-Type: text/plain; charset=UTF-8Content-Type: text/plain; charset=UTF-8Content-Type: text/plain; charset=UTF-8"
+msgstr "Content-Type: text/plain; charset=UTF-8Content-Type: text/plain; charset=UTF-8Content-Type: text/plain; charset=UTF-8Content-Type: text/plain; charset=UTF-8Content-Type: text/plain; charset=UTF-8Content-Type: text/plain; charset=UTF-8Content-Type: text/plain; charset=UTF-8Content-Type: text/plain; charset=UTF-8Content-Type: text/plain; charset=UTF-8Content-Type: text/plain; charset=UTF-8Content-Type: text/plain; charset=UTF-8Content-Type: text/plain; charset=UTF-8"
 

@@ -1,10 +1,10 @@
 object ExceptionForm: TExceptionForm
-  Left = 331
-  Height = 301
-  Top = 184
+  Left = 342
+  Height = 299
+  Top = 202
   Width = 457
   Caption = 'Exception info'
-  ClientHeight = 301
+  ClientHeight = 299
   ClientWidth = 457
   OnCreate = FormCreate
   OnDestroy = FormDestroy
@@ -154,17 +154,17 @@ object ExceptionForm: TExceptionForm
   end
   object PanelDescription: TPanel
     Left = 0
-    Height = 189
+    Height = 187
     Top = 80
     Width = 457
     Align = alClient
     BevelOuter = bvNone
-    ClientHeight = 189
+    ClientHeight = 187
     ClientWidth = 457
     TabOrder = 1
     object PageControl1: TPageControl
       Left = 8
-      Height = 187
+      Height = 185
       Top = 0
       Width = 444
       ActivePage = TabSheet2
@@ -189,11 +189,11 @@ object ExceptionForm: TExceptionForm
       end
       object TabSheet2: TTabSheet
         Caption = 'Call stack'
-        ClientHeight = 161
+        ClientHeight = 159
         ClientWidth = 436
         object ListView1: TListView
           Left = 4
-          Height = 151
+          Height = 149
           Top = 7
           Width = 430
           Anchors = [akTop, akLeft, akRight, akBottom]
@@ -233,7 +233,7 @@ object ExceptionForm: TExceptionForm
   object PanelButtons: TPanel
     Left = 0
     Height = 32
-    Top = 269
+    Top = 267
     Width = 457
     Align = alBottom
     BevelOuter = bvNone
@@ -241,22 +241,22 @@ object ExceptionForm: TExceptionForm
     ClientWidth = 457
     TabOrder = 2
     object ButtonKill: TButton
-      Left = 295
+      Left = 280
       Height = 25
       Top = 3
-      Width = 83
+      Width = 91
       Anchors = [akRight, akBottom]
-      Caption = 'Terminate'
+      Caption = 'Exit program'
       OnClick = ButtonKillClick
       TabOrder = 0
     end
     object ButtonClose: TButton
-      Left = 383
+      Left = 376
       Height = 25
       Top = 3
-      Width = 67
+      Width = 74
       Anchors = [akRight, akBottom]
-      Caption = 'Close'
+      Caption = 'Continue'
       OnClick = ButtonCloseClick
       TabOrder = 1
     end
@@ -270,7 +270,7 @@ object ExceptionForm: TExceptionForm
       TabOrder = 2
     end
     object ButtonDetails: TButton
-      Left = 215
+      Left = 200
       Height = 25
       Top = 3
       Width = 75

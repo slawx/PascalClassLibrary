@@ -3,7 +3,7 @@ msgstr "Content-Type: text/plain; charset=UTF-8"
 
 #: uexceptionlogger.saddress
 msgid "Address"
-msgstr ""
+msgstr "Content-Type: text/plain; charset=UTF-8"
 
 #: uexceptionlogger.sapplication
 msgid "Application"
@@ -19,7 +19,7 @@ msgid "Class"
 msgstr ""
 
 #: uexceptionlogger.sclose
-msgid "Close"
+msgid "Continue"
 msgstr ""
 
 #: uexceptionlogger.sdetails
@@ -72,7 +72,7 @@ msgid "Process ID"
 msgstr ""
 
 #: uexceptionlogger.sterminate
-msgid "Terminate"
+msgid "Exit program"
 msgstr ""
 
 #: uexceptionlogger.sthreadid
