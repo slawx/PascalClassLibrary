@@ -5,17 +5,21 @@ unit UPDClientINI;
 interface
 
 uses
-  Classes, SysUtils, UPDClient;
+  Classes, SysUtils, UPDClient, IniFiles;
 
 type
 
   { TPDClientINI }
 
   TPDClientINI = class(TPDClient)
+    IniFile: TIniFile;
     //procedure GetItemList(Condition: TCondition; ItemList: TItemList); override;
     //procedure SetItemList(Condition: TCondition; ItemList: TItemList); override;
+    FileName: string;
     constructor Create; override;
     destructor Destroy; override;
+    procedure Connect; override;
+    procedure Disconnect; override;
   end;
 
 implementation
@@ -41,7 +45,18 @@ end;
 
 destructor TPDClientINI.Destroy;
 begin
+  Disconnect;
   inherited Destroy;
+end;
+
+procedure TPDClientINI.Connect;
+begin
+  IniFile := TIniFile.Create(FileName);
+end;
+
+procedure TPDClientINI.Disconnect;
+begin
+  FreeAndNil(IniFile);
 end;
 
 end.

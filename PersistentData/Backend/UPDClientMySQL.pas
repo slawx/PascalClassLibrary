@@ -74,7 +74,7 @@ begin
   try
     DbRows := TDbRows.Create;
     Table := '`' + AObject.ObjectName + '`';
-    if AObject.SchemaName <> '' then Table := '`' + AObject.SchemaName + '`.' + Table;
+    if AObject.Path <> '' then Table := '`' + AObject.Path + '`.' + Table;
     Database.Query(DbRows, 'SELECT * FROM ' + Table +
       ' WHERE `Id`=' + IntToStr(AObject.Id));
     AObject.Properties.Assign(TDictionaryStringString(DbRows[0]));
@@ -91,8 +91,11 @@ var
 begin
   try
     DbRows := TDbRows.Create;
-    Database.Replace(AObject.ObjectName, AObject.Properties, AObject.SchemaName);
-    if AObject.Id = 0 then AObject.Id := Database.LastInsertId;
+    if AObject.Id = 0 then begin
+      Database.Insert(AObject.ObjectName, AObject.Properties, AObject.Path);
+      AObject.Id := Database.LastInsertId;
+    end else Database.Update(AObject.ObjectName, AObject.Properties,
+      'Id=' + IntToStr(AObject.Id), AObject.Path);
   finally
     DbRows.Free;
   end;
@@ -101,7 +104,7 @@ end;
 procedure TPDClientMySQL.ObjectDelete(AObject: TObjectProxy);
 begin
   Database.Delete(AObject.ObjectName, 'Id=' + IntToStr(AObject.Id),
-    AObject.SchemaName);
+    AObject.Path);
 end;
 
 procedure TPDClientMySQL.ListLoad(AList: TListProxy);
@@ -124,14 +127,14 @@ begin
     if AList.Condition <> '' then DbCondition := ' WHERE ' + AList.Condition
       else DbCondition := '';
     Table := '`' + AList.ObjectName + '`';
-    if AList.SchemaName <> '' then Table := '`' + AList.SchemaName + '`.' + Table;
+    if AList.Path <> '' then Table := '`' + AList.Path + '`.' + Table;
     Database.Query(DbRows, 'SELECT ' + Filter + ' FROM ' + Table + DbCondition);
     AList.Objects.Clear;
     for I := 0 to DbRows.Count - 1 do begin
       NewObject := TObjectProxy.Create;
       NewObject.Client := AList.Client;
       NewObject.ObjectName := AList.ObjectName;
-      NewObject.SchemaName := AList.SchemaName;
+      NewObject.Path := AList.Path;
       NewObject.Properties.Assign(TDictionaryStringString(DbRows[I]));
       AList.Objects.Add(NewObject);
     end;
@@ -197,7 +200,7 @@ begin
   try
     NewProxy := TListProxy.Create;
     NewProxy.Client := Self;
-    NewProxy.SchemaName := 'information_schema';
+    NewProxy.Path := 'information_schema';
     NewProxy.ObjectName := 'TABLES';
     NewProxy.Condition := '(TABLE_SCHEMA = "' + Schema +
       '") AND (TABLE_NAME = "' + AType.Name + '")';

@@ -24,7 +24,7 @@ type
     Properties: TDictionaryStringString;
     Client: TPDClient;
     ObjectName: string;
-    SchemaName: string;
+    Path: string;
     procedure Load;
     procedure Save;
     procedure Delete;
@@ -46,7 +46,7 @@ type
     ColummsFilterUse: Boolean;
     Condition: string;
     ObjectName: string;
-    SchemaName: string;
+    Path: string;
     Objects: TListObject; // TListObject<TObjectProxy>
     procedure Clear;
     constructor Create;
@@ -251,7 +251,7 @@ var
 begin
   NewProxy := TListProxy.Create;
   NewProxy.Client := Self;
-  NewProxy.SchemaName := 'information_schema';
+  NewProxy.Path := 'information_schema';
   NewProxy.ObjectName := 'TABLES';
   NewProxy.Condition := '(TABLE_SCHEMA = "' + Schema +
     '") AND (TABLE_NAME = "' + SystemVersionObject + '")';
@@ -259,7 +259,7 @@ begin
   if NewProxy.Objects.Count > 0 then begin
     NewObject := TObjectProxy.Create;
     NewObject.Client := Self;
-    NewObject.SchemaName := Schema;
+    NewObject.Path := Schema;
     NewObject.ObjectName := SystemVersionObject;
     NewObject.Id := 1;
     NewObject.Load;
@@ -277,7 +277,7 @@ begin
 
     NewObject := TObjectProxy.Create;
     NewObject.Client := Self;
-    NewObject.SchemaName := Schema;
+    NewObject.Path := Schema;
     NewObject.ObjectName := SystemVersionObject;
     NewObject.Properties.Add('Version', Version);
     NewObject.Properties.Add('Time', 'NOW()');
@@ -307,7 +307,7 @@ begin
 
     NewProxy := TListProxy.Create;
     NewProxy.Client := Self;
-    NewProxy.SchemaName := 'information_schema';
+    NewProxy.Path := 'information_schema';
     NewProxy.ObjectName := 'TABLES';
     NewProxy.Condition := 'TABLE_SCHEMA = "' + Schema + '"';
     NewProxy.Load;

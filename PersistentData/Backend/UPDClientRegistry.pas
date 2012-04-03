@@ -5,13 +5,14 @@ unit UPDClientRegistry;
 interface
 
 uses
-  Classes, SysUtils, UPDClient;
+  Classes, SysUtils, UPDClient, Registry;
 
 type
 
   { TPDClientRegistry }
 
   TPDClientRegistry = class(TPDClient)
+    Reg: TRegistry;
     //procedure GetItemList(Condition: TCondition; ItemList: TItemList); override;
     //procedure SetItemList(Condition: TCondition; ItemList: TItemList); override;
     constructor Create; override;
@@ -36,11 +37,13 @@ end;*)
 
 constructor TPDClientRegistry.Create;
 begin
+  Reg := TRegistry.Create;
   inherited Create;
 end;
 
 destructor TPDClientRegistry.Destroy;
 begin
+  Reg.Free;
   inherited Destroy;
 end;
 
