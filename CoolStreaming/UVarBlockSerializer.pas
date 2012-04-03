@@ -109,6 +109,7 @@ resourcestring
   SMaskedValueReadError = 'Error reading masked variable length block.';
   SUInt64Overflow = '64-bit UInt read overflow.';
   SReadError = 'Stream read error. Expected length %d, read %d. Source stream size %d.';
+  SErrorGetVarSize = 'Error reading variable block size';
 
 { TVarBlockSerializer }
 
@@ -415,14 +416,19 @@ var
   Data: Byte;
   StoredPosition: Integer;
 begin
-  StoredPosition := Stream.Position;
-  Result := 1; // Byte block length
-  Data := Stream.ReadByte;
-  if Data = $ff then Result := GetVarSize + ReadVarUInt + 1
-  else begin
-    Result := DecodeUnaryLength(Data);
+  try
+    StoredPosition := Stream.Position;
+    Result := 1; // Byte block length
+    Data := Stream.ReadByte;
+
+    if Data = $ff then Result := GetVarSize + ReadVarUInt + 1
+    else begin
+      Result := DecodeUnaryLength(Data);
+    end;
+    Stream.Position := StoredPosition;
+  except
+    raise Exception.Create(SErrorGetVarSize);
   end;
-  Stream.Position := StoredPosition;
 end;
 
 function TVarBlockSerializer.GetVarCount: Integer;
@@ -476,6 +482,7 @@ var
   Mask: Integer;
   I: Integer;
   StreamHelper: TStreamHelper;
+  RequestedSize: Integer;
 begin
   try
     StreamHelper := TStreamHelper.Create(Stream);
@@ -491,7 +498,10 @@ begin
       if TestMask(Mask, Index) then
         StreamHelper.ReadStream(Data.Stream, GetVarSize);
     except
-      raise Exception.Create(SMaskedValueReadError);
+      //raise Exception.Create(SMaskedValueReadError);
+      // Error recovery for not enough source data in stream
+      Data.Stream.Size := 0;
+      Data.Stream.WriteByte(0);
     end;
   finally
     StreamHelper.Free;
