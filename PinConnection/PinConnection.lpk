@@ -21,7 +21,7 @@
     <Description Value="System for class bidirectional communication interconnection."/>
     <License Value="GNU/GPL"/>
     <Version Minor="3"/>
-    <Files Count="10">
+    <Files Count="11">
       <Item1>
         <Filename Value="UCommFrame.pas"/>
         <UnitName Value="UCommFrame"/>
@@ -39,29 +39,33 @@
         <UnitName Value="UCommSerialPort"/>
       </Item4>
       <Item5>
-        <Filename Value="UCommSocket.pas"/>
-        <UnitName Value="UCommSocket"/>
-      </Item5>
-      <Item6>
         <Filename Value="UCommThread.pas"/>
         <UnitName Value="UCommThread"/>
-      </Item6>
-      <Item7>
+      </Item5>
+      <Item6>
         <Filename Value="UPacketBurst.pas"/>
         <UnitName Value="UPacketBurst"/>
-      </Item7>
-      <Item8>
+      </Item6>
+      <Item7>
         <Filename Value="USerialPort.pas"/>
         <UnitName Value="USerialPort"/>
-      </Item8>
-      <Item9>
+      </Item7>
+      <Item8>
         <Filename Value="UCommConcentrator.pas"/>
         <UnitName Value="UCommConcentrator"/>
-      </Item9>
-      <Item10>
+      </Item8>
+      <Item9>
         <Filename Value="UCommDelay.pas"/>
         <UnitName Value="UCommDelay"/>
+      </Item9>
+      <Item10>
+        <Filename Value="UCommTCPClient.pas"/>
+        <UnitName Value="UCommTCPClient"/>
       </Item10>
+      <Item11>
+        <Filename Value="UCommTCPServer.pas"/>
+        <UnitName Value="UCommSocket"/>
+      </Item11>
     </Files>
     <i18n>
       <EnableI18N Value="True"/>

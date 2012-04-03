@@ -3,7 +3,7 @@ msgstr "Content-Type: text/plain; charset=UTF-8"
 
 #: userialport.sassignmenterror
 msgid "Assignment error"
-msgstr ""
+msgstr "Content-Type: text/plain; charset=UTF-8Content-Type: text/plain; charset=UTF-8Content-Type: text/plain; charset=UTF-8Content-Type: text/plain; charset=UTF-8Content-Type: text/plain; charset=UTF-8Content-Type: text/plain; charset=UTF-8Content-Type: text/plain; charset=UTF-8Content-Type: text/plain; charset=UTF-8Content-Type: text/plain; charset=UTF-8Content-Type: text/plain; charset=UTF-8Content-Type: text/plain; charset=UTF-8Content-Type: text/plain; charset=UTF-8Content-Type: text/plain; charset=UTF-8Content-Type: text/plain; charset=UTF-8Content-Type: text/plain; charset=UTF-8Content-Type: text/plain; charset=UTF-8"
 
 #: userialport.swrongdatabitsnumber
 msgid "Wrong data bits number %s"
