@@ -12,8 +12,10 @@ public
   procedure Assign(Source: TGStream); virtual;
   procedure Write(Item: TGStreamItem); virtual; abstract;
   procedure WriteArray(Item: array of TGStreamItem); virtual; abstract;
+  procedure WriteStream(Stream: TGStream; Count: TGStreamIndex); virtual; abstract;
   function Read: TGStreamItem; virtual; abstract;
   function ReadArray(Count: TGStreamIndex): TGStreamItemArray; virtual; abstract;
+  function ReadStream(Stream: TGStream; Count: TGStreamIndex): TGStreamIndex; virtual; abstract;
   function Insert(Count: TGStreamIndex): TGStreamIndex; virtual; abstract;
   function Remove(Count: TGStreamIndex): TGStreamIndex; virtual; abstract;
   function Seek(Offset: TGStreamIndex; Origin: TSeekOrigin = soCurrent):

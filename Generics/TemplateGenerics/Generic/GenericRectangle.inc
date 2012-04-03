@@ -10,6 +10,7 @@ private
   function GetTopLeft: TGRectanglePoint;
   function GetTopRight: TGRectanglePoint;
   function GetWidth: TGRectangleDimension;
+  function GetEmpty: Boolean;
   procedure SetBottom(const AValue: TGRectangleDimension);
   procedure SetBottomLeft(const AValue: TGRectanglePoint);
   procedure SetBottomRight(const AValue: TGRectanglePoint);
@@ -20,8 +21,8 @@ private
   procedure SetTop(const AValue: TGRectangleDimension);
   procedure SetTopLeft(const AValue: TGRectanglePoint);
   procedure SetTopRight(const AValue: TGRectanglePoint);
-
   procedure SetWidth(const AValue: TGRectangleDimension);
+  procedure SetEmpty(const AValue: Boolean);
 public
   FLeft: TGRectangleDimension;
   FTop: TGRectangleDimension;
@@ -51,6 +52,7 @@ public
   property BottomRight: TGRectanglePoint read GetBottomRight write SetBottomRight;
 
   property Size: TGRectanglePoint read GetSize write SetSize;
+  property Empty: Boolean read GetEmpty write SetEmpty;
 end;
 
 
@@ -198,34 +200,62 @@ end;
 
 procedure TGRectangle.Intersect(Rect1, Rect2: TGRectangle);
 begin
-  Left := Max(Rect1.Left, Rect2.Left);
-  Top := Max(Rect1.Top, Rect2.Top);
-  Right := Min(Rect1.Right, Rect2.Right);
-  Bottom := Min(Rect1.Bottom, Rect2.Bottom);
+  if Rect1.Empty or Rect2.Empty then Empty := True
+  else begin
+    Left := Max(Rect1.Left, Rect2.Left);
+    Top := Max(Rect1.Top, Rect2.Top);
+    Right := Min(Rect1.Right, Rect2.Right);
+    Bottom := Min(Rect1.Bottom, Rect2.Bottom);
+  end;
 end;
 
 procedure TGRectangle.IntersectWith(Rect: TGRectangle);
 begin
-  Left := Max(Left, Rect.Left);
-  Top := Max(Top, Rect.Top);
-  Right := Min(Right, Rect.Right);
-  Bottom := Min(Bottom, Rect.Bottom);
+  if Empty or Rect.Empty then Empty := True
+  else begin
+    Left := Max(Left, Rect.Left);
+    Top := Max(Top, Rect.Top);
+    Right := Min(Right, Rect.Right);
+    Bottom := Min(Bottom, Rect.Bottom);
+  end;
 end;
 
 procedure TGRectangle.Union(Rect1, Rect2: TGRectangle);
 begin
-  Left := Min(Rect1.Left, Rect2.Left);
-  Top := Min(Rect1.Top, Rect2.Top);
-  Right := Max(Rect1.Right, Rect2.Right);
-  Bottom := Max(Rect1.Bottom, Rect2.Bottom);
+  if Rect1.Empty then Assign(Rect2)
+  else
+  if Rect2.Empty then Assign(Rect1)
+  else begin
+    Left := Min(Rect1.Left, Rect2.Left);
+    Top := Min(Rect1.Top, Rect2.Top);
+    Right := Max(Rect1.Right, Rect2.Right);
+    Bottom := Max(Rect1.Bottom, Rect2.Bottom);
+  end;
 end;
 
 procedure TGRectangle.UnionWith(Rect: TGRectangle);
 begin
-  Left := Min(Left, Rect.Left);
-  Top := Min(Top, Rect.Top);
-  Right := Max(Right, Rect.Right);
-  Bottom := Max(Bottom, Rect.Bottom);
+  if Empty then Assign(Rect)
+  else
+  if not Rect.Empty then begin
+    Left := Min(Left, Rect.Left);
+    Top := Min(Top, Rect.Top);
+    Right := Max(Right, Rect.Right);
+    Bottom := Max(Bottom, Rect.Bottom);
+  end;
+end;
+
+function TGRectangle.GetEmpty: Boolean;
+begin
+  Result := (Bottom <= Top) or (Right <= Left);
+end;
+
+procedure TGRectangle.SetEmpty(const AValue: Boolean);
+begin
+  Top := 0;
+  Bottom := 0;
+  Left := 0;
+  Right := 0;
 end;
 
 {$UNDEF IMPLEMENTATION}

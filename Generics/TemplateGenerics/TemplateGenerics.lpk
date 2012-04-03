@@ -10,7 +10,7 @@
       <PathDelim Value="\"/>
       <SearchPaths>
         <IncludeFiles Value="Generic"/>
-        <OtherUnitFiles Value="Specialized;Generic"/>
+        <OtherUnitFiles Value="Specialized;Generic;Additional"/>
         <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
       </SearchPaths>
       <CodeGeneration>
@@ -28,7 +28,7 @@
     </CompilerOptions>
     <Description Value="Generic classes implemented as templates."/>
     <Version Minor="4"/>
-    <Files Count="26">
+    <Files Count="27">
       <Item1>
         <Filename Value="ReadMe.txt"/>
         <Type Value="Text"/>
@@ -87,6 +87,7 @@
       </Item14>
       <Item15>
         <Filename Value="Generic\GenericRectangle.inc"/>
+        <UnitName Value="GenericRectangle"/>
       </Item15>
       <Item16>
         <Filename Value="Specialized\SpecializedList.pas"/>
@@ -132,6 +133,10 @@
         <Filename Value="Specialized\SpecializedRectangle.pas"/>
         <UnitName Value="SpecializedRectangle"/>
       </Item26>
+      <Item27>
+        <Filename Value="Additional\UBinarySerializer.pas"/>
+        <UnitName Value="UBinarySerializer"/>
+      </Item27>
     </Files>
     <Type Value="RunAndDesignTime"/>
     <RequiredPkgs Count="2">

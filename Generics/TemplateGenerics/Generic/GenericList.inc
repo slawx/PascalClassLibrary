@@ -23,6 +23,8 @@
   private
     FItems: array of TGListItem;
     FCount: TGListIndex;
+    FUpdateCount: NativeInt;
+    FOnUpdate: TNotifyEvent;
     function Get(Index: TGListIndex): TGListItem;
     function GetCapacity: TGListIndex;
     function GetLast: TGListItem;
@@ -71,6 +73,9 @@
       SourceIndex, SourceCount: TGListIndex);
     procedure Sort(Compare: TGListSortCompare);
     procedure SetArray(Values: array of TGListItem);
+    procedure BeginUpdate;
+    procedure EndUpdate;
+    procedure Update;
     property Count: TGListIndex read FCount write SetCount;
     property Capacity: TGListIndex read GetCapacity write SetCapacity;
     property Items[Index: TGListIndex]: TGListItem read Get write Put; default;
@@ -106,6 +111,7 @@ begin
     Items[Index + I] := Values[I];
     I := I + 1;
   end;
+  Update;
 end;
 
 procedure TGList.ReplaceList(Index: TGListIndex; Source: TGList);
@@ -117,6 +123,7 @@ begin
     Items[Index + I] := Source[I];
     I := I + 1;
   end;
+  Update;
 end;
 
 procedure TGList.ReplaceListPart(Index: TGListIndex; Source: TGList;
@@ -129,6 +136,7 @@ begin
     Items[Index + I] := Source[SourceIndex + I];
     I := I + 1;
   end;
+  Update;
 end;
 
 function TGList.GetCapacity: TGListIndex;
@@ -247,6 +255,7 @@ begin
     FItems[I] := Source[I];
     I := I + 1;
   end;
+  Update;
 end;
 
 function TGList.Extract(Item: TGListItem): TGListItem;
@@ -293,6 +302,7 @@ begin
     raise EListError.CreateFmt(SListIndexError, [Index]);
   InsertCount(Index, 1);
   FItems[Index] := Item;
+  Update;
 end;
 
 procedure TGList.InsertList(Index: TGListIndex; List: TGList);
@@ -318,6 +328,7 @@ begin
   Count := Count + ACount;
   if Index < FCount then
     System.Move(FItems[Index], FItems[Index + ACount], (FCount - ACount - Index) * SizeOf(TGListItem));
+  Update;
 end;
 
 function TGList.IndexOfList(List: TGList; Start: TGListIndex): TGListIndex;
@@ -408,6 +419,7 @@ begin
   FItems[NewIndex] := Temp;
   //Delete(CurIndex);
   //Insert(NewIndex, Temp);
+  Update;
 end;
 
 procedure TGList.MoveItems(CurIndex, NewIndex, Count: TGListIndex);
@@ -433,6 +445,7 @@ begin
       D := D + 1;
     end;
   end;
+  Update;
 end;
 
 function TGList.Remove(Item: TGListItem): TGListIndex;
@@ -468,12 +481,14 @@ begin
     Exchange(I, Count - 1 - I);
     I := I + 1;
   end;
+  Update;
 end;
 
 procedure TGList.Sort(Compare: TGListSortCompare);
 begin
   if FCount > 1 then
     QuickSort(0, FCount - 1, Compare);
+  Update;
 end;
 
 procedure TGList.AddArray(Values: array of TGListItem);
@@ -485,6 +500,7 @@ begin
     Add(Values[I]);
     I := I + 1;
   end;
+  Update;
 end;
 
 procedure TGList.SetArray(Values: array of TGListItem);
@@ -497,6 +513,22 @@ begin
     Add(Values[I]);
     I := I + 1;
   end;
+end;
+
+procedure TGList.BeginUpdate;
+begin
+  Inc(FUpdateCount);
+end;
+
+procedure TGList.EndUpdate;
+begin
+  Dec(FUpdateCount);
+  Update;
+end;
+
+procedure TGList.Update;
+begin
+  if Assigned(FOnUpdate) and (FUpdateCount = 0) then FOnUpdate(Self);
 end;
 
 function TGList.Implode(Separator: string; Converter: TGListToStringConverter): string;
@@ -529,6 +561,7 @@ begin
   Count := Count + 1;
   Result := FCount - 1;
   FItems[Result] := Item;
+  Update;
 end;
 
 procedure TGList.AddList(List: TGList);
@@ -544,6 +577,7 @@ begin
     I := I + 1;
     J := J + 1;
   end;
+  Update;
 end;
 
 procedure TGList.AddListPart(List: TGList; ItemIndex, ItemCount: TGListIndex);
@@ -559,6 +593,7 @@ begin
     I := I + 1;
     J := J + 1;
   end;
+  Update;
 end;
 
 procedure TGList.Clear;
@@ -574,6 +609,7 @@ begin
   FCount := FCount - 1;
   System.Move(FItems[Index + 1], FItems[Index], (FCount - Index) * SizeOf(TGListItem));
   SetCapacityOptimized(Capacity - 1);
+  Update;
 end;
 
 procedure TGList.DeleteItems(Index, Count: TGListIndex);
@@ -585,6 +621,7 @@ begin
     Delete(Index);
     I := I + 1;
   end;
+  Update;
 end;
 
 procedure TGList.Fill(Start, Count: TGListIndex; Value: TGListItem);
@@ -596,6 +633,7 @@ begin
     FItems[I] := Value;
     I := I + 1;
   end;
+  Update;
 end;
 
 procedure TGList.Exchange(Index1, Index2: TGListIndex);
@@ -609,6 +647,7 @@ begin
   Temp := FItems[Index1];
   FItems[Index1] := FItems[Index2];
   FItems[Index2] := Temp;
+  Update;
 end;
 
 {$UNDEF IMPLEMENTATION}

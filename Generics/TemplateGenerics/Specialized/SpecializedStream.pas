@@ -5,7 +5,7 @@ unit SpecializedStream;
 interface
 
 uses
-  Classes, SysUtils, SpecializedList;
+  Classes, SysUtils, SpecializedList, DateUtils;
 
 type
   TSeekOrigin = (soBegin, soCurrent, soEnd);
@@ -28,7 +28,7 @@ type
 {$DEFINE TGStreamIndex := Integer}
 {$DEFINE TGStreamItem := Byte}
 {$DEFINE TGStreamList := TListStreamByte}
-{$DEFINE TGStream := TStreamByte}
+{$DEFINE TGStream := TBaseStreamByte}
 {$DEFINE TGStreamSortCompare := TStreamByteSortCompare}
 {$DEFINE TGStreamToStringConverter := TStreamByteToStringConverter}
 {$DEFINE TGStreamFromStringConverter := TStreamByteFromStringConverter}
@@ -48,34 +48,46 @@ type
 {$DEFINE INTERFACE}
 {$I 'GenericStream.inc'}
 
-{ TMemoryStreamByte }
+  TStreamByte = class(TBaseStreamByte)
+    function ReadBuffer(var Buffer; Count: Integer): Integer; virtual; abstract;
+    function WriteBuffer(var Buffer; Count: Integer): Integer; virtual; abstract;
+  end;
 
-TMemoryStreamByte = class(TStreamByte)
-private
-  FList: TListByte;
-  FPosition: Integer;
-public
-  procedure Assign(Source: TStreamByte); override;
-  procedure Write(Item: Byte); override;
-  procedure WriteArray(Values: array of Byte); override;
-  procedure WriteList(List: TListByte);
-  function Read: Byte; override;
-  function ReadArray(Count: Integer): TStreamByteItemArray; override;
-  function ReadList(List: TListByte; Count: Integer): Integer;
-  function Insert(Count: Integer): Integer; override;
-  function Remove(Count: Integer): Integer; override;
-  function Seek(Offset: Integer; Origin: TSeekOrigin = soCurrent): Integer; override;
-  constructor Create; override;
-  destructor Destroy; override;
-  property List: TListByte read FList;
-end;
+  { TMemoryStreamByte }
+
+  TMemoryStreamByte = class(TStreamByte)
+  private
+    FList: TListByte;
+    FOwnsList: Boolean;
+    FPosition: Integer;
+  public
+    procedure Assign(Source: TBaseStreamByte); override;
+    procedure Write(Item: Byte); override;
+    procedure WriteArray(Values: array of Byte); override;
+    procedure WriteList(List: TListByte);
+    function WriteBuffer(var Buffer; Count: Integer): Integer; override;
+    procedure WriteStream(Stream: TBaseStreamByte; Count: Integer); override;
+    function Read: Byte; override;
+    function ReadArray(Count: Integer): TStreamByteItemArray; override;
+    function ReadList(List: TListByte; Count: Integer): Integer;
+    function ReadBuffer(var Buffer; Count: Integer): Integer; override;
+    function ReadStream(Stream: TBaseStreamByte; Count: Integer): Integer; override;
+    function Insert(Count: Integer): Integer; override;
+    function Remove(Count: Integer): Integer; override;
+    function Seek(Offset: Integer; Origin: TSeekOrigin = soCurrent): Integer; override;
+    constructor Create; override; overload;
+    constructor Create(AList: TListByte); overload;
+    destructor Destroy; override;
+    property OwnsList: Boolean read FOwnsList write FOwnsList;
+    property List: TListByte read FList;
+  end;
 
 
 implementation
 
 { TMemoryStreamByte }
 
-procedure TMemoryStreamByte.Assign(Source: TStreamByte);
+procedure TMemoryStreamByte.Assign(Source: TBaseStreamByte);
 begin
   inherited;
   if Source is TMemoryStreamByte then begin
@@ -105,6 +117,16 @@ begin
   FList.ReplaceList(FPosition, List);
 end;
 
+procedure TMemoryStreamByte.WriteStream(Stream: TBaseStreamByte; Count: Integer);
+begin
+
+end;
+
+function TMemoryStreamByte.WriteBuffer(var Buffer; Count: Integer): Integer;
+begin
+
+end;
+
 function TMemoryStreamByte.Read: Byte;
 begin
   Result := FList[FPosition];
@@ -122,6 +144,17 @@ begin
     Count := FList.Count - FPosition;
   FList.GetList(List, FPosition, Count);
   Result := Count;
+end;
+
+function TMemoryStreamByte.ReadBuffer(var Buffer; Count: Integer): Integer;
+begin
+
+end;
+
+function TMemoryStreamByte.ReadStream(Stream: TBaseStreamByte; Count: Integer
+  ): Integer;
+begin
+
 end;
 
 function TMemoryStreamByte.Insert(Count: Integer): Integer;
@@ -153,11 +186,19 @@ constructor TMemoryStreamByte.Create;
 begin
   inherited;
   FList := TListByte.Create;
+  OwnsList := True;
+end;
+
+constructor TMemoryStreamByte.Create(AList: TListByte);
+begin
+  inherited Create;
+  FList := AList;
+  OwnsList := False;
 end;
 
 destructor TMemoryStreamByte.Destroy;
 begin
-  FList.Free;
+  if OwnsList then FList.Free;
   inherited Destroy;
 end;
 
@@ -180,7 +221,7 @@ end;
 {$DEFINE TGStreamIndex := Integer}
 {$DEFINE TGStreamItem := Byte}
 {$DEFINE TGStreamList := TListStreamByte}
-{$DEFINE TGStream := TStreamByte}
+{$DEFINE TGStream := TBaseStreamByte}
 {$DEFINE TGStreamSortCompare := TStreamByteSortCompare}
 {$DEFINE TGStreamToStringConverter := TStreamByteToStringConverter}
 {$DEFINE TGStreamFromStringConverter := TStreamByteFromStringConverter}
@@ -199,4 +240,7 @@ end;
 {$DEFINE TGStreamItemArray := TStreamPointerItemArray}
 {$DEFINE IMPLEMENTATION}
 {$I 'GenericStream.inc'}
+
+
+
 end.
