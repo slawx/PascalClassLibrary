@@ -249,7 +249,7 @@ type
   end;
 
   {:@abstract(Main class implementing all communication routines)}
-  TBlockSerial = class(TObject)
+  TBlockSerial = class
   protected
     FOnStatus: THookSerialStatus;
     Fhandle: THandle;
@@ -812,10 +812,11 @@ end;
 procedure TBlockSerial.GetComNr(Value: string);
 begin
   FComNr := PortIsClosed;
-  if pos('COM', uppercase(Value)) = 1 then
-    FComNr := StrToIntdef(copy(Value, 4, Length(Value) - 3), PortIsClosed + 1) - 1;
-  if pos('/DEV/TTYS', uppercase(Value)) = 1 then
-    FComNr := StrToIntdef(copy(Value, 10, Length(Value) - 9), PortIsClosed - 1);
+  if Pos('COM', UpperCase(Value)) = 1 then
+    FComNr := StrToIntdef(Copy(Value, 4, Length(Value) - 3), PortIsClosed + 1) - 1;
+  if Pos('/DEV/TTYS', UpperCase(Value)) = 1 then begin
+    FComNr := StrToIntdef(Copy(Value, 10, Length(Value) - 9), PortIsClosed);
+  end;
 end;
 
 procedure TBlockSerial.SetBandwidth(Value: Integer);
@@ -1899,7 +1900,7 @@ begin
   {$IFNDEF FPC}
   SerialCheck(ioctl(integer(FHandle), TCFLSH, TCIOFLUSH));
   {$ELSE}
-  SerialCheck(fpioctl(integer(FHandle), TCFLSH, TCIOFLUSH));
+  SerialCheck(fpioctl(integer(FHandle), TCFLSH, Pointer(TCIOFLUSH)));
   {$ENDIF}
   FBuffer := '';
   ExceptCheck;
@@ -2295,4 +2296,4 @@ begin
 end;
 {$ENDIF}
 
-end.
+end.
