@@ -2,21 +2,21 @@
   This source is only used to compile and install the package.
  }
 
-unit CoolAudio; 
+unit CoolAudio;
 
 interface
 
 uses
   fmod, fmoddyn, fmoderrors, fmodpresets, fmodtypes, UCoolAudio, UPlaylist, 
   UAudioSystemFMOD, UAudioSystemMPlayer, UAudioSystemWindows, UAudioSystem, 
-  LazarusPackageIntf;
+  UAudioSystemMAD, UAudioSystemDSP, LazarusPackageIntf;
 
 implementation
 
-procedure Register; 
+procedure Register;
 begin
-end; 
+end;
 
 initialization
-  RegisterPackage('CoolAudio', @Register); 
+  RegisterPackage('CoolAudio', @Register);
 end.

@@ -2,22 +2,26 @@
 <CONFIG>
   <Package Version="4">
     <Name Value="CoolAudio"/>
+    <Author Value="Chronos"/>
     <CompilerOptions>
-      <Version Value="10"/>
+      <Version Value="11"/>
       <SearchPaths>
-        <OtherUnitFiles Value="fmodintf;Systems"/>
+        <OtherUnitFiles Value="fmodintf;Systems;Systems/DSP"/>
         <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
       </SearchPaths>
       <Linking>
         <Debugging>
-          <GenerateDebugInfo Value="True"/>
+          <DebugInfoType Value="dsStabs"/>
         </Debugging>
       </Linking>
       <Other>
         <CompilerPath Value="$(CompPath)"/>
       </Other>
     </CompilerOptions>
-    <Files Count="11">
+    <Description Value="CoolAudio"/>
+    <License Value="GNU/GPL"/>
+    <Version Minor="1"/>
+    <Files Count="13">
       <Item1>
         <Filename Value="fmodintf/fmod.pas"/>
         <UnitName Value="fmod"/>
@@ -62,6 +66,14 @@
         <Filename Value="Systems/UAudioSystem.pas"/>
         <UnitName Value="UAudioSystem"/>
       </Item11>
+      <Item12>
+        <Filename Value="Systems/UAudioSystemMAD.pas"/>
+        <UnitName Value="UAudioSystemMAD"/>
+      </Item12>
+      <Item13>
+        <Filename Value="Systems/DSP/UAudioSystemDSP.pas"/>
+        <UnitName Value="UAudioSystemDSP"/>
+      </Item13>
     </Files>
     <Type Value="RunAndDesignTime"/>
     <RequiredPkgs Count="2">
