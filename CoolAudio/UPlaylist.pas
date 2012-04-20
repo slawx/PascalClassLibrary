@@ -1,6 +1,6 @@
 unit UPlaylist;
 
-{$mode objfpc}{$H+}
+{$mode delphi}{$H+}
 
 interface
 
@@ -14,9 +14,9 @@ type
 
   { TPlaylist }
 
-  TPlaylist = class
+  TPlaylist = class(TComponent)
     Items: TObjectList; // TObjectList<TPlaylistItem>
-    constructor Create;
+    constructor Create(AOwner: TComponent);
     destructor Destroy; override;
   end;
 
@@ -25,8 +25,9 @@ implementation
 
 { TPlaylist }
 
-constructor TPlaylist.Create;
+constructor TPlaylist.Create(AOwner: TComponent);
 begin
+  inherited;
   Items := TObjectList.Create;
 end;
 

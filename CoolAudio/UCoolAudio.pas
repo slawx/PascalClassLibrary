@@ -30,7 +30,7 @@ implementation
 
 initialization
 
-AudioSystemManager := TAudioSystemManager.Create;
+AudioSystemManager := TAudioSystemManager.Create(nil);
 {$IFDEF AudioSystemWindows}
 AudioSystemManager.Register('Windows', TAudioSystemWindows, TPlayerWindows);
 {$ENDIF}

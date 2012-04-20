@@ -45,7 +45,7 @@ type
     procedure Play; override;
     procedure Pause; override;
     procedure Stop; override;
-    constructor Create; override;
+    constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     property DeviceType: TMPDeviceTypes read FDeviceType write SetDeviceType;
     property Handle: HWND read FHandle;
@@ -201,9 +201,9 @@ begin
   FPlaying := False;
 end;
 
-constructor TPlayerWindows.Create;
+constructor TPlayerWindows.Create(AOwner: TComponent);
 begin
-  inherited Create;
+  inherited;
 end;
 
 destructor TPlayerWindows.Destroy;

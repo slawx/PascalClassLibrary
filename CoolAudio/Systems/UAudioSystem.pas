@@ -1,6 +1,6 @@
 unit UAudioSystem;
 
-{$mode objfpc}{$H+}
+{$mode delphi}{$H+}
 
 interface
 
@@ -19,7 +19,7 @@ type
     FOutputDriver: TOutputDriver;
     procedure SetOutputMode(AValue: TOutputDriver); virtual;
   public
-    constructor Create; virtual;
+    constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     property OutputMode: TOutputDriver read FOutputDriver write SetOutputMode;
   end;
@@ -59,7 +59,7 @@ type
     property FileName: string read FFileName write SetFileName;
     property Playing: Boolean read FPlaying write SetPlaying;
     property Active: Boolean read FActive write SetActive;
-    constructor Create; virtual;
+    constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
   end;
 
@@ -75,12 +75,13 @@ type
 
   { TAudioSystemManager }
 
-  TAudioSystemManager = class
+  TAudioSystemManager = class(TComponent)
     Systems: TObjectList; // TListObject<TAudioSystem>
     procedure Register(Name: string; SystemClass: TAudioSystemClass;
       PlayerClass: TPlayerClass);
     procedure FillStringList(StringList: TStrings);
-    constructor Create;
+    function SearchByName(Name: string): TAudioSystemManagerItem;
+    constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
   end;
 
@@ -105,6 +106,16 @@ begin
     StringList.AddObject(Name, Systems[I]);
 end;
 
+function TAudioSystemManager.SearchByName(Name: string): TAudioSystemManagerItem;
+var
+  I: Integer;
+begin
+  I := 0;
+  while (I < Systems.Count) and (TAudioSystemManagerItem(Systems[I]).Name <> Name) do Inc(I);
+  if I < Systems.Count then Result := TAudioSystemManagerItem(Systems[I])
+    else Result := nil;
+end;
+
 procedure TAudioSystemManager.Register(Name: string;
   SystemClass: TAudioSystemClass; PlayerClass: TPlayerClass);
 var
@@ -117,8 +128,9 @@ begin
   Systems.Add(NewItem);
 end;
 
-constructor TAudioSystemManager.Create;
+constructor TAudioSystemManager.Create(AOwner: TComponent);
 begin
+  inherited;
   Systems := TObjectList.Create;
 end;
 
@@ -204,8 +216,9 @@ begin
   Active := False;
 end;
 
-constructor TPlayer.Create;
+constructor TPlayer.Create(AOwner: TComponent);
 begin
+  inherited;
 end;
 
 destructor TPlayer.Destroy;
@@ -222,8 +235,9 @@ begin
   FOutputDriver := AValue;
 end;
 
-constructor TAudioSystem.Create;
+constructor TAudioSystem.Create(AOwner: TComponent);
 begin
+  inherited;
   {$IFDEF Windows}
   FOutputDriver := omWin32;
   {$ENDIF}

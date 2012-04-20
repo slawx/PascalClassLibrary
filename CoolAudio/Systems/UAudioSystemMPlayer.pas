@@ -26,7 +26,7 @@ type
     procedure SetOutputMode(AValue: TOutputDriver); override;
   public
     function FindPath: string;
-    constructor Create; override;
+    constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     property Path: string read FPath write FPath;
   end;
@@ -51,7 +51,7 @@ type
     procedure Play; override;
     procedure Pause; override;
     procedure Stop; override;
-    constructor Create; override;
+    constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
   end;
 
@@ -114,9 +114,9 @@ begin
   if Result = '' then raise Exception.Create(SMPlayerNotFound);
 end;
 
-constructor TAudioSystemMPlayer.Create;
+constructor TAudioSystemMPlayer.Create(AOwner: TComponent);
 begin
-  inherited Create;
+  inherited;
   FPath := FindPath;
 end;
 
@@ -289,9 +289,9 @@ begin
   FPlaying := False;
 end;
 
-constructor TPlayerMPlayer.Create;
+constructor TPlayerMPlayer.Create(AOwner: TComponent);
 begin
-  inherited Create;
+  inherited;
   FProcess := TProcess.Create(nil);
 end;
 

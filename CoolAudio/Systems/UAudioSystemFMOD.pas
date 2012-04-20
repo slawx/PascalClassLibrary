@@ -15,7 +15,7 @@ type
   private
     procedure SetOutputMode(AValue: TOutputDriver); override;
   public
-    constructor Create; override;
+    constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
   end;
 
@@ -55,9 +55,9 @@ begin
   {$endif}
 end;
 
-constructor TAudioSystemFMOD.Create;
+constructor TAudioSystemFMOD.Create(AOwner: TComponent);
 begin
-  inherited Create;
+  inherited;
   fmod_load('');
   OutputMode := omALSA;
   FSOUND_Init(44100, 32, 0);
