@@ -1,0 +1,147 @@
+object FormPlaylist: TFormPlaylist
+  Left = 310
+  Height = 394
+  Top = 73
+  Width = 516
+  Caption = 'Playlist'
+  ClientHeight = 394
+  ClientWidth = 516
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  OnShow = FormShow
+  LCLVersion = '1.1'
+  object ButtonDelete: TButton
+    Left = 160
+    Height = 25
+    Top = 360
+    Width = 49
+    Action = AItemDelete
+    Anchors = [akLeft, akBottom]
+    TabOrder = 0
+  end
+  object ButtonAddFolder: TButton
+    Left = 80
+    Height = 25
+    Top = 360
+    Width = 73
+    Action = AAddDirectory
+    Anchors = [akLeft, akBottom]
+    TabOrder = 1
+  end
+  object ButtonAddFile: TButton
+    Left = 8
+    Height = 25
+    Top = 360
+    Width = 65
+    Action = AAddFile
+    Anchors = [akLeft, akBottom]
+    TabOrder = 2
+  end
+  object ListView1: TListView
+    Left = 8
+    Height = 344
+    Top = 8
+    Width = 505
+    Anchors = [akTop, akLeft, akRight, akBottom]
+    AutoWidthLastColumn = True
+    Columns = <    
+      item
+        Caption = 'Location'
+        Width = 501
+      end>
+    MultiSelect = True
+    OwnerData = True
+    PopupMenu = PopupMenu1
+    ReadOnly = True
+    RowSelect = True
+    TabOrder = 3
+    ViewStyle = vsReport
+    OnClick = ListView1Click
+    OnData = ListView1Data
+    OnDblClick = ListView1DblClick
+    OnKeyPress = ListView1KeyPress
+  end
+  object ButtonClear: TButton
+    Left = 216
+    Height = 25
+    Top = 360
+    Width = 49
+    Action = AClearAll
+    Anchors = [akLeft, akBottom]
+    TabOrder = 4
+  end
+  object CheckBoxRandom: TCheckBox
+    Left = 328
+    Height = 17
+    Top = 360
+    Width = 88
+    Anchors = [akLeft, akBottom]
+    Caption = 'Random order'
+    TabOrder = 5
+  end
+  object CheckBoxRepeat: TCheckBox
+    Left = 432
+    Height = 17
+    Top = 360
+    Width = 55
+    Caption = 'Repeat'
+    TabOrder = 6
+  end
+  object Button1: TButton
+    Left = 272
+    Height = 25
+    Top = 360
+    Width = 51
+    Action = AItemPlay
+    TabOrder = 7
+  end
+  object OpenDialog1: TOpenDialog
+    Filter = 'WAV files|*.wav|All files|*.*'
+    FilterIndex = 0
+    left = 44
+    top = 60
+  end
+  object PopupMenu1: TPopupMenu
+    left = 136
+    top = 60
+    object MenuItem5: TMenuItem
+      Action = AItemPlay
+    end
+    object MenuItem1: TMenuItem
+      Action = AAddFile
+    end
+    object MenuItem2: TMenuItem
+      Action = AAddDirectory
+    end
+    object MenuItem3: TMenuItem
+      Action = AItemDelete
+    end
+    object MenuItem4: TMenuItem
+      Action = AClearAll
+    end
+  end
+  object ActionList1: TActionList
+    left = 208
+    top = 60
+    object AItemDelete: TAction
+      Caption = 'Delete'
+      OnExecute = AItemDeleteExecute
+    end
+    object AAddFile: TAction
+      Caption = 'Add file'
+      OnExecute = AAddFileExecute
+    end
+    object AAddDirectory: TAction
+      Caption = 'Add directory'
+      OnExecute = AAddDirectoryExecute
+    end
+    object AClearAll: TAction
+      Caption = 'Clear all'
+      OnExecute = AClearAllExecute
+    end
+    object AItemPlay: TAction
+      Caption = 'Play'
+      OnExecute = AItemPlayExecute
+    end
+  end
+end

@@ -1,5 +1,6 @@
 unit UAudioSystemMAD;
 
+{$I UCoolAudioConfig.inc}
 {$mode delphi}{$H+}
 
 interface

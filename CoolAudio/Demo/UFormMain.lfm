@@ -1,0 +1,147 @@
+object FormMain: TFormMain
+  Left = 361
+  Height = 131
+  Top = 277
+  Width = 434
+  Caption = 'CoolAudio demo'
+  ClientHeight = 131
+  ClientWidth = 434
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  LCLVersion = '1.1'
+  object ButtonOpen: TButton
+    Left = 9
+    Height = 25
+    Top = 48
+    Width = 47
+    Action = AOpen
+    TabOrder = 0
+  end
+  object ButtonPlay: TButton
+    Left = 64
+    Height = 25
+    Top = 48
+    Width = 47
+    Action = APlay
+    TabOrder = 1
+  end
+  object ButtonPause: TButton
+    Left = 120
+    Height = 25
+    Top = 48
+    Width = 48
+    Action = APause
+    TabOrder = 2
+  end
+  object ButtonStop: TButton
+    Left = 176
+    Height = 25
+    Top = 48
+    Width = 48
+    Action = AStop
+    TabOrder = 3
+  end
+  object TrackBar1: TTrackBar
+    Left = 0
+    Height = 33
+    Top = 8
+    Width = 432
+    Max = 100
+    OnChange = TrackBar1Change
+    Position = 0
+    Anchors = [akTop, akLeft, akRight]
+    TabOrder = 4
+  end
+  object ComboBoxBackend: TComboBox
+    Left = 64
+    Height = 21
+    Top = 80
+    Width = 128
+    ItemHeight = 13
+    OnChange = ComboBoxBackendChange
+    Style = csDropDownList
+    TabOrder = 5
+  end
+  object Label1: TLabel
+    Left = 12
+    Height = 14
+    Top = 80
+    Width = 45
+    Caption = 'Backend:'
+    ParentColor = False
+  end
+  object LabelPosition: TLabel
+    Left = 10
+    Height = 14
+    Top = 112
+    Width = 42
+    Caption = 'Position:'
+    ParentColor = False
+  end
+  object ButtonPlaylist: TButton
+    Left = 360
+    Height = 25
+    Top = 48
+    Width = 67
+    Action = AShowPlaylist
+    TabOrder = 6
+  end
+  object ButtonPrevious: TButton
+    Left = 232
+    Height = 25
+    Top = 48
+    Width = 57
+    Action = APlayPrevious
+    TabOrder = 7
+  end
+  object ButtonNext: TButton
+    Left = 296
+    Height = 25
+    Top = 48
+    Width = 56
+    Action = APlayNext
+    TabOrder = 8
+  end
+  object OpenDialog1: TOpenDialog
+    Filter = 'Any file (*.*)|*.*|MP3 (*.mp3)|*.mp3|WAV (*.wav)|*.wav'
+    left = 272
+    top = 96
+  end
+  object TimerPlayback: TTimer
+    OnTimer = TimerPlaybackTimer
+    left = 328
+    top = 88
+  end
+  object ActionList1: TActionList
+    left = 208
+    top = 96
+    object APlayNext: TAction
+      Caption = 'Next'
+      OnExecute = APlayNextExecute
+    end
+    object APlayPrevious: TAction
+      Caption = 'Previous'
+      OnExecute = APlayPreviousExecute
+    end
+    object APlay: TAction
+      Caption = 'Play'
+      OnExecute = APlayExecute
+    end
+    object APause: TAction
+      Caption = 'Pause'
+      OnExecute = APauseExecute
+    end
+    object AStop: TAction
+      Caption = 'Stop'
+      OnExecute = AStopExecute
+    end
+    object AShowPlaylist: TAction
+      Caption = 'Playlist'
+      OnExecute = AShowPlaylistExecute
+    end
+    object AOpen: TAction
+      Caption = 'Open'
+      OnExecute = AOpenExecute
+    end
+  end
+end

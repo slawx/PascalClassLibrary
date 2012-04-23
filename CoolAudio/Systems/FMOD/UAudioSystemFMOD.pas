@@ -1,9 +1,11 @@
 unit UAudioSystemFMOD;
 
-{$mode objfpc}{$H+}
+{$I UCoolAudioConfig.inc}
+{$mode delphi}{$H+}
 
 interface
 
+{$IFDEF AudioSystemFMOD}
 uses
   Classes, SysUtils, fmoddyn, fmodtypes, UAudioSystem, DateUtils;
 
@@ -38,7 +40,12 @@ type
     procedure Stop; override;
   end;
 
+{$ENDIF}
+
+
 implementation
+
+{$IFDEF AudioSystemFMOD}
 
 { TAudioSystemFMOD }
 
@@ -127,6 +134,8 @@ begin
   end;
   FSOUND_Close;
 end;
+
+{$ENDIF}
 
 end.
 

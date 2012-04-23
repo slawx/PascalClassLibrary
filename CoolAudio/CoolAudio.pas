@@ -7,8 +7,8 @@ unit CoolAudio;
 interface
 
 uses
-  UCoolAudio, UPlaylist, UAudioSystemFMOD, UAudioSystemMPlayer, 
-  UAudioSystemWindows, UAudioSystem, UAudioSystemMAD, UAudioSystemDSP, 
+  UCoolAudio, UPlaylist, UAudioSystem, UAudioSystemDSP, UAudioSystemFMOD, 
+  UAudioSystemMAD, UAudioSystemWindows, UAudioSystemMPlayer, UWavFile, 
   LazarusPackageIntf;
 
 implementation

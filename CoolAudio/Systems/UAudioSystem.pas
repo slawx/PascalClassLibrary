@@ -85,6 +85,10 @@ type
     destructor Destroy; override;
   end;
 
+const
+  WavFileExt = '.wav';
+  Mp3FileExt = '.mp3';
+
 resourcestring
   SOpenOutputFailed = 'Failed opening audio output';
 
@@ -223,6 +227,7 @@ end;
 
 destructor TPlayer.Destroy;
 begin
+  Stop;
   Active := False;
   inherited Destroy;
 end;

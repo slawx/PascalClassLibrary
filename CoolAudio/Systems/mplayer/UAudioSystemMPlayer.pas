@@ -2,6 +2,7 @@
 
 unit UAudioSystemMPlayer;
 
+{$I UCoolAudioConfig.inc}
 {$mode Delphi}{$H+}
 
 interface

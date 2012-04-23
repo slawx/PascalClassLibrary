@@ -6,7 +6,7 @@
     <CompilerOptions>
       <Version Value="11"/>
       <SearchPaths>
-        <OtherUnitFiles Value="fmodintf;Systems;Systems/DSP"/>
+        <OtherUnitFiles Value="fmodintf;Systems;Systems/DSP;Systems/FMOD;Systems/MAD;Systems/WinAPI;Systems/mplayer"/>
         <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
       </SearchPaths>
       <Linking>
@@ -21,7 +21,7 @@
     <Description Value="CoolAudio"/>
     <License Value="GNU/GPL"/>
     <Version Minor="1"/>
-    <Files Count="8">
+    <Files Count="10">
       <Item1>
         <Filename Value="UCoolAudio.pas"/>
         <UnitName Value="UCoolAudio"/>
@@ -31,29 +31,36 @@
         <UnitName Value="UPlaylist"/>
       </Item2>
       <Item3>
-        <Filename Value="Systems/UAudioSystemFMOD.pas"/>
-        <UnitName Value="UAudioSystemFMOD"/>
-      </Item3>
-      <Item4>
-        <Filename Value="Systems/UAudioSystemMPlayer.pas"/>
-        <UnitName Value="UAudioSystemMPlayer"/>
-      </Item4>
-      <Item5>
-        <Filename Value="Systems/UAudioSystemWindows.pas"/>
-        <UnitName Value="UAudioSystemWindows"/>
-      </Item5>
-      <Item6>
         <Filename Value="Systems/UAudioSystem.pas"/>
         <UnitName Value="UAudioSystem"/>
-      </Item6>
-      <Item7>
-        <Filename Value="Systems/UAudioSystemMAD.pas"/>
-        <UnitName Value="UAudioSystemMAD"/>
-      </Item7>
-      <Item8>
+      </Item3>
+      <Item4>
         <Filename Value="Systems/DSP/UAudioSystemDSP.pas"/>
         <UnitName Value="UAudioSystemDSP"/>
+      </Item4>
+      <Item5>
+        <Filename Value="Systems/FMOD/UAudioSystemFMOD.pas"/>
+        <UnitName Value="UAudioSystemFMOD"/>
+      </Item5>
+      <Item6>
+        <Filename Value="Systems/MAD/UAudioSystemMAD.pas"/>
+        <UnitName Value="UAudioSystemMAD"/>
+      </Item6>
+      <Item7>
+        <Filename Value="Systems/WinAPI/UAudioSystemWindows.pas"/>
+        <UnitName Value="UAudioSystemWindows"/>
+      </Item7>
+      <Item8>
+        <Filename Value="Systems/mplayer/UAudioSystemMPlayer.pas"/>
+        <UnitName Value="UAudioSystemMPlayer"/>
       </Item8>
+      <Item9>
+        <Filename Value="Systems/UWavFile.pas"/>
+        <UnitName Value="UWavFile"/>
+      </Item9>
+      <Item10>
+        <Filename Value="UCoolAudioConfig.inc"/>
+      </Item10>
     </Files>
     <Type Value="RunAndDesignTime"/>
     <RequiredPkgs Count="2">

@@ -1,6 +1,7 @@
 unit UAudioSystemWindows;
 
-{$mode objfpc}{$H+}
+{$I UCoolAudioConfig.inc}
+{$mode delphi}{$H+}
 
 interface
 
@@ -186,19 +187,22 @@ procedure TPlayerWindows.Stop;
 var
   Parm: TMCI_Generic_Parms;
 begin
-  FFlags := 0;
-  if FUseNotify then
-  begin
-    if FNotify then FFlags := mci_Notify;
-    FUseNotify := False;
-  end else FFlags := mci_Notify;
-  if FUseWait then
-  begin
-    if FWait then FFlags := FFlags or mci_Wait;
-    FUseWait := False;
+  if FPlaying then begin
+    FFlags := 0;
+    if FUseNotify then
+    begin
+      if FNotify then FFlags := mci_Notify;
+      FUseNotify := False;
+    end else FFlags := mci_Notify;
+    if FUseWait then
+    begin
+      if FWait then FFlags := FFlags or mci_Wait;
+      FUseWait := False;
+    end;
+    CheckError(mciSendCommand(FDeviceID, mci_Stop, FFlags, Longint(@Parm)));
+    FPlaying := False;
+    Position := 0;
   end;
-  CheckError(mciSendCommand(FDeviceID, mci_Stop, FFlags, Longint(@Parm)));
-  FPlaying := False;
 end;
 
 constructor TPlayerWindows.Create(AOwner: TComponent);
