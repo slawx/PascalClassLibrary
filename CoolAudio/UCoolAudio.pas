@@ -17,16 +17,27 @@ uses
 var
   AudioSystemManager: TAudioSystemManager;
 
+procedure Register;
+
+
 implementation
+
+uses
+  UPlayList;
+
+procedure Register;
+begin
+  RegisterComponents('CoolAudio', [TMediaPlayer, TPlayList]);
+end;
 
 initialization
 
 AudioSystemManager := TAudioSystemManager.Create(nil);
-{$IFDEF AudioSystemWindows}AudioSystemManager.Register('Windows', TAudioSystemWindows, TPlayerWindows);{$ENDIF}
-{$IFDEF AudioSystemMPlayer}AudioSystemManager.Register('MPlayer', TAudioSystemMPlayer, TPlayerMPlayer);{$ENDIF}
-{$IFDEF AudioSystemFMOD}AudioSystemManager.Register('FMOD', TAudioSystemFMOD, TPlayerFMOD);{$ENDIF}
-{$IFDEF AudioSystemMAD}AudioSystemManager.Register('MAD', TAudioSystemMAD, TPlayerMAD);{$ENDIF}
-{$IFDEF AudioSystemDSP}AudioSystemManager.Register('DSP', TAudioSystemDSP, TPlayerDSP);{$ENDIF}
+{$IFDEF AudioSystemWindows}AudioSystemManager.Register('Windows', TAudioSystemWindows);{$ENDIF}
+{$IFDEF AudioSystemMPlayer}AudioSystemManager.Register('MPlayer', TAudioSystemMPlayer);{$ENDIF}
+{$IFDEF AudioSystemFMOD}AudioSystemManager.Register('FMOD', TAudioSystemFMOD);{$ENDIF}
+{$IFDEF AudioSystemMAD}AudioSystemManager.Register('MAD', TAudioSystemMAD);{$ENDIF}
+{$IFDEF AudioSystemDSP}AudioSystemManager.Register('DSP', TAudioSystemDSP);{$ENDIF}
 
 finalization
 

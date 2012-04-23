@@ -15,6 +15,7 @@ implementation
 
 procedure Register;
 begin
+  RegisterUnit('UCoolAudio', @UCoolAudio.Register);
 end;
 
 initialization

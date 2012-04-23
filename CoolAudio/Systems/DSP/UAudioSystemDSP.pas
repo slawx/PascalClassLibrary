@@ -20,6 +20,7 @@ type
     Channels: Integer;
     SampleRate: Integer; // Hz
     BitsPerSample: Integer;
+    function GetMediaPlayerDriverClass: TMediaPlayerDriverClass; override;
     procedure OpenDevice;
     procedure CloseDevice;
     constructor Create(AOwner: TComponent); override;
@@ -73,6 +74,11 @@ implementation
 {$IFDEF AudioSystemDSP}
 
 { TAudioSystemDSP }
+
+function TAudioSystemDSP.GetMediaPlayerDriverClass: TMediaPlayerDriverClass;
+begin
+  Result := TPlayerDSP;
+end;
 
 procedure TAudioSystemDSP.OpenDevice;
 var

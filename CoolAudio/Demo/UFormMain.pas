@@ -6,8 +6,8 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  ComCtrls, ExtCtrls, ActnList, UAudioSystem, UAudioSystemFMOD,
-  UAudioSystemMPlayer, UCoolAudio, UPlaylist;
+  ComCtrls, ExtCtrls, ActnList, UAudioSystem,
+  UCoolAudio, UPlaylist;
 
 type
 
@@ -31,10 +31,14 @@ type
     ButtonPause: TButton;
     ComboBoxBackend: TComboBox;
     Label1: TLabel;
+    Label2: TLabel;
     LabelPosition: TLabel;
+    MediaPlayer: TMediaPlayer;
     OpenDialog1: TOpenDialog;
+    PlayList: TPlayList;
     TimerPlayback: TTimer;
-    TrackBar1: TTrackBar;
+    TrackBarPosition: TTrackBar;
+    TrackBarVolume: TTrackBar;
     procedure AOpenExecute(Sender: TObject);
     procedure APauseExecute(Sender: TObject);
     procedure APlayExecute(Sender: TObject);
@@ -45,14 +49,12 @@ type
     procedure ComboBoxBackendChange(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
+    procedure FormShow(Sender: TObject);
     procedure TimerPlaybackTimer(Sender: TObject);
-    procedure TrackBar1Change(Sender: TObject);
+    procedure TrackBarPositionChange(Sender: TObject);
+    procedure TrackBarVolumeChange(Sender: TObject);
   private
-    { private declarations }
   public
-    AudioSystem: TAudioSystem;
-    Player: TPlayer;
-    Playlist: TPlaylist;
     procedure UpdateInterface;
   end;
 
@@ -73,7 +75,7 @@ uses
 
 procedure TFormMain.FormCreate(Sender: TObject);
 begin
-  Playlist := TPlaylist.Create(nil);
+  PlayList := TPlayList.Create(nil);
   AudioSystemManager.FillStringList(ComboBoxBackend.Items);
   if ComboBoxBackend.Items.Count > 0 then
     ComboBoxBackend.ItemIndex := 0;
@@ -82,62 +84,74 @@ end;
 
 procedure TFormMain.FormDestroy(Sender: TObject);
 begin
-  FreeAndNil(Player);
-  FreeAndNil(AudioSystem);
-  FreeAndNil(Playlist);
+  FreeAndNil(PlayList);
+end;
+
+procedure TFormMain.FormShow(Sender: TObject);
+begin
+  UpdateInterface;
 end;
 
 procedure TFormMain.TimerPlaybackTimer(Sender: TObject);
 begin
-  if Assigned(Player) and Player.Playing then begin
-    TrackBar1.OnChange := nil;
-    TrackBar1.Position := Trunc(Player.Position / Player.Length * TrackBar1.Max);
+  if Assigned(MediaPlayer) and MediaPlayer.Playing then begin
+    TrackBarPosition.OnChange := nil;
+    TrackBarPosition.Position := Trunc(MediaPlayer.Position / MediaPlayer.Length * TrackBarPosition.Max);
+    TrackBarVolume.OnChange := nil;
+    TrackBarVolume.Position := Trunc(MediaPlayer.Volume * TrackBarVolume.Max);
     Application.ProcessMessages;
-    TrackBar1.OnChange := TrackBar1Change;
-    LabelPosition.Caption := 'Position: ' + TimeToStr(Player.Position) + ' / ' + TimeToStr(Player.Length);
+    TrackBarPosition.OnChange := TrackBarPositionChange();
+    TrackBarVolume.OnChange := TrackBarVolumeChange();
+    LabelPosition.Caption := 'Position: ' + TimeToStr(MediaPlayer.Position) + ' / ' + TimeToStr(MediaPlayer.Length);
   end;
 end;
 
-procedure TFormMain.TrackBar1Change(Sender: TObject);
+procedure TFormMain.TrackBarPositionChange(Sender: TObject);
 begin
-  Player.Position := TrackBar1.Position / TrackBar1.Max * Player.Length;
+  MediaPlayer.Position := TrackBarPosition.Position / TrackBarPosition.Max * MediaPlayer.Length;
+end;
+
+procedure TFormMain.TrackBarVolumeChange(Sender: TObject);
+begin
+  MediaPlayer.Volume := TrackBarVolume.Position / TrackBarVolume.Max;
 end;
 
 procedure TFormMain.UpdateInterface;
 begin
+  APlay.Enabled := not MediaPlayer.Playing;
+  APause.Enabled := MediaPlayer.Playing;
+  AStop.Enabled := MediaPlayer.Playing;
   Caption := ApplicationTitle;
-  if Assigned(Player) then Caption := Player.FileName + ' - ' + Caption;
+  if Assigned(MediaPlayer) then Caption := MediaPlayer.FileName + ' - ' + Caption;
 end;
 
 procedure TFormMain.ComboBoxBackendChange(Sender: TObject);
 begin
-  FreeAndNil(Player);
-  FreeAndNil(AudioSystem);
   if ComboBoxBackend.ItemIndex <> - 1 then begin
     with TAudioSystemManagerItem(ComboBoxBackend.Items.Objects[ComboBoxBackend.ItemIndex]) do begin
-      AudioSystem := SystemClass.Create(nil);
-      Player := PlayerClass.Create(nil);
-      Player.AudioSystem := AudioSystem;
-      Playlist.Player := Player;
-      //Player.Active := True;
+      DefaultAudioSystem := SystemClass.Create(nil);
+      MediaPlayer.AudioSystem := DefaultAudioSystem;
+      PlayList.Player := MediaPlayer;
+      //MediaPlayer.Active := True;
     end;
   end;
 end;
 
 procedure TFormMain.APlayExecute(Sender: TObject);
 begin
-  Player.Play;
+  MediaPlayer.Play;
+  UpdateInterface;
 end;
 
 procedure TFormMain.APlayNextExecute(Sender: TObject);
 begin
-  Playlist.PlayNext;
+  PlayList.PlayNext;
   FormPlaylist.ReloadList;
 end;
 
 procedure TFormMain.APlayPreviousExecute(Sender: TObject);
 begin
-  Playlist.PlayPrevious;
+  PlayList.PlayPrevious;
 end;
 
 procedure TFormMain.AShowPlaylistExecute(Sender: TObject);
@@ -147,20 +161,23 @@ end;
 
 procedure TFormMain.AStopExecute(Sender: TObject);
 begin
-  Player.Stop;
+  MediaPlayer.Stop;
+  UpdateInterface;
 end;
 
 procedure TFormMain.APauseExecute(Sender: TObject);
 begin
-  Player.Pause;
+  MediaPlayer.Pause;
+  UpdateInterface;
 end;
 
 procedure TFormMain.AOpenExecute(Sender: TObject);
 begin
   if OpenDialog1.Execute then begin
-    Player.FileName := OpenDialog1.FileName;
-    Playlist.AddFile(OpenDialog1.FileName);
-    Player.Play;
+    MediaPlayer.FileName := OpenDialog1.FileName;
+    PlayList.AddFile(OpenDialog1.FileName);
+    MediaPlayer.Play;
+    UpdateInterface;
   end;
 end;
 

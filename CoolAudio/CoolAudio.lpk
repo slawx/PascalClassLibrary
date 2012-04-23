@@ -18,12 +18,15 @@
         <CompilerPath Value="$(CompPath)"/>
       </Other>
     </CompilerOptions>
-    <Description Value="CoolAudio"/>
+    <Description Value="Features:
+- TMediaPlayer for playing sound files using different audio systems 
+- TPlayList for song list management"/>
     <License Value="GNU/GPL"/>
-    <Version Minor="1"/>
+    <Version Minor="2"/>
     <Files Count="10">
       <Item1>
         <Filename Value="UCoolAudio.pas"/>
+        <HasRegisterProc Value="True"/>
         <UnitName Value="UCoolAudio"/>
       </Item1>
       <Item2>
@@ -60,6 +63,7 @@
       </Item9>
       <Item10>
         <Filename Value="UCoolAudioConfig.inc"/>
+        <UnitName Value="UCoolAudioConfig"/>
       </Item10>
     </Files>
     <Type Value="RunAndDesignTime"/>

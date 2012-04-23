@@ -29,12 +29,13 @@ type
     function FindPath: string;
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
+    function GetMediaPlayerDriverClass: TMediaPlayerDriverClass; override;
     property Path: string read FPath write FPath;
   end;
 
   { TPlayerMPlayer }
 
-  TPlayerMPlayer = class(TPlayer)
+  TPlayerMPlayer = class(TMediaPlayerDriver)
   private
     FProcess: TProcess;
     FVolume: Real;
@@ -52,7 +53,7 @@ type
     procedure Play; override;
     procedure Pause; override;
     procedure Stop; override;
-    constructor Create(AOwner: TComponent); override;
+    constructor Create; override;
     destructor Destroy; override;
   end;
 
@@ -124,6 +125,11 @@ end;
 destructor TAudioSystemMPlayer.Destroy;
 begin
   inherited Destroy;
+end;
+
+function TAudioSystemMPlayer.GetMediaPlayerDriverClass: TMediaPlayerDriverClass;
+begin
+  Result := TPlayerMPlayer;
 end;
 
 { TPlayerMPlayer }
@@ -290,7 +296,7 @@ begin
   FPlaying := False;
 end;
 
-constructor TPlayerMPlayer.Create(AOwner: TComponent);
+constructor TPlayerMPlayer.Create;
 begin
   inherited;
   FProcess := TProcess.Create(nil);

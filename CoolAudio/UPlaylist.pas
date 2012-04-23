@@ -12,14 +12,13 @@ type
     FileName: string;
   end;
 
-  { TPlaylist }
+  { TPlayList }
 
-  TPlaylist = class(TComponent)
+  TPlayList = class(TComponent)
+  private
+    FRandomOrder: Boolean;
+    FRepeatInfinitely: Boolean;
   public
-    Player: TPlayer;
-    Items: TObjectList; // TObjectList<TPlaylistItem>
-    RandomOrder: Boolean;
-    RepeatInfinitely: Boolean;
     CurrentIndex: Integer;
     procedure AddFile(FileName: string);
     procedure Shuffle;
@@ -28,14 +27,20 @@ type
     procedure PlayPrevious;
     constructor Create(AOwner: TComponent);
     destructor Destroy; override;
+  published
+    Player: TMediaPlayer;
+    Items: TObjectList; // TObjectList<TPlaylistItem>
+    property RandomOrder: Boolean read FRandomOrder write FRandomOrder;
+    property RepeatInfinitely: Boolean read FRepeatInfinitely
+      write FRepeatInfinitely;
   end;
 
 
 implementation
 
-{ TPlaylist }
+{ TPlayList }
 
-procedure TPlaylist.AddFile(FileName: string);
+procedure TPlayList.AddFile(FileName: string);
 var
   NewItem: TPlaylistItem;
 begin
@@ -44,18 +49,18 @@ begin
   Items.Add(NewItem);
 end;
 
-procedure TPlaylist.Shuffle;
+procedure TPlayList.Shuffle;
 begin
 
 end;
 
-procedure TPlaylist.Play;
+procedure TPlayList.Play;
 begin
   Player.FileName := TPlaylistItem(Items[CurrentIndex]).FileName;
   Player.Play;
 end;
 
-procedure TPlaylist.PlayNext;
+procedure TPlayList.PlayNext;
 begin
   Inc(CurrentIndex);
   if CurrentIndex >= Items.Count then begin
@@ -66,7 +71,7 @@ begin
   Play;
 end;
 
-procedure TPlaylist.PlayPrevious;
+procedure TPlayList.PlayPrevious;
 begin
   Dec(CurrentIndex);
   if CurrentIndex < 0 then begin
@@ -75,13 +80,13 @@ begin
   Play;
 end;
 
-constructor TPlaylist.Create(AOwner: TComponent);
+constructor TPlayList.Create(AOwner: TComponent);
 begin
   inherited;
   Items := TObjectList.Create;
 end;
 
-destructor TPlaylist.Destroy;
+destructor TPlayList.Destroy;
 begin
   Items.Free;
   inherited Destroy;

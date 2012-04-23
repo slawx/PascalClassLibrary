@@ -75,7 +75,7 @@ end;
 
 procedure TFormPlaylist.AClearAllExecute(Sender: TObject);
 begin
-  FormMain.Playlist.Items.Clear;
+  FormMain.PlayList.Items.Clear;
   ReloadList;
 end;
 
@@ -83,7 +83,7 @@ procedure TFormPlaylist.AItemDeleteExecute(Sender: TObject);
 var
   I: Integer;
 begin
-  with FormMain.Playlist, Items do begin
+  with FormMain.PlayList, Items do begin
     for I := Count - 1 downto 0 do
       if ListView1.Items[I].Selected then Delete(I);
     if Count > 0 then ListView1.Items[0].Selected := True;
@@ -93,8 +93,8 @@ end;
 
 procedure TFormPlaylist.AItemPlayExecute(Sender: TObject);
 begin
-  FormMain.Playlist.CurrentIndex := ListView1.Selected.Index;
-  FormMain.Playlist.Play;
+  FormMain.PlayList.CurrentIndex := ListView1.Selected.Index;
+  FormMain.PlayList.Play;
 end;
 
 procedure TFormPlaylist.AAddDirectoryExecute(Sender: TObject);
@@ -111,7 +111,7 @@ begin
         if (Ext = WavFileExt) then begin
           NewItem := TPlaylistItem.Create;
           NewItem.FileName := Dir + DirectorySeparator + sr.Name;
-          FormMain.Playlist.Items.Add(NewItem);
+          FormMain.PlayList.Items.Add(NewItem);
         end;
       until FindNext(sr) <> 0;
       FindClose(sr);
@@ -123,7 +123,7 @@ end;
 procedure TFormPlaylist.AAddFileExecute(Sender: TObject);
 begin
   if OpenDialog1.Execute then begin
-    FormMain.Playlist.AddFile(OpenDialog1.FileName);
+    FormMain.PlayList.AddFile(OpenDialog1.FileName);
     ReloadList;
   end;
 end;
@@ -144,10 +144,10 @@ end;
 
 procedure TFormPlaylist.ListView1Data(Sender: TObject; Item: TListItem);
 begin
-  if (Item.Index >= 0) and (Item.Index < FormMain.Playlist.Items.Count) then
-  with TPlaylistItem(FormMain.Playlist.Items[Item.Index]) do begin
+  if (Item.Index >= 0) and (Item.Index < FormMain.PlayList.Items.Count) then
+  with TPlaylistItem(FormMain.PlayList.Items[Item.Index]) do begin
     Item.Caption := FileName;
-    Item.Data := FormMain.Playlist.Items[Item.Index];
+    Item.Data := FormMain.PlayList.Items[Item.Index];
   end;
 end;
 
@@ -163,12 +163,12 @@ end;
 
 procedure TFormPlaylist.ReloadList;
 begin
-  ListView1.Items.Count := FormMain.Playlist.Items.Count;
+  ListView1.Items.Count := FormMain.PlayList.Items.Count;
   ListView1.Refresh;
   ListView1.Selected := nil;
-  if (FormMain.Playlist.CurrentIndex >= 0) and
-    (FormMain.Playlist.CurrentIndex < ListView1.Items.Count) then
-    ListView1.Items[FormMain.Playlist.CurrentIndex].Selected := True;
+  if (FormMain.PlayList.CurrentIndex >= 0) and
+    (FormMain.PlayList.CurrentIndex < ListView1.Items.Count) then
+    ListView1.Items[FormMain.PlayList.CurrentIndex].Selected := True;
   UpdateInterface;
 end;
 
@@ -177,8 +177,8 @@ begin
   AItemDelete.Enabled := Assigned(ListView1.Selected);
   AItemPlay.Enabled := Assigned(ListView1.Selected);
   AClearAll.Enabled := ListView1.Items.Count > 0;
-  CheckBoxRandom.Checked := FormMain.Playlist.RandomOrder;
-  CheckBoxRepeat.Checked := FormMain.Playlist.RepeatInfinitely;
+  CheckBoxRandom.Checked := FormMain.PlayList.RandomOrder;
+  CheckBoxRepeat.Checked := FormMain.PlayList.RepeatInfinitely;
 end;
 
 end.

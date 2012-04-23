@@ -8,6 +8,7 @@ object FormMain: TFormMain
   ClientWidth = 434
   OnCreate = FormCreate
   OnDestroy = FormDestroy
+  OnShow = FormShow
   LCLVersion = '1.1'
   object ButtonOpen: TButton
     Left = 9
@@ -41,13 +42,13 @@ object FormMain: TFormMain
     Action = AStop
     TabOrder = 3
   end
-  object TrackBar1: TTrackBar
+  object TrackBarPosition: TTrackBar
     Left = 0
     Height = 33
     Top = 8
     Width = 432
     Max = 100
-    OnChange = TrackBar1Change
+    OnChange = TrackBarPositionChange
     Position = 0
     Anchors = [akTop, akLeft, akRight]
     TabOrder = 4
@@ -102,19 +103,34 @@ object FormMain: TFormMain
     Action = APlayNext
     TabOrder = 8
   end
+  object TrackBarVolume: TTrackBar
+    Left = 352
+    Height = 25
+    Top = 80
+    Width = 75
+    Max = 100
+    OnChange = TrackBarVolumeChange
+    Position = 0
+    TabOrder = 9
+  end
+  object Label2: TLabel
+    Left = 312
+    Height = 14
+    Top = 87
+    Width = 39
+    Caption = 'Volume:'
+    ParentColor = False
+  end
   object OpenDialog1: TOpenDialog
     Filter = 'Any file (*.*)|*.*|MP3 (*.mp3)|*.mp3|WAV (*.wav)|*.wav'
-    left = 272
-    top = 96
+    left = 168
   end
   object TimerPlayback: TTimer
     OnTimer = TimerPlaybackTimer
-    left = 328
-    top = 88
+    left = 240
   end
   object ActionList1: TActionList
-    left = 208
-    top = 96
+    left = 104
     object APlayNext: TAction
       Caption = 'Next'
       OnExecute = APlayNextExecute
@@ -143,5 +159,17 @@ object FormMain: TFormMain
       Caption = 'Open'
       OnExecute = AOpenExecute
     end
+  end
+  object MediaPlayer: TMediaPlayer
+    Volume = 0
+    Muted = False
+    Active = True
+    left = 312
+  end
+  object PlayList: TPlayList
+    RandomOrder = False
+    RepeatInfinitely = False
+    left = 375
+    top = 2
   end
 end

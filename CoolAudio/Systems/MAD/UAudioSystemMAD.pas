@@ -12,6 +12,7 @@ uses
 type
   TAudioSystemMAD = class(TAudioSystem)
   public
+    function GetMediaPlayerDriverClass: TMediaPlayerDriverClass; override;
   end;
 
   { TPlayerMAD }
@@ -28,6 +29,13 @@ type
 implementation
 
 {$IFDEF AudioSystemMAD}
+
+{ TAudioSystemMAD }
+
+function TAudioSystemMAD.GetMediaPlayerDriverClass: TMediaPlayerDriverClass;
+begin
+  Result := TPlayerMAD;
+end;
 
 { TPlayerMAD }
 

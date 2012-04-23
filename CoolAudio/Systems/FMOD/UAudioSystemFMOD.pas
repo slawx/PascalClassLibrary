@@ -17,13 +17,14 @@ type
   private
     procedure SetOutputMode(AValue: TOutputDriver); override;
   public
+    function GetMediaPlayerDriverClass: TMediaPlayerDriverClass; override;
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
   end;
 
   { TPlayerFMOD }
 
-  TPlayerFMOD = class(TPlayer)
+  TPlayerFMOD = class(TMediaPlayerDriver)
   private
     FHandle: PFSoundStream;
     FVolume: Real;
@@ -60,6 +61,11 @@ begin
       if not FSOUND_SetOutput(FSOUND_OUTPUT_ALSA) then raise EOpenOutputFailed.Create(SOpenOutputFailed);
     end else raise EOpenOutputFailed.Create(SOpenOutputFailed);
   {$endif}
+end;
+
+function TAudioSystemFMOD.GetMediaPlayerDriverClass: TMediaPlayerDriverClass;
+begin
+  Result := TPlayerFMOD;
 end;
 
 constructor TAudioSystemFMOD.Create(AOwner: TComponent);

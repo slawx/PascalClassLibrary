@@ -1,10 +1,10 @@
 object FormPlaylist: TFormPlaylist
-  Left = 310
-  Height = 394
-  Top = 73
+  Left = 331
+  Height = 400
+  Top = 119
   Width = 516
   Caption = 'Playlist'
-  ClientHeight = 394
+  ClientHeight = 400
   ClientWidth = 516
   OnCreate = FormCreate
   OnDestroy = FormDestroy
@@ -13,7 +13,7 @@ object FormPlaylist: TFormPlaylist
   object ButtonDelete: TButton
     Left = 160
     Height = 25
-    Top = 360
+    Top = 366
     Width = 49
     Action = AItemDelete
     Anchors = [akLeft, akBottom]
@@ -22,7 +22,7 @@ object FormPlaylist: TFormPlaylist
   object ButtonAddFolder: TButton
     Left = 80
     Height = 25
-    Top = 360
+    Top = 366
     Width = 73
     Action = AAddDirectory
     Anchors = [akLeft, akBottom]
@@ -31,7 +31,7 @@ object FormPlaylist: TFormPlaylist
   object ButtonAddFile: TButton
     Left = 8
     Height = 25
-    Top = 360
+    Top = 366
     Width = 65
     Action = AAddFile
     Anchors = [akLeft, akBottom]
@@ -39,7 +39,7 @@ object FormPlaylist: TFormPlaylist
   end
   object ListView1: TListView
     Left = 8
-    Height = 344
+    Height = 350
     Top = 8
     Width = 505
     Anchors = [akTop, akLeft, akRight, akBottom]
@@ -64,7 +64,7 @@ object FormPlaylist: TFormPlaylist
   object ButtonClear: TButton
     Left = 216
     Height = 25
-    Top = 360
+    Top = 366
     Width = 49
     Action = AClearAll
     Anchors = [akLeft, akBottom]
@@ -73,7 +73,7 @@ object FormPlaylist: TFormPlaylist
   object CheckBoxRandom: TCheckBox
     Left = 328
     Height = 17
-    Top = 360
+    Top = 366
     Width = 88
     Anchors = [akLeft, akBottom]
     Caption = 'Random order'
@@ -82,17 +82,19 @@ object FormPlaylist: TFormPlaylist
   object CheckBoxRepeat: TCheckBox
     Left = 432
     Height = 17
-    Top = 360
+    Top = 366
     Width = 55
+    Anchors = [akLeft, akBottom]
     Caption = 'Repeat'
     TabOrder = 6
   end
   object Button1: TButton
     Left = 272
     Height = 25
-    Top = 360
+    Top = 366
     Width = 51
     Action = AItemPlay
+    Anchors = [akLeft, akBottom]
     TabOrder = 7
   end
   object OpenDialog1: TOpenDialog

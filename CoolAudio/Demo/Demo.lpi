@@ -37,16 +37,16 @@
         <PackageName Value="LCL"/>
       </Item2>
     </RequiredPackages>
-    <Units Count="31">
+    <Units Count="45">
       <Unit0>
         <Filename Value="Demo.lpr"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="Demo"/>
-        <EditorIndex Value="14"/>
+        <EditorIndex Value="15"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="34" Y="10"/>
-        <UsageCount Value="83"/>
+        <UsageCount Value="85"/>
         <Loaded Value="True"/>
       </Unit0>
       <Unit1>
@@ -58,9 +58,9 @@
         <UnitName Value="UFormMain"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="142"/>
-        <CursorPos X="28" Y="150"/>
-        <UsageCount Value="83"/>
+        <TopLine Value="1"/>
+        <CursorPos X="47" Y="9"/>
+        <UsageCount Value="85"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit1>
@@ -69,9 +69,9 @@
         <UnitName Value="UCoolAudio"/>
         <EditorIndex Value="12"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="27"/>
-        <CursorPos X="20" Y="19"/>
-        <UsageCount Value="35"/>
+        <TopLine Value="22"/>
+        <CursorPos X="34" Y="37"/>
+        <UsageCount Value="36"/>
         <Loaded Value="True"/>
       </Unit2>
       <Unit3>
@@ -85,11 +85,11 @@
       <Unit4>
         <Filename Value="../UPlaylist.pas"/>
         <UnitName Value="UPlaylist"/>
-        <EditorIndex Value="2"/>
+        <EditorIndex Value="4"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="10"/>
-        <CursorPos X="20" Y="26"/>
-        <UsageCount Value="17"/>
+        <TopLine Value="23"/>
+        <CursorPos X="31" Y="35"/>
+        <UsageCount Value="18"/>
         <Loaded Value="True"/>
       </Unit4>
       <Unit5>
@@ -119,19 +119,21 @@
       <Unit8>
         <Filename Value="../CoolAudio.pas"/>
         <UnitName Value="CoolAudio"/>
+        <EditorIndex Value="13"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
-        <CursorPos X="1" Y="1"/>
-        <UsageCount Value="4"/>
+        <CursorPos X="45" Y="19"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
       </Unit8>
       <Unit9>
         <Filename Value="../Systems/UAudioSystem.pas"/>
         <UnitName Value="UAudioSystem"/>
-        <EditorIndex Value="11"/>
+        <EditorIndex Value="5"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="217"/>
-        <CursorPos X="1" Y="230"/>
-        <UsageCount Value="50"/>
+        <TopLine Value="27"/>
+        <CursorPos X="15" Y="40"/>
+        <UsageCount Value="51"/>
         <Loaded Value="True"/>
       </Unit9>
       <Unit10>
@@ -182,12 +184,10 @@
       </Unit15>
       <Unit16>
         <Filename Value="../../../../Lazarus/0.9.31_2.5.1/lcl/include/control.inc"/>
-        <EditorIndex Value="8"/>
         <WindowIndex Value="0"/>
         <TopLine Value="2275"/>
         <CursorPos X="1" Y="2287"/>
         <UsageCount Value="34"/>
-        <Loaded Value="True"/>
       </Unit16>
       <Unit17>
         <Filename Value="../../../../Lazarus/0.9.31_2.5.1/lcl/include/wincontrol.inc"/>
@@ -215,12 +215,10 @@
       <Unit20>
         <Filename Value="../../../../Lazarus/0.9.31_2.5.1/fpc/2.5.1/source/packages/winunits-base/src/mmsystem.pp"/>
         <UnitName Value="mmsystem"/>
-        <EditorIndex Value="9"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1781"/>
         <CursorPos X="52" Y="1791"/>
         <UsageCount Value="36"/>
-        <Loaded Value="True"/>
       </Unit20>
       <Unit21>
         <Filename Value="../Systems/UAudioSystemWindows.pas"/>
@@ -239,205 +237,318 @@
       </Unit22>
       <Unit23>
         <Filename Value="../../../../Lazarus/0.9.31_2.5.1/fpc/2.5.1/source/rtl/objpas/sysutils/osutilsh.inc"/>
-        <EditorIndex Value="13"/>
+        <EditorIndex Value="14"/>
         <WindowIndex Value="0"/>
         <TopLine Value="23"/>
         <CursorPos X="10" Y="23"/>
-        <UsageCount Value="34"/>
+        <UsageCount Value="35"/>
         <Loaded Value="True"/>
       </Unit23>
       <Unit24>
         <Filename Value="../../../../Lazarus/0.9.31_2.5.1/fpc/2.5.1/source/rtl/win/wininc/base.inc"/>
-        <EditorIndex Value="10"/>
         <WindowIndex Value="0"/>
         <TopLine Value="148"/>
         <CursorPos X="6" Y="159"/>
         <UsageCount Value="11"/>
-        <Loaded Value="True"/>
       </Unit24>
       <Unit25>
         <Filename Value="UFormPlaylist.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="FormPlaylist"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UFormPlaylist"/>
         <EditorIndex Value="3"/>
         <WindowIndex Value="0"/>
         <TopLine Value="155"/>
         <CursorPos X="28" Y="168"/>
-        <UsageCount Value="23"/>
+        <UsageCount Value="25"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit25>
       <Unit26>
         <Filename Value="../Systems/WinAPI/UAudioSystemWindows.pas"/>
         <UnitName Value="UAudioSystemWindows"/>
-        <EditorIndex Value="5"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="6"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="62"/>
-        <CursorPos X="35" Y="75"/>
+        <TopLine Value="163"/>
+        <CursorPos X="3" Y="167"/>
         <UsageCount Value="11"/>
         <Loaded Value="True"/>
       </Unit26>
       <Unit27>
         <Filename Value="../../../../Lazarus/1.1_2.6.0/lcl/include/customform.inc"/>
-        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
         <TopLine Value="934"/>
         <CursorPos X="1" Y="947"/>
-        <UsageCount Value="11"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="10"/>
       </Unit27>
       <Unit28>
         <Filename Value="../../../../Lazarus/1.1_2.6.0/lcl/include/listitem.inc"/>
-        <EditorIndex Value="4"/>
         <WindowIndex Value="0"/>
         <TopLine Value="725"/>
         <CursorPos X="1" Y="738"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
       </Unit28>
       <Unit29>
         <Filename Value="../UCoolAudioConfig.inc"/>
-        <EditorIndex Value="6"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="5"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
       </Unit29>
       <Unit30>
         <Filename Value="../Systems/FMOD/fmoddyn.pas"/>
         <UnitName Value="fmoddyn"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="7"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="588"/>
-        <CursorPos X="5" Y="589"/>
+        <TopLine Value="576"/>
+        <CursorPos X="20" Y="594"/>
+        <UsageCount Value="10"/>
+      </Unit30>
+      <Unit31>
+        <Filename Value="../../../../Lazarus/1.1_2.6.0/lcl/stdctrls.pp"/>
+        <UnitName Value="StdCtrls"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1081"/>
+        <CursorPos X="3" Y="1085"/>
+        <UsageCount Value="10"/>
+      </Unit31>
+      <Unit32>
+        <Filename Value="../../../../Lazarus/1.1_2.6.0/lcl/include/buttons.inc"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="280"/>
+        <CursorPos X="3" Y="285"/>
+        <UsageCount Value="10"/>
+      </Unit32>
+      <Unit33>
+        <Filename Value="../../../../Lazarus/1.1_2.6.0/lcl/include/buttoncontrol.inc"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="59"/>
+        <CursorPos X="3" Y="61"/>
+        <UsageCount Value="10"/>
+      </Unit33>
+      <Unit34>
+        <Filename Value="../../../../Lazarus/1.1_2.6.0/lcl/widgetset/wsstdctrls.pp"/>
+        <UnitName Value="WSStdCtrls"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="212"/>
+        <CursorPos X="3" Y="225"/>
+        <UsageCount Value="10"/>
+      </Unit34>
+      <Unit35>
+        <Filename Value="../../../../Lazarus/1.1_2.6.0/lcl/widgetset/wsfactory.pas"/>
+        <UnitName Value="WSFactory"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="42"/>
+        <CursorPos X="1" Y="55"/>
+        <UsageCount Value="10"/>
+      </Unit35>
+      <Unit36>
+        <Filename Value="../../../../Lazarus/1.1_2.6.0/lcl/controls.pp"/>
+        <UnitName Value="Controls"/>
+        <EditorIndex Value="2"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1309"/>
+        <CursorPos X="15" Y="1310"/>
         <UsageCount Value="10"/>
         <Loaded Value="True"/>
-      </Unit30>
+      </Unit36>
+      <Unit37>
+        <Filename Value="../../../../Lazarus/1.1_2.6.0/lcl/include/control.inc"/>
+        <EditorIndex Value="1"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="3633"/>
+        <CursorPos X="47" Y="3641"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit37>
+      <Unit38>
+        <Filename Value="../../../../Lazarus/1.1_2.6.0/lcl/lclclasses.pp"/>
+        <UnitName Value="LCLClasses"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="37"/>
+        <CursorPos X="13" Y="41"/>
+        <UsageCount Value="10"/>
+      </Unit38>
+      <Unit39>
+        <Filename Value="../../../../Lazarus/1.1_2.6.0/lcl/widgetset/wslclclasses.pp"/>
+        <UnitName Value="WSLCLClasses"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="61"/>
+        <CursorPos X="3" Y="74"/>
+        <UsageCount Value="10"/>
+      </Unit39>
+      <Unit40>
+        <Filename Value="../Systems/FMOD/UAudioSystemFMOD.pas"/>
+        <UnitName Value="UAudioSystemFMOD"/>
+        <EditorIndex Value="9"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="66"/>
+        <CursorPos X="25" Y="68"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit40>
+      <Unit41>
+        <Filename Value="../Systems/mplayer/UAudioSystemMPlayer.pas"/>
+        <UnitName Value="UAudioSystemMPlayer"/>
+        <EditorIndex Value="7"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="130"/>
+        <CursorPos X="1" Y="134"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit41>
+      <Unit42>
+        <Filename Value="../../../../Lazarus/1.1_2.6.0/fpc/2.6.0/source/rtl/objpas/classes/classesh.inc"/>
+        <EditorIndex Value="11"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1919"/>
+        <CursorPos X="11" Y="1932"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit42>
+      <Unit43>
+        <Filename Value="../Systems/DSP/UAudioSystemDSP.pas"/>
+        <UnitName Value="UAudioSystemDSP"/>
+        <EditorIndex Value="8"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="64"/>
+        <CursorPos X="25" Y="78"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit43>
+      <Unit44>
+        <Filename Value="../Systems/MAD/UAudioSystemMAD.pas"/>
+        <UnitName Value="UAudioSystemMAD"/>
+        <EditorIndex Value="10"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="23"/>
+        <CursorPos X="23" Y="37"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit44>
     </Units>
     <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
-        <Filename Value="UFormPlaylist.pas"/>
-        <Caret Line="97" Column="25" TopLine="90"/>
+        <Filename Value="../Systems/UAudioSystem.pas"/>
+        <Caret Line="240" Column="1" TopLine="227"/>
       </Position1>
       <Position2>
-        <Filename Value="UFormPlaylist.pas"/>
-        <Caret Line="96" Column="3" TopLine="94"/>
+        <Filename Value="../Systems/UAudioSystem.pas"/>
+        <Caret Line="241" Column="1" TopLine="227"/>
       </Position2>
       <Position3>
-        <Filename Value="UFormPlaylist.pas"/>
-        <Caret Line="161" Column="24" TopLine="142"/>
+        <Filename Value="../Systems/UAudioSystem.pas"/>
+        <Caret Line="381" Column="1" TopLine="368"/>
       </Position3>
       <Position4>
-        <Filename Value="UFormPlaylist.pas"/>
-        <Caret Line="146" Column="19" TopLine="144"/>
+        <Filename Value="UFormMain.pas"/>
+        <Caret Line="121" Column="10" TopLine="111"/>
       </Position4>
       <Position5>
-        <Filename Value="UFormPlaylist.pas"/>
-        <Caret Line="161" Column="20" TopLine="155"/>
+        <Filename Value="UFormMain.pas"/>
+        <Caret Line="125" Column="28" TopLine="112"/>
       </Position5>
       <Position6>
         <Filename Value="UFormMain.pas"/>
-        <Caret Line="77" Column="53" TopLine="67"/>
+        <Caret Line="122" Column="28" TopLine="112"/>
       </Position6>
       <Position7>
         <Filename Value="UFormMain.pas"/>
-        <Caret Line="136" Column="1" TopLine="132"/>
+        <Caret Line="164" Column="30" TopLine="159"/>
       </Position7>
       <Position8>
-        <Filename Value="UFormPlaylist.pas"/>
-        <Caret Line="151" Column="30" TopLine="145"/>
+        <Filename Value="UFormMain.pas"/>
+        <Caret Line="51" Column="49" TopLine="27"/>
       </Position8>
       <Position9>
-        <Filename Value="UFormMain.pas"/>
-        <Caret Line="136" Column="1" TopLine="132"/>
+        <Filename Value="../UPlaylist.pas"/>
+        <Caret Line="30" Column="1" TopLine="10"/>
       </Position9>
       <Position10>
-        <Filename Value="UFormMain.pas"/>
-        <Caret Line="150" Column="28" TopLine="142"/>
+        <Filename Value="../UPlaylist.pas"/>
+        <Caret Line="35" Column="3" TopLine="15"/>
       </Position10>
       <Position11>
-        <Filename Value="../Systems/WinAPI/UAudioSystemWindows.pas"/>
-        <Caret Line="198" Column="7" TopLine="186"/>
+        <Filename Value="../UPlaylist.pas"/>
+        <Caret Line="18" Column="10" TopLine="7"/>
       </Position11>
       <Position12>
-        <Filename Value="../Systems/WinAPI/UAudioSystemWindows.pas"/>
-        <Caret Line="190" Column="1" TopLine="185"/>
+        <Filename Value="../Systems/UAudioSystem.pas"/>
+        <Caret Line="120" Column="68" TopLine="104"/>
       </Position12>
       <Position13>
-        <Filename Value="../Systems/WinAPI/UAudioSystemWindows.pas"/>
-        <Caret Line="191" Column="1" TopLine="185"/>
+        <Filename Value="../Systems/UAudioSystem.pas"/>
+        <Caret Line="318" Column="3" TopLine="313"/>
       </Position13>
       <Position14>
-        <Filename Value="../Systems/WinAPI/UAudioSystemWindows.pas"/>
-        <Caret Line="192" Column="1" TopLine="185"/>
+        <Filename Value="../UCoolAudio.pas"/>
+        <Caret Line="18" Column="49" TopLine="10"/>
       </Position14>
       <Position15>
-        <Filename Value="../Systems/WinAPI/UAudioSystemWindows.pas"/>
-        <Caret Line="196" Column="1" TopLine="185"/>
+        <Filename Value="../UCoolAudio.pas"/>
+        <Caret Line="40" Column="1" TopLine="22"/>
       </Position15>
       <Position16>
-        <Filename Value="../Systems/WinAPI/UAudioSystemWindows.pas"/>
-        <Caret Line="197" Column="1" TopLine="185"/>
+        <Filename Value="../Systems/UAudioSystem.pas"/>
+        <Caret Line="122" Column="39" TopLine="104"/>
       </Position16>
       <Position17>
-        <Filename Value="../Systems/WinAPI/UAudioSystemWindows.pas"/>
-        <Caret Line="202" Column="1" TopLine="185"/>
+        <Filename Value="../UCoolAudio.pas"/>
+        <Caret Line="40" Column="1" TopLine="22"/>
       </Position17>
       <Position18>
-        <Filename Value="../Systems/WinAPI/UAudioSystemWindows.pas"/>
-        <Caret Line="204" Column="19" TopLine="186"/>
+        <Filename Value="UFormMain.pas"/>
+        <Caret Line="29" Column="32" TopLine="18"/>
       </Position18>
       <Position19>
-        <Filename Value="../Systems/WinAPI/UAudioSystemWindows.pas"/>
-        <Caret Line="75" Column="1" TopLine="62"/>
+        <Filename Value="UFormMain.pas"/>
+        <Caret Line="27" Column="18" TopLine="18"/>
       </Position19>
       <Position20>
         <Filename Value="UFormPlaylist.pas"/>
-        <Caret Line="168" Column="59" TopLine="156"/>
+        <Caret Line="168" Column="28" TopLine="155"/>
       </Position20>
       <Position21>
-        <Filename Value="../../../../Lazarus/1.1_2.6.0/lcl/include/listitem.inc"/>
-        <Caret Line="738" Column="1" TopLine="725"/>
+        <Filename Value="../Systems/WinAPI/UAudioSystemWindows.pas"/>
+        <Caret Line="86" Column="48" TopLine="73"/>
       </Position21>
       <Position22>
-        <Filename Value="UFormPlaylist.pas"/>
-        <Caret Line="168" Column="28" TopLine="155"/>
+        <Filename Value="../Systems/WinAPI/UAudioSystemWindows.pas"/>
+        <Caret Line="213" Column="1" TopLine="200"/>
       </Position22>
       <Position23>
-        <Filename Value="../Systems/WinAPI/UAudioSystemWindows.pas"/>
-        <Caret Line="75" Column="1" TopLine="62"/>
+        <Filename Value="../Systems/UAudioSystem.pas"/>
+        <Caret Line="422" Column="1" TopLine="409"/>
       </Position23>
       <Position24>
         <Filename Value="../Systems/WinAPI/UAudioSystemWindows.pas"/>
-        <Caret Line="202" Column="1" TopLine="183"/>
+        <Caret Line="213" Column="1" TopLine="200"/>
       </Position24>
       <Position25>
-        <Filename Value="../Systems/UAudioSystem.pas"/>
-        <Caret Line="231" Column="39" TopLine="217"/>
+        <Filename Value="../Systems/WinAPI/UAudioSystemWindows.pas"/>
+        <Caret Line="86" Column="1" TopLine="73"/>
       </Position25>
       <Position26>
         <Filename Value="../Systems/WinAPI/UAudioSystemWindows.pas"/>
-        <Caret Line="216" Column="1" TopLine="203"/>
+        <Caret Line="213" Column="1" TopLine="200"/>
       </Position26>
       <Position27>
         <Filename Value="../Systems/WinAPI/UAudioSystemWindows.pas"/>
-        <Caret Line="202" Column="1" TopLine="189"/>
+        <Caret Line="86" Column="1" TopLine="73"/>
       </Position27>
       <Position28>
         <Filename Value="../Systems/UAudioSystem.pas"/>
-        <Caret Line="230" Column="1" TopLine="217"/>
+        <Caret Line="422" Column="1" TopLine="409"/>
       </Position28>
       <Position29>
         <Filename Value="../Systems/WinAPI/UAudioSystemWindows.pas"/>
-        <Caret Line="202" Column="1" TopLine="189"/>
+        <Caret Line="227" Column="1" TopLine="214"/>
       </Position29>
       <Position30>
-        <Filename Value="../UCoolAudioConfig.inc"/>
-        <Caret Line="5" Column="1" TopLine="1"/>
+        <Filename Value="../Systems/WinAPI/UAudioSystemWindows.pas"/>
+        <Caret Line="102" Column="3" TopLine="98"/>
       </Position30>
     </JumpHistory>
   </ProjectOptions>

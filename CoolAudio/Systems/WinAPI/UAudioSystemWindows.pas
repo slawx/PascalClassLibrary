@@ -10,9 +10,13 @@ uses
   Windows, Classes, SysUtils, UAudioSystem, MMSystem, DateUtils;
 
 type
+
+  { TAudioSystemWindows }
+
   TAudioSystemWindows = class(TAudioSystem)
   public
     PlayerIndex: Integer;
+    function GetMediaPlayerDriverClass: TMediaPlayerDriverClass; override;
   end;
 
   TMPDeviceTypes = (dtAutoSelect, dtAVIVideo, dtCDAudio, dtDAT, dtDigitalVideo, dtMMMovie,
@@ -20,7 +24,7 @@ type
 
   { TPlayerWindows }
 
-  TPlayerWindows = class(TPlayer)
+  TPlayerWindows = class(TMediaPlayerDriver)
   private
     FHandle: HWND;
     FDeviceId: MCIDEVICEID;
@@ -46,7 +50,7 @@ type
     procedure Play; override;
     procedure Pause; override;
     procedure Stop; override;
-    constructor Create(AOwner: TComponent); override;
+    constructor Create; override;
     destructor Destroy; override;
     property DeviceType: TMPDeviceTypes read FDeviceType write SetDeviceType;
     property Handle: HWND read FHandle;
@@ -59,6 +63,13 @@ resourcestring
   SMCIUnknownError = 'Unknown error code';
 
 implementation
+
+{ TAudioSystemWindows }
+
+function TAudioSystemWindows.GetMediaPlayerDriverClass: TMediaPlayerDriverClass;
+begin
+  Result := TPlayerWindows;
+end;
 
 {$IFDEF Windows}
 
@@ -174,12 +185,14 @@ procedure TPlayerWindows.Pause;
 var
   Parm: TMCI_Generic_Parms;
 begin
-  if FPlaying then begin
-    CheckError(mciSendCommand(FDeviceID, mci_Pause, FFlags, Longint(@Parm)));
-    FPlaying := False;
-  end else begin
-    CheckError(mciSendCommand(FDeviceID, mci_Resume, FFlags, Longint(@Parm)));
-    FPlaying := True;
+  if FActive then  begin
+    if FPlaying then begin
+      CheckError(mciSendCommand(FDeviceID, mci_Pause, FFlags, Longint(@Parm)));
+      FPlaying := False;
+    end else begin
+      CheckError(mciSendCommand(FDeviceID, mci_Resume, FFlags, Longint(@Parm)));
+      FPlaying := True;
+    end;
   end;
 end;
 
@@ -187,7 +200,7 @@ procedure TPlayerWindows.Stop;
 var
   Parm: TMCI_Generic_Parms;
 begin
-  if FPlaying then begin
+  if FActive and FPlaying then begin
     FFlags := 0;
     if FUseNotify then
     begin
@@ -205,7 +218,7 @@ begin
   end;
 end;
 
-constructor TPlayerWindows.Create(AOwner: TComponent);
+constructor TPlayerWindows.Create;
 begin
   inherited;
 end;
