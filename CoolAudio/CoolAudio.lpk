@@ -21,59 +21,39 @@
     <Description Value="CoolAudio"/>
     <License Value="GNU/GPL"/>
     <Version Minor="1"/>
-    <Files Count="13">
+    <Files Count="8">
       <Item1>
-        <Filename Value="fmodintf/fmod.pas"/>
-        <UnitName Value="fmod"/>
-      </Item1>
-      <Item2>
-        <Filename Value="fmodintf/fmoddyn.pas"/>
-        <UnitName Value="fmoddyn"/>
-      </Item2>
-      <Item3>
-        <Filename Value="fmodintf/fmoderrors.pas"/>
-        <UnitName Value="fmoderrors"/>
-      </Item3>
-      <Item4>
-        <Filename Value="fmodintf/fmodpresets.pas"/>
-        <UnitName Value="fmodpresets"/>
-      </Item4>
-      <Item5>
-        <Filename Value="fmodintf/fmodtypes.pas"/>
-        <UnitName Value="fmodtypes"/>
-      </Item5>
-      <Item6>
         <Filename Value="UCoolAudio.pas"/>
         <UnitName Value="UCoolAudio"/>
-      </Item6>
-      <Item7>
+      </Item1>
+      <Item2>
         <Filename Value="UPlaylist.pas"/>
         <UnitName Value="UPlaylist"/>
-      </Item7>
-      <Item8>
+      </Item2>
+      <Item3>
         <Filename Value="Systems/UAudioSystemFMOD.pas"/>
         <UnitName Value="UAudioSystemFMOD"/>
-      </Item8>
-      <Item9>
+      </Item3>
+      <Item4>
         <Filename Value="Systems/UAudioSystemMPlayer.pas"/>
         <UnitName Value="UAudioSystemMPlayer"/>
-      </Item9>
-      <Item10>
+      </Item4>
+      <Item5>
         <Filename Value="Systems/UAudioSystemWindows.pas"/>
         <UnitName Value="UAudioSystemWindows"/>
-      </Item10>
-      <Item11>
+      </Item5>
+      <Item6>
         <Filename Value="Systems/UAudioSystem.pas"/>
         <UnitName Value="UAudioSystem"/>
-      </Item11>
-      <Item12>
+      </Item6>
+      <Item7>
         <Filename Value="Systems/UAudioSystemMAD.pas"/>
         <UnitName Value="UAudioSystemMAD"/>
-      </Item12>
-      <Item13>
+      </Item7>
+      <Item8>
         <Filename Value="Systems/DSP/UAudioSystemDSP.pas"/>
         <UnitName Value="UAudioSystemDSP"/>
-      </Item13>
+      </Item8>
     </Files>
     <Type Value="RunAndDesignTime"/>
     <RequiredPkgs Count="2">

@@ -7,9 +7,9 @@ unit CoolAudio;
 interface
 
 uses
-  fmod, fmoddyn, fmoderrors, fmodpresets, fmodtypes, UCoolAudio, UPlaylist, 
-  UAudioSystemFMOD, UAudioSystemMPlayer, UAudioSystemWindows, UAudioSystem, 
-  UAudioSystemMAD, UAudioSystemDSP, LazarusPackageIntf;
+  UCoolAudio, UPlaylist, UAudioSystemFMOD, UAudioSystemMPlayer, 
+  UAudioSystemWindows, UAudioSystem, UAudioSystemMAD, UAudioSystemDSP, 
+  LazarusPackageIntf;
 
 implementation
 
