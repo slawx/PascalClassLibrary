@@ -1,9 +1,17 @@
 msgid ""
-msgstr "Content-Type: text/plain; charset=UTF-8"
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Project-Id-Version: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: Jiří Hajda <robie@centrum.cz>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Transfer-Encoding: 8bit\n"
 
 #: ucdwindowlist.sstatedocked
 msgid "Docked"
-msgstr "Content-Type: text/plain; charset=UTF-8Content-Type: text/plain; charset=UTF-8Content-Type: text/plain; charset=UTF-8Content-Type: text/plain; charset=UTF-8Content-Type: text/plain; charset=UTF-8Content-Type: text/plain; charset=UTF-8Content-Type: text/plain; charset=UTF-8Content-Type: text/plain; charset=UTF-8Content-Type: text/plain; charset=UTF-8Content-Type: text/plain; charset=UTF-8Content-Type: text/plain; charset=UTF-8Content-Type: text/plain; charset=UTF-8"
+msgstr ""
 
 #: ucdwindowlist.sstatefloating
 msgid "Floating"

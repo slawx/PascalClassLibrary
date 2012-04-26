@@ -8,6 +8,8 @@ uses
   Classes, SysUtils, UCDCommon, UCDManager;
 
 type
+  TLogEvent = procedure (Sender: TObject; Text: string) of object;
+
   { TCDMaster }
 
   TCDMaster = class(TCDMasterBase)
@@ -15,6 +17,7 @@ type
     FDefaultHeaderPos: THeaderPos;
     FDefaultMoveSpeed: Integer;
     FDefaultTabsPos: THeaderPos;
+    FOnDebugLog: TLogEvent;
     FShowIcons: Boolean;
     FTabsEnabled: Boolean;
     procedure SetShowIcons(const AValue: Boolean);
@@ -23,6 +26,7 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
   published
+    property OnDebugLog: TLogEvent read FOnDebugLog write FOnDebugLog;
     property TabsEnabled: Boolean read FTabsEnabled write SetTabsEnabled;
     property DefaultTabsPos: THeaderPos read FDefaultTabsPos
       write FDefaultTabsPos;

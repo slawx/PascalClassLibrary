@@ -9,11 +9,19 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ucdcustomize.senternewname
-msgid "Enter new name"
-msgstr ""
+#: ucdwindowlist.sstatedocked
+msgid "Docked"
+msgstr "Ukotvené"
 
-#: ucdcustomize.snewlayout
-msgid "New Layout"
-msgstr ""
+#: ucdwindowlist.sstatefloating
+msgid "Floating"
+msgstr "Plovoucí"
+
+#: ucdwindowlist.sstatehidden
+msgid "Hidden"
+msgstr "Skryté"
+
+#: ucdwindowlist.sstatevisible
+msgid "Visible"
+msgstr "Viditelné"
 

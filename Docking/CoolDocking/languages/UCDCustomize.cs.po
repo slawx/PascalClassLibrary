@@ -11,9 +11,9 @@ msgstr ""
 
 #: ucdcustomize.senternewname
 msgid "Enter new name"
-msgstr ""
+msgstr "Zadejte nový název"
 
 #: ucdcustomize.snewlayout
 msgid "New Layout"
-msgstr ""
+msgstr "Nové rozvržení"
 

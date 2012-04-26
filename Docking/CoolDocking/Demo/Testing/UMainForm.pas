@@ -71,9 +71,13 @@ procedure TMainForm.FormShow(Sender: TObject);
 var
   ConjoinedDockForm1: TCDConjoinForm;
   ConjoinedDockForm2: TCDConjoinForm;
+  Form1: TDockForm;
 begin
   NewDockForm.ManualDock(Panel1);
-  NewDockForm.ManualDock(Panel1);
+  Form1 := NewDockForm;
+  Form1.ManualDock(Panel1);
+  NewDockForm.ManualDock(Form1);
+  TCDManager(Panel1.DockManager).DockStyle := dsTabs;
 (*  ConjoinedDockForm1 := TCDManager(Panel1.DockManager).CreateConjoinForm;
   ConjoinedDockForm1.Name := 'Model';;
   ConjoinedDockForm1.Show;

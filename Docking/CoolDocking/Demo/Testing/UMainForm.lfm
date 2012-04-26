@@ -4,13 +4,13 @@ object MainForm: TMainForm
   Top = 150
   Width = 576
   Caption = 'MainForm'
-  ClientHeight = 415
+  ClientHeight = 416
   ClientWidth = 576
   Menu = MainMenu1
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
-  LCLVersion = '0.9.30'
+  LCLVersion = '1.1'
   object Button1: TButton
     Left = 10
     Height = 25
@@ -22,12 +22,12 @@ object MainForm: TMainForm
   end
   object Panel1: TPanel
     Left = 0
-    Height = 367
+    Height = 368
     Top = 48
     Width = 576
     Align = alBottom
     Anchors = [akTop, akLeft, akRight, akBottom]
-    ClientHeight = 367
+    ClientHeight = 368
     ClientWidth = 576
     DockSite = True
     TabOrder = 1
@@ -60,9 +60,9 @@ object MainForm: TMainForm
       Height = 150
       Top = 144
       Width = 200
+      TabStop = False
       MultiLine = True
       TabIndex = 0
-      TabOrder = 1
       Tabs.Strings = (
         'ggdfg'
         'gfgdfgfdgd'
@@ -72,7 +72,7 @@ object MainForm: TMainForm
         'dddd'
         'ddd'
       )
-      TabStop = False
+      TabOrder = 1
     end
   end
   object Button2: TButton

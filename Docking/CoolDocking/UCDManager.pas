@@ -87,6 +87,8 @@ type
   { TCDManager }
 
   TCDManager = class(TCDManagerBase)
+  protected
+    FUpdateCount: Integer;
   private
     FDockSite: TWinControl;
     FHeaderPos: THeaderPos;
@@ -104,7 +106,7 @@ type
     procedure SetVisible(const AValue: Boolean); virtual;
     constructor Create(ADockSite: TWinControl); override;
     destructor Destroy; override;
-    procedure UpdateClientSize; virtual;
+    procedure Update; virtual;
     procedure Switch(Index: Integer); virtual;
     procedure ChangeVisible(Control: TWinControl; Visible: Boolean); virtual;
     procedure Assign(Source: TCDManager); virtual;
@@ -379,12 +381,13 @@ end;
 
 procedure TCDManager.BeginUpdate;
 begin
-  inherited BeginUpdate;
+  Inc(FUpdateCount);
 end;
 
 procedure TCDManager.EndUpdate;
 begin
-  inherited EndUpdate;
+  if FUpdateCount > 0 then Dec(FUpdateCount);
+  if FUpdateCount = 0 then Update;
 end;
 
 procedure TCDManager.GetControlBounds(Control: TControl; out
@@ -571,7 +574,7 @@ begin
     if DockSite.DockManager is TCDManager then
       NewManager.Assign(TCDManager(DockSite.DockManager));
     DockSite.DockManager := NewManager;
-    NewManager.UpdateClientSize;
+    NewManager.Update;
   end;
 end;
 
@@ -580,7 +583,7 @@ begin
   if FHeaderVisible = AValue then Exit;
   FHeaderVisible := AValue;
   if Assigned(DockSite.HostDockSite) then
-    TCDManager(DockSite.HostDockSite.DockManager).UpdateClientSize;
+    TCDManager(DockSite.HostDockSite.DockManager).Update;
 end;
 
 procedure TCDManager.SetHeaderPos(const AValue: THeaderPos);
@@ -596,7 +599,7 @@ procedure TCDManager.SetVisible(const AValue: Boolean);
 begin
 end;
 
-procedure TCDManager.UpdateClientSize;
+procedure TCDManager.Update;
 begin
 end;
 
@@ -810,4 +813,4 @@ begin
 end;
 
 end.
-
+

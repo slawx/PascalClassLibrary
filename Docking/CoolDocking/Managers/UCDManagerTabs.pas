@@ -43,7 +43,7 @@ type
     MouseDownSkip: Boolean;
     TabImageList: TImageList;
     PageControl: TPageControl;
-    procedure UpdateClientSize; override;
+    procedure Update; override;
     procedure SetHeaderPos(const AValue: THeaderPos); override;
     procedure InsertControlNoUpdate(Control: TControl; InsertAt: TAlign); virtual;
     procedure RemoveControl(Control: TControl); override;
@@ -81,13 +81,14 @@ var
   Temp: TControl;
   Temp2: TControl;
 begin
+  DebugLog('TCDManagerTabsItem.VisibleChange');
   with TCDManagerTabs(Manager) do begin
     if TControl(Sender).Visible then begin
-      UpdateClientSize;
+      Update;
       Switch(DockItems.IndexOf(FindControlInPanels(TControl(Sender))));
       TCDManagerTabsItem(DockItems[DockItems.IndexOf(
         FindControlInPanels(TControl(Sender)))]).HideType := dhtPermanent;
-    end else UpdateClientSize;
+    end else Update;
   end;
 
   // Show current dock clients in parent dock sites
@@ -142,7 +143,8 @@ end;
 
 procedure TCDManagerTabs.TabControlChange(Sender: TObject);
 begin
-  UpdateClientSize;
+  DebugLog('TCDManagerTabs.TabControlChange ' + IntToStr(PageControl.TabIndex));
+  Update;
   MouseDownSkip := True;
 end;
 
@@ -188,6 +190,7 @@ begin
     Align := alClient;
     OnChange := TabControlChange;
     MultiLine := True;
+    AutoSize := True;
     PopupMenu := Self.PopupMenu;
     OnMouseLeave := TabControlMouseLeave;
     OnMouseDown := TabControlMouseDown;
@@ -224,6 +227,7 @@ end;
 
 procedure TCDManagerTabs.Switch(Index: Integer);
 begin
+  DebugLog('TCDManagerTabs.Switch ' + IntToStr(Index));
   PageControl.TabIndex := Index;
 end;
 
@@ -264,7 +268,7 @@ begin
     Control.RemoveHandlerOnVisibleChanging(ManagerItem.VisibleChanging);
   end; //else raise Exception.Create(Format('Control %s not found in DockItems', [Control.Name]));
 
-  ManagerItem.Control.Visible := False;
+  //ManagerItem.Control.Visible := False;
   ManagerItem.Control.Parent := nil;
   DockItems.Remove(ManagerItem);
   ClientCount := DockItems.Count;
@@ -278,14 +282,14 @@ begin
         TCDManagerItem(DockItems[0]).Control.ManualDock(HostDockSite);
       end else TCDManagerItem(DockItems[0]).Control.ManualFloat(Rect(Left, Top, Left + Width, Top + Height));
       ManualFloat(Rect(Left, Top, Left + Width, Top + Height));
-      //UpdateClientSize;
+      //Update;
       inherited RemoveControl(Control);
       Free;
       Exit;
     end;
   end;
   //if ClientCount > 0 then
-  UpdateClientSize;
+  Update;
   inherited RemoveControl(Control);
 end;
 
@@ -340,15 +344,17 @@ var
 begin
   inherited;
   InsertControlNoUpdate(AControl, InsertAt);
-  UpdateClientSize;
+  Update;
 end;
 
-procedure TCDManagerTabs.UpdateClientSize;
+procedure TCDManagerTabs.Update;
 var
   I: Integer;
   NewTabSheet: TTabSheet;
   DeletedPage: TTabSheet;
 begin
+  if FUpdateCount = 0 then begin
+  DebugLog('TCDManagerTabs.Update');
   for I := 0 to DockItems.Count - 1 do
   with TCDManagerTabsItem(DockItems[I]) do begin
     //Control.Tag := Integer(dhtTemporal);
@@ -406,8 +412,9 @@ begin
     //TCDClientPanel(DockPanels[I]).ClientAreaPanel.Height := DockSite.Height - PageControl.Height;
     //TCDClientPanel(FDockPanels[I]).DockPanelPaint(Self);
   end;
-  inherited UpdateClientSize;
+  end;
+  inherited;
 end;
 
 end.
-
+

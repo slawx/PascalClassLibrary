@@ -1,6 +1,6 @@
 unit UCDCommon;
 
-{$mode objfpc}{$H+}
+{$mode delphi}{$H+}
 
 interface
 
@@ -75,11 +75,19 @@ type
 
 function GetUniqueName(BaseName: string): string;
 function HeaderPosToTabPos(HeaderPos: THeaderPos): TTabPosition;
+procedure DebugLog(Text: string); inline;
 
 implementation
 
 var
   UniqueNameCounter: Integer;
+
+procedure DebugLog(Text: string); inline;
+begin
+  //{$IFDEF DEBUG_COOLDOCK}
+  WriteLn(FormatDateTime('hh:nn:ss.zzz', Time) + ' ' + Text);
+  //{$ENDIF}
+end;
 
 function GetUniqueName(BaseName: string): string;
 begin

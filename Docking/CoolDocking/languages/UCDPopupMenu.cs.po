@@ -11,77 +11,77 @@ msgstr ""
 
 #: ucdpopupmenu.scloseform
 msgid "Close"
-msgstr ""
+msgstr "Zavřít"
 
 #: ucdpopupmenu.scustomize
 msgid "Customize..."
-msgstr ""
+msgstr "Přizpůsobit..."
 
 #: ucdpopupmenu.sdocklist
 msgid "List"
-msgstr ""
+msgstr "Seznam"
 
 #: ucdpopupmenu.sdockpopuplist
 msgid "Popup list"
-msgstr ""
+msgstr "Vyskakovací seznam"
 
 #: ucdpopupmenu.sdockpopuptabs
 msgid "Popup tabs"
-msgstr ""
+msgstr "Vyskakovací záložky"
 
 #: ucdpopupmenu.sdockstyle
 msgid "Style"
-msgstr ""
+msgstr "Styl"
 
 #: ucdpopupmenu.sdocktabs
 msgid "Tabs"
-msgstr ""
+msgstr "Záložky"
 
 #: ucdpopupmenu.senternewwindowname
 msgid "Enter new window name"
-msgstr ""
+msgstr "Zadejte jméno nového okna"
 
 #: ucdpopupmenu.sheadervisible
 msgid "Header visible"
-msgstr ""
+msgstr "Viditelné záhlaví"
 
 #: ucdpopupmenu.slocked
 msgid "Locked"
-msgstr ""
+msgstr "Uzamknuto"
 
 #: ucdpopupmenu.sposition
 msgid "Position"
-msgstr ""
+msgstr "Pozice"
 
 #: ucdpopupmenu.spositionauto
 msgid "Auto"
-msgstr ""
+msgstr "Automaticky"
 
 #: ucdpopupmenu.spositionbottom
 msgid "Bottom"
-msgstr ""
+msgstr "Dole"
 
 #: ucdpopupmenu.spositionleft
 msgid "Left"
-msgstr ""
+msgstr "Vlevo"
 
 #: ucdpopupmenu.spositionright
 msgid "Right"
-msgstr ""
+msgstr "Vpravo"
 
 #: ucdpopupmenu.spositiontop
 msgid "Top"
-msgstr ""
+msgstr "Nahoře"
 
 #: ucdpopupmenu.srenameform
 msgid "Rename"
-msgstr ""
+msgstr "Přejmenovat"
 
 #: ucdpopupmenu.srenamewindow
 msgid "Rename window"
-msgstr ""
+msgstr "Přejmenovat okno"
 
 #: ucdpopupmenu.sundock
 msgid "Undock"
-msgstr ""
+msgstr "Odkotvit"
 

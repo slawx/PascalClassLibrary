@@ -50,11 +50,8 @@ uses
 
 procedure Register;
 begin
-  RegisterComponents('CoolDocking', [TCDClient]);
-  RegisterComponents('CoolDocking', [TCDCustomize]);
+  RegisterComponents('CoolDocking', [TCDClient, TCDCustomize]);
 end;
-
-
 
 { TCDClient }
 

@@ -7,7 +7,7 @@ object CDWindowListForm: TCDWindowListForm
   ClientHeight = 256
   ClientWidth = 382
   OnShow = FormShow
-  LCLVersion = '0.9.31'
+  LCLVersion = '1.1'
   object ListView1: TListView
     Left = 8
     Height = 211
