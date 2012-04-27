@@ -306,12 +306,13 @@ var
   BaseAlign: TAlign;
   VisibleControlsCount: Integer;
 begin
+  inherited;
   if FUpdateCount = 0 then begin
   DebugLog('TCDManagerRegions.UpdateClientSize');
-  inherited;
   VisibleControlsCount := DockSite.VisibleDockClientCount;
-  if DockSite is TForm then
-    DockSite.Visible := (VisibleControlsCount > 0);
+  if DockSite is TForm then begin
+    DockSiteVisible := VisibleControlsCount > 0;
+  end;
   if VisibleControlsCount = 0 then VisibleControlsCount := 1;
 
   for I := 0 to DockItems.Count - 1 do
@@ -359,18 +360,12 @@ var
   I: Integer;
 begin
   inherited;
+  //if DockSite.Visible <> AValue then
   try
     BeginUpdate;
     for I := 0 to DockItems.Count - 1 do
       with TCDManagerRegionsItem(DockItems[I]) do begin
-        if AValue and (not Control.Visible) and (Control.Tag = Integer(dhtTemporal))  then begin
-          Control.Show;
-          Control.Tag := Integer(dhtPermanent);
-        end else
-        if not AValue then begin
-          Control.Tag := Integer(dhtTemporal);
-          Control.Hide;
-        end;
+        TCDManager(Control.DockManager).DockSiteVisible := AValue;
       end;
         //ClientAreaPanel.Show;
   finally

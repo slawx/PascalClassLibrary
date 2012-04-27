@@ -29,7 +29,7 @@
     </CompilerOptions>
     <Description Value="Set of components for forms docking for Lazarus."/>
     <License Value="GNU/GPL"/>
-    <Version Minor="6"/>
+    <Version Minor="7"/>
     <Files Count="15">
       <Item1>
         <Filename Value="UCDClient.pas"/>
@@ -50,37 +50,37 @@
         <UnitName Value="UCDWindowList"/>
       </Item4>
       <Item5>
-        <Filename Value="Managers\UCDManagerTabs.pas"/>
-        <UnitName Value="UCDManagerTabs"/>
+        <Filename Value="UCDManager.pas"/>
+        <UnitName Value="UCDManager"/>
       </Item5>
       <Item6>
-        <Filename Value="Managers\UCDManagerRegions.pas"/>
-        <UnitName Value="UCDManagerRegions"/>
+        <Filename Value="Managers\UCDManagerTabs.pas"/>
+        <UnitName Value="UCDManagerTabs"/>
       </Item6>
       <Item7>
-        <Filename Value="Managers\UCDManagerTabsPopup.pas"/>
-        <UnitName Value="UCDManagerTabsPopup"/>
+        <Filename Value="Managers\UCDManagerRegions.pas"/>
+        <UnitName Value="UCDManagerRegions"/>
       </Item7>
       <Item8>
-        <Filename Value="Managers\UCDManagerRegionsPopup.pas"/>
-        <UnitName Value="UCDManagerRegionsPopup"/>
+        <Filename Value="Managers\UCDManagerTabsPopup.pas"/>
+        <UnitName Value="UCDManagerTabsPopup"/>
       </Item8>
       <Item9>
-        <Filename Value="UCDPopupMenu.pas"/>
-        <UnitName Value="UCDPopupMenu"/>
+        <Filename Value="Managers\UCDManagerRegionsPopup.pas"/>
+        <UnitName Value="UCDManagerRegionsPopup"/>
       </Item9>
       <Item10>
+        <Filename Value="UCDPopupMenu.pas"/>
+        <UnitName Value="UCDPopupMenu"/>
+      </Item10>
+      <Item11>
         <Filename Value="UCDLayout.pas"/>
         <HasRegisterProc Value="True"/>
         <UnitName Value="UCDLayout"/>
-      </Item10>
-      <Item11>
-        <Filename Value="UCDCommon.pas"/>
-        <UnitName Value="UCDCommon"/>
       </Item11>
       <Item12>
-        <Filename Value="UCDManager.pas"/>
-        <UnitName Value="UCDManager"/>
+        <Filename Value="UCDCommon.pas"/>
+        <UnitName Value="UCDCommon"/>
       </Item12>
       <Item13>
         <Filename Value="UCDConjoinForm.pas"/>
@@ -120,5 +120,8 @@
     <PublishOptions>
       <Version Value="2"/>
     </PublishOptions>
+    <CustomOptions Items="ExternHelp" Version="2">
+      <_ExternHelp Items="Count"/>
+    </CustomOptions>
   </Package>
 </CONFIG>

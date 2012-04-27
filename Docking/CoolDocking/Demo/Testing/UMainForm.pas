@@ -26,13 +26,7 @@ type
     MenuItem2: TMenuItem;
     MenuItem3: TMenuItem;
     MenuItem4: TMenuItem;
-    PageControl1: TPageControl;
     Panel1: TPanel;
-    TabControl1: TTabControl;
-    TabSheet1: TTabSheet;
-    TabSheet2: TTabSheet;
-    TabSheet3: TTabSheet;
-    TabSheet4: TTabSheet;
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -42,6 +36,8 @@ type
     procedure MenuItem4Click(Sender: TObject);
     procedure PageControl1Change(Sender: TObject);
   private
+    procedure DockSiteShowExecute(Sender: TObject);
+    procedure DockSiteHideExecute(Sender: TObject);
   public
     FormIndex: Integer;
     DockForms: TList;
@@ -78,6 +74,7 @@ begin
   Form1.ManualDock(Panel1);
   NewDockForm.ManualDock(Form1);
   TCDManager(Panel1.DockManager).DockStyle := dsTabs;
+  NewDockForm.ManualDock(Panel1);
 (*  ConjoinedDockForm1 := TCDManager(Panel1.DockManager).CreateConjoinForm;
   ConjoinedDockForm1.Name := 'Model';;
   ConjoinedDockForm1.Show;
@@ -108,6 +105,18 @@ begin
 
 end;
 
+procedure TMainForm.DockSiteShowExecute(Sender: TObject);
+begin
+  if Sender is TControl then
+    DebugLog(TControl(Sender).Name + ' Show');
+end;
+
+procedure TMainForm.DockSiteHideExecute(Sender: TObject);
+begin
+  if Sender is TControl then
+    DebugLog(TControl(Sender).Name + ' Hide');
+end;
+
 function TMainForm.NewDockForm: TDockForm;
 begin
   Application.CreateForm(TDockForm, Result);
@@ -116,6 +125,8 @@ begin
   Result.CoolDockClient1.Name := 'CoolDockClient' + IntToStr(FormIndex);
   Result.Caption := Result.Name;
   Result.Memo1.Text := Result.Name;
+  TCDManager(Result.DockManager).OnDockSiteHide := DockSiteHideExecute;
+  TCDManager(Result.DockManager).OnDockSiteShow := DockSiteShowExecute;
   //Result.DragKind := dkDock;
   //Result.DragMode := dmAutomatic;
   //Result.DockSite := True;

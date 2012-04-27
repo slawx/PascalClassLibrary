@@ -84,9 +84,9 @@ var
 
 procedure DebugLog(Text: string); inline;
 begin
-  //{$IFDEF DEBUG_COOLDOCK}
+  {$IFDEF DEBUG_COOLDOCK}
   WriteLn(FormatDateTime('hh:nn:ss.zzz', Time) + ' ' + Text);
-  //{$ENDIF}
+  {$ENDIF}
 end;
 
 function GetUniqueName(BaseName: string): string;

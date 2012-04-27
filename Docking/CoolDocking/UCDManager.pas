@@ -67,9 +67,7 @@ type
   TCDManagerItem = class
   private
     FControl: TWinControl;
-    function GetHideType: TCDHideType;
     procedure ResizeExecute(Sender: TObject);
-    procedure SetHideType(const AValue: TCDHideType);
   public
     Manager: TCDManager;
     procedure SetControl(const AValue: TWinControl); virtual;
@@ -80,7 +78,6 @@ type
     procedure VisibleChanging(Sender: TObject); virtual;
     constructor Create; virtual;
     destructor Destroy; override;
-    property HideType: TCDHideType read GetHideType write SetHideType;
     property Control: TWinControl read FControl write SetControl;
   end;
 
@@ -89,19 +86,24 @@ type
   TCDManager = class(TCDManagerBase)
   protected
     FUpdateCount: Integer;
+    FDockStyle: TCDStyleType;
   private
     FDockSite: TWinControl;
+    FDockSiteVisible: Boolean;
     FHeaderPos: THeaderPos;
     FHeaderVisible: Boolean;
+    FOnDockSiteHide: TNotifyEvent;
+    FOnDockSiteShow: TNotifyEvent;
     function GetDockSite: TWinControl;
     function GetMoveDuration: Integer;
+    procedure SetDockSiteVisible(AValue: Boolean); virtual;
     procedure SetDockStyle(const AValue: TCDStyleType);
     procedure SetHeaderVisible(const AValue: Boolean);
     procedure SetMoveDuration(const AValue: Integer);
+    procedure CloseHandler(Sender: TObject; var CloseAction: TCloseAction);
   public
     Locked: Boolean;
     PopupMenu: TCDPopupMenu;
-    FDockStyle: TCDStyleType;
     FreeParentIfEmpty: Boolean; // Free or not parent conjoin forms
     procedure SetVisible(const AValue: Boolean); virtual;
     constructor Create(ADockSite: TWinControl); override;
@@ -145,6 +147,9 @@ type
     property HeaderPos: THeaderPos read GetHeaderPos write SetHeaderPos;
     property HeaderVisible: Boolean read FHeaderVisible write SetHeaderVisible;
     property Visible: Boolean write SetVisible;
+    property DockSiteVisible: Boolean read FDockSiteVisible write SetDockSiteVisible;
+    property OnDockSiteHide: TNotifyEvent read FOnDockSiteHide write FOnDockSiteHide;
+    property OnDockSiteShow: TNotifyEvent read FOnDockSiteShow write FOnDockSiteShow;
   end;
 
 
@@ -272,11 +277,6 @@ begin
 
 end;
 
-function TCDManagerItem.GetHideType: TCDHideType;
-begin
-  Result := TCDHideType(Control.Tag);
-end;
-
 procedure TCDManagerItem.ResizeExecute(Sender: TObject);
 begin
 (*  if Assigned(Control) then begin
@@ -293,11 +293,6 @@ procedure TCDManagerItem.SetControl(const AValue: TWinControl);
 begin
   if FControl = AValue then Exit;
   FControl := AValue;
-end;
-
-procedure TCDManagerItem.SetHideType(const AValue: TCDHideType);
-begin
-  Control.Tag := Integer(AValue);
 end;
 
 procedure TCDManagerItem.DockPanelMouseDown(Sender: TObject;
@@ -356,6 +351,17 @@ begin
 
 end;
 
+procedure TCDManager.SetDockSiteVisible(AValue: Boolean);
+begin
+  if FDockSiteVisible = AValue then Exit;
+  FDockSiteVisible := AValue;
+  SetVisible(FDockSiteVisible);
+  if Assigned(FOnDockSiteHide) and not AValue then
+    FOnDockSiteHide(Self);
+  if Assigned(FOnDockSiteShow) and AValue then
+    FOnDockSiteShow(Self);
+end;
+
 constructor TCDManager.Create(ADockSite: TWinControl);
 var
   NewMenuItem: TMenuItem;
@@ -371,10 +377,14 @@ begin
   FHeaderVisible := True;
   PopupMenu := TCDPopupMenu.Create(Self);
   PopupMenu.Parent := ADockSite;
+  if ADockSite is TForm then
+    TForm(ADockSite).AddHandlerClose(CloseHandler);
 end;
 
 destructor TCDManager.Destroy;
 begin
+  if FDockSite is TForm then
+    TForm(FDockSite).RemoveHandlerClose(CloseHandler);
   PopupMenu.Free;
   inherited Destroy;
 end;
@@ -593,6 +603,13 @@ end;
 
 procedure TCDManager.SetMoveDuration(const AValue: Integer);
 begin
+end;
+
+procedure TCDManager.CloseHandler(Sender: TObject; var CloseAction: TCloseAction
+  );
+begin
+  //DockSite.Visible := False;
+  //SetVisible(FDockSite.Visible);
 end;
 
 procedure TCDManager.SetVisible(const AValue: Boolean);

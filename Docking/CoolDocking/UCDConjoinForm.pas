@@ -66,7 +66,8 @@ constructor TCDConjoinForm.Create(TheOwner: TComponent);
 begin
   inherited CreateNew(TheOwner);
   CoolDockClient := TCDClient.Create(Self);
-  with CoolDockClient do begin
+  with TCDClient(CoolDockClient) do begin
+    Dockable := True;
   end;
   OnShow := FormShow;
   OnHide := FormHide;

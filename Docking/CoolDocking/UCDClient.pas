@@ -94,17 +94,17 @@ end;
 constructor TCDClient.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
-  FDockable := True;
+  FDockable := False;
   if not (AOwner is TForm) then
     raise Exception.Create(SWrongOwner);
   with (AOwner as TForm) do begin
     if not (csDesigning in ComponentState) then begin
-      if Dockable then begin
+      (*if Dockable then begin
         DragKind := dkDock;
         DragMode := dmAutomatic;
         DockSite := True;
       end;
-      UseDockManager := True;
+      *)UseDockManager := True;
       DockManager := TCDManagerRegions.Create(TWinControl(AOwner));
       //FormStyle := fsStayOnTop;
     end;

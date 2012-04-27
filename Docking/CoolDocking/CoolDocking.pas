@@ -7,9 +7,9 @@ unit CoolDocking;
 interface
 
 uses
-  UCDClient, UCDCustomize, UCDWindowList, UCDManagerTabs, UCDManagerRegions, 
-  UCDManagerTabsPopup, UCDManagerRegionsPopup, UCDPopupMenu, UCDLayout, 
-  UCDCommon, UCDManager, UCDConjoinForm, UCDMaster, UCDResource, 
+  UCDClient, UCDCustomize, UCDWindowList, UCDManager, UCDManagerTabs, 
+  UCDManagerRegions, UCDManagerTabsPopup, UCDManagerRegionsPopup, 
+  UCDPopupMenu, UCDLayout, UCDCommon, UCDConjoinForm, UCDMaster, UCDResource, 
   LazarusPackageIntf;
 
 implementation

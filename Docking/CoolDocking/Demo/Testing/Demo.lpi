@@ -55,10 +55,11 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UMainForm"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="3"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="63"/>
-        <CursorPos X="1" Y="75"/>
+        <TopLine Value="103"/>
+        <CursorPos X="1" Y="114"/>
         <UsageCount Value="201"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -133,7 +134,7 @@
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
-        <CursorPos X="12" Y="9"/>
+        <CursorPos X="32" Y="7"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -337,7 +338,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="22" Y="17"/>
-        <UsageCount Value="154"/>
+        <UsageCount Value="155"/>
         <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit31>
@@ -448,7 +449,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="44" Y="45"/>
-        <UsageCount Value="106"/>
+        <UsageCount Value="107"/>
         <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit44>
@@ -766,7 +767,7 @@
       <Unit82>
         <Filename Value="..\..\UCDConjoinForm.pas"/>
         <UnitName Value="UCDConjoinForm"/>
-        <EditorIndex Value="15"/>
+        <EditorIndex Value="7"/>
         <WindowIndex Value="0"/>
         <TopLine Value="49"/>
         <CursorPos X="1" Y="55"/>
@@ -776,7 +777,7 @@
       <Unit83>
         <Filename Value="..\..\UCDCommon.pas"/>
         <UnitName Value="UCDCommon"/>
-        <EditorIndex Value="16"/>
+        <EditorIndex Value="8"/>
         <WindowIndex Value="0"/>
         <TopLine Value="85"/>
         <CursorPos X="44" Y="88"/>
@@ -786,10 +787,10 @@
       <Unit84>
         <Filename Value="..\..\UCDManager.pas"/>
         <UnitName Value="UCDManager"/>
-        <EditorIndex Value="7"/>
+        <EditorIndex Value="4"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="76"/>
-        <CursorPos X="1" Y="92"/>
+        <TopLine Value="354"/>
+        <CursorPos X="1" Y="362"/>
         <UsageCount Value="13"/>
         <Loaded Value="True"/>
       </Unit84>
@@ -804,11 +805,10 @@
       <Unit86>
         <Filename Value="..\..\Managers\UCDManagerTabs.pas"/>
         <UnitName Value="UCDManagerTabs"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="11"/>
+        <EditorIndex Value="6"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="394"/>
-        <CursorPos X="7" Y="415"/>
+        <TopLine Value="388"/>
+        <CursorPos X="57" Y="396"/>
         <UsageCount Value="13"/>
         <Loaded Value="True"/>
       </Unit86>
@@ -951,7 +951,7 @@
       <Unit103>
         <Filename Value="..\..\UCDMaster.pas"/>
         <UnitName Value="UCDMaster"/>
-        <EditorIndex Value="17"/>
+        <EditorIndex Value="9"/>
         <WindowIndex Value="0"/>
         <TopLine Value="4"/>
         <CursorPos X="66" Y="11"/>
@@ -961,7 +961,7 @@
       <Unit104>
         <Filename Value="..\..\UCDClient.pas"/>
         <UnitName Value="UCDClient"/>
-        <EditorIndex Value="18"/>
+        <EditorIndex Value="10"/>
         <WindowIndex Value="0"/>
         <TopLine Value="91"/>
         <CursorPos X="1" Y="108"/>
@@ -971,209 +971,193 @@
       <Unit105>
         <Filename Value="..\..\Managers\UCDManagerRegions.pas"/>
         <UnitName Value="UCDManagerRegions"/>
-        <EditorIndex Value="8"/>
+        <EditorIndex Value="5"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="357"/>
-        <CursorPos X="1" Y="362"/>
+        <TopLine Value="301"/>
+        <CursorPos X="1" Y="314"/>
         <UsageCount Value="11"/>
         <Loaded Value="True"/>
       </Unit105>
       <Unit106>
         <Filename Value="H:\Lazarus\1.1_2.6.0\lcl\controls.pp"/>
         <UnitName Value="Controls"/>
-        <EditorIndex Value="6"/>
         <WindowIndex Value="0"/>
         <TopLine Value="533"/>
         <CursorPos X="15" Y="537"/>
         <UsageCount Value="11"/>
-        <Loaded Value="True"/>
       </Unit106>
       <Unit107>
         <Filename Value="H:\Lazarus\1.1_2.6.0\components\lazutils\lazmethodlist.pas"/>
         <UnitName Value="LazMethodList"/>
-        <EditorIndex Value="12"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="142"/>
-        <CursorPos X="1" Y="164"/>
+        <TopLine Value="1"/>
+        <CursorPos X="15" Y="160"/>
         <UsageCount Value="11"/>
-        <Loaded Value="True"/>
       </Unit107>
       <Unit108>
         <Filename Value="H:\Lazarus\1.1_2.6.0\lcl\include\control.inc"/>
-        <EditorIndex Value="13"/>
         <WindowIndex Value="0"/>
         <TopLine Value="4254"/>
         <CursorPos X="1" Y="4272"/>
         <UsageCount Value="11"/>
-        <Loaded Value="True"/>
       </Unit108>
       <Unit109>
         <Filename Value="H:\Lazarus\1.1_2.6.0\lcl\include\customform.inc"/>
-        <EditorIndex Value="14"/>
         <WindowIndex Value="0"/>
         <TopLine Value="473"/>
         <CursorPos X="1" Y="489"/>
         <UsageCount Value="11"/>
-        <Loaded Value="True"/>
       </Unit109>
       <Unit110>
         <Filename Value="H:\Lazarus\1.1_2.6.0\fpc\2.6.0\source\rtl\objpas\classes\classesh.inc"/>
-        <EditorIndex Value="9"/>
         <WindowIndex Value="0"/>
         <TopLine Value="659"/>
         <CursorPos X="3" Y="660"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
       </Unit110>
       <Unit111>
         <Filename Value="H:\Lazarus\1.1_2.6.0\fpc\2.6.0\source\rtl\objpas\classes\stringl.inc"/>
-        <EditorIndex Value="10"/>
         <WindowIndex Value="0"/>
         <TopLine Value="645"/>
         <CursorPos X="3" Y="648"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
       </Unit111>
       <Unit112>
         <Filename Value="H:\Lazarus\1.1_2.6.0\lcl\comctrls.pp"/>
         <UnitName Value="ComCtrls"/>
-        <EditorIndex Value="4"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1439"/>
         <CursorPos X="15" Y="1449"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
       </Unit112>
       <Unit113>
         <Filename Value="H:\Lazarus\1.1_2.6.0\lcl\include\customlistview.inc"/>
-        <EditorIndex Value="5"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1428"/>
         <CursorPos X="20" Y="1449"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
       </Unit113>
     </Units>
     <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
-        <Filename Value="..\..\UCDManager.pas"/>
-        <Caret Line="89" Column="3" TopLine="85"/>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="135" Column="14" TopLine="114"/>
       </Position1>
       <Position2>
-        <Filename Value="..\..\UCDManager.pas"/>
-        <Caret Line="104" Column="25" TopLine="85"/>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="134" Column="14" TopLine="113"/>
       </Position2>
       <Position3>
-        <Filename Value="..\..\UCDManager.pas"/>
-        <Caret Line="145" Column="47" TopLine="106"/>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="140" Column="3" TopLine="124"/>
       </Position3>
       <Position4>
         <Filename Value="..\..\UCDManager.pas"/>
-        <Caret Line="595" Column="32" TopLine="574"/>
+        <Caret Line="362" Column="20" TopLine="354"/>
       </Position4>
       <Position5>
-        <Filename Value="..\..\Managers\UCDManagerRegions.pas"/>
-        <Caret Line="373" Column="3" TopLine="369"/>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="116" Column="1" TopLine="103"/>
       </Position5>
       <Position6>
-        <Filename Value="..\..\Managers\UCDManagerRegions.pas"/>
-        <Caret Line="166" Column="29" TopLine="163"/>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="118" Column="1" TopLine="103"/>
       </Position6>
       <Position7>
-        <Filename Value="..\..\Managers\UCDManagerRegions.pas"/>
-        <Caret Line="49" Column="15" TopLine="36"/>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="110" Column="1" TopLine="103"/>
       </Position7>
       <Position8>
-        <Filename Value="..\..\UCDManager.pas"/>
-        <Caret Line="95" Column="1" TopLine="85"/>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="112" Column="1" TopLine="103"/>
       </Position8>
       <Position9>
-        <Filename Value="..\..\UCDManager.pas"/>
-        <Caret Line="120" Column="15" TopLine="107"/>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="116" Column="1" TopLine="103"/>
       </Position9>
       <Position10>
-        <Filename Value="..\..\UCDManager.pas"/>
-        <Caret Line="121" Column="15" TopLine="108"/>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="110" Column="1" TopLine="103"/>
       </Position10>
       <Position11>
-        <Filename Value="..\..\UCDManager.pas"/>
-        <Caret Line="120" Column="15" TopLine="108"/>
+        <Filename Value="..\..\Managers\UCDManagerRegions.pas"/>
+        <Caret Line="368" Column="1" TopLine="355"/>
       </Position11>
       <Position12>
         <Filename Value="..\..\UCDManager.pas"/>
-        <Caret Line="121" Column="26" TopLine="107"/>
+        <Caret Line="362" Column="1" TopLine="354"/>
       </Position12>
       <Position13>
-        <Filename Value="..\..\UCDManager.pas"/>
-        <Caret Line="120" Column="15" TopLine="107"/>
+        <Filename Value="..\..\Managers\UCDManagerRegions.pas"/>
+        <Caret Line="368" Column="1" TopLine="355"/>
       </Position13>
       <Position14>
-        <Filename Value="..\..\UCDManager.pas"/>
-        <Caret Line="121" Column="15" TopLine="108"/>
+        <Filename Value="..\..\Managers\UCDManagerRegions.pas"/>
+        <Caret Line="176" Column="1" TopLine="163"/>
       </Position14>
       <Position15>
-        <Filename Value="..\..\UCDManager.pas"/>
-        <Caret Line="120" Column="36" TopLine="97"/>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="116" Column="1" TopLine="103"/>
       </Position15>
       <Position16>
         <Filename Value="..\..\UCDManager.pas"/>
-        <Caret Line="118" Column="36" TopLine="97"/>
+        <Caret Line="360" Column="1" TopLine="354"/>
       </Position16>
       <Position17>
-        <Filename Value="..\..\UCDManager.pas"/>
-        <Caret Line="389" Column="45" TopLine="381"/>
+        <Filename Value="..\..\Managers\UCDManagerRegions.pas"/>
+        <Caret Line="314" Column="1" TopLine="301"/>
       </Position17>
       <Position18>
-        <Filename Value="..\..\Managers\UCDManagerRegions.pas"/>
-        <Caret Line="32" Column="1" TopLine="27"/>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="108" Column="9" TopLine="103"/>
       </Position18>
       <Position19>
         <Filename Value="UMainForm.pas"/>
-        <Caret Line="75" Column="12" TopLine="66"/>
+        <Caret Line="115" Column="1" TopLine="103"/>
       </Position19>
       <Position20>
-        <Filename Value="..\..\UCDManager.pas"/>
-        <Caret Line="108" Column="22" TopLine="95"/>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="116" Column="1" TopLine="103"/>
       </Position20>
       <Position21>
-        <Filename Value="..\..\Managers\UCDManagerRegions.pas"/>
-        <Caret Line="155" Column="1" TopLine="142"/>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="109" Column="1" TopLine="103"/>
       </Position21>
       <Position22>
-        <Filename Value="..\..\Managers\UCDManagerRegions.pas"/>
-        <Caret Line="46" Column="21" TopLine="33"/>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="110" Column="1" TopLine="103"/>
       </Position22>
       <Position23>
-        <Filename Value="..\..\Managers\UCDManagerTabs.pas"/>
-        <Caret Line="83" Column="1" TopLine="70"/>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="115" Column="1" TopLine="103"/>
       </Position23>
       <Position24>
-        <Filename Value="..\..\Managers\UCDManagerTabs.pas"/>
-        <Caret Line="84" Column="32" TopLine="70"/>
+        <Filename Value="..\..\UCDManager.pas"/>
+        <Caret Line="360" Column="1" TopLine="354"/>
       </Position24>
       <Position25>
-        <Filename Value="..\..\Managers\UCDManagerTabs.pas"/>
-        <Caret Line="46" Column="21" TopLine="33"/>
+        <Filename Value="..\..\Managers\UCDManagerRegions.pas"/>
+        <Caret Line="314" Column="1" TopLine="301"/>
       </Position25>
       <Position26>
-        <Filename Value="..\..\Managers\UCDManagerTabs.pas"/>
-        <Caret Line="347" Column="3" TopLine="328"/>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="109" Column="1" TopLine="103"/>
       </Position26>
       <Position27>
-        <Filename Value="..\..\Managers\UCDManagerRegions.pas"/>
-        <Caret Line="309" Column="9" TopLine="297"/>
+        <Filename Value="..\..\UCDManager.pas"/>
+        <Caret Line="362" Column="1" TopLine="354"/>
       </Position27>
       <Position28>
         <Filename Value="..\..\Managers\UCDManagerRegions.pas"/>
-        <Caret Line="35" Column="15" TopLine="22"/>
+        <Caret Line="368" Column="1" TopLine="355"/>
       </Position28>
       <Position29>
-        <Filename Value="..\..\Managers\UCDManagerRegions.pas"/>
-        <Caret Line="72" Column="7" TopLine="58"/>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="115" Column="1" TopLine="103"/>
       </Position29>
       <Position30>
         <Filename Value="..\..\Managers\UCDManagerRegions.pas"/>
-        <Caret Line="63" Column="37" TopLine="58"/>
+        <Caret Line="314" Column="1" TopLine="301"/>
       </Position30>
     </JumpHistory>
   </ProjectOptions>
@@ -1203,7 +1187,6 @@
         <OverflowChecks Value="True"/>
         <StackChecks Value="True"/>
       </Checks>
-      <VerifyObjMethodCallValidity Value="True"/>
     </CodeGeneration>
     <Linking>
       <Debugging>

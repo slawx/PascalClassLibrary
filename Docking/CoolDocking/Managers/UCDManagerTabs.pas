@@ -86,8 +86,8 @@ begin
     if TControl(Sender).Visible then begin
       Update;
       Switch(DockItems.IndexOf(FindControlInPanels(TControl(Sender))));
-      TCDManagerTabsItem(DockItems[DockItems.IndexOf(
-        FindControlInPanels(TControl(Sender)))]).HideType := dhtPermanent;
+      //TCDManagerTabsItem(DockItems[DockItems.IndexOf(
+      //  FindControlInPanels(TControl(Sender)))]).HideType := dhtPermanent;
     end else Update;
   end;
 
@@ -123,12 +123,8 @@ procedure TCDManagerTabs.SetVisible(const AValue: Boolean);
 begin
   inherited;
   if (PageControl.TabIndex >= 0) and (PageControl.TabIndex < DockItems.Count) then
-    with TCDManagerItem(DockItems[PageControl.TabIndex]) do begin
-      if AValue and (not Control.Visible) and (Control.Tag = Integer(dhtTemporal)) then begin
-        Control.Show;
-        Control.Tag := Integer(dhtPermanent);
-      end;
-    end;
+    with TCDManagerItem(DockItems[PageControl.TabIndex]) do
+      TCDManager(Control.DockManager).DockSiteVisible := True;
 end;
 
 procedure TCDManagerTabs.TabControlMouseLeave(Sender: TObject);
@@ -398,15 +394,12 @@ begin
     Control.Parent := PageControl.Pages[I];
     Control.Align := alClient;
     if PageControl.PageIndex = I then begin
-      if (not Control.Visible) and (HideType = dhtTemporal) then
-        Control.Visible := True;
+      TCDManager(Control.DockManager).DockSiteVisible := True;
+      if not Control.Visible then Control.Show;
     end else begin
-      if Control.Visible then begin
-        HideType := dhtTemporal;
-        Control.Visible := False;
-      end;
+      TCDManager(Control.DockManager).DockSiteVisible := False;
     end;
-    PageControl.Pages[I].TabVisible := Control.Visible or (HideType = dhtTemporal);
+    PageControl.Pages[I].TabVisible := Control.Visible;
 
     //TCDClientPanel(DockPanels[I]).ClientAreaPanel.Width := DockSite.Width;
     //TCDClientPanel(DockPanels[I]).ClientAreaPanel.Height := DockSite.Height - PageControl.Height;
