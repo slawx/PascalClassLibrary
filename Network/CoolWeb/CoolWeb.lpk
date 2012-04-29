@@ -7,9 +7,15 @@
     <CompilerOptions>
       <Version Value="11"/>
       <SearchPaths>
+        <IncludeFiles Value="WebServer"/>
         <OtherUnitFiles Value="WebServer;Persistence;Network;Modules;Common;/usr/lib/mysql/;/usr/lib64/mysql/"/>
         <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
       </SearchPaths>
+      <Parsing>
+        <SyntaxOptions>
+          <SyntaxMode Value="Delphi"/>
+        </SyntaxOptions>
+      </Parsing>
       <Other>
         <CompilerMessages>
           <UseMsgFile Value="True"/>
@@ -19,8 +25,8 @@
     </CompilerOptions>
     <Description Value="Unit set for generating CGI or server web application."/>
     <License Value="GNU/GPL"/>
-    <Version Minor="2"/>
-    <Files Count="16">
+    <Version Minor="3"/>
+    <Files Count="18">
       <Item1>
         <Filename Value="WebServer/UHTTPServer.pas"/>
         <UnitName Value="UHTTPServer"/>
@@ -36,87 +42,101 @@
         <UnitName Value="UHTTPServerTCP"/>
       </Item3>
       <Item4>
+        <Filename Value="WebServer/UHTTPServerTurboPower.pas"/>
+        <UnitName Value="UHTTPServerTurboPower"/>
+      </Item4>
+      <Item5>
+        <Filename Value="WebServer/UTurboPowerForm.pas"/>
+        <UnitName Value="UTurboPowerForm"/>
+      </Item5>
+      <Item6>
         <Filename Value="WebServer/UHTTPSessionFile.pas"/>
         <HasRegisterProc Value="True"/>
         <UnitName Value="UHTTPSessionFile"/>
-      </Item4>
-      <Item5>
+      </Item6>
+      <Item7>
         <Filename Value="WebServer/UHTTPSessionMySQL.pas"/>
         <HasRegisterProc Value="True"/>
         <UnitName Value="UHTTPSessionMySQL"/>
-      </Item5>
-      <Item6>
+      </Item7>
+      <Item8>
         <Filename Value="Persistence/USqlDatabase.pas"/>
         <HasRegisterProc Value="True"/>
         <UnitName Value="USqlDatabase"/>
-      </Item6>
-      <Item7>
-        <Filename Value="Network/UTCPServer.pas"/>
-        <UnitName Value="UTCPServer"/>
-      </Item7>
-      <Item8>
-        <Filename Value="Modules/UPageList.pas"/>
-        <UnitName Value="UPageList"/>
       </Item8>
       <Item9>
-        <Filename Value="Modules/UUser.pas"/>
-        <UnitName Value="UUser"/>
+        <Filename Value="Network/UTCPServer.pas"/>
+        <UnitName Value="UTCPServer"/>
       </Item9>
       <Item10>
-        <Filename Value="Common/UHtmlClasses.pas"/>
-        <UnitName Value="UHtmlClasses"/>
+        <Filename Value="Modules/UPageList.pas"/>
+        <UnitName Value="UPageList"/>
       </Item10>
       <Item11>
-        <Filename Value="Common/UMemoryStreamEx.pas"/>
-        <UnitName Value="UMemoryStreamEx"/>
+        <Filename Value="Modules/UUser.pas"/>
+        <UnitName Value="UUser"/>
       </Item11>
       <Item12>
-        <Filename Value="Common/UMIMEType.pas"/>
-        <UnitName Value="UMIMEType"/>
+        <Filename Value="Common/UHtmlClasses.pas"/>
+        <UnitName Value="UHtmlClasses"/>
       </Item12>
       <Item13>
-        <Filename Value="Common/UXmlClasses.pas"/>
-        <UnitName Value="UXmlClasses"/>
+        <Filename Value="Common/UMemoryStreamEx.pas"/>
+        <UnitName Value="UMemoryStreamEx"/>
       </Item13>
       <Item14>
+        <Filename Value="Common/UMIMEType.pas"/>
+        <UnitName Value="UMIMEType"/>
+      </Item14>
+      <Item15>
+        <Filename Value="Common/UXmlClasses.pas"/>
+        <UnitName Value="UXmlClasses"/>
+      </Item15>
+      <Item16>
         <Filename Value="WebServer/UWebPage.pas"/>
         <HasRegisterProc Value="True"/>
         <UnitName Value="UWebPage"/>
-      </Item14>
-      <Item15>
+      </Item16>
+      <Item17>
         <Filename Value="WebServer/UWebApp.pas"/>
         <HasRegisterProc Value="True"/>
         <UnitName Value="UWebApp"/>
-      </Item15>
-      <Item16>
+      </Item17>
+      <Item18>
         <Filename Value="LazIDEReg.pas"/>
         <HasRegisterProc Value="True"/>
         <UnitName Value="LazIDEReg"/>
-      </Item16>
+      </Item18>
     </Files>
     <Type Value="RunAndDesignTime"/>
-    <RequiredPkgs Count="6">
+    <RequiredPkgs Count="8">
       <Item1>
-        <PackageName Value="IDEIntf"/>
+        <PackageName Value="TurboPowerIProDsgn"/>
       </Item1>
       <Item2>
-        <PackageName Value="LCL"/>
+        <PackageName Value="TurboPowerIPro"/>
       </Item2>
       <Item3>
-        <PackageName Value="Common"/>
+        <PackageName Value="IDEIntf"/>
       </Item3>
       <Item4>
+        <PackageName Value="LCL"/>
+      </Item4>
+      <Item5>
+        <PackageName Value="Common"/>
+      </Item5>
+      <Item6>
         <PackageName Value="TemplateGenerics"/>
         <MaxVersion Minor="3"/>
         <MinVersion Minor="3" Valid="True"/>
-      </Item4>
-      <Item5>
+      </Item6>
+      <Item7>
         <PackageName Value="synapse"/>
-      </Item5>
-      <Item6>
+      </Item7>
+      <Item8>
         <PackageName Value="FCL"/>
         <MinVersion Major="1" Valid="True"/>
-      </Item6>
+      </Item8>
     </RequiredPkgs>
     <UsageOptions>
       <UnitPath Value="$(PkgOutDir)"/>

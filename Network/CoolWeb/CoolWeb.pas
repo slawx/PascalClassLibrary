@@ -2,30 +2,30 @@
   This source is only used to compile and install the package.
  }
 
-unit CoolWeb; 
+unit CoolWeb;
 
 interface
 
 uses
-  UHTTPServer, UHTTPServerCGI, UHTTPServerTCP, UHTTPSessionFile, 
-  UHTTPSessionMySQL, USqlDatabase, UTCPServer, UPageList, UUser, UHtmlClasses, 
-  UMemoryStreamEx, UMIMEType, UXmlClasses, UWebPage, UWebApp, LazIDEReg, 
-  LazarusPackageIntf;
+  UHTTPServer, UHTTPServerCGI, UHTTPServerTCP, UHTTPServerTurboPower, 
+  UTurboPowerForm, UHTTPSessionFile, UHTTPSessionMySQL, USqlDatabase, 
+  UTCPServer, UPageList, UUser, UHtmlClasses, UMemoryStreamEx, UMIMEType, 
+  UXmlClasses, UWebPage, UWebApp, LazIDEReg, LazarusPackageIntf;
 
 implementation
 
-procedure Register; 
+procedure Register;
 begin
-  RegisterUnit('UHTTPServerCGI', @UHTTPServerCGI.Register); 
-  RegisterUnit('UHTTPServerTCP', @UHTTPServerTCP.Register); 
-  RegisterUnit('UHTTPSessionFile', @UHTTPSessionFile.Register); 
-  RegisterUnit('UHTTPSessionMySQL', @UHTTPSessionMySQL.Register); 
-  RegisterUnit('USqlDatabase', @USqlDatabase.Register); 
-  RegisterUnit('UWebPage', @UWebPage.Register); 
-  RegisterUnit('UWebApp', @UWebApp.Register); 
-  RegisterUnit('LazIDEReg', @LazIDEReg.Register); 
-end; 
+  RegisterUnit('UHTTPServerCGI', @UHTTPServerCGI.Register);
+  RegisterUnit('UHTTPServerTCP', @UHTTPServerTCP.Register);
+  RegisterUnit('UHTTPSessionFile', @UHTTPSessionFile.Register);
+  RegisterUnit('UHTTPSessionMySQL', @UHTTPSessionMySQL.Register);
+  RegisterUnit('USqlDatabase', @USqlDatabase.Register);
+  RegisterUnit('UWebPage', @UWebPage.Register);
+  RegisterUnit('UWebApp', @UWebApp.Register);
+  RegisterUnit('LazIDEReg', @LazIDEReg.Register);
+end;
 
 initialization
-  RegisterPackage('CoolWeb', @Register); 
+  RegisterPackage('CoolWeb', @Register);
 end.

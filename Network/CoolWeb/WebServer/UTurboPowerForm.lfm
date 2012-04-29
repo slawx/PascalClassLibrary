@@ -1,0 +1,77 @@
+object FormWebBrowser: TFormWebBrowser
+  Left = 402
+  Height = 417
+  Top = 194
+  Width = 460
+  Caption = 'Web browser'
+  ClientHeight = 417
+  ClientWidth = 460
+  OnClose = FormClose
+  LCLVersion = '1.1'
+  object IpHtmlPanel1: TIpHtmlPanel
+    Left = 0
+    Height = 370
+    Top = 26
+    Width = 460
+    Align = alClient
+    DataProvider = IpFileDataProvider1
+    FixedTypeface = 'Courier New'
+    DefaultTypeFace = 'default'
+    DefaultFontSize = 12
+    FlagErrors = False
+    PrintSettings.MarginLeft = 0.5
+    PrintSettings.MarginTop = 0.5
+    PrintSettings.MarginRight = 0.5
+    PrintSettings.MarginBottom = 0.5
+    TabOrder = 0
+  end
+  object ToolBar1: TToolBar
+    Left = 0
+    Height = 26
+    Top = 0
+    Width = 460
+    Caption = 'ToolBar1'
+    TabOrder = 1
+    object ToolButton1: TToolButton
+      Left = 1
+      Top = 2
+      Action = AReloadPage
+    end
+    object ToolButton2: TToolButton
+      Left = 24
+      Top = 2
+      Action = AShowSource
+    end
+    object EditAddress: TEdit
+      Left = 47
+      Height = 27
+      Top = 2
+      Width = 201
+      TabOrder = 0
+    end
+  end
+  object StatusBar1: TStatusBar
+    Left = 0
+    Height = 21
+    Top = 396
+    Width = 460
+    Panels = <>
+  end
+  object ActionList1: TActionList
+    left = 307
+    top = 132
+    object AReloadPage: TAction
+      Caption = 'Reload page'
+      Hint = 'Reload page'
+    end
+    object AShowSource: TAction
+      Caption = 'Show source'
+      Hint = 'Show source'
+      OnExecute = AShowSourceExecute
+    end
+  end
+  object IpFileDataProvider1: TIpFileDataProvider
+    left = 112
+    top = 172
+  end
+end

@@ -6,10 +6,10 @@ interface
 
 uses
   Classes, SysUtils, CustApp, SpecializedList, UWebPage, UHTTPSessionFile,
-  UHTTPServer;
+  UHTTPServer, Forms;
 
 type
-  THTTPServerType = (stCGI, stTCP);
+  THTTPServerType = (stCGI, stTCP, stTurboPower);
 
   TRegistredPage = class
     Name: string;
@@ -24,12 +24,11 @@ type
 
   { TWebApp }
 
-  TWebApp = class(TCustomApplication)
+  TWebApp = class(TComponent)
   private
     FOnBeforePageProduce: TOnProduceEvent;
     FOnInitialize: TNotifyEvent;
     FServerType: THTTPServerType;
-    procedure DoRun; override;
     function DumpExceptionCallStack(E: Exception): string;
     procedure HTTPServerRequest(HandlerData: THTTPHandlerData);
     procedure SetServerType(AValue: THTTPServerType);
@@ -38,10 +37,12 @@ type
     HTTPServer: THTTPServer;
     HTTPSessionStorageFile: THTTPSessionStorageFile;
     LogException: Boolean;
-    procedure ShowException(E: Exception); override;
+    procedure ShowException(E: Exception);
     procedure RegisterPage(PageClass: TWebPageClass; out Reference; Path: string);
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
+    procedure Run;
+  published
     property OnBeforePageProduce: TOnProduceEvent read FOnBeforePageProduce write FOnBeforePageProduce;
     property OnInitialize: TNotifyEvent read FOnInitialize write FOnInitialize;
     property ServerType: THTTPServerType read FServerType write SetServerType;
@@ -50,14 +51,10 @@ type
 
 procedure Register;
 
-var
-  Application: TWebApp;
-
-
 implementation
 
 uses
-  UHTTPServerCGI, UHTTPServerTCP;
+  UHTTPServerCGI, UHTTPServerTCP, UHTTPServerTurboPower;
 
 resourcestring
   SPageNotFound = 'Page not found';
@@ -65,7 +62,7 @@ resourcestring
 
 procedure Register;
 begin
-  RegisterClass(TWebApp);
+  RegisterComponents('CoolWeb', [TWebApp]);
 end;
 
 
@@ -83,14 +80,12 @@ end;
 
 { TWebApp }
 
-procedure TWebApp.DoRun;
+procedure TWebApp.Run;
 begin
-  try
-    if Assigned(FOnInitialize) then FOnInitialize(Self);
-    HTTPServer.Run;
-  finally
-    Terminate;
-  end;
+  if Assigned(FOnInitialize) then FOnInitialize(Self);
+  HTTPServer.Run;
+  if (ServerType = stCGI) or (ServerType = stTCP) then
+    Application.Terminate;
 end;
 
 function TWebApp.DumpExceptionCallStack(E: Exception): string;
@@ -154,6 +149,7 @@ begin
   case FServerType of
     stCGI: HTTPServer := THTTPServerCGI.Create(nil);
     stTCP: HTTPServer := THTTPServerTCP.Create(nil);
+    stTurboPower: HTTPServer := THTTPServerTurboPower.Create(nil);
   end;
   HTTPServer.OnRequest := HTTPServerRequest;
 end;
@@ -197,12 +193,7 @@ end;
 
 initialization
 
-Application := TWebApp.Create(nil);
-
-
 finalization
-
-Application.Free;
 
 end.
 
