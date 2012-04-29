@@ -12,6 +12,7 @@ uses
 type
   TPaintObject = (poImage, poPaintBox, poOpenGL);
 
+
   { TDrawMethod }
 
   TDrawMethod = class
@@ -465,6 +466,7 @@ begin
     P := PInteger(BGRABitmap.ScanLine[Y]);
     for X := 0 to Size.X - 1 do begin
       P^ := NoSwapBRComponent(Pixels[X, Y]) or $ff000000;
+      //P^ := Pixels[X, Y] or $ff000000;
       (*P^.red := Pixels[X, Y];
       P^.green := Pixels[X, Y];
       P^.blue := Pixels[X, Y];
@@ -475,7 +477,6 @@ begin
   BGRABitmap.InvalidateBitmap; // changed by direct access
   //BGRABitmap.Draw(Bitmap.Canvas, 0, 0, True);
   BGRABitmap.Draw(PaintBox.Canvas, 0, 0, True);
-//  Bitmap.RawImage.Ass
 end;
 
 { TBitmapRawImageDataPaintBox }
@@ -521,6 +522,7 @@ begin
     hPaint := PaintBox.Canvas.Handle;
     PaintBox.Canvas.CopyRect(Rect(0, 0, Bitmap.Width, Bitmap.Height), TempBitmap.Canvas,
       Rect(0, 0, TempBitmap.Width, TempBitmap.Height));
+   // PaintBox.Canvas.Draw(0, 0, TempBitmap);
     //BitBlt(hPaint, 0, 0, TempBitmap.Width, TempBitmap.Height, hBmp, 0, 0, srcCopy);
 end;
 
@@ -713,4 +715,4 @@ begin
 end;
 
 end.
-
+

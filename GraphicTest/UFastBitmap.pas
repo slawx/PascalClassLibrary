@@ -101,11 +101,13 @@ end;
 
 constructor TFastBitmap3.Create;
 begin
-
+  inherited;
+  Size := Point(0, 0);
 end;
 
 destructor TFastBitmap3.Destroy;
 begin
+  FreeMem(FPixelsData);
   inherited Destroy;
 end;
 
