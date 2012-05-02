@@ -44,10 +44,8 @@ function BinToHexString(Source: AnsiString): string;
 //function GetSpecialFolderPath(Folder: Integer): string;
 function BCDToInt(Value: Byte): Byte;
 function CompareByteArray(Data1, Data2: TArrayOfByte): Boolean;
-{$IFDEF Windows}
 function GetUserName: string;
 function LoggedOnUserNameEx(Format: TUserNameFormat): string;
-{$ENDIF}
 function SplitString(var Text: string; Count: Word): string;
 function GetBit(Variable: QWord; Index: Byte): Boolean;
 procedure SetBit(var Variable: QWord; Index: Byte; State: Boolean);
@@ -284,6 +282,7 @@ const
 var
   L: LongWord;
 begin
+
   L := MAX_USERNAME_LENGTH + 2;
   SetLength(Result, L);
   if Windows.GetUserName(PChar(Result), L) and (L > 0) then begin
@@ -316,6 +315,17 @@ begin
       else Result := GetUserName;
   end else Result := GetUserName;
 end;
+{$ELSE}
+function GetUserName: string;
+begin
+  Result := '';
+end;
+
+function LoggedOnUserNameEx(Format: TUserNameFormat): string;
+begin
+  Result := '';
+end;
+
 {$ENDIF}
 
 function SplitString(var Text: string; Count: Word): string;
@@ -414,4 +424,4 @@ finalization
 
 FreeLibraries;
 
-end.
+end.

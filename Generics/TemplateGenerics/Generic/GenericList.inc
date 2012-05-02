@@ -23,7 +23,7 @@
   private
     FItems: array of TGListItem;
     FCount: TGListIndex;
-    FUpdateCount: NativeInt;
+    FUpdateCount: Integer;
     FOnUpdate: TNotifyEvent;
     function Get(Index: TGListIndex): TGListItem;
     function GetCapacity: TGListIndex;
@@ -651,4 +651,4 @@ begin
 end;
 
 {$UNDEF IMPLEMENTATION}
-{$ENDIF}
+{$ENDIF}

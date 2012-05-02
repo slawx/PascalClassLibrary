@@ -42,7 +42,7 @@ begin
   {$IFDEF Windows}
   fIsHighResolution := QueryPerformanceFrequency(fFrequency) ;
   {$ELSE}
-  raise Exception.Create('Not implemeneted');
+  fIsHighResolution := False;
   {$ENDIF}
   if NOT fIsHighResolution then fFrequency := MSecsPerSec;
 
@@ -60,7 +60,6 @@ begin
     {$IFDEF Windows}
     QueryPerformanceCounter(lInt)
     {$ELSE}
-    raise Exception.Create('Not implemeneted')
     {$ENDIF}
   else
     lInt := MilliSecondOf(Now) ;
