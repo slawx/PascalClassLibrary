@@ -8,7 +8,7 @@ uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
   ComCtrls, ExtCtrls, Buttons, Menus, UCDMaster, UCDCustomize, UCDClient,
   UDockForm, UComponentTree, UCDWindowList, UCDConjoinForm, UCDManager,
-  UCDCommon;
+  UCDCommon, UCDManagerRegions;
 
 type
 
@@ -68,13 +68,22 @@ var
   ConjoinedDockForm1: TCDConjoinForm;
   ConjoinedDockForm2: TCDConjoinForm;
   Form1: TDockForm;
+  Form2: TDockForm;
+  Form3: TDockForm;
 begin
-  NewDockForm.ManualDock(Panel1);
   Form1 := NewDockForm;
-  Form1.ManualDock(Panel1);
-  NewDockForm.ManualDock(Form1);
-  TCDManager(Panel1.DockManager).DockStyle := dsTabs;
-  NewDockForm.ManualDock(Panel1);
+  Form1.ManualDock(Panel1, nil, alRight);
+  Form2 := NewDockForm;
+  Form2.ManualDock(Panel1, nil, alRight);
+  Form3 := NewDockForm;
+  Form3.ManualDock(Panel1, nil, alRight);
+  TCDManagerRegionsItem(TCDPanelHeader(Form2.Parent.Parent).DockItem).SetCenter;
+
+  //Form1 := NewDockForm;
+  //Form1.ManualDock(Panel1);
+  //NewDockForm.ManualDock(Form1);
+  //TCDManager(Panel1.DockManager).DockStyle := dsTabs;
+  //NewDockForm.ManualDock(Panel1);
 (*  ConjoinedDockForm1 := TCDManager(Panel1.DockManager).CreateConjoinForm;
   ConjoinedDockForm1.Name := 'Model';;
   ConjoinedDockForm1.Show;

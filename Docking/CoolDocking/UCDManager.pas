@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, UCDCommon, Controls, Contnrs, Dialogs,
   UCDPopupMenu, LCLType, LCLIntf, LMessages, Graphics, Buttons,
-  UCDConjoinForm, Menus, StdCtrls, ExtCtrls, Forms;
+  UCDConjoinForm, Menus, ExtCtrls, Forms;
 
 const
   GrabberSize = 22;
@@ -56,6 +56,7 @@ type
   public
     Header: TCDHeader;
     ControlPanel: TPanel;
+    DockItem: TCDManagerItem;
     property HeaderPos: THeaderPos read FHeaderPos write SetHeaderPos;
     property HeaderVisible: Boolean read GetHeaderVisible write SetHeaderVisible;
     constructor Create(TheOwner: TComponent);
@@ -356,9 +357,9 @@ begin
   if FDockSiteVisible = AValue then Exit;
   FDockSiteVisible := AValue;
   SetVisible(FDockSiteVisible);
-  if Assigned(FOnDockSiteHide) and not AValue then
+  if Assigned(FOnDockSiteHide) and (not FDockSiteVisible) then
     FOnDockSiteHide(Self);
-  if Assigned(FOnDockSiteShow) and AValue then
+  if Assigned(FOnDockSiteShow) and FDockSiteVisible then
     FOnDockSiteShow(Self);
 end;
 

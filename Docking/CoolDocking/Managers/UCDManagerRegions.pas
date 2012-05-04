@@ -14,14 +14,17 @@ type
   { TCDManagerRegionsItem }
 
   TCDManagerRegionsItem = class(TCDManagerItem)
+  private
+  public
     PanelHeader: TCDPanelHeader;
     Splitter: TSplitter;
-    Align: TAlign;
     procedure VisibleChange(Sender: TObject); override;
     procedure Paint(Sender: TObject); override;
+    procedure PanelResize(Sender: TObject);
     constructor Create;
     destructor Destroy; override;
     procedure SetControl(const AValue: TWinControl); override;
+    procedure SetCenter;
   end;
 
   { TCDManagerRegions }
@@ -29,11 +32,17 @@ type
   TCDManagerRegions = class(TCDManager)
   private
     FDockItems: TObjectList; // TList<TCDManagerRegionsItem>
+    FLastVisibleItemsCount: Integer;
     function GetHeaderPos: THeaderPos; override;
     procedure SetHeaderPos(const AValue: THeaderPos); override;
     function GetDirection(InsertAt: TAlign): TCDDirection;
-  public
+    procedure ResizePanels;
+    procedure ClearItemsAlignment;
+    procedure UpdateItemsAlignment;
+    function PanelsVisible: Integer;
+  protected
     FDockDirection: TCDDirection;
+  public
     //Panels: TObjectList; // TObjectList<TCDStyleRegionsPanel>
     function FindControlInPanels(Control: TControl): TCDManagerItem; override;
     procedure InsertControlNoUpdate(Control: TControl; InsertAt: TAlign);
@@ -58,6 +67,13 @@ uses
 
 { TCDManagerRegionsItem }
 
+procedure TCDManagerRegionsItem.SetCenter;
+begin
+  TCDManagerRegions(Manager).ClearItemsAlignment;
+  PanelHeader.Align := alClient;
+  Manager.Update;
+end;
+
 procedure TCDManagerRegionsItem.VisibleChange(Sender: TObject);
 begin
   inherited VisibleChange(Sender);
@@ -65,6 +81,7 @@ begin
     //if TControl(Sender).Visible then begin
     //  TCDManagerRegionsItem(DockItems[DockItems.IndexOf(FindControlInPanels(TControl(Sender)))]).HideType := dhtPermanent;
     //end;
+    PanelHeader.Visible := Control.Visible;
     Update;
 
     // if any region is visible, show parent docksite
@@ -90,12 +107,18 @@ begin
   end;
 end;
 
+procedure TCDManagerRegionsItem.PanelResize(Sender: TObject);
+begin
+  TCDManagerRegions(Manager).ResizePanels;
+end;
+
 constructor TCDManagerRegionsItem.Create;
 begin
   PanelHeader := TCDPanelHeader.Create(nil);
 //  PanelHeader.Header.ManagerItem := Self;
   PanelHeader.Header.OnMouseDown := DockPanelMouseDown;
   PanelHeader.Header.Icon.OnMouseDown := DockPanelMouseDown;
+  PanelHeader.OnResize := PanelResize;
 
   Splitter := TSplitter.Create(nil);
   with Splitter do begin
@@ -112,7 +135,7 @@ begin
   PanelHeader.Free;
   Splitter.Parent := nil;
   Splitter.Free;
-  Control.Parent := nil;
+  if Assigned(Control) then Control.Parent := nil;
   inherited Destroy;
 end;
 
@@ -152,6 +175,86 @@ begin
   else;
 end;
 
+procedure TCDManagerRegions.ResizePanels;
+var
+  I: Integer;
+  CenterPanelSize: TPoint;
+  Zoom: Real;
+const
+  MinSize = 30;
+begin
+  I := 0;
+  while (I < DockItems.Count) and
+    (TCDManagerRegionsItem(DockItems[I]).PanelHeader.Align <> alClient) do
+      Inc(I);
+  if I < DockItems.Count then begin
+    CenterPanelSize.X := TCDManagerRegionsItem(DockItems[I]).PanelHeader.Width;
+    CenterPanelSize.Y := TCDManagerRegionsItem(DockItems[I]).PanelHeader.Height;
+  end else Exit;
+  if (CenterPanelSize.X < MinSize) and (FDockDirection = ddHorizontal) then begin
+    Zoom := CenterPanelSize.X / MinSize;
+    for I := 0 to DockItems.Count - 1 do
+      with TCDManagerRegionsItem(DockItems[I]).PanelHeader do
+        if Align <> alClient then Width := Round(Width * Zoom);
+  end;
+  if (CenterPanelSize.Y < MinSize) and (FDockDirection = ddVertical) then begin
+    Zoom := CenterPanelSize.Y / MinSize;
+    for I := 0 to DockItems.Count - 1 do
+      with TCDManagerRegionsItem(DockItems[I]).PanelHeader do
+        if Align <> alClient then Height := Round(Height * Zoom);
+  end;
+end;
+
+procedure TCDManagerRegions.ClearItemsAlignment;
+var
+  I: Integer;
+begin
+  for I := 0 to FDockItems.Count - 1 do
+  with TCDManagerRegionsItem(FDockItems[I]) do begin
+    PanelHeader.Align := alNone;
+    Splitter.Align := alNone;
+  end;
+end;
+
+procedure TCDManagerRegions.UpdateItemsAlignment;
+var
+  I: Integer;
+  ClientPanelIndex: Integer;
+begin
+  // Find alClient panel item index
+  I := 0;
+  while (I < FDockItems.Count) and
+    (TCDManagerRegionsItem(FDockItems[I]).PanelHeader.Align <> alClient) do Inc(I);
+  if I < FDockItems.Count then ClientPanelIndex := I
+    else ClientPanelIndex := FDockItems.Count div 2;
+
+  // Normalize alignment
+  for I := 0 to FDockItems.Count - 1 do
+  with TCDManagerRegionsItem(FDockItems[I]) do begin
+    if FDockDirection = ddHorizontal then begin
+      if I < ClientPanelIndex then PanelHeader.Align := alLeft
+        else if I = ClientPanelIndex then PanelHeader.Align := alClient
+        else if I > ClientPanelIndex then PanelHeader.Align := alRight;
+    end;
+    if FDockDirection = ddVertical then begin
+      if I < ClientPanelIndex then PanelHeader.Align := alTop
+        else if I = ClientPanelIndex then PanelHeader.Align := alClient
+        else if I > ClientPanelIndex then PanelHeader.Align := alBottom;
+    end;
+  end;
+end;
+
+function TCDManagerRegions.PanelsVisible: Integer;
+var
+  I: Integer;
+begin
+  Result := 0;
+  for I := 0 to FDockItems.Count - 1 do
+  with TCDManagerRegionsItem(FDockItems[I]) do begin
+    if PanelHeader.Visible then Inc(Result);
+  end;
+end;
+
 function TCDManagerRegions.FindControlInPanels(Control: TControl
   ): TCDManagerItem;
 var
@@ -171,6 +274,7 @@ var
 begin
   NewItem := TCDManagerRegionsItem.Create;
   with NewItem do begin
+    PanelHeader.DockItem := NewItem;
     PanelHeader.Parent := Self.DockSite;
     Manager := Self;
     if DockStyle = dsList then Visible := True;
@@ -183,9 +287,6 @@ begin
   end;
 
   NewItem.PanelHeader.Parent := DockSite;
-
-  if DockItems.Count = 0 then NewItem.Align := alClient
-    else NewItem.Align := InsertAt;
 
   NewItem.Control := TWinControl(Control);
   Control.AddHandlerOnVisibleChanged(NewItem.VisibleChange);
@@ -301,57 +402,61 @@ end;
 procedure TCDManagerRegions.Update;
 var
   I: Integer;
-  SplitterLeft: Integer;
-  SplitterTop: Integer;
-  BaseAlign: TAlign;
+  PositionLeft: Integer;
+  PositionTop: Integer;
   VisibleControlsCount: Integer;
+const
+  MinSize = 30;
 begin
   inherited;
   if FUpdateCount = 0 then begin
   DebugLog('TCDManagerRegions.UpdateClientSize');
-  VisibleControlsCount := DockSite.VisibleDockClientCount;
+  VisibleControlsCount := PanelsVisible;
   if DockSite is TForm then begin
-    DockSiteVisible := VisibleControlsCount > 0;
+    //DockSiteVisible := VisibleControlsCount > 0;
   end;
   if VisibleControlsCount = 0 then VisibleControlsCount := 1;
 
+  PositionLeft := 0;
+  PositionTop := 0;
+  UpdateItemsAlignment;
   for I := 0 to DockItems.Count - 1 do
   with TCDManagerRegionsItem(DockItems[I]) do
   begin
-    PanelHeader.Left := SplitterLeft;
-    PanelHeader.Top := SplitterTop;
-    PanelHeader.Height := Self.DockSite.Height div
-      VisibleControlsCount;
-    PanelHeader.Width := Self.DockSite.Width div
-      VisibleControlsCount;
+    PanelHeader.Left := PositionLeft;
+    PanelHeader.Top := PositionTop;
+    if (FLastVisibleItemsCount <> VisibleControlsCount) then begin
+      PanelHeader.Height := Self.DockSite.Height div
+        VisibleControlsCount;
+      PanelHeader.Width := Self.DockSite.Width div
+        VisibleControlsCount;
+    end;
+    if PanelHeader.Height < MinSize then PanelHeader.Height := MinSize;
+    if PanelHeader.Width < MinSize then PanelHeader.Width := MinSize;
+
     if Assigned(TWinControl(Control).DockManager) then
       PanelHeader.Header.Visible := TCDManager(TWinControl(Control).DockManager).HeaderVisible;
     PanelHeader.Visible := Control.Visible;
     Paint(Self);
-    if FDockDirection = ddHorizontal then
-      BaseAlign := alLeft else BaseAlign := alTop;
 
-    if I < Trunc((DockItems.Count - 1) / 2) then BaseAlign := BaseAlign
-        else if I = Trunc((DockItems.Count - 1) / 2) then BaseAlign := alClient
-        else if I > Trunc((DockItems.Count - 1) / 2) then begin
-          if BaseAlign = alTop then BaseAlign := alBottom
-          else if BaseAlign = alLeft then BaseAlign := alRight;
-        end;
-    PanelHeader.Align := BaseAlign;
-
-    Splitter.Align := BaseAlign;
-    SplitterLeft := PanelHeader.Left;
-    SplitterTop := PanelHeader.Top;
-    Splitter.Left := SplitterLeft;
-    Splitter.Top := SplitterTop;
+    //PositionLeft := PanelHeader.Left;
+    //PositionTop := PanelHeader.Top;
+    if PanelHeader.Align = alLeft then Splitter.Left := PositionLeft + PanelHeader.Width + 1;
+    if PanelHeader.Align = alRight then Splitter.Left := PositionLeft - 1;
+    if PanelHeader.Align = alTop then Splitter.Top := PositionTop + PanelHeader.Height + 1;
+    if PanelHeader.Align = alBottom then Splitter.Top := PositionTop - 1;
+    Splitter.Align := PanelHeader.Align;
     Splitter.Parent := Self.DockSite;
-    Splitter.Visible := I <> (Trunc(DockItems.Count - 1) / 2);
-    Inc(SplitterLeft, Splitter.Width);
-    Inc(SplitterTop, Splitter.Height);
+    Splitter.Visible := PanelHeader.Visible and (PanelHeader.Align <> alClient);
+    Splitter.Width := 3;
+    Splitter.Height := 3;
+    Inc(PositionLeft, Splitter.Width + PanelHeader.Width);
+    Inc(PositionTop, Splitter.Height + PanelHeader.Height);
 
     Paint(Self);
-    PanelHeader.Align := BaseAlign;
+    //PanelHeader.Align := BaseAlign;
   end;
+    FLastVisibleItemsCount := VisibleControlsCount;
   end;
 end;
 
@@ -361,6 +466,7 @@ var
 begin
   inherited;
   //if DockSite.Visible <> AValue then
+  if DockItems.Count > 0 then
   try
     BeginUpdate;
     for I := 0 to DockItems.Count - 1 do
