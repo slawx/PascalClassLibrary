@@ -5,7 +5,7 @@ unit UStreamHelper;
 interface
 
 uses
-  Classes, DateUtils, syncobjs;
+  Classes, DateUtils, syncobjs, SysUtils;
 
 type
   TEndianness = (enBig, enLittle);
@@ -48,6 +48,7 @@ type
     function ReadSingle: Single;
     procedure ReadStream(AStream: TStream; Count: Integer);
     procedure ReadStreamPart(AStream: TStream; Count: Integer);
+    function EqualTo(Source: TStream): Boolean;
     function Sum: Byte;
     procedure FillByte(Data: Byte; Count: Integer);
     constructor Create; overload;
@@ -156,6 +157,34 @@ begin
       AStream.Size := AStream.Position + Count;
     AStream.Write(Buffer[0], Count);
   end;
+end;
+
+function TStreamHelper.EqualTo(Source: TStream): Boolean;
+const
+  BlockSize = 4096;
+var
+  Buffer1: array[0..BlockSize - 1] of Byte;
+  Buffer2: array[0..BlockSize - 1] of Byte;
+  BufferLength: Integer;
+  OldPos1, OldPos2: Integer;
+begin
+  OldPos1 := Source.Position;
+  Source.Position := 0;
+  OldPos2 := Position;
+  Position := 0;
+  Result := True;
+  if Source.Size = Size then begin
+    while Source.Position < Source.Size do begin
+      BufferLength := Source.Read(Buffer1, BlockSize);
+      Read(Buffer2, BlockSize);
+      if not CompareMem(@Buffer1, @Buffer2, BufferLength) then begin
+        Result := False;
+        Break;
+      end;
+    end;
+  end else Result := False;
+  Source.Position := OldPos1;
+  Position := OldPos2;
 end;
 
 procedure TStreamHelper.WriteStreamPart(AStream: TStream; Count: Integer);

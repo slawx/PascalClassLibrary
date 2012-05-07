@@ -38,6 +38,9 @@ public
   procedure Union(Rect1, Rect2: TGRectangle);
   procedure UnionWith(Rect: TGRectangle);
 
+  procedure SetRect(Left, Top, Width, Height: TGRectangleDimension);
+  procedure SetBounds(Left, Top, Right, Bottom: TGRectangleDimension);
+
   property Left: TGRectangleDimension read FLeft write SetLeft;
   property Top: TGRectangleDimension read FTop write SetTop;
   property Right: TGRectangleDimension read FRight write SetRight;
@@ -243,6 +246,22 @@ begin
     Right := Max(Right, Rect.Right);
     Bottom := Max(Bottom, Rect.Bottom);
   end;
+end;
+
+procedure TGRectangle.SetRect(Left, Top, Width, Height: TGRectangleDimension);
+begin
+  Self.Left := Left;
+  Self.Top := Top;
+  Self.Width := Width;
+  Self.Height := Height;
+end;
+
+procedure TGRectangle.SetBounds(Left, Top, Right, Bottom: TGRectangleDimension);
+begin
+  Self.Left := Left;
+  Self.Top := Top;
+  Self.Right := Right;
+  Self.Bottom := Bottom;
 end;
 
 function TGRectangle.GetEmpty: Boolean;

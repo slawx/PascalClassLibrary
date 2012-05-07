@@ -321,6 +321,7 @@ begin
   NewItem := TAudioSystemManagerItem.Create;
   NewItem.Name := Name;
   NewItem.SystemClass := SystemClass;
+  NewItem.Supported := True;
   Systems.Add(NewItem);
 end;
 

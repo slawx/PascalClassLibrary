@@ -48,9 +48,9 @@ function GetUserName: string;
 function LoggedOnUserNameEx(Format: TUserNameFormat): string;
 function SplitString(var Text: string; Count: Word): string;
 function GetBit(Variable: QWord; Index: Byte): Boolean;
-procedure SetBit(var Variable: QWord; Index: Byte; State: Boolean);
-procedure SetBit(var Variable: Cardinal; Index: Byte; State: Boolean);
-procedure SetBit(var Variable: Word; Index: Byte; State: Boolean);
+procedure SetBit(var Variable: QWord; Index: Byte; State: Boolean); overload;
+procedure SetBit(var Variable: Cardinal; Index: Byte; State: Boolean); overload;
+procedure SetBit(var Variable: Word; Index: Byte; State: Boolean); overload;
 function AddLeadingZeroes(const aNumber, Length : integer) : string;
 function LastPos(const SubStr: String; const S: String): Integer;
 function GenerateNewName(OldName: string): string;
@@ -412,7 +412,7 @@ end;
 
 procedure OpenFileInShell(FileName: string);
 begin
-  ExecuteProgram('cmd.exe /c start ' + FileName);
+  ExecuteProgram('cmd.exe /c start "' + FileName + '"');
 end;
 
 initialization
