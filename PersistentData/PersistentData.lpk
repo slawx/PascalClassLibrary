@@ -9,7 +9,7 @@
       <PathDelim Value="\"/>
       <SearchPaths>
         <OtherUnitFiles Value="Backend"/>
-        <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)\"/>
+        <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
       </SearchPaths>
       <CodeGeneration>
         <Checks>
@@ -29,31 +29,40 @@
     <Description Value="Generic data persistence layer"/>
     <License Value="GNU/GPL"/>
     <Version Minor="1"/>
-    <Files Count="6">
+    <Files Count="8">
       <Item1>
         <Filename Value="UPDServer.pas"/>
-        <UnitName Value="UChronisServer"/>
+        <UnitName Value="UPDServer"/>
       </Item1>
       <Item2>
         <Filename Value="UPDClient.pas"/>
-        <UnitName Value="UChronisClient"/>
+        <UnitName Value="UPDClient"/>
       </Item2>
       <Item3>
         <Filename Value="Backend\UPDClientXMLRPC.pas"/>
-        <UnitName Value="UChronisClientXMLRPC"/>
+        <UnitName Value="UPDClientXMLRPC"/>
       </Item3>
       <Item4>
         <Filename Value="Backend\UPDClientINI.pas"/>
-        <UnitName Value="UChronisClientDirect"/>
+        <UnitName Value="UPDClientINI"/>
       </Item4>
       <Item5>
         <Filename Value="Backend\UPDClientMySQL.pas"/>
-        <UnitName Value="UChronisClientMySQL"/>
+        <UnitName Value="UPDClientMySQL"/>
       </Item5>
       <Item6>
         <Filename Value="Backend\UPDClientRegistry.pas"/>
-        <UnitName Value="UChronisClientDirect"/>
+        <UnitName Value="UPDClientRegistry"/>
       </Item6>
+      <Item7>
+        <Filename Value="UPersistentData.pas"/>
+        <HasRegisterProc Value="True"/>
+        <UnitName Value="UPersistentData"/>
+      </Item7>
+      <Item8>
+        <Filename Value="Backend\UPDClientMemory.pas"/>
+        <UnitName Value="UPDClientMemory"/>
+      </Item8>
     </Files>
     <Type Value="RunAndDesignTime"/>
     <RequiredPkgs Count="2">
@@ -71,4 +80,4 @@
       <Version Value="2"/>
     </PublishOptions>
   </Package>
-</CONFIG>
+</CONFIG>

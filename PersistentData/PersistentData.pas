@@ -8,12 +8,13 @@ interface
 
 uses
   UPDServer, UPDClient, UPDClientXMLRPC, UPDClientINI, UPDClientMySQL, 
-  UPDClientRegistry, LazarusPackageIntf;
+  UPDClientRegistry, UPersistentData, UPDClientMemory, LazarusPackageIntf;
 
 implementation
 
 procedure Register;
 begin
+  RegisterUnit('UPersistentData', @UPersistentData.Register);
 end;
 
 initialization

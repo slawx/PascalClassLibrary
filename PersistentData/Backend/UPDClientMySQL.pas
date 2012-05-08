@@ -13,11 +13,15 @@ type
 
   TPDClientMySQL = class(TPDClient)
   protected
+    FHost: string;
+    FPort: Word;
+    FUser: string;
+    FPassword: string;
+    FDatabase: TSqlDatabase;
     procedure InitSystemTypes; override;
     function GetConnected: Boolean; override;
     procedure Init; override;
   public
-    Database: TSqlDatabase;
     procedure ObjectLoad(AObject: TObjectProxy); override;
     procedure ObjectSave(AObject: TObjectProxy); override;
     procedure ObjectDelete(AObject: TObjectProxy); override;
@@ -28,10 +32,16 @@ type
     function TypeIsDefined(AType: TPDType): Boolean; override;
     procedure Install;
     procedure Uninstall;
-    constructor Create; override;
+    constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Connect; override;
     procedure Disconnect; override;
+  published
+    property Database: TSqlDatabase read FDatabase write FDatabase;
+    property Host: string read FHost write FHost;
+    property Port: Word read FPort write FPort;
+    property User: string read FUser write FUser;
+    property Password: string read FPassword write FPassword;
   end;
 
 implementation
@@ -235,33 +245,36 @@ begin
   inherited;
 end;
 
-constructor TPDClientMySQL.Create;
+constructor TPDClientMySQL.Create(AOwner: TComponent);
 begin
   inherited;
-  Database := TSqlDatabase.Create(nil);
+  FDatabase := TSqlDatabase.Create(nil);
+  BackendName := 'MySQL';
 end;
 
 destructor TPDClientMySQL.Destroy;
 begin
-  FreeAndNil(Database);
+  FreeAndNil(FDatabase);
   inherited Destroy;
 end;
 
 procedure TPDClientMySQL.Connect;
 begin
-  Database.Port := Port;
-  Database.UserName := User;
-  Database.Password := Password;
-  Database.HostName := Host;
-  Database.Database := Schema;
-  Database.Connect;
-  Init;
+  if not Connected then begin
+    Database.Port := Port;
+    Database.UserName := User;
+    Database.Password := Password;
+    Database.HostName := Host;
+    Database.Database := Schema;
+    Database.Connect;
+    Init;
+  end;
 end;
 
 procedure TPDClientMySQL.Disconnect;
 begin
-  Database.Disconnect;
+  if Connected then Database.Disconnect;
 end;
 
 end.
-
+

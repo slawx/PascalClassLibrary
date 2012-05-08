@@ -79,20 +79,20 @@ type
 
   { TPDClient }
 
-  TPDClient = class
+  TPDClient = class(TComponent)
   private
+    FSchema: string;
+    procedure SetConnected(AValue: Boolean);
   protected
     procedure InitSystemTypes; virtual;
     procedure Init; virtual;
     function GetConnected: Boolean; virtual;
+    function GetConnectionString: string; virtual;
+    procedure SetConnectionString(AValue: string); virtual;
   public
-    Host: string;
-    Port: Word;
-    Schema: string;
-    User: string;
-    Password: string;
     Types: TPDTypeList;
     Version: string;
+    BackendName: string;
     procedure ObjectLoad(AObject: TObjectProxy); virtual; abstract;
     procedure ObjectSave(AObject: TObjectProxy); virtual; abstract;
     procedure ObjectDelete(AObject: TObjectProxy); virtual; abstract;
@@ -103,15 +103,21 @@ type
     procedure TypeUndefine(AType: TPDType); virtual; abstract;
     procedure CheckTypes;
     function TypeExists(Name: string): Boolean; virtual; abstract;
-    constructor Create; virtual;
+    constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Connect; virtual;
     procedure Disconnect; virtual;
     procedure Install; virtual;
     procedure Uninstall; virtual;
     procedure Update; virtual;
-    property Connected: Boolean read GetConnected;
+  published
+    property Schema: string read FSchema write FSchema;
+    property Connected: Boolean read GetConnected write SetConnected;
+    property ConnectionString: string read GetConnectionString
+      write SetConnectionString;
   end;
+
+  TPDClientClass = class of TPDClient;
 
 implementation
 
@@ -238,6 +244,21 @@ end;
 
 { TPDClient }
 
+function TPDClient.GetConnectionString: string;
+begin
+  Result := '';
+end;
+
+procedure TPDClient.SetConnectionString(AValue: string);
+begin
+
+end;
+
+procedure TPDClient.SetConnected(AValue: Boolean);
+begin
+  if AValue then Connect else Disconnect;
+end;
+
 procedure TPDClient.InitSystemTypes;
 begin
 end;
@@ -329,8 +350,9 @@ begin
   end;
 end;
 
-constructor TPDClient.Create;
+constructor TPDClient.Create(AOwner: TComponent);
 begin
+  inherited;
   Types := TPDTypeList.Create;
   Types.Client := Self;
   InitSystemTypes;
@@ -344,12 +366,10 @@ end;
 
 procedure TPDClient.Connect;
 begin
-  raise Exception.Create(SNotSupported);
 end;
 
 procedure TPDClient.Disconnect;
 begin
-  raise Exception.Create(SNotSupported);
 end;
 
 procedure TPDClient.Install;
@@ -368,4 +388,4 @@ begin
 end;
 
 end.
-
+

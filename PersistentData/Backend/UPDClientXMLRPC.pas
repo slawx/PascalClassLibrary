@@ -12,10 +12,19 @@ type
   { TPDClientXMLRPC }
 
   TPDClientXMLRPC = class(TPDClient)
+    constructor Create(AOwner: TComponent); override;
   end;
 
 implementation
 
 
-end.
+{ TPDClientXMLRPC }
 
+constructor TPDClientXMLRPC.Create(AOwner: TComponent);
+begin
+  inherited Create(AOwner);
+  BackendName := 'XMLRPC';
+end;
+
+end.
+

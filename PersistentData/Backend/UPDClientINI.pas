@@ -12,11 +12,12 @@ type
   { TPDClientINI }
 
   TPDClientINI = class(TPDClient)
+  public
     IniFile: TIniFile;
     //procedure GetItemList(Condition: TCondition; ItemList: TItemList); override;
     //procedure SetItemList(Condition: TCondition; ItemList: TItemList); override;
     FileName: string;
-    constructor Create; override;
+    constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Connect; override;
     procedure Disconnect; override;
@@ -38,9 +39,10 @@ begin
   inherited SetItemList(Condition, ItemList);
 end;*)
 
-constructor TPDClientINI.Create;
+constructor TPDClientINI.Create(AOwner: TComponent);
 begin
-  inherited Create;
+  inherited;
+  BackendName := 'INI';
 end;
 
 destructor TPDClientINI.Destroy;
@@ -60,4 +62,4 @@ begin
 end;
 
 end.
-
+

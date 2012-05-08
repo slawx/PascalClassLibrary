@@ -15,7 +15,7 @@ type
     Reg: TRegistry;
     //procedure GetItemList(Condition: TCondition; ItemList: TItemList); override;
     //procedure SetItemList(Condition: TCondition; ItemList: TItemList); override;
-    constructor Create; override;
+    constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
   end;
 
@@ -35,10 +35,11 @@ begin
   inherited SetItemList(Condition, ItemList);
 end;*)
 
-constructor TPDClientRegistry.Create;
+constructor TPDClientRegistry.Create(AOwner: TComponent);
 begin
+  inherited;
   Reg := TRegistry.Create;
-  inherited Create;
+  BackendName := 'Windows registry';
 end;
 
 destructor TPDClientRegistry.Destroy;
@@ -48,4 +49,4 @@ begin
 end;
 
 end.
-
+
