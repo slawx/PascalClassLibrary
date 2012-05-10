@@ -49,8 +49,7 @@ implementation
 
 resourcestring
   SMissingBaseType = 'Missing base typ for %s';
-  SUndefinedType = 'Undefinned type %s';
-  SCantLoadObjectWithoutId = 'Can''t load object without id';
+  SUndefinedType = 'Undefined type in %0:s.%1:s';
 
 
 { TPDClientMySQL }
@@ -171,13 +170,13 @@ begin
       '`Id` int(11) NOT NULL AUTO_INCREMENT,';
     for I := 0 to AType.Properties.Count - 1 do
     with AType.Properties do begin
-      RefType := Types.SearchByName(Items[I].Value);
+      RefType := TPDTypeProperty(Items[I]).DbType;
       if not Assigned(RefType) then
-        raise Exception.Create(Format(SUndefinedType, [Items[I].Value]));
+        raise Exception.Create(Format(SUndefinedType, [AType.Name, TPDTypeProperty(Items[I]).Name]));
       if RefType.DbType = '' then
         raise Exception.Create(Format(SMissingBaseType, [RefType.Name]));
 
-      Query := Query + '`' + Items[I].Key + '` ' + RefType.DbType + ' NULL,';
+      Query := Query + '`' + TPDTypeProperty(Items[I]).Name + '` ' + RefType.DbType + ' NULL,';
     end;
     Query := Query + 'PRIMARY KEY (`Id`)' +
       ') ENGINE=InnoDB  DEFAULT CHARSET=utf8';
@@ -277,4 +276,4 @@ begin
 end;
 
 end.
-
+

@@ -3,7 +3,7 @@
   <ProjectSession>
     <Version Value="9"/>
     <BuildModes Active="Default"/>
-    <Units Count="17">
+    <Units Count="20">
       <Unit0>
         <Filename Value="Demo.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -11,7 +11,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
-        <UsageCount Value="42"/>
+        <UsageCount Value="45"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit0>
       <Unit1>
@@ -24,8 +24,8 @@
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
         <TopLine Value="26"/>
-        <CursorPos X="62" Y="45"/>
-        <UsageCount Value="42"/>
+        <CursorPos X="40" Y="36"/>
+        <UsageCount Value="45"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
@@ -36,9 +36,9 @@
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="356"/>
-        <CursorPos X="1" Y="363"/>
-        <UsageCount Value="21"/>
+        <TopLine Value="34"/>
+        <CursorPos X="1" Y="45"/>
+        <UsageCount Value="22"/>
         <Loaded Value="True"/>
       </Unit2>
       <Unit3>
@@ -52,11 +52,11 @@
       <Unit4>
         <Filename Value="../Backend/UPDClientMySQL.pas"/>
         <UnitName Value="UPDClientMySQL"/>
-        <EditorIndex Value="3"/>
+        <EditorIndex Value="4"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="245"/>
-        <CursorPos X="51" Y="272"/>
-        <UsageCount Value="21"/>
+        <TopLine Value="155"/>
+        <CursorPos X="3" Y="157"/>
+        <UsageCount Value="22"/>
         <Loaded Value="True"/>
       </Unit4>
       <Unit5>
@@ -93,11 +93,11 @@
       <Unit9>
         <Filename Value="../Backend/UPDClientMemory.pas"/>
         <UnitName Value="UPDClientMemory"/>
-        <EditorIndex Value="5"/>
+        <EditorIndex Value="6"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="95"/>
-        <CursorPos X="18" Y="126"/>
-        <UsageCount Value="21"/>
+        <TopLine Value="125"/>
+        <CursorPos X="1" Y="145"/>
+        <UsageCount Value="22"/>
         <Loaded Value="True"/>
       </Unit9>
       <Unit10>
@@ -111,11 +111,11 @@
       <Unit11>
         <Filename Value="../UPersistentData.pas"/>
         <UnitName Value="UPersistentData"/>
-        <EditorIndex Value="4"/>
+        <EditorIndex Value="5"/>
         <WindowIndex Value="0"/>
         <TopLine Value="35"/>
         <CursorPos X="94" Y="52"/>
-        <UsageCount Value="20"/>
+        <UsageCount Value="21"/>
         <Loaded Value="True"/>
       </Unit11>
       <Unit12>
@@ -129,11 +129,11 @@
       <Unit13>
         <Filename Value="../../Network/CoolWeb/Persistence/USqlDatabase.pas"/>
         <UnitName Value="USqlDatabase"/>
-        <EditorIndex Value="2"/>
+        <EditorIndex Value="3"/>
         <WindowIndex Value="0"/>
         <TopLine Value="332"/>
         <CursorPos X="20" Y="350"/>
-        <UsageCount Value="20"/>
+        <UsageCount Value="21"/>
         <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit13>
@@ -159,130 +159,158 @@
         <CursorPos X="1" Y="105"/>
         <UsageCount Value="10"/>
       </Unit16>
+      <Unit17>
+        <Filename Value="../../Generics/TemplateGenerics/Specialized/SpecializedDictionary.pas"/>
+        <UnitName Value="SpecializedDictionary"/>
+        <EditorIndex Value="2"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="8"/>
+        <CursorPos X="3" Y="12"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+      </Unit17>
+      <Unit18>
+        <Filename Value="../../Generics/TemplateGenerics/Generic/GenericDictionary.inc"/>
+        <EditorIndex Value="8"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="13"/>
+        <CursorPos X="25" Y="29"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+      </Unit18>
+      <Unit19>
+        <Filename Value="../../Generics/TemplateGenerics/Generic/GenericList.inc"/>
+        <EditorIndex Value="7"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="64"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+      </Unit19>
     </Units>
     <General>
       <ActiveWindowIndexAtStart Value="0"/>
     </General>
-    <JumpHistory Count="30" HistoryIndex="29">
+    <JumpHistory Count="30" HistoryIndex="28">
       <Position1>
         <Filename Value="../UPDClient.pas"/>
-        <Caret Line="352" Column="1" TopLine="330"/>
+        <Caret Line="370" Column="1" TopLine="357"/>
       </Position1>
       <Position2>
-        <Filename Value="../UPDClient.pas"/>
-        <Caret Line="353" Column="1" TopLine="330"/>
-      </Position2>
-      <Position3>
-        <Filename Value="../UPersistentData.pas"/>
-        <Caret Line="53" Column="1" TopLine="35"/>
-      </Position3>
-      <Position4>
-        <Filename Value="../UPersistentData.pas"/>
-        <Caret Line="54" Column="1" TopLine="35"/>
-      </Position4>
-      <Position5>
-        <Filename Value="../UPersistentData.pas"/>
-        <Caret Line="52" Column="1" TopLine="35"/>
-      </Position5>
-      <Position6>
-        <Filename Value="UFormMain.pas"/>
-        <Caret Line="21" Column="23" TopLine="1"/>
-      </Position6>
-      <Position7>
-        <Filename Value="UFormMain.pas"/>
-        <Caret Line="22" Column="23" TopLine="1"/>
-      </Position7>
-      <Position8>
-        <Filename Value="UFormMain.pas"/>
-        <Caret Line="21" Column="23" TopLine="1"/>
-      </Position8>
-      <Position9>
-        <Filename Value="UFormMain.pas"/>
-        <Caret Line="23" Column="23" TopLine="1"/>
-      </Position9>
-      <Position10>
-        <Filename Value="UFormMain.pas"/>
-        <Caret Line="25" Column="23" TopLine="1"/>
-      </Position10>
-      <Position11>
-        <Filename Value="UFormMain.pas"/>
-        <Caret Line="48" Column="18" TopLine="17"/>
-      </Position11>
-      <Position12>
-        <Filename Value="../UPDClient.pas"/>
-        <Caret Line="115" Column="70" TopLine="90"/>
-      </Position12>
-      <Position13>
-        <Filename Value="../UPDClient.pas"/>
-        <Caret Line="259" Column="42" TopLine="257"/>
-      </Position13>
-      <Position14>
-        <Filename Value="UFormMain.pas"/>
-        <Caret Line="39" Column="39" TopLine="17"/>
-      </Position14>
-      <Position15>
-        <Filename Value="UFormMain.pas"/>
-        <Caret Line="51" Column="19" TopLine="19"/>
-      </Position15>
-      <Position16>
-        <Filename Value="UFormMain.pas"/>
-        <Caret Line="57" Column="86" TopLine="25"/>
-      </Position16>
-      <Position17>
-        <Filename Value="UFormMain.pas"/>
-        <Caret Line="56" Column="1" TopLine="26"/>
-      </Position17>
-      <Position18>
-        <Filename Value="UFormMain.pas"/>
-        <Caret Line="57" Column="1" TopLine="26"/>
-      </Position18>
-      <Position19>
-        <Filename Value="UFormMain.pas"/>
-        <Caret Line="45" Column="49" TopLine="26"/>
-      </Position19>
-      <Position20>
-        <Filename Value="../UPDClient.pas"/>
-        <Caret Line="385" Column="14" TopLine="358"/>
-      </Position20>
-      <Position21>
-        <Filename Value="UFormMain.pas"/>
-        <Caret Line="56" Column="20" TopLine="26"/>
-      </Position21>
-      <Position22>
-        <Filename Value="UFormMain.pas"/>
-        <Caret Line="57" Column="20" TopLine="27"/>
-      </Position22>
-      <Position23>
-        <Filename Value="UFormMain.pas"/>
-        <Caret Line="56" Column="20" TopLine="26"/>
-      </Position23>
-      <Position24>
-        <Filename Value="UFormMain.pas"/>
-        <Caret Line="45" Column="62" TopLine="26"/>
-      </Position24>
-      <Position25>
-        <Filename Value="../UPDClient.pas"/>
-        <Caret Line="370" Column="1" TopLine="357"/>
-      </Position25>
-      <Position26>
         <Filename Value="../../Network/CoolWeb/Persistence/USqlDatabase.pas"/>
         <Caret Line="349" Column="13" TopLine="332"/>
-      </Position26>
-      <Position27>
+      </Position2>
+      <Position3>
         <Filename Value="../Backend/UPDClientMySQL.pas"/>
         <Caret Line="74" Column="1" TopLine="56"/>
-      </Position27>
-      <Position28>
+      </Position3>
+      <Position4>
         <Filename Value="../../Network/CoolWeb/Persistence/USqlDatabase.pas"/>
         <Caret Line="350" Column="1" TopLine="332"/>
-      </Position28>
-      <Position29>
+      </Position4>
+      <Position5>
         <Filename Value="../Backend/UPDClientMySQL.pas"/>
         <Caret Line="74" Column="1" TopLine="56"/>
-      </Position29>
-      <Position30>
+      </Position5>
+      <Position6>
         <Filename Value="../Backend/UPDClientMySQL.pas"/>
         <Caret Line="272" Column="51" TopLine="245"/>
+      </Position6>
+      <Position7>
+        <Filename Value="../Backend/UPDClientMemory.pas"/>
+        <Caret Line="21" Column="35" TopLine="8"/>
+      </Position7>
+      <Position8>
+        <Filename Value="../Backend/UPDClientMySQL.pas"/>
+        <Caret Line="53" Column="1" TopLine="43"/>
+      </Position8>
+      <Position9>
+        <Filename Value="../Backend/UPDClientMemory.pas"/>
+        <Caret Line="58" Column="49" TopLine="45"/>
+      </Position9>
+      <Position10>
+        <Filename Value="../Backend/UPDClientMemory.pas"/>
+        <Caret Line="39" Column="3" TopLine="21"/>
+      </Position10>
+      <Position11>
+        <Filename Value="../Backend/UPDClientMemory.pas"/>
+        <Caret Line="61" Column="14" TopLine="49"/>
+      </Position11>
+      <Position12>
+        <Filename Value="../Backend/UPDClientMemory.pas"/>
+        <Caret Line="67" Column="37" TopLine="54"/>
+      </Position12>
+      <Position13>
+        <Filename Value="../Backend/UPDClientMemory.pas"/>
+        <Caret Line="59" Column="38" TopLine="46"/>
+      </Position13>
+      <Position14>
+        <Filename Value="../UPDClient.pas"/>
+        <Caret Line="34" Column="44" TopLine="13"/>
+      </Position14>
+      <Position15>
+        <Filename Value="../Backend/UPDClientMemory.pas"/>
+        <Caret Line="20" Column="28" TopLine="9"/>
+      </Position15>
+      <Position16>
+        <Filename Value="../Backend/UPDClientMemory.pas"/>
+        <Caret Line="21" Column="52" TopLine="10"/>
+      </Position16>
+      <Position17>
+        <Filename Value="../Backend/UPDClientMemory.pas"/>
+        <Caret Line="82" Column="1" TopLine="79"/>
+      </Position17>
+      <Position18>
+        <Filename Value="../Backend/UPDClientMemory.pas"/>
+        <Caret Line="74" Column="37" TopLine="61"/>
+      </Position18>
+      <Position19>
+        <Filename Value="../Backend/UPDClientMemory.pas"/>
+        <Caret Line="81" Column="20" TopLine="68"/>
+      </Position19>
+      <Position20>
+        <Filename Value="../Backend/UPDClientMemory.pas"/>
+        <Caret Line="99" Column="63" TopLine="86"/>
+      </Position20>
+      <Position21>
+        <Filename Value="../Backend/UPDClientMemory.pas"/>
+        <Caret Line="128" Column="15" TopLine="112"/>
+      </Position21>
+      <Position22>
+        <Filename Value="../Backend/UPDClientMemory.pas"/>
+        <Caret Line="83" Column="3" TopLine="79"/>
+      </Position22>
+      <Position23>
+        <Filename Value="../Backend/UPDClientMemory.pas"/>
+        <Caret Line="121" Column="3" TopLine="113"/>
+      </Position23>
+      <Position24>
+        <Filename Value="../Backend/UPDClientMemory.pas"/>
+        <Caret Line="128" Column="24" TopLine="113"/>
+      </Position24>
+      <Position25>
+        <Filename Value="../Backend/UPDClientMemory.pas"/>
+        <Caret Line="129" Column="54" TopLine="112"/>
+      </Position25>
+      <Position26>
+        <Filename Value="../Backend/UPDClientMemory.pas"/>
+        <Caret Line="128" Column="66" TopLine="115"/>
+      </Position26>
+      <Position27>
+        <Filename Value="../UPDClient.pas"/>
+        <Caret Line="25" Column="5" TopLine="12"/>
+      </Position27>
+      <Position28>
+        <Filename Value="../Backend/UPDClientMemory.pas"/>
+        <Caret Line="128" Column="75" TopLine="115"/>
+      </Position28>
+      <Position29>
+        <Filename Value="../UPDClient.pas"/>
+        <Caret Line="47" Column="17" TopLine="33"/>
+      </Position29>
+      <Position30>
+        <Filename Value="../UPDClient.pas"/>
+        <Caret Line="456" Column="1" TopLine="431"/>
       </Position30>
     </JumpHistory>
   </ProjectSession>

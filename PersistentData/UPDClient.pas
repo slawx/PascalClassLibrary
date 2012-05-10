@@ -14,6 +14,7 @@ type
   EClientNotSet = class(Exception);
 
   TPDClient = class;
+  TPDType = class;
 
   TOrderDirection = (odNone, odAscending, odDescending);
 
@@ -30,6 +31,16 @@ type
     procedure Delete;
     constructor Create;
     destructor Destroy; override;
+    procedure Assign(Source: TObjectProxy);
+  end;
+
+  TOperation = (opUndefined, opDefined, opEqual, opNotEqual,
+    opLess, opMore, opLessOrEqual, opMoreOrEqual);
+
+  TCondition = class
+    Column: string;
+    Operation: TOperation;
+    Value: string;
   end;
 
   { TListProxy }
@@ -55,18 +66,37 @@ type
     procedure Save; virtual;
   end;
 
+  TPDTypeProperty = class
+    Name: string;
+    DbType: TPDType;
+    Unique: Boolean;
+    Index: Boolean;
+  end;
+
+  { TPDTypePropertyList }
+
+  TPDTypePropertyList = class(TListObject)
+    Client: TPDClient;
+    procedure AddSimple(Name: string; TypeName: string; Unique: Boolean = False;
+      Index: Boolean = False);
+  end;
+
   { TPDType }
 
   TPDType = class
-    Client: TPDClient;
+  private
+    FClient: TPDClient;
+    procedure SetClient(AValue: TPDClient);
+  public
     Name: string;
     DbType: string;
-    Properties: TDictionaryStringString;
+    Properties: TPDTypePropertyList;
     function IsDefined: Boolean;
     procedure Define;
     procedure Undefine;
     constructor Create;
     destructor Destroy; override;
+    property Client: TPDClient read FClient write SetClient;
   end;
 
   { TPDTypeList }
@@ -102,7 +132,6 @@ type
     procedure TypeDefine(AType: TPDType); virtual; abstract;
     procedure TypeUndefine(AType: TPDType); virtual; abstract;
     procedure CheckTypes;
-    function TypeExists(Name: string): Boolean; virtual; abstract;
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Connect; virtual;
@@ -119,12 +148,28 @@ type
 
   TPDClientClass = class of TPDClient;
 
+  resourcestring
+    SClientNotSet = 'Client not set';
+    SNotSupported = 'Not supported';
+    SVersionMismatch = 'Version mismatch, client: %0:s, server: %1:s. Please upgrade database.';
+    SCantLoadObjectWithoutId = 'Can''t load object without id';
+
+
 implementation
 
-resourcestring
-  SClientNotSet = 'Client not set';
-  SNotSupported = 'Not supported';
-  SVersionMismatch = 'Version mismatch, client: %0:s, server: %1:s. Please upgrade database.';
+{ TPDTypePropertyList }
+
+procedure TPDTypePropertyList.AddSimple(Name: string; TypeName: string;
+  Unique: Boolean; Index: Boolean);
+var
+  NewProperty: TPDTypeProperty;
+begin
+  NewProperty := TPDTypeProperty(AddNew(TPDTypeProperty.Create));
+  NewProperty.Name := Name;
+  NewProperty.DbType := Client.Types.SearchByName(TypeName);
+  NewProperty.Unique := Unique;
+  NewProperty.Index := Index;
+end;
 
 
 { TPDTypeList }
@@ -147,6 +192,13 @@ begin
     else Result := nil;
 end;
 
+procedure TPDType.SetClient(AValue: TPDClient);
+begin
+  if FClient = AValue then Exit;
+  FClient := AValue;
+  Properties.Client := AValue;
+end;
+
 function TPDType.IsDefined: Boolean;
 begin
   if Assigned(Client) then Result := Client.TypeIsDefined(Self)
@@ -167,7 +219,7 @@ end;
 
 constructor TPDType.Create;
 begin
-  Properties := TDictionaryStringString.Create;
+  Properties := TPDTypePropertyList.Create;
 end;
 
 destructor TPDType.Destroy;
@@ -205,6 +257,15 @@ destructor TObjectProxy.Destroy;
 begin
   Properties.Free;
   inherited Destroy;
+end;
+
+procedure TObjectProxy.Assign(Source: TObjectProxy);
+begin
+  Path := Source.Path;
+  Client := Source.Client;
+  ObjectName := Source.ObjectName;
+  Id := Source.Id;
+  Properties.Assign(Source.Properties);
 end;
 
 { TListProxy }
@@ -292,8 +353,8 @@ begin
     NewType := TPDType.Create;
     NewType.Client := Self;
     NewType.Name := SystemVersionObject;
-    NewType.Properties.Add('Version', 'String');
-    NewType.Properties.Add('Time', 'DateTime');
+    NewType.Properties.AddSimple('Version', 'String');
+    NewType.Properties.AddSimple('Time', 'DateTime');
     NewType.Define;
 
     NewObject := TObjectProxy.Create;
@@ -379,7 +440,7 @@ end;
 
 procedure TPDClient.Uninstall;
 begin
-
+  //Types.Uninstall;
 end;
 
 procedure TPDClient.Update;
@@ -388,4 +449,4 @@ begin
 end;
 
 end.
-
+

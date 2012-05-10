@@ -8,7 +8,7 @@ interface
 
 uses
   UPDServer, UPDClient, UPDClientXMLRPC, UPDClientINI, UPDClientMySQL, 
-  UPDClientRegistry, UPersistentData, UPDClientMemory, LazarusPackageIntf;
+  UPDClientRegistry, UPDClientMemory, UPersistentData, LazarusPackageIntf;
 
 implementation
 

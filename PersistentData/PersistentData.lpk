@@ -55,13 +55,13 @@
         <UnitName Value="UPDClientRegistry"/>
       </Item6>
       <Item7>
+        <Filename Value="Backend\UPDClientMemory.pas"/>
+        <UnitName Value="UPDClientMemory"/>
+      </Item7>
+      <Item8>
         <Filename Value="UPersistentData.pas"/>
         <HasRegisterProc Value="True"/>
         <UnitName Value="UPersistentData"/>
-      </Item7>
-      <Item8>
-        <Filename Value="Backend\UPDClientMemory.pas"/>
-        <UnitName Value="UPDClientMemory"/>
       </Item8>
     </Files>
     <Type Value="RunAndDesignTime"/>
@@ -80,4 +80,4 @@
       <Version Value="2"/>
     </PublishOptions>
   </Package>
-</CONFIG>
+</CONFIG>
