@@ -1,0 +1,153 @@
+<?xml version="1.0"?>
+<CONFIG>
+  <Package Version="4">
+    <PathDelim Value="\"/>
+    <Name Value="ISPProgrammer"/>
+    <Author Value="Chronos (robie@centrum.cz)"/>
+    <CompilerOptions>
+      <Version Value="11"/>
+      <PathDelim Value="\"/>
+      <SearchPaths>
+        <OtherUnitFiles Value="Dallas;PRESTO;RFU;ISPprog"/>
+        <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)\"/>
+      </SearchPaths>
+      <Other>
+        <CompilerMessages>
+          <MsgFileName Value=""/>
+        </CompilerMessages>
+        <CompilerPath Value="$(CompPath)"/>
+      </Other>
+    </CompilerOptions>
+    <Description Value="In-system programming tools"/>
+    <License Value="GNU/LGPL"/>
+    <Version Minor="1"/>
+    <Files Count="27">
+      <Item1>
+        <Filename Value="UCPUType.pas"/>
+        <UnitName Value="UCPUType"/>
+      </Item1>
+      <Item2>
+        <Filename Value="UISPProgrammer.pas"/>
+        <UnitName Value="UISPProgrammer"/>
+      </Item2>
+      <Item3>
+        <Filename Value="UProgrammerType.pas"/>
+        <UnitName Value="UProgrammerType"/>
+      </Item3>
+      <Item4>
+        <Filename Value="Dallas\UDallasProgrammer.pas"/>
+        <UnitName Value="UDallasProgrammer"/>
+      </Item4>
+      <Item5>
+        <Filename Value="PRESTO\UPrestoDLL.pas"/>
+        <UnitName Value="UPrestoDLL"/>
+      </Item5>
+      <Item6>
+        <Filename Value="PRESTO\UPresto.pas"/>
+        <UnitName Value="UPresto"/>
+      </Item6>
+      <Item7>
+        <Filename Value="RFU\URFUProgrammer.pas"/>
+        <UnitName Value="URFUProgrammer"/>
+      </Item7>
+      <Item8>
+        <Filename Value="ISPprog\Processors.pas"/>
+        <UnitName Value="Processors"/>
+      </Item8>
+      <Item9>
+        <Filename Value="ISPprog\SerialFlash.pas"/>
+        <UnitName Value="SerialFlash"/>
+      </Item9>
+      <Item10>
+        <Filename Value="ISPprog\SPI.pas"/>
+        <UnitName Value="SPI"/>
+      </Item10>
+      <Item11>
+        <Filename Value="ISPprog\UISPprog.pas"/>
+        <UnitName Value="UISPprog"/>
+      </Item11>
+      <Item12>
+        <Filename Value="ISPprog\CfgMgr.pas"/>
+        <UnitName Value="CfgMgr"/>
+      </Item12>
+      <Item13>
+        <Filename Value="ISPprog\DataFlash.pas"/>
+        <UnitName Value="DataFlash"/>
+      </Item13>
+      <Item14>
+        <Filename Value="ISPprog\Delays.pas"/>
+        <UnitName Value="Delays"/>
+      </Item14>
+      <Item15>
+        <Filename Value="ISPprog\Globals.pas"/>
+        <UnitName Value="Globals"/>
+      </Item15>
+      <Item16>
+        <Filename Value="ISPprog\InpOut32.pas"/>
+        <UnitName Value="InpOut32"/>
+      </Item16>
+      <Item17>
+        <Filename Value="ISPprog\ISP.pas"/>
+        <UnitName Value="ISP"/>
+      </Item17>
+      <Item18>
+        <Filename Value="ISPprog\ISP_EEPROM.pas"/>
+        <UnitName Value="ISP_EEPROM"/>
+      </Item18>
+      <Item19>
+        <Filename Value="ISPprog\ISP_Flash.pas"/>
+        <UnitName Value="ISP_Flash"/>
+      </Item19>
+      <Item20>
+        <Filename Value="ISPprog\ISP_Fusebits.pas"/>
+        <UnitName Value="ISP_Fusebits"/>
+      </Item20>
+      <Item21>
+        <Filename Value="ISPprog\ISP_Lockbits.pas"/>
+        <UnitName Value="ISP_Lockbits"/>
+      </Item21>
+      <Item22>
+        <Filename Value="ISPprog\ISP_UserSign.pas"/>
+        <UnitName Value="ISP_UserSign"/>
+      </Item22>
+      <Item23>
+        <Filename Value="ISPprog\ISPLib.pas"/>
+        <UnitName Value="ISPLib"/>
+      </Item23>
+      <Item24>
+        <Filename Value="ISPprog\MemBuffer.pas"/>
+        <UnitName Value="MemBuffer"/>
+      </Item24>
+      <Item25>
+        <Filename Value="ISPprog\PinsIO.pas"/>
+        <UnitName Value="PinsIO"/>
+      </Item25>
+      <Item26>
+        <Filename Value="ISPprog\PortsIO.pas"/>
+        <UnitName Value="PortsIO"/>
+      </Item26>
+      <Item27>
+        <Filename Value="UIntelHexFile.pas"/>
+        <UnitName Value="UIntelHexFile"/>
+      </Item27>
+    </Files>
+    <Type Value="RunAndDesignTime"/>
+    <RequiredPkgs Count="3">
+      <Item1>
+        <PackageName Value="PinConnection"/>
+      </Item1>
+      <Item2>
+        <PackageName Value="CoolStreaming"/>
+      </Item2>
+      <Item3>
+        <PackageName Value="FCL"/>
+      </Item3>
+    </RequiredPkgs>
+    <UsageOptions>
+      <UnitPath Value="$(PkgOutDir)"/>
+    </UsageOptions>
+    <PublishOptions>
+      <Version Value="2"/>
+    </PublishOptions>
+  </Package>
+</CONFIG>
