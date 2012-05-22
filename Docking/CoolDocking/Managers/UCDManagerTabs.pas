@@ -43,6 +43,7 @@ type
     MouseDownSkip: Boolean;
     TabImageList: TImageList;
     PageControl: TPageControl;
+    procedure BringToFront; override;
     procedure Update; override;
     procedure SetHeaderPos(const AValue: THeaderPos); override;
     procedure InsertControlNoUpdate(Control: TControl; InsertAt: TAlign); virtual;
@@ -303,6 +304,12 @@ begin
     (TCDManagerTabsItem(FDockItems[I]).TabSheet <> TabSheet) do Inc(I);
   if I < FDockItems.Count then Result := TCDManagerTabsItem(FDockItems[I])
     else Result := nil;
+end;
+
+procedure TCDManagerTabs.BringToFront;
+begin
+  inherited BringToFront;
+  Update;
 end;
 
 procedure TCDManagerTabs.SetHeaderPos(const AValue: THeaderPos);

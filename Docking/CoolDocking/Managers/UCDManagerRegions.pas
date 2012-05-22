@@ -44,6 +44,7 @@ type
     FDockDirection: TCDDirection;
   public
     //Panels: TObjectList; // TObjectList<TCDStyleRegionsPanel>
+    procedure BringToFront; override;
     function FindControlInPanels(Control: TControl): TCDManagerItem; override;
     procedure InsertControlNoUpdate(Control: TControl; InsertAt: TAlign);
     procedure InsertControlPanel(Control: TControl; InsertAt: TAlign;
@@ -253,6 +254,11 @@ begin
   with TCDManagerRegionsItem(FDockItems[I]) do begin
     if PanelHeader.Visible then Inc(Result);
   end;
+end;
+
+procedure TCDManagerRegions.BringToFront;
+begin
+  inherited BringToFront;
 end;
 
 function TCDManagerRegions.FindControlInPanels(Control: TControl

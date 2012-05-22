@@ -117,6 +117,7 @@ type
       DropCtl: TControl); virtual;
     procedure SetHeaderPos(const AValue: THeaderPos); virtual;
     function GetHeaderPos: THeaderPos; virtual;
+    procedure BringToFront; virtual;
 
     // Inherited from TDockManager
     procedure BeginUpdate; override;
@@ -345,6 +346,19 @@ end;
 function TCDManager.GetHeaderPos: THeaderPos;
 begin
   Result := FHeaderPos;
+end;
+
+procedure TCDManager.BringToFront;
+begin
+  //DockSiteVisible := True;
+  DockSite.Show;
+  DockSite.BringToFront;
+  if Assigned(DockSite.Parent) then begin
+    if Assigned(DockSite.Parent.DockManager)
+      and (DockSite.Parent.DockManager is TCDManager) then
+    TCDManager(DockSite.Parent.DockManager).BringToFront
+    else DockSite.Parent.BringToFront;
+  end;
 end;
 
 function TCDManager.GetMoveDuration: Integer;
