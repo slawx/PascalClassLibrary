@@ -60,6 +60,7 @@ procedure DeleteFiles(APath, AFileSpec: string);
 procedure OpenWebPage(URL: string);
 procedure OpenFileInShell(FileName: string);
 procedure ExecuteProgram(CommandLine: string);
+procedure FreeThenNil(var Obj);
 
 
 implementation
@@ -391,6 +392,12 @@ begin
   end;
 end;
 
+procedure FreeThenNil(var Obj);
+begin
+  TObject(Obj).Free;
+  TObject(Obj) := nil;
+end;
+
 procedure OpenWebPage(URL: string);
 var
   Process: TProcess;
@@ -424,4 +431,4 @@ finalization
 
 FreeLibraries;
 
-end.
+end.
