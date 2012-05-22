@@ -12,16 +12,18 @@ type
   { TLastOpenedList }
 
   TLastOpenedList = class(TStringList)
+  private
+    FOnChange: TNotifyEvent;
   public
     MaxCount: Integer;
-    MenuItem: TMenuItem;
     ClickAction: TNotifyEvent;
     constructor Create;
     destructor Destroy; override;
-    procedure ReloadMenu;
+    procedure LoadToMenuItem(MenuItem: TMenuItem);
     procedure LoadFromRegistry(Root: HKEY; Key: string);
     procedure SaveToRegistry(Root: HKEY; Key: string);
     procedure AddItem(FileName: string);
+    property OnChange: TNotifyEvent read FOnChange write FOnChange;
   end;
 
 implementation
@@ -39,7 +41,7 @@ begin
   inherited;
 end;
 
-procedure TLastOpenedList.ReloadMenu;
+procedure TLastOpenedList.LoadToMenuItem(MenuItem: TMenuItem);
 var
   NewMenuItem: TMenuItem;
   I: Integer;
@@ -59,6 +61,7 @@ procedure TLastOpenedList.LoadFromRegistry(Root: HKEY; Key: string);
 var
   I: Integer;
   Registry: TRegistryEx;
+  FileName: string;
 begin
   Registry := TRegistryEx.Create;
   with Registry do
@@ -68,10 +71,12 @@ begin
     Clear;
     I := 0;
     while ValueExists('File' + IntToStr(I)) and (I < MaxCount) do begin
-      inherited Add(UTF8Encode(ReadStringWithDefault('File' + IntToStr(I), '')));
+      FileName := UTF8Encode(ReadStringWithDefault('File' + IntToStr(I), ''));
+      if Trim(FileName) <> '' then inherited Add(FileName);
       Inc(I);
     end;
-    ReloadMenu;
+    if Assigned(FOnChange) then
+      FOnChange(Self);
   finally
     Free;
   end;
@@ -100,7 +105,8 @@ begin
   while Count > MaxCount do
     Delete(Count - 1);
 
-  ReloadMenu;
+  if Assigned(FOnChange) then
+    FOnChange(Self);
 end;
 
 end.
