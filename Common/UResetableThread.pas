@@ -272,11 +272,14 @@ end;
 
 procedure TThreadPool.RunInThread(AMethod: TMethodCall);
 begin
-  CheckException;
-  with TResetableThread(Acquire) do begin
-    Method := AMethod;
-    OnFinished := MethodFinish;
-    Start;
+  try
+    with TResetableThread(Acquire) do begin
+      Method := AMethod;
+      OnFinished := MethodFinish;
+      Start;
+    end;
+  finally
+    CheckException;
   end;
 end;
 

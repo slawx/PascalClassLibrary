@@ -147,7 +147,22 @@ end;
 // TListMethod<Integer, TMethod>
 TListMethod = class(TListMethodBase)
   procedure CallAll;
-  procedure CallNotifyEvents(Sender: TObject);
+end;
+
+// TListNotifyEventBase<Integer, TNotifyEvent>
+{$DEFINE TGListIndex := Integer}
+{$DEFINE TGListItem := TNotifyEvent}
+{$DEFINE TGList := TListNotifyEventBase}
+{$DEFINE TGListSortCompare := TListNotifyEventSortCompare}
+{$DEFINE TGListToStringConverter := TListNotifyEventToStringConverter}
+{$DEFINE TGListFromStringConverter := TListNotifyEventFromStringConverter}
+{$DEFINE TGListItemArray := TListNotifyEventItemArray}
+{$DEFINE INTERFACE}
+{$I 'GenericList.inc'}
+
+// TListNotifyEvent<Integer, TNotifyEvent>
+TListNotifyEvent = class(TListNotifyEventBase)
+  procedure CallAll(Sender: TObject);
 end;
 
 function StrToStr(Value: string): string;
@@ -268,6 +283,17 @@ implementation
 {$DEFINE IMPLEMENTATION}
 {$I 'GenericList.inc'}
 
+// TListNotifyEventBase<Integer, TNotifyEvent>
+{$DEFINE TGListIndex := Integer}
+{$DEFINE TGListItem := TNotifyEvent}
+{$DEFINE TGList := TListNotifyEventBase}
+{$DEFINE TGListSortCompare := TListNotifyEventSortCompare}
+{$DEFINE TGListToStringConverter := TListNotifyEventToStringConverter}
+{$DEFINE TGListFromStringConverter := TListNotifyEventFromStringConverter}
+{$DEFINE TGListItemArray := TListNotifyEventItemArray}
+{$DEFINE IMPLEMENTATION}
+{$I 'GenericList.inc'}
+
 
 function StrToStr(Value: string): string;
 begin
@@ -333,7 +359,7 @@ begin
   end;
 end;
 
-procedure TListMethod.CallNotifyEvents(Sender: TObject);
+procedure TListNotifyEvent.CallAll(Sender: TObject);
 var
   I: TGListIndex;
 begin
