@@ -37,11 +37,12 @@ type
     property OnChange: TNotifyEvent read FOnChange write FOnChange;
   end;
 
+  TFormJobProgressView = class;
   TJobProgressView = class;
   TJobThread = class;
   TJob = class;
 
-  TJobProgressViewMethod = procedure of object;
+  TJobProgressViewMethod = procedure(Job: TJob) of object;
 
   { TJob }
 
@@ -75,9 +76,9 @@ type
     Job: TJob;
   end;
 
-  { TJobProgressView }
+  { TFormJobProgressView }
 
-  TJobProgressView = class(TForm)
+  TFormJobProgressView = class(TForm)
     ImageList1: TImageList;
     Label2: TLabel;
     LabelOperation: TLabel;
@@ -99,24 +100,32 @@ type
     procedure TimerUpdateTimer(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+  public
+    JobProgressView: TJobProgressView;
+  end;
+
+  { TJobProgressView }
+
+  TJobProgressView = class(TComponent)
   private
+    FAutoClose: Boolean;
     Finished: Boolean;
     FOnJobFinish: TJobProgressViewMethod;
+    FShowDelay: Integer;
     FTerminate: Boolean;
     FormList: TList;
+    TotalStartTime: TDateTime;
     Log: TStringList;
+    Form: TFormJobProgressView;
     procedure SetTerminate(const AValue: Boolean);
     procedure UpdateProgress;
     procedure ReloadJobList;
     procedure StartJobs;
     procedure UpdateHeight;
   public
-    TotalStartTime: TDateTime;
     Jobs: TObjectList; // TListObject<TJob>
     CurrentJob: TJob;
     CurrentJobIndex: Integer;
-    ShowDelay: Integer;
-    AutoClose: Boolean;
     constructor Create(TheOwner: TComponent); override;
     destructor Destroy; override;
     procedure Clear;
@@ -126,12 +135,17 @@ type
     procedure Stop;
     procedure TermSleep(Delay: Integer);
     property Terminate: Boolean read FTerminate write SetTerminate;
+  published
+    property ShowDelay: Integer read FShowDelay write FShowDelay;
+    property AutoClose: Boolean read FAutoClose write FAutoClose;
     property OnJobFinish: TJobProgressViewMethod read FOnJobFinish
       write FOnJobFinish;
   end;
 
-  var
-    JobProgressView: TJobProgressView;
+  //var
+  //  FormJobProgressView: TFormJobProgressView;
+
+procedure Register;
 
 resourcestring
   SExecuted = 'Executed';
@@ -158,7 +172,7 @@ begin
   try
     try
       //raise Exception.Create('Exception in job');
-      JobProgressView.CurrentJob.Method;
+      ProgressView.CurrentJob.Method(Job);
     except
       on E: Exception do begin
         ProgressView.Terminate := True;
@@ -200,31 +214,31 @@ var
 begin
   Terminate := False;
 
-  BringToFront;
+  Form.BringToFront;
 
   Finished := False;
-  Caption := SPleaseWait;
+  Form.Caption := SPleaseWait;
   try
-    FormList := Screen.DisableForms(Self);
+    FormList := Screen.DisableForms(Form);
     Log.Clear;
-    MemoLog.Clear;
+    Form.MemoLog.Clear;
 
-    LabelEstimatedTimePart.Visible := False;
-    LabelEstimatedTimeTotal.Visible := False;
+    Form.LabelEstimatedTimePart.Visible := False;
+    Form.LabelEstimatedTimeTotal.Visible := False;
 
     CurrentJob := nil;
     if ShowDelay = 0 then begin
-      TimerUpdate.Interval := UpdateInterval;
-      TimerUpdate.Enabled := True;
-      TimerUpdateTimer(Self);
+      Form.TimerUpdate.Interval := UpdateInterval;
+      Form.TimerUpdate.Enabled := True;
+      Form.TimerUpdateTimer(Self);
     end else begin
-      TimerUpdate.Interval := ShowDelay;
-      TimerUpdate.Enabled := True;
+      Form.TimerUpdate.Interval := ShowDelay;
+      Form.TimerUpdate.Enabled := True;
     end;
 
     TotalStartTime := Now;
-    ProgressBarTotal.Position := 0;
-    ProgressBarTotal.Visible := False;
+    Form.ProgressBarTotal.Position := 0;
+    Form.ProgressBarTotal.Visible := False;
     //UpdateHeight;
 
     I := 0;
@@ -233,15 +247,15 @@ begin
       CurrentJobIndex := I;
       CurrentJob := TJob(Jobs[I]);
       StartTime := Now;
-      LabelEstimatedTimePart.Caption := Format(SEstimatedTime, ['']);
-      ProgressBarPart.Position := 0;
-      ProgressBarPart.Visible := False;
+      Form.LabelEstimatedTimePart.Caption := Format(SEstimatedTime, ['']);
+      Form.ProgressBarPart.Position := 0;
+      Form.ProgressBarPart.Visible := False;
       //Show;
       ReloadJobList;
       Application.ProcessMessages;
       if NoThreaded then begin
         Thread := nil;
-        Method;
+        Method(CurrentJob);
       end else begin
         try
           Thread := TJobThread.Create(True);
@@ -261,25 +275,25 @@ begin
           FreeAndNil(Thread);
         end;
       end;
-      ProgressBarPart.Hide;
+      Form.ProgressBarPart.Hide;
       if Terminate then Break;
       EndTime := Now;
       Finished := True;
       if Assigned(FOnJobFinish) then
-        FOnJobFinish;
+        FOnJobFinish(CurrentJob);
       Inc(I);
     end;
   finally
     CurrentJob := nil;
-    TimerUpdate.Enabled := False;
+    Form.TimerUpdate.Enabled := False;
     Screen.EnableForms(FormList);
     //if Visible then Hide;
-    MemoLog.Lines.Assign(Log);
-    if (MemoLog.Lines.Count = 0) and AutoClose then begin
-      Hide;
+    Form.MemoLog.Lines.Assign(Log);
+    if (Form.MemoLog.Lines.Count = 0) and AutoClose then begin
+      Form.Hide;
     end;
     Clear;
-    Caption := SFinished;
+    Form.Caption := SFinished;
     //LabelEstimatedTimePart.Visible := False;
     Finished := True;
     CurrentJobIndex := -1;
@@ -296,6 +310,7 @@ var
   PanelProgressTotalVisible: Boolean;
   PanelLogVisible: Boolean;
 begin
+  with Form do begin
   H := PanelOperationsTitle.Height;
   PanelOperationsVisible := Jobs.Count > 0;
   if PanelOperationsVisible <> PanelOperations.Visible then
@@ -323,16 +338,18 @@ begin
   if PanelLogVisible then
     H := H + MemoLogHeight;
   if Height <> H then Height := H;
+  end;
 end;
 
-procedure TJobProgressView.TimerUpdateTimer(Sender: TObject);
+procedure TFormJobProgressView.TimerUpdateTimer(Sender: TObject);
 var
   ProgressBarPartVisible: Boolean;
   ProgressBarTotalVisible: Boolean;
 begin
-  UpdateProgress;
-  if Visible and (not ProgressBarPart.Visible) and Assigned(CurrentJob) and
-  (CurrentJob.Progress.Value > 0) then begin
+  JobProgressView.UpdateProgress;
+  if Visible and (not ProgressBarPart.Visible) and
+  Assigned(JobProgressView.CurrentJob) and
+  (JobProgressView.CurrentJob.Progress.Value > 0) then begin
     ProgressBarPartVisible := True;
     if ProgressBarPartVisible <> ProgressBarPart.Visible then
       ProgressBarPart.Visible := ProgressBarPartVisible;
@@ -346,29 +363,29 @@ begin
   end;
 end;
 
-procedure TJobProgressView.FormDestroy(Sender:TObject);
+procedure TFormJobProgressView.FormDestroy(Sender:TObject);
 begin
 end;
 
-procedure TJobProgressView.ListViewJobsData(Sender: TObject; Item: TListItem);
+procedure TFormJobProgressView.ListViewJobsData(Sender: TObject; Item: TListItem);
 begin
-  if (Item.Index >= 0) and (Item.Index < Jobs.Count) then
-  with TJob(Jobs[Item.Index]) do begin
+  if (Item.Index >= 0) and (Item.Index < JobProgressView.Jobs.Count) then
+  with TJob(JobProgressView.Jobs[Item.Index]) do begin
     Item.Caption := Title;
-    if Item.Index = CurrentJobIndex then Item.ImageIndex := 1
+    if Item.Index = JobProgressView.CurrentJobIndex then Item.ImageIndex := 1
       else if Finished then Item.ImageIndex := 0
       else Item.ImageIndex := 2;
-    Item.Data := Jobs[Item.Index];
+    Item.Data := JobProgressView.Jobs[Item.Index];
   end;
 end;
 
-procedure TJobProgressView.FormClose(Sender: TObject;
+procedure TFormJobProgressView.FormClose(Sender: TObject;
   var CloseAction: TCloseAction);
 begin
   ListViewJobs.Clear;
 end;
 
-procedure TJobProgressView.FormCreate(Sender: TObject);
+procedure TFormJobProgressView.FormCreate(Sender: TObject);
 begin
   Caption := SPleaseWait;
   try
@@ -398,10 +415,10 @@ begin
   end;
 end;
 
-procedure TJobProgressView.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+procedure TFormJobProgressView.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
 begin
-  CanClose := Finished;
-  Terminate := True;
+  CanClose := JobProgressView.Finished;
+  JobProgressView.Terminate := True;
   Caption := SPleaseWait + STerminate;
 end;
 
@@ -426,7 +443,7 @@ var
   LabelEstimatedTimePartVisible: Boolean;
 begin
   if Assigned(CurrentJob) then
-  with CurrentJob do begin
+  with CurrentJob, Form do begin
     // Part progress
     ProgressBarPart.Max := Progress.Max;
     ProgressBarPart.Position := Progress.Value;
@@ -467,18 +484,22 @@ var
 begin
   UpdateHeight;
   // Workaround for not showing first line
-  ListViewJobs.Items.Count := Jobs.Count + 1;
-  ListViewJobs.Refresh;
+  Form.ListViewJobs.Items.Count := Jobs.Count + 1;
+  Form.ListViewJobs.Refresh;
 
-  if ListViewJobs.Items.Count <> Jobs.Count then
-    ListViewJobs.Items.Count := Jobs.Count;
-  ListViewJobs.Refresh;
+  if Form.ListViewJobs.Items.Count <> Jobs.Count then
+    Form.ListViewJobs.Items.Count := Jobs.Count;
+  Form.ListViewJobs.Refresh;
   //Application.ProcessMessages;
 end;
 
 constructor TJobProgressView.Create(TheOwner: TComponent);
 begin
   inherited;
+  if not (csDesigning in ComponentState) then begin
+    Form := TFormJobProgressView.Create(Self);
+    Form.JobProgressView := Self;
+  end;
   Jobs := TObjectList.Create;
   Log := TStringList.Create;
   //PanelOperationsTitle.Height := 80;
@@ -500,18 +521,34 @@ end;
 
 procedure TProgress.SetMax(const AValue: Integer);
 begin
-  FMax := AValue;
-  if FValue >= FMax then FValue := FMax;
+  try
+    FLock.Acquire;
+    FMax := AValue;
+    if FValue >= FMax then FValue := FMax;
+  finally
+    FLock.Release;
+  end;
 end;
 
 procedure TProgress.SetValue(const AValue: Integer);
 var
   Change: Boolean;
 begin
-  if AValue < Max then begin
-    Change := AValue <> FValue;
-    FValue := AValue;
-    if Change and Assigned(FOnChange) then FOnChange(Self);
+  try
+    FLock.Acquire;
+    if AValue < Max then begin
+      Change := AValue <> FValue;
+      FValue := AValue;
+      if Change and Assigned(FOnChange) then
+      try
+        FLock.Release;
+        FOnChange(Self);
+      finally
+        FLock.Acquire;
+      end;
+    end;
+  finally
+    FLock.Release;
   end;
 end;
 

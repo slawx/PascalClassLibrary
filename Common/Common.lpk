@@ -73,6 +73,7 @@
       </Item12>
       <Item13>
         <Filename Value="UJobProgressView.pas"/>
+        <HasRegisterProc Value="True"/>
         <UnitName Value="UJobProgressView"/>
       </Item13>
     </Files>

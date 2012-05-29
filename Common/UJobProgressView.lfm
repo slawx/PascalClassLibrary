@@ -1,4 +1,4 @@
-object JobProgressView: TJobProgressView
+object FormJobProgressView: TFormJobProgressView
   Left = 466
   Height = 248
   Top = 251

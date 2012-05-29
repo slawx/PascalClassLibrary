@@ -16,6 +16,7 @@ implementation
 procedure Register;
 begin
   RegisterUnit('UDebugLog', @UDebugLog.Register);
+  RegisterUnit('UJobProgressView', @UJobProgressView.Register);
 end;
 
 initialization
