@@ -5,15 +5,15 @@ unit URFUProgrammer;
 interface
 
 uses
-  Classes, SysUtils, Forms, UISPProgrammer, UCPUType, Process;
+  Classes, SysUtils, Forms, UISPProgrammer, UCPUType, Process, UJobProgressView;
 
 type
 
   { TRFUProgrammer }
 
   TRFUProgrammer = class(TISPProgrammer)
-    procedure Write; override;
-    procedure Verify; override;
+    procedure Write(Job: TJob); override;
+    procedure Verify(Job: TJob); override;
     procedure Erase; override;
     procedure Reset; override;
     constructor Create; override;
@@ -25,9 +25,9 @@ implementation
 
 { TRFUProgrammer }
 
-procedure TRFUProgrammer.Write;
+procedure TRFUProgrammer.Write(Job: TJob);
 begin
-  inherited Write;
+  inherited;
   with TProcess.Create(nil) do
   try
     CommandLine := 'clRFU.exe ' + FileName + ' -cl coldload.bin -pb pilot.bin';
@@ -40,9 +40,9 @@ begin
   end;
 end;
 
-procedure TRFUProgrammer.Verify;
+procedure TRFUProgrammer.Verify(Job: TJob);
 begin
-  inherited Verify;
+  inherited;
 end;
 
 procedure TRFUProgrammer.Erase;

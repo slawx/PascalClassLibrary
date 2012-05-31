@@ -43,10 +43,10 @@ type
     BaudRate: TBaudRate;
     procedure LoadFromRegistry(Root: HKEY; Key: string); override;
     procedure SaveToRegistry(Root: HKEY; Key: string); override;
-    procedure Read; override;
-    procedure Write; override;
+    procedure Read(Job: TJob); override;
+    procedure Write(Job: TJob); override;
     procedure Erase; override;
-    procedure Verify; override;
+    procedure Verify(Job: TJob); override;
     procedure Reset; override;
     function ReadIdentification: string; override;
     constructor Create; override;
@@ -211,7 +211,7 @@ begin
     end;
 end;
 
-procedure TDallasProgrammer.Read;
+procedure TDallasProgrammer.Read(Job: TJob);
 var
   Value: string;
   I: Integer;
@@ -235,7 +235,7 @@ begin
   end;
 
   //HexFile.SaveToStringList(HexData);
-  JobProgressView.CurrentJob.Progress.Max := 65535 div 32;
+  Job.Progress.Max := 65535 div 32;
   //Request.Size := 0;
   //ResponseClear;
   I := 0;
@@ -265,16 +265,16 @@ begin
     finally
       ResponseLock.Release;
     end;
-    JobProgressView.CurrentJob.Progress.Value := I;
-    if JobProgressView.CurrentJob.Terminate then Break;
+    Job.Progress.Value := I;
+    if Job.Terminate then Break;
   until False;
   //for I := 0 to HexData.Count - 1 do
   //  Log(HexData[I]);
-  if not JobProgressView.CurrentJob.Terminate then
+  if not Job.Terminate then
     HexFile.LoadFromStringList(HexData);
 end;
 
-procedure TDallasProgrammer.Verify;
+procedure TDallasProgrammer.Verify(Job: TJob);
 var
   Value: string;
   I: Integer;
@@ -291,7 +291,7 @@ begin
     raise Exception.Create(STimeout);
   end;
   HexFile.SaveToStringList(HexData);
-  JobProgressView.CurrentJob.Progress.Max := HexData.Count;
+  Job.Progress.Max := HexData.Count;
   for I := 0 to HexData.Count - 1 do begin
     Request.Size := 0;
     ResponseClear;
@@ -310,12 +310,12 @@ begin
       ResponseLock.Release;
     end;
     CheckErrorCode(Value);
-    JobProgressView.CurrentJob.Progress.Value := I;
-    if JobProgressView.CurrentJob.Terminate then Break;
+    Job.Progress.Value := I;
+    if Job.Terminate then Break;
   end;
 end;
 
-procedure TDallasProgrammer.Write;
+procedure TDallasProgrammer.Write(Job: TJob);
 var
   Value: string;
   I: Integer;
@@ -332,7 +332,7 @@ begin
     raise Exception.Create(STimeout);
   end;
   HexFile.SaveToStringList(HexData);
-  JobProgressView.CurrentJob.Progress.Max := HexData.Count;
+  Job.Progress.Max := HexData.Count;
   for I := 0 to HexData.Count - 1 do begin
     Request.Size := 0;
     ResponseClear;
@@ -351,8 +351,8 @@ begin
       ResponseLock.Release;
     end;
     CheckErrorCode(Value);
-    JobProgressView.CurrentJob.Progress.Value := I;
-    if JobProgressView.CurrentJob.Terminate then Break;
+    Job.Progress.Value := I;
+    if Job.Terminate then Break;
   end;
 end;
 

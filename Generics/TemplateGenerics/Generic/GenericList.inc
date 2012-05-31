@@ -33,9 +33,10 @@
     procedure SetCapacityOptimized(const NewCapacity: TGListIndex);
     procedure SetLast(AValue: TGListItem);
     procedure SetFirst(AValue: TGListItem);
+    procedure QuickSort(L, R : TGListIndex; Compare: TGListSortCompare);
+  protected
     procedure Put(Index: TGListIndex; const AValue: TGListItem); virtual;
     procedure SetCount(const AValue: TGListIndex); virtual;
-    procedure QuickSort(L, R : TGListIndex; Compare: TGListSortCompare);
   public
     function CompareMem(P1, P2: Pointer; Length: cardinal): Boolean; inline;
     function Add(Item: TGListItem): TGListIndex;

@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Registry, UIntelHexFile, UCommSerialPort,
-  UCPUType;
+  UCPUType, UJobProgressView;
 
 type
   TLogEvent = procedure (Text: string) of object;
@@ -33,9 +33,9 @@ type
     procedure Log(Text: string);
     procedure LoadFromRegistry(Root: HKEY; Key: string); virtual;
     procedure SaveToRegistry(Root: HKEY; Key: string); virtual;
-    procedure Write; virtual;
-    procedure Read; virtual;
-    procedure Verify; virtual;
+    procedure Write(Job: TJob); virtual;
+    procedure Read(Job: TJob); virtual;
+    procedure Verify(Job: TJob); virtual;
     procedure Erase; virtual;
     procedure Reset; virtual;
     function ReadIdentification: string; virtual;
@@ -85,17 +85,17 @@ begin
 
 end;
 
-procedure TISPProgrammer.Write;
+procedure TISPProgrammer.Write(Job: TJob);
 begin
   raise Exception.Create(SNotImplemented);
 end;
 
-procedure TISPProgrammer.Read;
+procedure TISPProgrammer.Read(Job: TJob);
 begin
   raise Exception.Create(SNotImplemented);
 end;
 
-procedure TISPProgrammer.Verify;
+procedure TISPProgrammer.Verify(Job: TJob);
 begin
   raise Exception.Create(SNotImplemented);
 end;

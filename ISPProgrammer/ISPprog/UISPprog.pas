@@ -25,9 +25,9 @@ type
     procedure SetActive(AValue: Boolean); override;
   public
     constructor Create; override;
-    procedure Write; override;
-    procedure Read; override;
-    procedure Verify; override;
+    procedure Write(Job: TJob); override;
+    procedure Read(Job: TJob); override;
+    procedure Verify(Job: TJob); override;
     procedure Erase; override;
     procedure Reset; override;
     function ReadIdentification: string; override;
@@ -148,7 +148,7 @@ end;
 
 { TISPProg }
 
-procedure TISPProg.Write;
+procedure TISPProg.Write(Job: TJob);
 var
   res: string;
   radr, veradr, pagemask, pagesize, minadr, maxadr: integer;
@@ -211,7 +211,7 @@ begin
     minadr:=minadr and (not pagemask);  // round down to page size
     maxadr:=maxadr or pagemask;         // round up to page size
     radr:=minadr;
-    JobProgressView.CurrentJob.Progress.Max := maxadr - minadr + 1;
+    Job.Progress.Max := maxadr - minadr + 1;
     while radr <= maxadr do begin
       if (proctype = PROC_TYPE_AVR) and (flashsize > 1024*128) then
       begin
@@ -232,8 +232,8 @@ begin
         end;
       end;
       radr := radr + pagesize;
-      JobProgressView.CurrentJob.Progress.Value := radr - minadr;
-      if JobProgressView.CurrentJob.Terminate then Break;
+      Job.Progress.Value := radr - minadr;
+      if Job.Terminate then Break;
     end;
     Log(SProgramOK);
     LedOff;
@@ -262,7 +262,7 @@ begin
         end;
       end;
       radr := radr + pagesize;
-      JobProgressView.CurrentJob.Progress.Value := radr - minadr;
+      Job.Progress.Value := radr - minadr;
     end;
     Log(SProgramOK);
     LedOff;
@@ -283,7 +283,7 @@ begin
         //Exit;
       end;
     end;
-    JobProgressView.CurrentJob.Progress.Value := radr - minadr;
+    Job.Progress.Value := radr - minadr;
   end;
   LedOff;
   Log(SProgramOK);
@@ -294,7 +294,7 @@ begin
   inherited;
 end;
 
-procedure TISPProg.Verify;
+procedure TISPProg.Verify(Job: TJob);
 begin
   inherited;
 end;

@@ -7,8 +7,9 @@ interface
 {$IFDEF Windows}
 
 uses
-  Classes, SysUtils, UISPProgrammer, URegistry, UPrestoDLL,
-  UStreamHelper, Globals, Processors, Delays, UCPUType, Registry;
+  Classes, SysUtils, UISPProgrammer, UPrestoDLL,
+  UStreamHelper, Globals, Processors, Delays, UCPUType, Registry,
+  UJobProgressView;
 
 type
 
@@ -32,8 +33,8 @@ type
     procedure LoadFromRegistry(Root: HKEY; Key: string); override;
     procedure SaveToRegistry(Root: HKEY; Key: string); override;
     function ReadIdentification: string; override;
-    procedure Write; override;
-    procedure Verify; override;
+    procedure Write(Job: TJob); override;
+    procedure Verify(Job: TJob); override;
     procedure Erase; override;
     procedure Reset; override;
     constructor Create; override;
@@ -45,12 +46,6 @@ type
 implementation
 
 {$IFDEF Windows}
-
-uses
-  UJobProgressView;
-
-const
-  TempHexFile = 'Dump.hex';
 
 resourcestring
   SUnknownDevice = 'Can''t program locked or not known device.';
@@ -278,7 +273,7 @@ error:
   end;
 end;
 
-procedure TPrestoProgrammer.Write;
+procedure TPrestoProgrammer.Write(Job: TJob);
 var
   Address, I, PageSize, MinAdr, MaxAdr: Integer;
   b, b1: byte;
@@ -311,7 +306,7 @@ begin
 
     // AT89S8253, AT89S2051/4051, AT89S51/52, AVRs with page programming
     PageSize := Signatures[devicenr].fpagesize;
-    JobProgressView.CurrentJob.Progress.Max := MaxAdr;
+    Job.Progress.Max := MaxAdr;
     WritePage.Size := PageSize;
     ReadPage.Size := PageSize;
     if Flash.Size > Signatures[devicenr].fsize then
@@ -360,8 +355,8 @@ begin
         end;
         Inc(Address);
       end;
-      JobProgressView.CurrentJob.Progress.Value := Address;
-      if JobProgressView.CurrentJob.Terminate then Break;
+      Job.Progress.Value := Address;
+      if Job.Terminate then Break;
     end;
     Log(SProgramOK);
   finally
@@ -371,9 +366,9 @@ begin
   end;
 end;
 
-procedure TPrestoProgrammer.Verify;
+procedure TPrestoProgrammer.Verify(Job: TJob);
 begin
-  inherited Verify;
+  inherited;
 end;
 
 procedure TPrestoProgrammer.Erase;
@@ -445,9 +440,8 @@ end;
 
 procedure TPrestoProgrammer.ISPWriteFlashPage(Address: Integer; Buffer: TStream);
 var
-  pagesize, pagemask, raddr: integer;
+  pagesize, pagemask: integer;
   Data: TStreamHelper;
-  ptr: ^byte;
 begin
   try
     Data := TStreamHelper.Create;
@@ -535,8 +529,6 @@ begin
 end;
 
 procedure TPrestoProgrammer.SetActive(AValue: Boolean);
-var
-  Answer: Integer;
 begin
   if Active = AValue then Exit;
   inherited;
