@@ -163,7 +163,6 @@ end;
 
 procedure Synchronize(Method: TMethodCall);
 var
-  I: Integer;
   Thread: TVirtualThread;
 begin
   if MainThreadID = ThreadID then Method

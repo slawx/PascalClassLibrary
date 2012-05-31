@@ -90,6 +90,7 @@ begin
   Registry := TRegistryEx.Create;
   with Registry do
   try
+    RootKey := Root;
     OpenKey(Key, True);
     for I := 0 to Count - 1 do
       WriteString('File' + IntToStr(I), UTF8Decode(Strings[I]));

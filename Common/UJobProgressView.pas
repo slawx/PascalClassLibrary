@@ -48,7 +48,6 @@ type
 
   TJob = class
   private
-    FResultString: string;
     FTerminate: Boolean;
     procedure SetTerminate(const AValue: Boolean);
   public
@@ -210,7 +209,6 @@ end;
 procedure TJobProgressView.StartJobs;
 var
   I: Integer;
-  H: Integer;
 begin
   Terminate := False;
 
@@ -276,11 +274,11 @@ begin
         end;
       end;
       Form.ProgressBarPart.Hide;
+      if Assigned(FOnJobFinish) then
+        FOnJobFinish(CurrentJob);
       if Terminate then Break;
       EndTime := Now;
       Finished := True;
-      if Assigned(FOnJobFinish) then
-        FOnJobFinish(CurrentJob);
       Inc(I);
     end;
   finally
@@ -426,6 +424,7 @@ procedure TJobProgressView.SetTerminate(const AValue: Boolean);
 var
   I: Integer;
 begin
+  if AValue = FTerminate then Exit;
   for I := 0 to Jobs.Count - 1 do
     TJob(Jobs[I]).Terminate := AValue;
   FTerminate := AValue;
@@ -439,8 +438,6 @@ var
   TotalValue: Integer;
   EstimatedTimePart: TDateTime;
   RemainingTime: TDateTime;
-  LabelEstimatedTimePartCaption: string;
-  LabelEstimatedTimePartVisible: Boolean;
 begin
   if Assigned(CurrentJob) then
   with CurrentJob, Form do begin
@@ -479,8 +476,6 @@ begin
 end;
 
 procedure TJobProgressView.ReloadJobList;
-var
-  OldImageIndex: Integer;
 begin
   UpdateHeight;
   // Workaround for not showing first line
@@ -592,7 +587,10 @@ procedure TJob.SetTerminate(const AValue: Boolean);
 begin
   if FTerminate = AValue then Exit;
   FTerminate := AValue;
-  if Assigned(Thread) then Thread.Terminate;
+  if AValue then begin
+    ProgressView.Terminate := AValue;
+    if Assigned(Thread) then Thread.Terminate;
+  end;
 end;
 
 procedure TJob.AddLogItem(Value: string);
