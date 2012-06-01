@@ -5,9 +5,12 @@ unit URegistry;
 interface
 
 uses
-  Registry;
+  Classes, Registry;
 
 type
+
+  { TRegistryEx }
+
   TRegistryEx = class(TRegistry)
   private
   public
@@ -17,6 +20,7 @@ type
     function ReadStringWithDefault(const Name: string; DefaultValue: string): string;
     function ReadFloatWithDefault(const Name: string;
       DefaultValue: Double): Double;
+    function DeleteKeyRecursive(const Key: string): Boolean;
   end;
 
 implementation
@@ -51,6 +55,24 @@ begin
       WriteFloat(Name, DefaultValue);
       Result := DefaultValue;
     end;
+end;
+
+function TRegistryEx.DeleteKeyRecursive(const Key: string): Boolean;
+var
+  SubKeys: TStringList;
+  I: Integer;
+begin
+  try
+    SubKeys := TStringList.Create;
+    if OpenKey(Key, False) and HasSubKeys then begin
+      GetKeyNames(SubKeys);
+      for I := 0 to SubKeys.Count - 1 do
+        DeleteKeyRecursive(Key + '\' + SubKeys[I]);
+    end;
+    Result := DeleteKey(Key);
+  finally
+    SubKeys.Free;
+  end;
 end;
 
 function TRegistryEx.ReadBoolWithDefault(const Name: string;
