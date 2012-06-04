@@ -5,7 +5,7 @@ unit UDebugLog;
 interface
 
 uses
-  Classes, SysUtils, FileUtil;
+  Classes, SysUtils, FileUtil, SpecializedList, SyncObjs;
 
 type
   TDebugLogAddEvent = procedure (Group: string; Text: string) of object;
@@ -28,7 +28,8 @@ type
     FWriteToFileEnable: Boolean;
     procedure SetMaxCount(const AValue: Integer);
   public
-    Items: TThreadList;
+    Items: TListObject;
+    Lock: TCriticalSection;
     procedure Add(Group: string; Text: string);
     procedure WriteToFile(Text: string);
     constructor Create(AOwner: TComponent); override;
@@ -56,25 +57,19 @@ end;
 { TDebugLog }
 
 procedure TDebugLog.SetMaxCount(const AValue: Integer);
-var
-  List: TList;
-  I: Integer;
 begin
   if FMaxCount = AValue then Exit;
   FMaxCount := AValue;
-  List := Items.LockList;
-  if List.Count > 0 then begin
-    for I := AValue to List.Count - 1 do
-      TDebugLogItem(List[I]).Free;
-    List.Count := AValue;
+  try
+    Lock.Acquire;
+    if Items.Count > FMaxCount then Items.Count := AValue;
+  finally
+    Lock.Release;
   end;
-  Items.UnlockList;
 end;
 
 procedure TDebugLog.Add(Group: string; Text: string);
 var
-  I: Integer;
-  List: TList;
   NewItem: TDebugLogItem;
 begin
   NewItem := TDebugLogItem.Create;
@@ -82,17 +77,19 @@ begin
   NewItem.Group := Group;
   NewItem.Text := Text;
 
-  List := Items.LockList;
-  List.Insert(0, NewItem);
-  if List.Count > MaxCount then begin
-    TDebugLogItem(List.Items[List.Count - 1]).Free;
-    List.Delete(List.Count - 1);
-  end;
-  Items.UnlockList;
+  try
+    Lock.Acquire;
+    Items.Insert(0, NewItem);
+    if Items.Count > MaxCount then begin
+      Items.Delete(Items.Count - 1);
+    end;
 
-  if WriteToFileEnable then begin
-    if Group <> '' then Group := Group + '[' + Group + '] ';
-    WriteToFile(Group + Text);
+    if WriteToFileEnable then begin
+      if Group <> '' then Group := Group + '[' + Group + '] ';
+      WriteToFile(Group + Text);
+    end;
+  finally
+    Lock.Release;
   end;
   if Assigned(FOnNewItem) then
     FOnNewItem(NewItem);
@@ -112,28 +109,24 @@ begin
     Text := FormatDateTime('hh:nn:ss.zzz', Now) + ': ' + Text + LineEnding;
     LogFile.WriteBuffer(Text[1], Length(Text));
   finally
-    LogFile.Free;
+    FreeAndNil(LogFile);
   end;
 end;
 
 constructor TDebugLog.Create(AOwner: TComponent);
 begin
   inherited;
-  Items := TThreadList.Create;
+  Items := TListObject.Create;
+  Lock := TCriticalSection.Create;
   MaxCount := 100;
   FileName := 'DebugLog.txt';
   WriteToFileEnable := False;
 end;
 
 destructor TDebugLog.Destroy;
-var
-  List: TList;
-  I: Integer;
 begin
-  List := Items.LockList;
-  for I := 0 to List.Count - 1 do
-    TDebugLogItem(List[I]).Free;
   Items.Free;
+  Lock.Free;
   inherited;
 end;
 
