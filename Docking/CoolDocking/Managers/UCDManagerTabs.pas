@@ -39,6 +39,8 @@ type
     function FindControlInPanels(Control: TControl): TCDManagerItem; override;
     function GetHeaderPos: THeaderPos; override;
     function FindTabSheet(TabSheet: TTabSheet): TCDManagerTabsItem;
+    procedure PageControlContextPopup(Sender: TObject; MousePos: TPoint;
+      var Handled: Boolean);
   public
     MouseDownSkip: Boolean;
     TabImageList: TImageList;
@@ -188,7 +190,7 @@ begin
     OnChange := TabControlChange;
     MultiLine := True;
     AutoSize := True;
-    PopupMenu := Self.PopupMenu;
+    OnContextPopup := PageControlContextPopup;
     OnMouseLeave := TabControlMouseLeave;
     OnMouseDown := TabControlMouseDown;
     //TTabControlNoteBookStrings(Tabs).NoteBook.OnMouseLeave := TabControlMouseLeave;
@@ -304,6 +306,25 @@ begin
     (TCDManagerTabsItem(FDockItems[I]).TabSheet <> TabSheet) do Inc(I);
   if I < FDockItems.Count then Result := TCDManagerTabsItem(FDockItems[I])
     else Result := nil;
+end;
+
+procedure TCDManagerTabs.PageControlContextPopup(Sender: TObject;
+  MousePos: TPoint; var Handled: Boolean);
+var
+  I: Integer;
+  R: TRect;
+begin
+  with Sender as TPageControl do begin
+    PopupMenu := nil;
+    for I := 0 to PageControl.PageCount - 1 do begin
+      R := PageControl.TabRect(I);
+      if (MousePos.X >= R.Left) and (MousePos.Y >= R.Top) and
+        (MousePos.X <= R.Right) and (MousePos.Y <= R.Bottom) then begin
+          PopupMenu := Self.PopupMenu;
+          Break;
+        end;
+    end;
+  end;
 end;
 
 procedure TCDManagerTabs.BringToFront;
