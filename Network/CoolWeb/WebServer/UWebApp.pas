@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, CustApp, SpecializedList, UWebPage, UHTTPSessionFile,
-  UHTTPServer, Forms;
+  UHTTPServer, Forms, FileUtil;
 
 type
   THTTPServerType = (stCGI, stTCP, stTurboPower);
@@ -16,34 +16,35 @@ type
     Page: TWebPage;
   end;
 
-  { TRegistredPageList }
+  { TPageList }
 
-  TRegistredPageList = class(TListObject)
+  TPageList = class(TListObject)
+    RootDir: string;
     function FindByName(Name: string): TRegistredPage;
+    procedure RegisterPage(PageClass: TWebPageClass; out Reference; Path: string);
+    function ProducePage(HandlerData: THTTPHandlerData): Boolean;
   end;
 
   { TWebApp }
 
   TWebApp = class(TComponent)
   private
-    FOnBeforePageProduce: TOnProduceEvent;
+    FOnPageProduce: TOnProduceEvent;
     FOnInitialize: TNotifyEvent;
     FServerType: THTTPServerType;
     function DumpExceptionCallStack(E: Exception): string;
     procedure HTTPServerRequest(HandlerData: THTTPHandlerData);
     procedure SetServerType(AValue: THTTPServerType);
   public
-    Pages: TRegistredPageList;
     HTTPServer: THTTPServer;
     HTTPSessionStorageFile: THTTPSessionStorageFile;
     LogException: Boolean;
     procedure ShowException(E: Exception);
-    procedure RegisterPage(PageClass: TWebPageClass; out Reference; Path: string);
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Run;
   published
-    property OnBeforePageProduce: TOnProduceEvent read FOnBeforePageProduce write FOnBeforePageProduce;
+    property OnPageProduce: TOnProduceEvent read FOnPageProduce write FOnPageProduce;
     property OnInitialize: TNotifyEvent read FOnInitialize write FOnInitialize;
     property ServerType: THTTPServerType read FServerType write SetServerType;
   end;
@@ -56,9 +57,6 @@ implementation
 uses
   UHTTPServerCGI, UHTTPServerTCP, UHTTPServerTurboPower;
 
-resourcestring
-  SPageNotFound = 'Page not found';
-
 
 procedure Register;
 begin
@@ -66,9 +64,9 @@ begin
 end;
 
 
-{ TRegistredPageList }
+{ TPageList }
 
-function TRegistredPageList.FindByName(Name: string): TRegistredPage;
+function TPageList.FindByName(Name: string): TRegistredPage;
 var
   I: Integer;
 begin
@@ -107,38 +105,39 @@ begin
   Result := Report;
 end;
 
-procedure TWebApp.RegisterPage(PageClass: TWebPageClass; out Reference;
+procedure TPageList.RegisterPage(PageClass: TWebPageClass; out Reference;
   Path: string);
 var
   NewPage: TRegistredPage;
   Instance: TWebPage;
 begin
-  NewPage := TRegistredPage(Pages.AddNew(TRegistredPage.Create));
+  NewPage := TRegistredPage(AddNew(TRegistredPage.Create));
 //  NewPage.Page := PageClass.Create(Self);
   NewPage.Page := PageClass.Create(nil);
   NewPage.Name := Path;
   TWebPage(Reference) := NewPage.Page;
 end;
 
-procedure TWebApp.HTTPServerRequest(HandlerData: THTTPHandlerData);
+function TPageList.ProducePage(HandlerData: THTTPHandlerData): Boolean;
 var
   Page: TRegistredPage;
   PageName: string;
 begin
   with HandlerData do begin
-    //Request.QueryParts.Count := 2;
-    //Request.QueryParts[0] := 'uzivatel';
-    //Request.QueryParts[1] := 'prihlaseni';
-    if Assigned(FOnBeforePageProduce) then
-      FOnBeforePageProduce(HandlerData);
-
     if Request.QueryParts.Count > 0 then PageName := Request.QueryParts[0]
       else PageName := '';
-    Page := Pages.FindByName(PageName);
+    Page := FindByName(PageName);
     if Assigned(Page) then begin
       Page.Page.OnProduce(HandlerData);
-    end else Response.Content.WriteString(SPageNotFound);
+      Result := True;
+    end else Result := False;
   end;
+end;
+
+procedure TWebApp.HTTPServerRequest(HandlerData: THTTPHandlerData);
+begin
+  if Assigned(FOnPageProduce) then
+    FOnPageProduce(HandlerData);
 end;
 
 procedure TWebApp.SetServerType(AValue: THTTPServerType);
@@ -178,14 +177,12 @@ end;
 constructor TWebApp.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
-  Pages := TRegistredPageList.Create;
   HTTPServer := THTTPServerCGI.Create(nil);
   HTTPServer.OnRequest := HTTPServerRequest;
 end;
 
 destructor TWebApp.Destroy;
 begin
-  Pages.Free;
   HTTPServer.Free;
   inherited Destroy;
 end;
