@@ -98,11 +98,12 @@ begin
     if EnvVars.Values['QUERY_STRING'][Length(EnvVars.Values['QUERY_STRING'])] = '/' then
       EnvVars.Values['QUERY_STRING'] := Copy(EnvVars.Values['QUERY_STRING'], 1,
         Length(EnvVars.Values['QUERY_STRING']) - 1);
-    Request.QueryParts.Explode(EnvVars.Values['QUERY_STRING'], '/', StrToStr);
-    if Pos('?', EnvVars.Values['REQUEST_URI']) > 0 then
+    Request.Path.Explode(EnvVars.Values['QUERY_STRING'], '/', StrToStr);
+    if Pos('?', EnvVars.Values['REQUEST_URI']) > 0 then begin
       Request.Query.Parse(Copy(EnvVars.Values['REQUEST_URI'],
         Pos('?', EnvVars.Values['REQUEST_URI']) + 1,
         Length(EnvVars.Values['REQUEST_URI'])));
+    end;
 
     // Load session variables
     if Assigned(SessionStorage) then
@@ -118,7 +119,7 @@ begin
     end;
 
     Response.Content.Clear;
-    Response.Headers.Values['Content-type'] := 'text/html';
+    Response.Headers.Add('Content-type', 'text/html');
 
     // Execute content handler
     if Assigned(OnRequest) then OnRequest(HandlerData)
@@ -131,12 +132,12 @@ begin
     with Response do begin
       // Generate cookies
       for I := 0 to Cookies.Count - 1 do
-        Headers.Add('Set-Cookie' + Headers.NameValueSeparator + Cookies.Names[I] + '=' + Cookies.ValueFromIndex[I]);
+        Headers.Add('Set-Cookie', Cookies.Names[I] + '=' + Cookies.ValueFromIndex[I]);
         // + ';path=/;expires=' + RFC822DateTime(Now);
 
       // Generate headers
       for I := 0 to Headers.Count - 1 do begin
-        WriteLn(Headers.Names[I] + ': ' + Headers.ValueFromIndex[I]);
+        WriteLn(Headers.Keys[I] + ': ' + Headers.Items[I].Value);
       end;
 
       WriteLn; // Empty line header separator

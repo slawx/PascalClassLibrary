@@ -124,7 +124,7 @@ var
   PageName: string;
 begin
   with HandlerData do begin
-    if Request.QueryParts.Count > 0 then PageName := Request.QueryParts[0]
+    if Request.Path.Count > 0 then PageName := Request.Path[0]
       else PageName := '';
     Page := FindByName(PageName);
     if Assigned(Page) then begin

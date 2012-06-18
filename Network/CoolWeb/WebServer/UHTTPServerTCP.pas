@@ -50,7 +50,7 @@ begin
       Server := Self;
 
       Response := THTTPResponse.Create;
-      Response.Headers.Values['Server'] := Name;
+      Response.Headers.Add('Server', Name);
       Request := THTTPRequest.Create;
       LineIndex := 0;
       try
@@ -62,15 +62,18 @@ begin
             if (LineParts.Count >= 3) then begin
               Request.Method := LineParts[0];
               if Pos('?', LineParts[1]) > 0 then begin
-                Request.Path := Copy(LineParts[1], 1, Pos('?', LineParts[1]) - 1);
                 Request.Query.Parse(Copy(LineParts[1], Pos('?', LineParts[1]) + 1, Length(LineParts[1])));
-              end else Request.Path := LineParts[1];
+                Request.Path.Explode(Copy(LineParts[1], 1, Pos('?', LineParts[1]) - 1), '/', StrToStr);
+              end else begin
+                Request.Path.Explode(LineParts[1], '/', StrToStr);
+                Request.Query.Clear;
+              end;
             end;
           end else begin
             LineParts.Explode(Line, ' ', StrToStr, 2);
             if (LineParts.Count = 2) and (LineParts[0][Length(LineParts[0])] = ':') then begin
               LineParts[0] := Copy(LineParts[0], 1, Length(LineParts[0]) - 1);
-              Request.Headers.Values[LineParts[0]] := LineParts[1];
+              Request.Headers.Add(LineParts[0], LineParts[1]);
               //WriteLn(Line);
             end;
           end;
@@ -81,7 +84,7 @@ begin
       end;
 
     // Process cookies
-    if Request.Headers.IndexOfName('Cookie') <> -1 then
+    if Request.Headers.SearchKey('Cookie') <> -1 then
       Request.Cookies.Parse(Request.Headers.Values['Cookie']);
 
     // Load session variables
@@ -89,7 +92,7 @@ begin
       SessionStorage.Load(HandlerData);
 
     Response.Content.Clear;
-    Response.Headers.Values['Content-Type'] := 'text/html';
+    Response.Headers.Add('Content-Type', 'text/html');
 
     if Assigned(OnRequest) then OnRequest(HandlerData)
       else raise EEmptyHTTPHandler.Create(SEmptyHTTPHandler);
@@ -100,19 +103,19 @@ begin
 
     with Response do begin
       SendString('HTTP/1.0 200 OK'#13#10);
-      Headers.Values['Content-Length'] := IntToStr(Content.Size);
-      Headers.Values['Connection'] := 'close';
-      Headers.Values['Date'] := RFC822DateTime(Now);
+      Headers.Add('Content-Length', IntToStr(Content.Size));
+      Headers.Add('Connection', 'close');
+      Headers.Add('Date', RFC822DateTime(Now));
 
       // Handle cookies
       for I := 0 to Cookies.Count - 1 do
-        Headers.Add('Set-Cookie' + Headers.NameValueSeparator + Cookies.Names[I] + '=' + Cookies.ValueFromIndex[I]);
+        Headers.Add('Set-Cookie', Cookies.Names[I] + '=' + Cookies.ValueFromIndex[I]);
         // + ';path=/;expires=' + RFC822DateTime(Now);
 
       // Send headers
       for I := 0 to Headers.Count - 1 do begin
-        //WriteLn(Headers.Names[I] + ': ' + Headers.ValueFromIndex[I] + #13#10);
-        SendString(Headers.Names[I] + ': ' + Headers.ValueFromIndex[I] + #13#10);
+        WriteLn(Headers.Keys[I] + ': ' + Headers.Items[I].Value + #13#10);
+        SendString(Headers.Keys[I] + ': ' + Headers.Items[I].Value + #13#10);
       end;
       SendString(#13#10);
       SendBuffer(Content.Memory, Content.Size);

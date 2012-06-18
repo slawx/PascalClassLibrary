@@ -46,7 +46,7 @@ begin
       else raise EEmptyHTTPHandler.Create(SEmptyHTTPHandler);
     Response.Content.Position := 0;
     FormWebBrowser.HtmlSource := Response.Content.ReadString;
-    //FormWebBrowser.IpHtmlPanel1.SetHtmlFromStr(FormWebBrowser.HtmlSource);
+    FormWebBrowser.IpHtmlPanel1.SetHtmlFromStr(FormWebBrowser.HtmlSource);
   finally
     Free;
   end;

@@ -45,6 +45,7 @@ type
     procedure ReadStreamPart(Stream: TStream; Count: Integer);
     function Sum: Byte;
     procedure FillByte(Data: Byte; Count: Integer);
+    procedure Assign(Source: TMemoryStreamEx);
     constructor Create;
     property Endianness: TEndianness read FEndianness write SetEndianness;
   end;
@@ -201,6 +202,20 @@ var
 begin
   for I := 0 to Count - 1 do
     WriteByte(Data);
+end;
+
+procedure TMemoryStreamEx.Assign(Source: TMemoryStreamEx);
+var
+  OldPosition: Int64;
+begin
+  FEndianness := Source.FEndianness;
+  SwapData := Source.SwapData;
+  OldPosition := Source.Position;
+  Clear;
+  Source.Position := 0;
+  CopyFrom(Source, Source.Size);
+  Position := OldPosition;
+  Source.Position := OldPosition;
 end;
 
 function TMemoryStreamEx.ReadWord: Word;
