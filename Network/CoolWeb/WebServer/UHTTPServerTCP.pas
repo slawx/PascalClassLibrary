@@ -87,6 +87,15 @@ begin
     if Request.Headers.SearchKey('Cookie') <> -1 then
       Request.Cookies.Parse(Request.Headers.Values['Cookie']);
 
+    if (Request.Method = 'POST') and (Request.Headers.SearchKey('Content-Type') <> -1) then begin
+      if (Request.Headers.Values['Content-Type'] = 'application/x-www-form-urlencoded') and
+        (Request.Headers.SearchKey('Content-Length') <> -1) then begin
+          SetLength(Line, StrToInt(Request.Headers.Values['Content-Length']));
+          RecvBuffer(Pointer(Line[1]), Length(Line));
+          Request.Post.Parse(Line);
+      end;
+    end;
+
     // Load session variables
     if Assigned(SessionStorage) then
       SessionStorage.Load(HandlerData);
