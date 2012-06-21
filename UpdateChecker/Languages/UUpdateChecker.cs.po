@@ -1,0 +1,33 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Project-Id-Version: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: Jiří Hajda <robie@centrum.cz>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: uupdatechecker.scantexecutefile
+msgid "Can't execute installer \"%s\""
+msgstr "Nelze spustit instalátor \"%s\""
+
+#: uupdatechecker.sdownloadprogress
+msgid "Download progress"
+msgstr "Průběh stahování"
+
+#: uupdatechecker.sfile
+#| msgid "File"
+msgid "File:"
+msgstr "Soubor:"
+
+#: uupdatechecker.sprogress
+#| msgid "Progress"
+msgid "Progress:"
+msgstr "Průběh:"
+
+#: uupdatechecker.swrongfileformat
+msgid "Wrong file format"
+msgstr "Nesprávný formát souboru"
+

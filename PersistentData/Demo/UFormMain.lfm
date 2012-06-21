@@ -1,7 +1,7 @@
 object FormMain: TFormMain
-  Left = 256
+  Left = 264
   Height = 509
-  Top = 81
+  Top = 95
   Width = 686
   Caption = 'PersistentData demo'
   ClientHeight = 509
@@ -10,19 +10,19 @@ object FormMain: TFormMain
   LCLVersion = '1.1'
   object ComboBox1: TComboBox
     Left = 112
-    Height = 27
+    Height = 21
     Top = 48
     Width = 152
-    ItemHeight = 0
+    ItemHeight = 13
     OnChange = ComboBox1Change
     Style = csDropDownList
     TabOrder = 0
   end
   object Label1: TLabel
     Left = 8
-    Height = 18
+    Height = 14
     Top = 49
-    Width = 76
+    Width = 57
     Caption = 'Client type:'
     ParentColor = False
   end

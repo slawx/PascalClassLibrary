@@ -187,6 +187,7 @@ begin
   Top := Source.Top;
   Right := Source.Right;
   Bottom := Source.Bottom;
+  KeepSize := Source.KeepSize;
 end;
 
 function TGRectangle.IsPointInside(Pos: TGRectanglePoint): Boolean;

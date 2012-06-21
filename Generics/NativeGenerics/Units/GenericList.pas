@@ -194,7 +194,7 @@ begin
   end;
 end;
 
-procedure TGList<TItem>.GetList(List: TGList; Index, ACount: TIndex);
+procedure TGList<TItem>.GetList(List: TGList<TItem>; Index, ACount: TIndex);
 begin
  List.Clear;
  List.AddListPart(Self, Index, ACount);
@@ -538,7 +538,7 @@ begin
   end;
 end;
 
-procedure TGList<TItem>.AddListPart(List: TGList; ItemIndex, ItemCount: TIndex);
+procedure TGList<TItem>.AddListPart(List: TGList<TItem>; ItemIndex, ItemCount: TIndex);
 var
   I: TIndex;
   J: TIndex;

@@ -1,0 +1,52 @@
+object FormDownloadProgress: TFormDownloadProgress
+  Left = 599
+  Height = 75
+  Top = 212
+  Width = 376
+  Caption = 'Download progress'
+  ClientHeight = 75
+  ClientWidth = 376
+  OnCreate = FormCreate
+  Position = poScreenCenter
+  LCLVersion = '1.1'
+  object ProgressBar1: TProgressBar
+    Left = 8
+    Height = 20
+    Top = 48
+    Width = 360
+    Anchors = [akLeft, akRight, akBottom]
+    TabOrder = 0
+  end
+  object Label1: TLabel
+    Left = 7
+    Height = 14
+    Top = 8
+    Width = 21
+    Caption = 'File:'
+    ParentColor = False
+  end
+  object LabelFileName: TLabel
+    Left = 72
+    Height = 14
+    Top = 8
+    Width = 13
+    Caption = '    '
+    ParentColor = False
+  end
+  object Label2: TLabel
+    Left = 8
+    Height = 14
+    Top = 25
+    Width = 47
+    Caption = 'Progress:'
+    ParentColor = False
+  end
+  object LabelProgress: TLabel
+    Left = 72
+    Height = 14
+    Top = 25
+    Width = 13
+    Caption = '    '
+    ParentColor = False
+  end
+end

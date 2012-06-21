@@ -18,6 +18,7 @@ type
       TFromStringConverter = function(Text: string): TItem;
       TRow = array of TItem;
       TMerge = function(Item1, Item2: TItem): TItem of object;
+      PItem = ^TItem;
 
       TIndex = record
         X: TIndexX;
@@ -67,14 +68,14 @@ type
   public
     function Add(Item: TItem): TIndex;
     procedure AddMatrix(Values: array of TRow);
-    procedure AddList(List: TGMatrix);
-    procedure Assign(Source: TGMatrix);
+    procedure AddList(List: TGMatrix<TItem>);
+    procedure Assign(Source: TGMatrix<TItem>);
     procedure Clear; virtual;
     procedure Contract;
     function CreateIndex(X: TIndexY; Y: TIndexX): TIndex;
     procedure Delete(Index: TIndex); virtual;
     procedure DeleteItems(Index, Count: TIndex);
-    function EqualTo(List: TGMatrix): Boolean;
+    function EqualTo(List: TGMatrix<TItem>): Boolean;
     procedure Expand;
     function Extract(Item: TItem): TItem;
     procedure Exchange(Index1, Index2: TIndex);
@@ -84,14 +85,14 @@ type
     function Implode(RowSeparator, ColSeparator: string; Converter: TToStringConverter): string;
     procedure Explode(Text, Separator: string; Converter: TFromStringConverter; SlicesCount: Integer = -1);
     function IndexOf(Item: TItem; Start: TIndex = 0): TIndex;
-    function IndexOfList(List: TGMatrix; Start: TIndex = 0): TIndex;
+    function IndexOfList(List: TGMatrix<TItem>; Start: TIndex = 0): TIndex;
     procedure Insert(Index: TIndex; Item: TItem);
-    procedure InsertList(Index: TIndex; List: TGMatrix);
+    procedure InsertList(Index: TIndex; List: TGMatrix<TItem>);
     procedure InsertArray(Index: TIndex; Values: array of TItem);
     procedure Move(CurIndex, NewIndex: TIndex);
     procedure MoveItems(CurIndex, NewIndex, Count: TIndex);
-    procedure Merge(Index: TIndex; Source: TGMatrix; Proc: TMerge);
-    procedure Replace(Index: TIndex; Source: TGMatrix);
+    procedure Merge(Index: TIndex; Source: TGMatrix<TItem>; Proc: TMerge);
+    procedure Replace(Index: TIndex; Source: TGMatrix<TItem>);
     function Remove(Item: TItem): TIndex;
     procedure Reverse;
     procedure ReverseHorizontal;
@@ -106,8 +107,16 @@ type
     type
       TIndex = TGAbstractMatrix<TItem>.TIndex;
   private
+    FRowSize: Integer;
+    FCellSize: Integer;
     FData: Pointer;
     FCount: TIndex;
+  public
+    constructor Create;
+    function GetItemXY(X: TIndexX; Y: TIndexY): TItem; override;
+    procedure PutItemXY(X: TIndexX; Y: TIndexY; const AValue: TItem); override;
+    property Data: Pointer read FData;
+    property Count: TIndex read FCount write SetCount;
   end;
 
 resourcestring
@@ -119,9 +128,26 @@ uses
   RtlConsts;
 
 
+{ TGRawMatrix }
+
+constructor TGRawMatrix<TItem>.Create;
+begin
+  FCellSize := SizeOf(TItem);
+end;
+
+function TGRawMatrix<TItem>.GetItemXY(X: TIndexX; Y: TIndexY): TItem;
+begin
+  Result := PItem(X * FCellSize + Y * FRowSize)^;
+end;
+
+procedure TGRawMatrix<TItem>.PutItemXY(X: TIndexX; Y: TIndexY; const AValue: TItem);
+begin
+  PItem(X * FCellSize + Y * FRowSize)^ := AValue;
+end;
+
 { TGMatrix }
 
-procedure TGMatrix<TItem>.Replace(Index: TIndex; Source: TGMatrix);
+procedure TGMatrix<TItem>.Replace(Index: TIndex; Source: TGMatrix<TItem>);
 var
   X: TIndexX;
   Y: TIndexY;
@@ -137,7 +163,7 @@ begin
   end;
 end;
 
-procedure TGMatrix<TItem>.Merge(Index: TIndex; Source: TGMatrix; Proc: TMerge);
+procedure TGMatrix<TItem>.Merge(Index: TIndex; Source: TGMatrix<TItem>; Proc: TMerge);
 var
   X: TIndexX;
   Y: TIndexY;
@@ -220,7 +246,7 @@ begin
   FCount := AValue;
 end;
 
-procedure TGMatrix<TItem>.Assign(Source: TGMatrix);
+procedure TGMatrix<TItem>.Assign(Source: TGMatrix<TItem>);
 var
   Index: TIndex;
 begin
@@ -308,7 +334,7 @@ begin
   *)
 end;
 
-procedure TGMatrix<TItem>.InsertList(Index: TIndex; List: TGMatrix);
+procedure TGMatrix<TItem>.InsertList(Index: TIndex; List: TGMatrix<TItem>);
 var
   I: TIndex;
 begin
@@ -320,7 +346,7 @@ begin
   *)
 end;
 
-function TGMatrix<TItem>.IndexOfList(List: TGMatrix; Start: TIndex): TIndex;
+function TGMatrix<TItem>.IndexOfList(List: TGMatrix<TItem>; Start: TIndex): TIndex;
 var
   I: TIndex;
 begin
@@ -428,7 +454,7 @@ begin
     Delete(Result); *)
 end;
 
-function TGMatrix<TItem>.EqualTo(List: TGMatrix): Boolean;
+function TGMatrix<TItem>.EqualTo(List: TGMatrix<TItem>): Boolean;
 var
   I: TIndex;
 begin
@@ -574,7 +600,7 @@ begin
   FCount := FCount + 1; *)
 end;
 
-procedure TGMatrix<TItem>.AddList(List: TGMatrix);
+procedure TGMatrix<TItem>.AddList(List: TGMatrix<TItem>);
 var
   I: TIndex;
 begin

@@ -1,0 +1,23 @@
+msgid ""
+msgstr "Content-Type: text/plain; charset=UTF-8"
+
+#: uupdatechecker.scantexecutefile
+msgid "Can't execute installer \"%s\""
+msgstr ""
+
+#: uupdatechecker.sdownloadprogress
+msgid "Download progress"
+msgstr ""
+
+#: uupdatechecker.sfile
+msgid "File:"
+msgstr ""
+
+#: uupdatechecker.sprogress
+msgid "Progress:"
+msgstr ""
+
+#: uupdatechecker.swrongfileformat
+msgid "Wrong file format"
+msgstr ""
+
