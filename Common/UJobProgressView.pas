@@ -165,7 +165,6 @@ begin
   RegisterComponents('Samples', [TJobProgressView]);
 end;
 
-
 procedure TJobThread.Execute;
 begin
   try
