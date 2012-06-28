@@ -65,6 +65,7 @@
       </Item10>
       <Item11>
         <Filename Value="ULastOpenedList.pas"/>
+        <HasRegisterProc Value="True"/>
         <UnitName Value="ULastOpenedList"/>
       </Item11>
       <Item12>

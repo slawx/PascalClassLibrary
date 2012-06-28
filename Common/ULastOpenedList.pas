@@ -19,18 +19,27 @@ type
     procedure LimitMaxCount;
   public
     Items: TStringList;
-    ClickAction: TNotifyEvent;
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-    procedure LoadToMenuItem(MenuItem: TMenuItem);
+    procedure LoadToMenuItem(MenuItem: TMenuItem; ClickAction: TNotifyEvent);
     procedure LoadFromRegistry(Root: HKEY; Key: string);
     procedure SaveToRegistry(Root: HKEY; Key: string);
     procedure AddItem(FileName: string);
+  published
     property MaxCount: Integer read FMaxCount write SetMaxCount;
     property OnChange: TNotifyEvent read FOnChange write FOnChange;
   end;
 
+procedure Register;
+
+
 implementation
+
+procedure Register;
+begin
+  RegisterComponents('Samples', [TLastOpenedList]);
+end;
+
 
 { TLastOpenedList }
 
@@ -61,7 +70,7 @@ begin
   inherited;
 end;
 
-procedure TLastOpenedList.LoadToMenuItem(MenuItem: TMenuItem);
+procedure TLastOpenedList.LoadToMenuItem(MenuItem: TMenuItem; ClickAction: TNotifyEvent);
 var
   NewMenuItem: TMenuItem;
   I: Integer;
