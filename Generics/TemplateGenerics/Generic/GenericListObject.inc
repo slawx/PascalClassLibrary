@@ -14,12 +14,12 @@
   TGListObject = class(TGList)
   private
     procedure Put(Index: TGListIndex; const AValue: TGListItem); override;
+    procedure SetCount(const AValue: TGListIndex); override;
   public
     OwnsObjects: Boolean;
     function AddNew(NewObject: TGListItem = nil): TGListItem;
     function InsertNew(Index: TGListIndex; NewObject: TGListItem = nil): TGListItem;
     procedure Delete(Index: TGListObjectIndex); override;
-    procedure Clear; override;
     procedure Assign(Source: TGList); override;
     constructor Create; override;
     destructor Destroy; override;
@@ -84,18 +84,18 @@ begin
   inherited Delete(Index);
 end;
 
-procedure TGListObject.Clear;
+procedure TGListObject.SetCount(const AValue: TGListIndex);
 var
   I: TGListObjectIndex;
 begin
   if OwnsObjects then begin
-    I := 0;
-    while I < Count do begin
+    I := FCount - 1;
+    while I >= AValue do begin
       FItems[I].Free;
-      I := I + 1;
+      I := I - 1;
     end;
   end;
-  inherited Clear;
+  inherited;
 end;
 
 constructor TGListObject.Create;
