@@ -12,7 +12,7 @@
 
   // TGListObject<TListObjectIndex, TListObjectItem> = class(TGList)
   TGListObject = class(TGList)
-  private
+  protected
     procedure Put(Index: TGListIndex; const AValue: TGListItem); override;
     procedure SetCount(const AValue: TGListIndex); override;
   public
