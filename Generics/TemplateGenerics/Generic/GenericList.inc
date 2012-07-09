@@ -291,8 +291,8 @@ function TGList.IndexOf(Item: TGListItem; Start: TGListIndex): TGListIndex;
 begin
   Result := Start;
   while (Result < FCount) and
-  not CompareMem(@FItems[Result], @Item, SizeOf(TGListItem)) do
-//  not (CompareByte(FItems[Result], Item, SizeOf(TGListItem)) = 0) do
+//  not CompareMem(@FItems[Result], @Item, SizeOf(TGListItem)) do
+  not (CompareByte(FItems[Result], Item, SizeOf(TGListItem)) = 0) do
     Result := Result + 1;
   if Result = FCount then Result := -1;
 end;
@@ -453,7 +453,8 @@ function TGList.Remove(Item: TGListItem): TGListIndex;
 begin
   Result := IndexOf(Item);
   if Result <> -1 then
-    Delete(Result);
+    Delete(Result)
+    else raise Exception.CreateFmt(SItemNotFound, [0]);
 end;
 
 function TGList.EqualTo(List: TGList): Boolean;
