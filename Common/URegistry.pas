@@ -8,6 +8,13 @@ uses
   Classes, Registry;
 
 type
+  TRegistryRoot = (rrKeyClassesRoot = HKEY($80000000),
+    rrKeyCurrentUser = HKEY($80000001),
+    rrKeyLocalMachine = HKEY($80000002),
+    rrKeyUsers = HKEY($80000003),
+    rrKeyPerformanceData = HKEY($80000004),
+    rrKeyCurrentConfig = HKEY($80000005),
+    rrKeyDynData = HKEY($80000006));
 
   { TRegistryEx }
 

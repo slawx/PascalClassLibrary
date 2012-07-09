@@ -124,13 +124,14 @@ end;
 destructor TCommThread.Destroy;
 begin
   Active := False;
-  FInputBuffer.Free;
-  FInputBufferLock.Free;
-  Ext.Free;
-  Pin.Free;
-  FStatusEvent.Free;
-  FDataAvailable.Free;
-  inherited Destroy;
+  FInputBufferLock.Acquire;
+  FreeAndNil(FInputBuffer);
+  FreeAndNil(FInputBufferLock);
+  FreeAndNil(Ext);
+  FreeAndNil(Pin);
+  FreeAndNil(FStatusEvent);
+  FreeAndNil(FDataAvailable);
+  inherited;
 end;
 
 { TCommThreadReceiveThread }

@@ -39,6 +39,7 @@ type
     procedure ReadVarStream(AStream: TStream);
     function GetVarSize: Integer;
     function GetVarCount: Integer;
+    function TryVarBlock: Boolean;
 
     // Advanced data types
     procedure WriteVarSInt(Value: Int64);
@@ -447,6 +448,31 @@ begin
     Inc(Result);
   end;
   Stream.Position := StoredPosition;
+end;
+
+function TVarBlockSerializer.TryVarBlock: Boolean;
+var
+  Data: Byte;
+  StoredPosition: Integer;
+  Count: Integer;
+begin
+  if Stream.Position < Stream.Size then
+  try
+    StoredPosition := Stream.Position;
+    Data := Stream.ReadByte;
+    if Data = $ff then begin
+      if TryVarBlock then begin
+        Count := ReadVarUInt;
+        Result := Count <= Stream.Size - Stream.Position;
+      end else Result := False;
+    end else begin
+      Count := DecodeUnaryLength(Data) - 1;
+      Result := Count <= Stream.Size - Stream.Position;
+    end;
+    Stream.Position := StoredPosition;
+  except
+    raise Exception.Create(SErrorGetVarSize);
+  end else Result := False;
 end;
 
 procedure TVarBlockSerializer.WriteVarSInt(Value: Int64);

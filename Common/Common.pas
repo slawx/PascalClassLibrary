@@ -9,7 +9,7 @@ interface
 uses
   StopWatch, UCommon, UDebugLog, UDelay, UPrefixMultiplier, UURI, UThreading, 
   UMemory, UResetableThread, UPool, ULastOpenedList, URegistry, 
-  UJobProgressView, UXMLUtils, LazarusPackageIntf;
+  UJobProgressView, UXMLUtils, UApplicationInfo, LazarusPackageIntf;
 
 implementation
 
@@ -18,6 +18,7 @@ begin
   RegisterUnit('UDebugLog', @UDebugLog.Register);
   RegisterUnit('ULastOpenedList', @ULastOpenedList.Register);
   RegisterUnit('UJobProgressView', @UJobProgressView.Register);
+  RegisterUnit('UApplicationInfo', @UApplicationInfo.Register);
 end;
 
 initialization

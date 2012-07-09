@@ -21,7 +21,7 @@
     <Description Value="Various libraries"/>
     <License Value="GNU/GPL"/>
     <Version Minor="7"/>
-    <Files Count="14">
+    <Files Count="15">
       <Item1>
         <Filename Value="StopWatch.pas"/>
         <UnitName Value="StopWatch"/>
@@ -81,6 +81,11 @@
         <Filename Value="UXMLUtils.pas"/>
         <UnitName Value="UXMLUtils"/>
       </Item14>
+      <Item15>
+        <Filename Value="UApplicationInfo.pas"/>
+        <HasRegisterProc Value="True"/>
+        <UnitName Value="UApplicationInfo"/>
+      </Item15>
     </Files>
     <i18n>
       <EnableI18N Value="True"/>

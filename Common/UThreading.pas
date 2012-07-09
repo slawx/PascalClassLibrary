@@ -302,6 +302,7 @@ const
 var
   I: Integer;
 begin
+  if Terminated then Exit;
   SysUtils.Sleep(Delay mod Quantum);
   for I := 1 to (Delay div Quantum) do begin
     if Terminated then Break;
