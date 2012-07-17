@@ -21,7 +21,7 @@
     <Description Value="Various libraries"/>
     <License Value="GNU/GPL"/>
     <Version Minor="7"/>
-    <Files Count="15">
+    <Files Count="14">
       <Item1>
         <Filename Value="StopWatch.pas"/>
         <UnitName Value="StopWatch"/>
@@ -69,37 +69,36 @@
         <UnitName Value="ULastOpenedList"/>
       </Item11>
       <Item12>
-        <Filename Value="URegistry.pas"/>
-        <UnitName Value="URegistry"/>
-      </Item12>
-      <Item13>
         <Filename Value="UJobProgressView.pas"/>
         <HasRegisterProc Value="True"/>
         <UnitName Value="UJobProgressView"/>
-      </Item13>
-      <Item14>
+      </Item12>
+      <Item13>
         <Filename Value="UXMLUtils.pas"/>
         <UnitName Value="UXMLUtils"/>
-      </Item14>
-      <Item15>
+      </Item13>
+      <Item14>
         <Filename Value="UApplicationInfo.pas"/>
         <HasRegisterProc Value="True"/>
         <UnitName Value="UApplicationInfo"/>
-      </Item15>
+      </Item14>
     </Files>
     <i18n>
       <EnableI18N Value="True"/>
       <OutDir Value="Languages"/>
     </i18n>
     <Type Value="RunAndDesignTime"/>
-    <RequiredPkgs Count="2">
+    <RequiredPkgs Count="3">
       <Item1>
-        <PackageName Value="TemplateGenerics"/>
+        <PackageName Value="RegistryPkg"/>
       </Item1>
       <Item2>
+        <PackageName Value="TemplateGenerics"/>
+      </Item2>
+      <Item3>
         <PackageName Value="FCL"/>
         <MinVersion Major="1" Valid="True"/>
-      </Item2>
+      </Item3>
     </RequiredPkgs>
     <UsageOptions>
       <UnitPath Value="$(PkgOutDir)"/>
@@ -111,4 +110,4 @@
       <_ExternHelp Items="Count"/>
     </CustomOptions>
   </Package>
-</CONFIG>
+</CONFIG>

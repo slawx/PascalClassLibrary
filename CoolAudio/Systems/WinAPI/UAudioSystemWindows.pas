@@ -64,6 +64,8 @@ resourcestring
 
 implementation
 
+{$IFDEF Windows}
+
 { TAudioSystemWindows }
 
 function TAudioSystemWindows.GetMediaPlayerDriverClass: TMediaPlayerDriverClass;
@@ -71,7 +73,6 @@ begin
   Result := TPlayerWindows;
 end;
 
-{$IFDEF Windows}
 
 { TPlayerWindows }
 
@@ -302,4 +303,4 @@ end;
 {$ENDIF}
 
 end.
-
+

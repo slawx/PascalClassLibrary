@@ -5,7 +5,7 @@ unit UPDClientMemory;
 interface
 
 uses
-  Classes, SysUtils, UPDClient, SpecializedDictionary, SpecializedList;
+  Classes, SysUtils, UPDClient, SpecializedList;
 
 type
 

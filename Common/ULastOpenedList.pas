@@ -5,7 +5,7 @@ unit ULastOpenedList;
 interface
 
 uses
-  Classes, SysUtils, Registry, URegistry, Menus;
+  Classes, SysUtils, Registry2, URegistry, Menus;
 
 type
 
@@ -138,4 +138,4 @@ begin
 end;
 
 end.
-
+

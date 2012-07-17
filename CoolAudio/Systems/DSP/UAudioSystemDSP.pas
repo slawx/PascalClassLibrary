@@ -29,7 +29,7 @@ type
 
   { TPlayerDSP }
 
-  TPlayerDSP = class(TPlayer)
+  TPlayerDSP = class(TMediaPlayerDriver)
   private
     FTimer: TTimer;
     procedure TimerExecute(Sender: TObject);
@@ -40,7 +40,7 @@ type
     procedure Stop; override;
     procedure Open; override;
     procedure Close; override;
-    constructor Create(AOwner: TComponent); override;
+    constructor Create; override;
     destructor Destroy; override;
   end;
 
@@ -179,7 +179,7 @@ begin
   inherited Close;
 end;
 
-constructor TPlayerDSP.Create(AOwner: TComponent);
+constructor TPlayerDSP.Create;
 begin
   inherited;
   WavFile := TWAVFile.Create;
@@ -195,4 +195,4 @@ end;
 
 {$ENDIF}
 
-end.
+end.

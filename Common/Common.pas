@@ -8,8 +8,8 @@ interface
 
 uses
   StopWatch, UCommon, UDebugLog, UDelay, UPrefixMultiplier, UURI, UThreading, 
-  UMemory, UResetableThread, UPool, ULastOpenedList, URegistry, 
-  UJobProgressView, UXMLUtils, UApplicationInfo, LazarusPackageIntf;
+  UMemory, UResetableThread, UPool, ULastOpenedList, UJobProgressView, 
+  UXMLUtils, UApplicationInfo, LazarusPackageIntf;
 
 implementation
 

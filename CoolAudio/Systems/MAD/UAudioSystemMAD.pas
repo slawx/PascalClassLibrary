@@ -17,7 +17,7 @@ type
 
   { TPlayerMAD }
 
-  TPlayerMAD = class(TPlayer)
+  TPlayerMAD = class(TMediaPlayerDriver)
   public
     procedure Play; override;
     procedure Pause; override;
@@ -58,4 +58,4 @@ end;
 {$ENDIF}
 
 end.
-
+
