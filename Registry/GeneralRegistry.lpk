@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <CONFIG>
   <Package Version="4">
-    <Name Value="RegistryPkg"/>
+    <Name Value="GeneralRegistry"/>
     <CompilerOptions>
       <Version Value="11"/>
       <SearchPaths>
@@ -14,7 +14,7 @@
         <CompilerPath Value="$(CompPath)"/>
       </Other>
     </CompilerOptions>
-    <Files Count="7">
+    <Files Count="8">
       <Item1>
         <Filename Value="Registry2.pas"/>
         <Type Value="Text"/>
@@ -40,10 +40,10 @@
         <Filename Value="xregreg.inc"/>
         <Type Value="Include"/>
       </Item6>
-      <Item7>
-        <Filename Value="URegistry.pas"/>
-        <UnitName Value="URegistry"/>
-      </Item7>
+      <Item8>
+        <Filename Value="UGeneralRegistry.pas"/>
+        <UnitName Value="UGeneralRegistry"/>
+      </Item8>
     </Files>
     <Type Value="RunAndDesignTime"/>
     <RequiredPkgs Count="1">
