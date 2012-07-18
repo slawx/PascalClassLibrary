@@ -5,6 +5,7 @@ unit UAudioSystemFMOD;
 
 interface
 
+{$UNDEF AudioSystemFMOD}
 {$IFDEF AudioSystemFMOD}
 uses
   Classes, SysUtils, fmoddyn, fmodtypes, UAudioSystem, DateUtils;

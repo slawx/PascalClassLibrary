@@ -62,6 +62,7 @@ type
 resourcestring
   SMCIUnknownError = 'Unknown error code';
 
+
 implementation
 
 {$IFDEF Windows}

@@ -2,7 +2,9 @@
   {$DEFINE AudioSystemDSP}
   {$DEFINE AudioSystemMAD}
 {$ENDIF}
-{$DEFINE AudioSystemFMOD}
+{$IFDEF i386}
+  {$DEFINE AudioSystemFMOD}
+{$ENDIF}
 {$DEFINE AudioSystemMPlayer}
 {$IFDEF Windows}
   {$DEFINE AudioSystemWindows}

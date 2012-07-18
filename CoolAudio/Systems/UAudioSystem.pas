@@ -85,6 +85,8 @@ type
     procedure SetVolume(AValue: Real);
   public
     Driver: TMediaPlayerDriver;
+    constructor Create(AOwner: TComponent); override;
+    destructor Destroy; override;
     procedure Play;
     procedure Pause;
     procedure Stop;
@@ -99,8 +101,6 @@ type
     property AudioSystem: TAudioSystem read GetAudioSystem write SetAudioSystem;
     property FileName: string read GetFileName write SetFileName;
     property Active: Boolean read GetActive write SetActive;
-    constructor Create(AOwner: TComponent); override;
-    destructor Destroy; override;
   end;
 
   TPlayerClass = class of TMediaPlayerDriver;
@@ -116,6 +116,7 @@ type
   { TAudioSystemManager }
 
   TAudioSystemManager = class(TComponent)
+  public
     Systems: TObjectList; // TListObject<TAudioSystem>
     procedure Register(Name: string; SystemClass: TAudioSystemClass);
     procedure FillStringList(StringList: TStrings);

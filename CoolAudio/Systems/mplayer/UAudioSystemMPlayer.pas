@@ -22,7 +22,7 @@ type
   { TAudioSystemMPlayer }
 
   TAudioSystemMPlayer = class(TAudioSystem)
-  private
+  protected
     FPath: string;
     procedure SetOutputMode(AValue: TOutputDriver); override;
   public
@@ -36,7 +36,7 @@ type
   { TPlayerMPlayer }
 
   TPlayerMPlayer = class(TMediaPlayerDriver)
-  private
+  protected
     FProcess: TProcess;
     FVolume: Real;
     function GetProcessOutput: string;
