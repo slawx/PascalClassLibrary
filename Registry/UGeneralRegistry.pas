@@ -5,7 +5,10 @@ unit UGeneralRegistry;
 interface
 
 uses
-  Classes, SysUtils, IniFiles, WinRegistry;
+  Classes, SysUtils, IniFiles, XMLRead, XMLWrite, DOM
+  {$IFDEF Windows}
+  , WinRegistry
+  {$ENDIF};
 
 type
   TRegistryRoot = (rrUnknown, rrApplicationUser, rrApplicationGlobal,
@@ -110,7 +113,10 @@ type
   { TXMLRegistry }
 
   TXMLRegistry = class(TBaseRegistry)
+    XMLDocument: TXMLDocument;
     function OpenKey(const Key: string; CreateNew: Boolean): Boolean; override;
+    constructor Create;
+    destructor Destroy; override;
   end;
 
   { TIniRegistry }
@@ -123,6 +129,8 @@ type
 
   TMemoryRegistry = class(TBaseRegistry)
   end;
+
+  {$IFDEF Windows}
 
   { TWinRegistry }
 
@@ -158,6 +166,7 @@ type
     constructor Create;
     destructor Destroy; override;
   end;
+  {$ENDIF}
 
 procedure Register;
 
@@ -174,6 +183,7 @@ end;
 
 { TBaseRegistry }
 
+{$IFDEF Windows}
 { TWinRegistry }
 
 procedure TWinRegistry.SetCurrentKey(const AValue: string);
@@ -334,9 +344,7 @@ begin
   Registry.Free;
   inherited Destroy;
 end;
-
-
-{ TBaseRegistry }
+{$ENDIF}
 
 { TIniRegistry }
 
@@ -356,6 +364,17 @@ end;
 function TXMLRegistry.OpenKey(const Key: string; CreateNew: Boolean): Boolean;
 begin
 
+end;
+
+constructor TXMLRegistry.Create;
+begin
+  XMLDocument := TXMLDocument.Create;
+end;
+
+destructor TXMLRegistry.Destroy;
+begin
+  XMLDocument.Free;
+  inherited Destroy;
 end;
 
 { TGeneralRegistry }
@@ -554,4 +573,4 @@ begin
 end;
 
 end.
-
+
