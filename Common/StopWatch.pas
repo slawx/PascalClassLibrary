@@ -21,14 +21,14 @@ type
     function GetElapsedMiliseconds: TLargeInteger;
     function GetElapsed: string;
   public
-    constructor Create(const startOnCreate : Boolean = False) ;
+    constructor Create(const startOnCreate: Boolean = False) ;
     procedure Start;
     procedure Stop;
-    property IsHighResolution : Boolean read fIsHighResolution;
-    property ElapsedTicks : TLargeInteger read GetElapsedTicks;
-    property ElapsedMiliseconds : TLargeInteger read GetElapsedMiliseconds;
-    property Elapsed : string read GetElapsed;
-    property IsRunning : Boolean read fIsRunning;
+    property IsHighResolution: Boolean read fIsHighResolution;
+    property ElapsedTicks: TLargeInteger read GetElapsedTicks;
+    property ElapsedMiliseconds: TLargeInteger read GetElapsedMiliseconds;
+    property Elapsed: string read GetElapsed;
+    property IsRunning: Boolean read fIsRunning;
   end;
 
 implementation
@@ -90,4 +90,4 @@ begin
   fIsRunning := False;
 end;
 
-end.
+end.

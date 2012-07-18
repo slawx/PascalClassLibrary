@@ -5,9 +5,12 @@ unit UGeneralRegistry;
 interface
 
 uses
-  Classes, SysUtils, IniFiles;
+  Classes, SysUtils, IniFiles, WinRegistry;
 
 type
+  TRegistryRoot = (rrUnknown, rrApplicationUser, rrApplicationGlobal,
+    rrSystemUser, rrSystemGlobal);
+
   TRegKeyInfo = record
     NumberSubKeys: Integer;
     MaxSubKeyLength: Integer;
@@ -29,15 +32,15 @@ type
 
   TBaseRegistry = class
   private
-    procedure SetCurrentKey(const AValue: string);
-    procedure SetCurrentRoot(const AValue: string);
   protected
-    FCurrentRoot: string;
+    FCurrentRoot: NativeInt;
     FCurrentKey: string;
+    procedure SetCurrentKey(const AValue: string); virtual; abstract;
+    procedure SetCurrentRoot(const AValue: NativeInt); virtual; abstract;
   public
     function KeyExists(const Name: string): Boolean; virtual; abstract;
     function ValueExists(const Name: string): Boolean; virtual; abstract;
-    procedure OpenKey(const Key: string; CreateNew: Boolean); virtual; abstract;
+    function OpenKey(const Key: string; CreateNew: Boolean): Boolean; virtual; abstract;
     procedure CloseKey; virtual; abstract;
     function DeleteKey(const Name: string; Recursive: Boolean = False): Boolean; virtual; abstract;
     function DeleteValue(const Name: string): Boolean; virtual; abstract;
@@ -54,7 +57,10 @@ type
     procedure WriteInteger(const Name: string; Value: Integer); virtual; abstract;
     procedure WriteString(const Name: string; Value: string); virtual; abstract;
     procedure WriteBinaryData(const Name: string; var Buffer; BufSize: Integer); virtual; abstract;
-    property CurrentRoot: string read FCurrentRoot write SetCurrentRoot;
+    function HasSubKeys: Boolean; virtual; abstract;
+    procedure GetKeyNames(Strings: TStrings); virtual; abstract;
+    procedure GetValueNames(Strings: TStrings); virtual; abstract;
+    property CurrentRoot: NativeInt read FCurrentRoot write SetCurrentRoot;
     property CurrentKey: string read FCurrentKey write SetCurrentKey;
   end;
 
@@ -67,10 +73,10 @@ type
     FBackend: TBaseRegistry;
     procedure CheckBackend; inline;
     function GetCurrentKey: string;
-    function GetCurrentRoot: string;
+    function GetCurrentRoot: NativeInt;
     procedure SetBackend(const AValue: TBaseRegistry);
     procedure SetCurrentKey(const AValue: string);
-    procedure SetCurrentRoot(const AValue: string);
+    procedure SetCurrentRoot(const AValue: NativeInt);
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -80,7 +86,7 @@ type
     function DeleteKey(const Name: string; Recursive: Boolean = False): Boolean;
     function DeleteValue(const Name: string): Boolean;
     function RenameValue(const OldName, NewName: string): Boolean;
-    procedure OpenKey(const Key: string; CreateNew: Boolean);
+    function OpenKey(const Key: string; CreateNew: Boolean): Boolean;
     function ReadBool(const Name: string): Boolean;
     function ReadDateTime(const Name: string): TDateTime;
     function ReadFloat(const Name: string): Double;
@@ -93,15 +99,18 @@ type
     procedure WriteInteger(const Name: string; Value: Integer);
     procedure WriteString(const Name: string; Value: string);
     procedure WriteBinaryData(const Name: string; var Buffer; BufSize: Integer);
+    function HasSubKeys: Boolean;
+    procedure GetKeyNames(Strings: TStrings);
+    procedure GetValueNames(Strings: TStrings);
     property Backend: TBaseRegistry read FBackend write SetBackend;
-    property CurrentRoot: string read GetCurrentRoot write SetCurrentRoot;
+    property CurrentRoot: NativeInt read GetCurrentRoot write SetCurrentRoot;
     property CurrentKey: string read GetCurrentKey write SetCurrentKey;
   end;
 
   { TXMLRegistry }
 
   TXMLRegistry = class(TBaseRegistry)
-    procedure OpenKey(const Key: string; CreateNew: Boolean); override;
+    function OpenKey(const Key: string; CreateNew: Boolean): Boolean; override;
   end;
 
   { TIniRegistry }
@@ -115,8 +124,39 @@ type
   TMemoryRegistry = class(TBaseRegistry)
   end;
 
-  TWinRegistry = class(TBaseRegistry)
+  { TWinRegistry }
 
+  TWinRegistry = class(TBaseRegistry)
+  protected
+    procedure SetCurrentKey(const AValue: string); override;
+    procedure SetCurrentRoot(const AValue: NativeInt); override;
+  public
+    BasePath: string;
+    Registry: TRegistry;
+    function KeyExists(const Name: string): Boolean; override;
+    function ValueExists(const Name: string): Boolean; override;
+    function OpenKey(const Key: string; CreateNew: Boolean): Boolean; override;
+    procedure CloseKey; override;
+    function DeleteKey(const Name: string; Recursive: Boolean = False): Boolean; override;
+    function DeleteValue(const Name: string): Boolean; override;
+    function RenameValue(const OldName, NewName: string): Boolean; override;
+    function ReadBool(const Name: string): Boolean; override;
+    function ReadDateTime(const Name: string): TDateTime; override;
+    function ReadFloat(const Name: string): Double; override;
+    function ReadInteger(const Name: string): Integer; override;
+    function ReadString(const Name: string): string; override;
+    function ReadBinaryData(const Name: string; var Buffer; BufSize: Integer): Integer; override;
+    procedure WriteBool(const Name: string; Value: Boolean); override;
+    procedure WriteDateTime(const Name: string; Value: TDateTime); override;
+    procedure WriteFloat(const Name: string; Value: Double); override;
+    procedure WriteInteger(const Name: string; Value: Integer); override;
+    procedure WriteString(const Name: string; Value: string); override;
+    procedure WriteBinaryData(const Name: string; var Buffer; BufSize: Integer); override;
+    function HasSubKeys: Boolean; override;
+    procedure GetKeyNames(Strings: TStrings); override;
+    procedure GetValueNames(Strings: TStrings); override;
+    constructor Create;
+    destructor Destroy; override;
   end;
 
 procedure Register;
@@ -132,17 +172,169 @@ begin
   RegisterComponents('Samples', [TGeneralRegistry]);
 end;
 
-procedure TBaseRegistry.SetCurrentKey(const AValue: string);
+{ TBaseRegistry }
+
+{ TWinRegistry }
+
+procedure TWinRegistry.SetCurrentKey(const AValue: string);
 begin
-  if FCurrentKey=AValue then Exit;
-  FCurrentKey:=AValue;
+  if FCurrentKey = AValue then Exit;
+  OpenKey(AValue, False);
 end;
 
-procedure TBaseRegistry.SetCurrentRoot(const AValue: string);
+procedure TWinRegistry.SetCurrentRoot(const AValue: NativeInt);
 begin
-  if FCurrentRoot=AValue then Exit;
-  FCurrentRoot:=AValue;
+  if FCurrentRoot = AValue then Exit;
+  FCurrentRoot := AValue;
+  if AValue = Integer(rrApplicationUser) then begin
+    Registry.RootKey := HKEY_CURRENT_USER;
+    BasePath := '\Software\Company\Product';
+  end;
+  if AValue = Integer(rrApplicationGlobal) then begin
+    Registry.RootKey := HKEY_LOCAL_MACHINE;
+    BasePath := '\Software\Company\Product';
+  end;
 end;
+
+function TWinRegistry.KeyExists(const Name: string): Boolean;
+begin
+  Result := Registry.KeyExists(Name);
+end;
+
+function TWinRegistry.ValueExists(const Name: string): Boolean;
+begin
+  Result := Registry.ValueExists(Name);
+end;
+
+function TWinRegistry.OpenKey(const Key: string; CreateNew: Boolean): Boolean;
+begin
+  Result := Registry.OpenKey(Key, CreateNew);
+  FCurrentKey := Key;
+end;
+
+procedure TWinRegistry.CloseKey;
+begin
+  Registry.CloseKey;
+end;
+
+function TWinRegistry.DeleteKey(const Name: string; Recursive: Boolean
+  ): Boolean;
+var
+  SubKeys: TStringList;
+  I: Integer;
+begin
+  try
+    SubKeys := TStringList.Create;
+    if Recursive and OpenKey(Name, False) and HasSubKeys then begin
+      GetKeyNames(SubKeys);
+      for I := 0 to SubKeys.Count - 1 do
+        DeleteKey(Name + '\' + SubKeys[I], True);
+    end;
+    Result := Registry.DeleteKey(Name);
+  finally
+    SubKeys.Free;
+  end;
+end;
+
+function TWinRegistry.DeleteValue(const Name: string): Boolean;
+begin
+  Result := Registry.DeleteValue(Name);
+end;
+
+function TWinRegistry.RenameValue(const OldName, NewName: string): Boolean;
+begin
+  Result := True;
+  Registry.RenameValue(OldName, NewName);
+end;
+
+function TWinRegistry.ReadBool(const Name: string): Boolean;
+begin
+  Result := Registry.ReadBool(Name);
+end;
+
+function TWinRegistry.ReadDateTime(const Name: string): TDateTime;
+begin
+  Result := Registry.ReadDateTime(Name);
+end;
+
+function TWinRegistry.ReadFloat(const Name: string): Double;
+begin
+  Result := Registry.ReadFloat(Name);
+end;
+
+function TWinRegistry.ReadInteger(const Name: string): Integer;
+begin
+  Result := Registry.ReadInteger(Name);
+end;
+
+function TWinRegistry.ReadString(const Name: string): string;
+begin
+  Result := Registry.ReadString(Name);
+end;
+
+function TWinRegistry.ReadBinaryData(const Name: string; var Buffer;
+  BufSize: Integer): Integer;
+begin
+  Result := Registry.ReadBinaryData(Name, Buffer, BufSize);
+end;
+
+procedure TWinRegistry.WriteBool(const Name: string; Value: Boolean);
+begin
+  Registry.WriteBool(Name, Value);
+end;
+
+procedure TWinRegistry.WriteDateTime(const Name: string; Value: TDateTime);
+begin
+  Registry.WriteDateTime(Name, Value);
+end;
+
+procedure TWinRegistry.WriteFloat(const Name: string; Value: Double);
+begin
+  Registry.WriteFloat(Name, Value);
+end;
+
+procedure TWinRegistry.WriteInteger(const Name: string; Value: Integer);
+begin
+  Registry.WriteInteger(Name, Value);
+end;
+
+procedure TWinRegistry.WriteString(const Name: string; Value: string);
+begin
+  Registry.WriteString(Name, Value);
+end;
+
+procedure TWinRegistry.WriteBinaryData(const Name: string; var Buffer;
+  BufSize: Integer);
+begin
+  Registry.WriteBinaryData(Name, Buffer, BufSize);
+end;
+
+function TWinRegistry.HasSubKeys: Boolean;
+begin
+  Result := Registry.HasSubKeys;
+end;
+
+procedure TWinRegistry.GetKeyNames(Strings: TStrings);
+begin
+  Registry.GetKeyNames(Strings);
+end;
+
+procedure TWinRegistry.GetValueNames(Strings: TStrings);
+begin
+  Registry.GetValueNames(Strings);
+end;
+
+constructor TWinRegistry.Create;
+begin
+  Registry := TRegistry.Create;
+end;
+
+destructor TWinRegistry.Destroy;
+begin
+  Registry.Free;
+  inherited Destroy;
+end;
+
 
 { TBaseRegistry }
 
@@ -161,7 +353,7 @@ end;
 
 { TXMLRegistry }
 
-procedure TXMLRegistry.OpenKey(const Key: string; CreateNew: Boolean);
+function TXMLRegistry.OpenKey(const Key: string; CreateNew: Boolean): Boolean;
 begin
 
 end;
@@ -180,7 +372,7 @@ begin
   Result := Backend.CurrentKey;
 end;
 
-function TGeneralRegistry.GetCurrentRoot: string;
+function TGeneralRegistry.GetCurrentRoot: NativeInt;
 begin
   CheckBackend;
   Result := Backend.CurrentRoot;
@@ -199,10 +391,10 @@ begin
   Backend.CurrentKey := AValue;
 end;
 
-procedure TGeneralRegistry.SetCurrentRoot(const AValue: string);
+procedure TGeneralRegistry.SetCurrentRoot(const AValue: NativeInt);
 begin
   CheckBackend;
-  Backend.CurrentKey := AValue;
+  Backend.CurrentRoot := AValue;
 end;
 
 procedure TGeneralRegistry.CloseKey;
@@ -241,10 +433,10 @@ begin
   Result := Backend.DeleteKey(Name, Recursive);
 end;
 
-procedure TGeneralRegistry.OpenKey(const Key: string; CreateNew: Boolean);
+function TGeneralRegistry.OpenKey(const Key: string; CreateNew: Boolean): Boolean;
 begin
   CheckBackend;
-  Backend.OpenKey(Key, CreateNew);
+  Result := Backend.OpenKey(Key, CreateNew);
 end;
 
 function TGeneralRegistry.ReadBool(const Name: string): Boolean;
@@ -268,7 +460,7 @@ end;
 function TGeneralRegistry.ReadInteger(const Name: string): Integer;
 begin
   CheckBackend;
-  Result := ReadInteger(Name);
+  Result := Backend.ReadInteger(Name);
 end;
 
 function TGeneralRegistry.ReadString(const Name: string): string;
@@ -319,6 +511,24 @@ procedure TGeneralRegistry.WriteBinaryData(const Name: string; var Buffer;
 begin
   CheckBackend;
   Backend.WriteBinaryData(Name, Buffer, BufSize);
+end;
+
+function TGeneralRegistry.HasSubKeys: Boolean;
+begin
+  CheckBackend;
+  Result := Backend.HasSubKeys;
+end;
+
+procedure TGeneralRegistry.GetKeyNames(Strings: TStrings);
+begin
+  CheckBackend;
+  Backend.GetKeyNames(Strings);
+end;
+
+procedure TGeneralRegistry.GetValueNames(Strings: TStrings);
+begin
+  CheckBackend;
+  Backend.GetValueNames(Strings);
 end;
 
 constructor TGeneralRegistry.Create(AOwner: TComponent);

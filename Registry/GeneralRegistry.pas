@@ -7,12 +7,13 @@ unit GeneralRegistry;
 interface
 
 uses
-  xmlreg, UGeneralRegistry, LazarusPackageIntf;
+  UGeneralRegistry, LazarusPackageIntf;
 
 implementation
 
 procedure Register;
 begin
+  RegisterUnit('UGeneralRegistry', @UGeneralRegistry.Register);
 end;
 
 initialization

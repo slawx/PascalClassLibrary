@@ -90,7 +90,8 @@
     <Type Value="RunAndDesignTime"/>
     <RequiredPkgs Count="3">
       <Item1>
-        <PackageName Value="RegistryPkg"/>
+        <PackageName Value="GeneralRegistry"/>
+        <MinVersion Minor="1" Valid="True"/>
       </Item1>
       <Item2>
         <PackageName Value="TemplateGenerics"/>
@@ -110,4 +111,4 @@
       <_ExternHelp Items="Count"/>
     </CustomOptions>
   </Package>
-</CONFIG>
+</CONFIG>

@@ -2,6 +2,7 @@
 <CONFIG>
   <Package Version="4">
     <Name Value="GeneralRegistry"/>
+    <Author Value="Chronos (robie@centrum.cz)"/>
     <CompilerOptions>
       <Version Value="11"/>
       <SearchPaths>
@@ -14,36 +15,20 @@
         <CompilerPath Value="$(CompPath)"/>
       </Other>
     </CompilerOptions>
-    <Files Count="8">
+    <Description Value="Generalized registry classes for multiplatform programming."/>
+    <License Value="LGPL"/>
+    <Version Minor="1"/>
+    <Files Count="3">
       <Item1>
-        <Filename Value="Registry2.pas"/>
+        <Filename Value="WinRegistry.pas"/>
         <Type Value="Text"/>
-        <UnitName Value="Registry2"/>
+        <UnitName Value="WinRegistry"/>
       </Item1>
-      <Item2>
-        <Filename Value="xmlreg.pp"/>
-        <UnitName Value="xmlreg"/>
-      </Item2>
       <Item3>
-        <Filename Value="regdef.inc"/>
-        <Type Value="Include"/>
-      </Item3>
-      <Item4>
-        <Filename Value="regini.inc"/>
-        <Type Value="Include"/>
-      </Item4>
-      <Item5>
-        <Filename Value="winreg.inc"/>
-        <Type Value="Include"/>
-      </Item5>
-      <Item6>
-        <Filename Value="xregreg.inc"/>
-        <Type Value="Include"/>
-      </Item6>
-      <Item8>
         <Filename Value="UGeneralRegistry.pas"/>
+        <HasRegisterProc Value="True"/>
         <UnitName Value="UGeneralRegistry"/>
-      </Item8>
+      </Item3>
     </Files>
     <Type Value="RunAndDesignTime"/>
     <RequiredPkgs Count="1">
