@@ -1,3 +1,5 @@
+// FPC windows registry implementation with removed linux xmlregistry imitation
+
 unit WinRegistry;
 
 {$mode objfpc}

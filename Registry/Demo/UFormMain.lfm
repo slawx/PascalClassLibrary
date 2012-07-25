@@ -1,0 +1,92 @@
+object FormMain: TFormMain
+  Left = 320
+  Height = 454
+  Top = 141
+  Width = 707
+  Caption = 'General registry editor'
+  ClientHeight = 435
+  ClientWidth = 707
+  Menu = MainMenu1
+  OnShow = FormShow
+  LCLVersion = '1.1'
+  object StatusBar1: TStatusBar
+    Left = 0
+    Height = 20
+    Top = 415
+    Width = 707
+    Panels = <>
+  end
+  object TreeView1: TTreeView
+    Left = 0
+    Height = 415
+    Top = 0
+    Width = 224
+    Align = alLeft
+    DefaultItemHeight = 16
+    TabOrder = 1
+  end
+  object Splitter1: TSplitter
+    Left = 224
+    Height = 415
+    Top = 0
+    Width = 5
+  end
+  object ListView1: TListView
+    Left = 229
+    Height = 415
+    Top = 0
+    Width = 478
+    Align = alClient
+    Columns = <    
+      item
+        Caption = 'Name'
+        Width = 150
+      end    
+      item
+        Caption = 'Type'
+        Width = 150
+      end    
+      item
+        Caption = 'Value'
+        Width = 100
+      end>
+    OwnerData = True
+    ReadOnly = True
+    RowSelect = True
+    TabOrder = 3
+    ViewStyle = vsReport
+    OnData = ListView1Data
+  end
+  object MainMenu1: TMainMenu
+    left = 128
+    top = 72
+    object MenuItem1: TMenuItem
+      Caption = 'File'
+      object MenuItem2: TMenuItem
+        Action = AImport
+      end
+      object MenuItem3: TMenuItem
+        Action = AExport
+      end
+    end
+  end
+  object ActionList1: TActionList
+    left = 128
+    top = 128
+    object AImport: TAction
+      Caption = 'Import'
+    end
+    object AExport: TAction
+      Caption = 'Export'
+    end
+    object AConnectionAdd: TAction
+      Caption = 'Add connection'
+    end
+    object AConnectionDelete: TAction
+      Caption = 'Delete connection'
+    end
+    object AConnectionModify: TAction
+      Caption = 'Modify connection'
+    end
+  end
+end

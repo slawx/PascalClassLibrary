@@ -1,0 +1,12 @@
+object Core: TCore
+  OnCreate = DataModuleCreate
+  OldCreateOrder = False
+  Height = 233
+  HorizontalOffset = 428
+  VerticalOffset = 172
+  Width = 275
+  object ActiveRegistry: TGeneralRegistry
+    left = 42
+    top = 113
+  end
+end

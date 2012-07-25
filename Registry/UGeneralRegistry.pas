@@ -24,11 +24,17 @@ type
     ModificationTime: TDateTime;
   end;
 
-  TRegValueType = (vtUnknown, vtInteger, vtString, vtBinary, vtFloat, vtBoolean);
+  TRegValueType = (vtUnknown, vtInteger, vtString, vtBinary, vtFloat, vtBoolean,
+    vtText);
 
   TRegValueInfo = record
     ValueType: TRegValueType;
     Size: Integer;
+  end;
+
+  TRegKey = record
+    Root: NativeInt;
+    Path: string;
   end;
 
   { TBaseRegistry }
@@ -43,6 +49,10 @@ type
   public
     function KeyExists(const Name: string): Boolean; virtual; abstract;
     function ValueExists(const Name: string): Boolean; virtual; abstract;
+    function GetKeyInfo(var Value: TRegKeyInfo): Boolean; virtual; abstract;
+    function GetValueInfo(const Name: string; var Value: TRegValueInfo): Boolean; virtual; abstract;
+    function GetValueType(const Name: string): TRegValueType; virtual; abstract;
+    function GetValueSize(const Name: string): Integer; virtual; abstract;
     function OpenKey(const Key: string; CreateNew: Boolean): Boolean; virtual; abstract;
     procedure CloseKey; virtual; abstract;
     function DeleteKey(const Name: string; Recursive: Boolean = False): Boolean; virtual; abstract;
@@ -89,6 +99,10 @@ type
     function DeleteKey(const Name: string; Recursive: Boolean = False): Boolean;
     function DeleteValue(const Name: string): Boolean;
     function RenameValue(const OldName, NewName: string): Boolean;
+    function GetKeyInfo(out Value: TRegKeyInfo): Boolean;
+    function GetValueInfo(const Name: string; out Value: TRegValueInfo): Boolean;
+    function GetValueType(const Name: string): TRegValueType;
+    function GetValueSize(const Name: string): Integer;
     function OpenKey(const Key: string; CreateNew: Boolean): Boolean;
     function ReadBool(const Name: string): Boolean;
     function ReadDateTime(const Name: string): TDateTime;
@@ -96,6 +110,11 @@ type
     function ReadInteger(const Name: string): Integer;
     function ReadString(const Name: string): string;
     function ReadBinaryData(const Name: string; var Buffer; BufSize: Integer): Integer;
+    function ReadBoolDefault(const Name: string; const DefaultValue: Boolean): Boolean;
+    function ReadDateTimeDefault(const Name: string; const DefaultValue: TDateTime): TDateTime;
+    function ReadFloatDefault(const Name: string; const DefaultValue: Double): Double;
+    function ReadIntegerDefault(const Name: string; const DefaultValue: Integer): Integer;
+    function ReadStringDefault(const Name: string; const DefaultValue: string): string;
     procedure WriteBool(const Name: string; Value: Boolean);
     procedure WriteDateTime(const Name: string; Value: TDateTime);
     procedure WriteFloat(const Name: string; Value: Double);
@@ -143,6 +162,10 @@ type
     Registry: TRegistry;
     function KeyExists(const Name: string): Boolean; override;
     function ValueExists(const Name: string): Boolean; override;
+    function GetKeyInfo(var Value: TRegKeyInfo): Boolean; override;
+    function GetValueInfo(const Name: string; var Value: TRegValueInfo): Boolean; override;
+    function GetValueType(const Name: string): TRegValueType; override;
+    function GetValueSize(const Name: string): Integer; override;
     function OpenKey(const Key: string; CreateNew: Boolean): Boolean; override;
     procedure CloseKey; override;
     function DeleteKey(const Name: string; Recursive: Boolean = False): Boolean; override;
@@ -167,6 +190,10 @@ type
     destructor Destroy; override;
   end;
   {$ENDIF}
+
+const
+  RegValueTypeName: array[TRegValueType] of string = ('Unknown', 'Integer', 'String',
+    'Binary', 'Float', 'Boolean', 'Text');
 
 procedure Register;
 
@@ -214,6 +241,52 @@ end;
 function TWinRegistry.ValueExists(const Name: string): Boolean;
 begin
   Result := Registry.ValueExists(Name);
+end;
+
+function TWinRegistry.GetKeyInfo(var Value: TRegKeyInfo): Boolean;
+var
+  KeyInfo: WinRegistry.TRegKeyInfo;
+begin
+  Result := Registry.GetKeyInfo(KeyInfo);
+  if Result then begin
+    Value.CreationTime := KeyInfo.FileTime;
+    Value.ModificationTime := KeyInfo.FileTime;
+    Value.MaxDataLength := KeyInfo.MaxDataLen;
+    Value.MaxSubKeyLength := KeyInfo.MaxSubKeyLen;
+    Value.MaxValueLength := KeyInfo.MaxValueLen;
+    Value.NumberSubKeys := KeyInfo.NumSubKeys;
+    Value.NumberValues := KeyInfo.NumValues;
+  end;
+end;
+
+function TWinRegistry.GetValueInfo(const Name: string; var Value: TRegValueInfo): Boolean;
+var
+  ValueInfo: WinRegistry.TRegDataInfo;
+begin
+  Result := Registry.GetDataInfo(Name, ValueInfo);
+  if Result then begin
+    Value.Size := ValueInfo.DataSize;
+    case ValueInfo.RegData of
+      rdUnknown: Value.ValueType := vtUnknown;
+      rdString: Value.ValueType := vtString;
+      rdExpandString: Value.ValueType := vtText;
+      rdBinary: Value.ValueType := vtBinary;
+      rdInteger: Value.ValueType := vtInteger;
+    end;
+  end;
+end;
+
+function TWinRegistry.GetValueType(const Name: string): TRegValueType;
+var
+  ValueInfo: TRegValueInfo;
+begin
+  if GetValueInfo(Name, ValueInfo) then
+    Result := ValueInfo.ValueType else Result := vtUnknown;
+end;
+
+function TWinRegistry.GetValueSize(const Name: string): Integer;
+begin
+  Result := Registry.GetDataSize(Name);
 end;
 
 function TWinRegistry.OpenKey(const Key: string; CreateNew: Boolean): Boolean;
@@ -446,6 +519,30 @@ begin
   Result := Backend.RenameValue(OldName, NewName);
 end;
 
+function TGeneralRegistry.GetKeyInfo(out Value: TRegKeyInfo): Boolean;
+begin
+  CheckBackend;
+  Result := Backend.GetKeyInfo(Value);
+end;
+
+function TGeneralRegistry.GetValueInfo(const Name: string; out Value: TRegValueInfo): Boolean;
+begin
+  CheckBackend;
+  Result := Backend.GetValueInfo(Name, Value);
+end;
+
+function TGeneralRegistry.GetValueType(const Name: string): TRegValueType;
+begin
+  CheckBackend;
+  Result := Backend.GetValueType(Name);
+end;
+
+function TGeneralRegistry.GetValueSize(const Name: string): Integer;
+begin
+  CheckBackend;
+  Result := Backend.GetValueSize(Name);
+end;
+
 function TGeneralRegistry.DeleteKey(const Name: string; Recursive: Boolean = False): Boolean;
 begin
   CheckBackend;
@@ -493,6 +590,41 @@ function TGeneralRegistry.ReadBinaryData(const Name: string; var Buffer;
 begin
   CheckBackend;
   Result := Backend.ReadBinaryData(Name, Buffer, BufSize);
+end;
+
+function TGeneralRegistry.ReadBoolDefault(const Name: string;
+  const DefaultValue: Boolean): Boolean;
+begin
+  if ValueExists(Name) then Result := ReadBool(Name)
+    else Result := DefaultValue;
+end;
+
+function TGeneralRegistry.ReadDateTimeDefault(const Name: string;
+  const DefaultValue: TDateTime): TDateTime;
+begin
+  if ValueExists(Name) then Result := ReadDateTime(Name)
+    else Result := DefaultValue;
+end;
+
+function TGeneralRegistry.ReadFloatDefault(const Name: string;
+  const DefaultValue: Double): Double;
+begin
+  if ValueExists(Name) then Result := ReadFloat(Name)
+    else Result := DefaultValue;
+end;
+
+function TGeneralRegistry.ReadIntegerDefault(const Name: string;
+  const DefaultValue: Integer): Integer;
+begin
+  if ValueExists(Name) then Result := ReadInteger(Name)
+    else Result := DefaultValue;
+end;
+
+function TGeneralRegistry.ReadStringDefault(const Name: string;
+  const DefaultValue: string): string;
+begin
+  if ValueExists(Name) then Result := ReadString(Name)
+    else Result := DefaultValue;
 end;
 
 procedure TGeneralRegistry.WriteBool(const Name: string; Value: Boolean);
@@ -573,4 +705,4 @@ begin
 end;
 
 end.
-
+
