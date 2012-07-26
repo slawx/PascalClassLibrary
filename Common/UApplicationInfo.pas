@@ -5,7 +5,7 @@ unit UApplicationInfo;
 interface
 
 uses
-  SysUtils, Classes, Forms, UGeneralRegistry;
+  SysUtils, Registry, Classes, Forms, URegistry;
 
 type
 
@@ -73,7 +73,7 @@ begin
   FIdentification := 1;
   FAppName := Application.Name;
   FRegistryKey := '\Software\' + FAppName;
-  FRegistryRoot := rrApplicationUser;
+  FRegistryRoot := rrKeyCurrentUser;
 end;
 
 end.

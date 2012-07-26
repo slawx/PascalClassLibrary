@@ -5,7 +5,7 @@ unit ULastOpenedList;
 interface
 
 uses
-  Classes, SysUtils, UGeneralRegistry, Menus;
+  Classes, SysUtils, Registry, URegistry, Menus;
 
 type
 
@@ -22,8 +22,8 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure LoadToMenuItem(MenuItem: TMenuItem; ClickAction: TNotifyEvent);
-    procedure LoadFromRegistry(Root: Integer; const Key: string);
-    procedure SaveToRegistry(Root: Integer; const Key: string);
+    procedure LoadFromRegistry(Root: HKEY; Key: string);
+    procedure SaveToRegistry(Root: HKEY; Key: string);
     procedure AddItem(FileName: string);
   published
     property MaxCount: Integer read FMaxCount write SetMaxCount;
@@ -86,23 +86,21 @@ begin
   end;
 end;
 
-procedure TLastOpenedList.LoadFromRegistry(Root: Integer; const Key: string);
+procedure TLastOpenedList.LoadFromRegistry(Root: HKEY; Key: string);
 var
   I: Integer;
-  Registry: TGeneralRegistry;
+  Registry: TRegistryEx;
   FileName: string;
 begin
-  Registry := TGeneralRegistry.Create(nil);
+  Registry := TRegistryEx.Create;
   with Registry do
   try
-    CurrentRoot := Root;
+    RootKey := Root;
     OpenKey(Key, True);
     Items.Clear;
     I := 0;
     while ValueExists('File' + IntToStr(I)) and (I < MaxCount) do begin
-      if ValueExists('File' + IntToStr(I)) then
-        FileName := UTF8Encode(ReadString('File' + IntToStr(I)))
-        else FileName := '';
+      FileName := UTF8Encode(ReadStringWithDefault('File' + IntToStr(I), ''));
       if Trim(FileName) <> '' then Items.Add(FileName);
       Inc(I);
     end;
@@ -113,15 +111,15 @@ begin
   end;
 end;
 
-procedure TLastOpenedList.SaveToRegistry(Root: Integer; const Key: string);
+procedure TLastOpenedList.SaveToRegistry(Root: HKEY; Key: string);
 var
   I: Integer;
-  Registry: TGeneralRegistry;
+  Registry: TRegistryEx;
 begin
-  Registry := TGeneralRegistry.Create(nil);
+  Registry := TRegistryEx.Create;
   with Registry do
   try
-    CurrentRoot := Root;
+    RootKey := Root;
     OpenKey(Key, True);
     for I := 0 to Items.Count - 1 do
       WriteString('File' + IntToStr(I), UTF8Decode(Items[I]));
