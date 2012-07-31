@@ -10,12 +10,17 @@ uses
 type
   TModuleManager = class;
 
+  TAPI = class
+
+  end;
+
   { TModule }
 
   TModule = class
   private
     FInstalled: Boolean;
     Manager: TModuleManager;
+    procedure SetInstalled(AValue: Boolean);
   public
     Version: string;
     Name: string;
@@ -24,6 +29,8 @@ type
     Author: string;
     Description: TStringList;
     License: string;
+    API: TAPI;
+    MarkForInstall: Boolean;
     procedure Install; virtual;
     procedure Uninstall; virtual;
     procedure Update; virtual;
@@ -31,21 +38,29 @@ type
     procedure EnumModulesUninstall(ModuleList: TStringList);
     constructor Create; virtual;
     destructor Destroy; override;
-    property Installed: Boolean read FInstalled;
+    property Installed: Boolean read FInstalled write SetInstalled;
   end;
 
   { TModuleManager }
 
-  TModuleManager = class
+  TModuleManager = class(TComponent)
+  private
+    FAPI: TAPI;
+    procedure SetAPI(AValue: TAPI);
+  public
     Modules: TObjectList; // TObjectList<TModule>
     function FindModuleByName(Name: string): TModule;
     procedure InstallDependencies(Dependencies: TStringList);
     procedure UninstallDependencies(ModuleName: string);
     procedure EnumModulesInstall(Dependencies, ModuleList: TStringList);
     procedure EnumModulesUninstall(ModuleName: string; ModuleList: TStringList);
-    procedure RegisterModule(Module: TModule);
-    constructor Create;
+    procedure RegisterModule(Module: TModule; MarkForInstall: Boolean = False);
+    procedure UnregisterModule(Module: TModule);
+    procedure InstallMarked;
+    procedure UninstallAll;
+    constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
+    property API: TAPI read FAPI write SetAPI;
   end;
 
 
@@ -55,6 +70,16 @@ resourcestring
   SModuleNotFound = 'Module %s not found';
 
 { TModuleManager }
+
+procedure TModuleManager.SetAPI(AValue: TAPI);
+var
+  I: Integer;
+begin
+  if FAPI = AValue then Exit;
+  FAPI := AValue;
+  for I := 0 to Modules.Count - 1 do
+    TModule(Modules[I]).API := FAPI;
+end;
 
 function TModuleManager.FindModuleByName(Name: string): TModule;
 var
@@ -121,15 +146,42 @@ begin
   end;
 end;
 
-procedure TModuleManager.RegisterModule(Module: TModule);
+procedure TModuleManager.RegisterModule(Module: TModule;
+  MarkForInstall: Boolean = False);
 begin
   Modules.Add(Module);
   Module.Manager := Self;
+  Module.API := API;
+  Module.MarkForInstall := MarkForInstall;
 end;
 
-constructor TModuleManager.Create;
+procedure TModuleManager.UnregisterModule(Module: TModule);
 begin
-  Modules := TObjectList.Create
+  Modules.Remove(Module);
+end;
+
+procedure TModuleManager.InstallMarked;
+var
+  I: Integer;
+begin
+  for I := 0 to Modules.Count - 1 do
+  with TModule(Modules[I]) do
+    if not Installed and MarkForInstall then Install;
+end;
+
+procedure TModuleManager.UninstallAll;
+var
+  I: Integer;
+begin
+  for I := 0 to Modules.Count - 1 do
+  with TModule(Modules[I]) do
+    if Installed then Uninstall;
+end;
+
+constructor TModuleManager.Create(AOwner: TComponent);
+begin
+  inherited;
+  Modules := TObjectList.Create;
 end;
 
 destructor TModuleManager.Destroy;
@@ -139,6 +191,12 @@ begin
 end;
 
 { TModule }
+
+procedure TModule.SetInstalled(AValue: Boolean);
+begin
+  if FInstalled = AValue then Exit;
+  if AValue then Install else Uninstall;
+end;
 
 procedure TModule.Install;
 begin
@@ -179,6 +237,7 @@ end;
 
 destructor TModule.Destroy;
 begin
+  Installed := False;
   Description.Free;
   Dependencies.Free;
   inherited Destroy;
