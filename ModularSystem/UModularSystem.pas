@@ -186,7 +186,9 @@ end;
 
 destructor TModuleManager.Destroy;
 begin
-  Modules.Free;
+  UninstallAll;
+  FreeAndNil(FAPI);
+  FreeAndNil(Modules);
   inherited Destroy;
 end;
 
