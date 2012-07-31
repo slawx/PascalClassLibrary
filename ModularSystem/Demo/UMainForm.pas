@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, ComCtrls,
-  StdCtrls, Menus, ActnList, UModularSystem, UModuleUser, UModuleBase;
+  StdCtrls, Menus, ActnList, UModularSystem;
 
 type
 
@@ -36,7 +36,7 @@ type
     procedure ListViewModulesSelectItem(Sender: TObject; Item: TListItem;
       Selected: Boolean);
   private
-    { private declarations }
+    procedure RegisterModules;
   public
     ModuleManager: TModuleManager;
     procedure RefreshList;
@@ -48,9 +48,14 @@ const
 var
   MainForm: TMainForm;
 
+
 implementation
 
 {$R *.lfm}
+
+uses
+  UModuleUser, UModuleBase, UModuleACL;
+
 
 { TMainForm }
 
@@ -58,11 +63,14 @@ procedure TMainForm.ListViewModulesData(Sender: TObject; Item: TListItem);
 begin
   if (Item.Index >= 0) and (Item.Index < ModuleManager.Modules.Count) then
   with TModule(ModuleManager.Modules[Item.Index]) do begin
-    Item.Caption := Name;
+    Item.Caption := Title;
     Item.Data := ModuleManager.Modules[Item.Index];
+    Item.SubItems.Add(Name);
     Item.SubItems.Add(Version);
     Item.SubItems.Add(InstalledText[Installed]);
-    Item.SubItems.Add(Dependencies.Text);
+    Item.SubItems.Add(License);
+    Item.SubItems.Add(StringReplace(Dependencies.Text, LineEnding, ', ', [rfReplaceAll]));
+    Item.SubItems.Add(StringReplace(Description.Text, LineEnding, ', ', [rfReplaceAll]));
   end;
 end;
 
@@ -77,6 +85,13 @@ begin
   AModuleUpdate.Enabled := Assigned(ListViewModules.Selected) and Installed;
 end;
 
+procedure TMainForm.RegisterModules;
+begin
+  ModuleManager.RegisterModule(TModuleUser.Create);
+  ModuleManager.RegisterModule(TModuleBase.Create);
+  ModuleManager.RegisterModule(TModuleACL.Create);
+end;
+
 procedure TMainForm.RefreshList;
 begin
   ListViewModules.Items.Count := ModuleManager.Modules.Count;
@@ -86,16 +101,9 @@ begin
 end;
 
 procedure TMainForm.FormCreate(Sender: TObject);
-var
-  UserModule: TModuleUser;
-  BaseModule: TModuleBase;
 begin
-  UserModule := TModuleUser.Create;
-  BaseModule := TModuleBase.Create;
-
   ModuleManager := TModuleManager.Create;
-  ModuleManager.RegisterModule(UserModule);
-  ModuleManager.RegisterModule(BaseModule);
+  RegisterModules;
 end;
 
 procedure TMainForm.ButtonInstallClick(Sender: TObject);
@@ -108,7 +116,8 @@ begin
       TModule(ListViewModules.Selected.Data).EnumModulesInstall(ModuleList);
       if ModuleList.Count > 0 then begin
         if MessageDlg('These modules will be installed in addition to ' +
-          TModule(ListViewModules.Selected.Data).Name + ': ' + ModuleList.Text,
+          TModule(ListViewModules.Selected.Data).Name + ': ' +
+          StringReplace(ModuleList.Text, LineEnding, ', ', [rfReplaceAll]),
           mtConfirmation, [mbYes, mbNo], 0) = mrYes then
            TModule(ListViewModules.Selected.Data).Install;
       end else TModule(ListViewModules.Selected.Data).Install;
@@ -129,7 +138,8 @@ begin
       TModule(ListViewModules.Selected.Data).EnumModulesUninstall(ModuleList);
       if ModuleList.Count > 0 then begin
         if MessageDlg('These modules will be uninstalled in addition to ' +
-          TModule(ListViewModules.Selected.Data).Name + ': ' + ModuleList.Text,
+          TModule(ListViewModules.Selected.Data).Name + ': ' +
+          StringReplace(ModuleList.Text, LineEnding, ', ', [rfReplaceAll]),
           mtConfirmation, [mbYes, mbNo], 0) = mrYes then
             TModule(ListViewModules.Selected.Data).Uninstall;
       end else TModule(ListViewModules.Selected.Data).Uninstall;
@@ -160,4 +170,4 @@ begin
 end;
 
 end.
-
+

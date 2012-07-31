@@ -1,24 +1,28 @@
 object MainForm: TMainForm
-  Left = 463
+  Left = 283
   Height = 316
   Top = 182
-  Width = 398
+  Width = 649
   Caption = 'Module test'
   ClientHeight = 316
-  ClientWidth = 398
+  ClientWidth = 649
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
-  LCLVersion = '0.9.31'
+  LCLVersion = '1.1'
   object ListViewModules: TListView
     Left = 8
     Height = 265
     Top = 8
-    Width = 381
+    Width = 632
     Anchors = [akTop, akLeft, akRight, akBottom]
     Columns = <    
       item
         Caption = 'Name'
+        Width = 70
+      end    
+      item
+        Caption = 'System name'
         Width = 70
       end    
       item
@@ -29,8 +33,16 @@ object MainForm: TMainForm
         Width = 80
       end    
       item
+        Caption = 'License'
+        Width = 70
+      end    
+      item
         Caption = 'Dependencies'
         Width = 162
+      end    
+      item
+        Caption = 'Description'
+        Width = 200
       end>
     OwnerData = True
     PopupMenu = PopupMenu1
@@ -96,4 +108,4 @@ object MainForm: TMainForm
       OnExecute = ButtonUpdateClick
     end
   end
-end
+end

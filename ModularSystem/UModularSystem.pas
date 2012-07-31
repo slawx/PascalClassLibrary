@@ -19,9 +19,11 @@ type
   public
     Version: string;
     Name: string;
+    Title: string;
     Dependencies: TStringList;
     Author: string;
-    Description: string;
+    Description: TStringList;
+    License: string;
     procedure Install; virtual;
     procedure Uninstall; virtual;
     procedure Update; virtual;
@@ -96,8 +98,10 @@ begin
   for I := 0 to Dependencies.Count - 1 do begin
     Module := FindModuleByName(Dependencies[I]);
     if Assigned(Module) then begin
-      if not Module.Installed and (ModuleList.IndexOf(Module.Name) = -1) then
+      if not Module.Installed and (ModuleList.IndexOf(Module.Name) = -1) then begin
         ModuleList.Add(Module.Name);
+        EnumModulesInstall(Module.Dependencies, ModuleList);
+      end;
     end else raise Exception.CreateFmt(SModuleNotFound, [Module.Name]);
   end;
 end;
@@ -110,8 +114,10 @@ begin
   for I := 0 to Modules.Count - 1 do
   with TModule(Modules[I]) do begin
     if (Dependencies.IndexOf(ModuleName) <> -1) and Installed and
-      (ModuleList.IndexOf(Name) = -1) then
+      (ModuleList.IndexOf(Name) = -1) then begin
       ModuleList.Add(Name);
+      Self.EnumModulesUninstall(Name, ModuleList);
+    end;
   end;
 end;
 
@@ -168,10 +174,12 @@ end;
 constructor TModule.Create;
 begin
   Dependencies := TStringList.Create;
+  Description := TStringList.Create;
 end;
 
 destructor TModule.Destroy;
 begin
+  Description.Free;
   Dependencies.Free;
   inherited Destroy;
 end;

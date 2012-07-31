@@ -1,4 +1,4 @@
-unit UModuleUser;
+unit UModuleACL;
 
 {$mode objfpc}{$H+}
 
@@ -8,29 +8,29 @@ uses
   Classes, SysUtils, UModularSystem;
 
 type
+  { TModuleACL }
 
-  { TModuleUser }
-
-  TModuleUser = class(TModule)
+  TModuleACL = class(TModule)
     constructor Create; override;
     destructor Destroy; override;
   end;
 
+
 implementation
 
-{ TModuleUser }
+{ TModuleACL }
 
-constructor TModuleUser.Create;
+constructor TModuleACL.Create;
 begin
   inherited;
-  Name := 'User';
-  Title := 'User';
+  Name := 'UserACL';
+  Title := 'User ACL';
   Version := '1.0';
   License := 'GNU/LGPLv3';
-  Dependencies.Add('Base');
+  Dependencies.Add('User');
 end;
 
-destructor TModuleUser.Destroy;
+destructor TModuleACL.Destroy;
 begin
   inherited Destroy;
 end;

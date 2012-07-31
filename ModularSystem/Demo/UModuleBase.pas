@@ -22,7 +22,9 @@ constructor TModuleBase.Create;
 begin
 inherited;
   Name := 'Base';
+  Title := 'Base';
   Version := '1.0';
+  License := 'GNU/LGPLv3';
 end;
 
 destructor TModuleBase.Destroy;

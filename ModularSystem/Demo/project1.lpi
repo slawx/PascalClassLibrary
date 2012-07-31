@@ -30,10 +30,13 @@
         <LaunchingApplication PathPlusParams="\usr\bin\xterm -T 'Lazarus Run Output' -e $(LazarusDir)\tools\runwait.sh $(TargetCmdLine)"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="1">
+    <RequiredPackages Count="2">
       <Item1>
-        <PackageName Value="LCL"/>
+        <PackageName Value="ModularSystem"/>
       </Item1>
+      <Item2>
+        <PackageName Value="LCL"/>
+      </Item2>
     </RequiredPackages>
     <Units Count="5">
       <Unit0>
@@ -45,6 +48,7 @@
         <Filename Value="UMainForm.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="MainForm"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UMainForm"/>
       </Unit1>
@@ -59,9 +63,9 @@
         <UnitName Value="UModuleBase"/>
       </Unit3>
       <Unit4>
-        <Filename Value="..\UModularSystem.pas"/>
+        <Filename Value="UModuleACL.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="UModularSystem"/>
+        <UnitName Value="UModuleACL"/>
       </Unit4>
     </Units>
   </ProjectOptions>
@@ -73,7 +77,6 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
-      <OtherUnitFiles Value=".."/>
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <CodeGeneration>
