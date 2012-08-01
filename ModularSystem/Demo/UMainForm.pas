@@ -102,7 +102,7 @@ end;
 
 procedure TMainForm.FormCreate(Sender: TObject);
 begin
-  ModuleManager := TModuleManager.Create;
+  ModuleManager := TModuleManager.Create(nil);
   RegisterModules;
 end;
 
@@ -170,4 +170,4 @@ begin
 end;
 
 end.
-
+
