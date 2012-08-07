@@ -10,25 +10,25 @@ uses
 type
   TModuleManager = class;
 
-  TAPI = class
+  TAPI = class(TComponent)
 
   end;
 
   { TModule }
 
-  TModule = class
+  TModule = class(TComponent)
   private
     FInstalled: Boolean;
     Manager: TModuleManager;
+    FVersion: string;
+    FIdentification: string;
+    FTitle: string;
+    FLicense: string;
+    FAuthor: string;
+    FDependencies: TStringList;
+    FDescription: TStringList;
     procedure SetInstalled(AValue: Boolean);
   public
-    Version: string;
-    Name: string;
-    Title: string;
-    Dependencies: TStringList;
-    Author: string;
-    Description: TStringList;
-    License: string;
     API: TAPI;
     MarkForInstall: Boolean;
     procedure Install; virtual;
@@ -39,6 +39,14 @@ type
     constructor Create; virtual;
     destructor Destroy; override;
     property Installed: Boolean read FInstalled write SetInstalled;
+  published
+    property Version: string read FVersion write FVersion;
+    property Identification: string read FIdentification write FIdentification;
+    property Title: string read FTitle write FTitle;
+    property License: string read FLicense write FLicense;
+    property Author: string read FAuthor write FAuthor;
+    property Dependencies: TStringList read FDependencies write FDependencies;
+    property Description: TStringList read FDescription write FDescription;
   end;
 
   { TModuleManager }
@@ -63,11 +71,18 @@ type
     property API: TAPI read FAPI write SetAPI;
   end;
 
+procedure Register;
+
 
 implementation
 
 resourcestring
   SModuleNotFound = 'Module %s not found';
+
+procedure Register;
+begin
+  RegisterComponents('ModularSystem', [TModuleManager, TModule]);
+end;
 
 { TModuleManager }
 
@@ -86,7 +101,7 @@ var
   I: Integer;
 begin
   I := 0;
-  while (I < Modules.Count) and (TModule(Modules[I]).Name <> Name) do Inc(I);
+  while (I < Modules.Count) and (TModule(Modules[I]).Identification <> Name) do Inc(I);
   if I < Modules.Count then Result := TModule(Modules[I])
     else Result := nil;
 end;
@@ -100,7 +115,7 @@ begin
     Module := FindModuleByName(Dependencies[I]);
     if Assigned(Module) then begin
       if not Module.Installed then Module.Install;
-    end else raise Exception.CreateFmt(SModuleNotFound, [Module.Name]);
+    end else raise Exception.CreateFmt(SModuleNotFound, [Module.Identification]);
   end;
 end;
 
@@ -110,7 +125,7 @@ var
 begin
   for I := 0 to Modules.Count - 1 do
   with TModule(Modules[I]) do begin
-    if Dependencies.IndexOf(ModuleName) <> - 1 then Uninstall;
+    if (Dependencies.IndexOf(ModuleName) <> - 1) and Installed then Uninstall;
   end;
 end;
 
@@ -123,11 +138,11 @@ begin
   for I := 0 to Dependencies.Count - 1 do begin
     Module := FindModuleByName(Dependencies[I]);
     if Assigned(Module) then begin
-      if not Module.Installed and (ModuleList.IndexOf(Module.Name) = -1) then begin
-        ModuleList.Add(Module.Name);
+      if not Module.Installed and (ModuleList.IndexOf(Module.Identification) = -1) then begin
+        ModuleList.Add(Module.Identification);
         EnumModulesInstall(Module.Dependencies, ModuleList);
       end;
-    end else raise Exception.CreateFmt(SModuleNotFound, [Module.Name]);
+    end else raise Exception.CreateFmt(SModuleNotFound, [Module.Identification]);
   end;
 end;
 
@@ -139,9 +154,9 @@ begin
   for I := 0 to Modules.Count - 1 do
   with TModule(Modules[I]) do begin
     if (Dependencies.IndexOf(ModuleName) <> -1) and Installed and
-      (ModuleList.IndexOf(Name) = -1) then begin
-      ModuleList.Add(Name);
-      Self.EnumModulesUninstall(Name, ModuleList);
+      (ModuleList.IndexOf(Identification) = -1) then begin
+      ModuleList.Add(Identification);
+      Self.EnumModulesUninstall(Identification, ModuleList);
     end;
   end;
 end;
@@ -209,7 +224,7 @@ end;
 procedure TModule.Uninstall;
 begin
   if not Installed then Exit;
-  Manager.UninstallDependencies(Name);
+  Manager.UninstallDependencies(Identification);
   FInstalled := False;
 end;
 
@@ -227,7 +242,7 @@ end;
 procedure TModule.EnumModulesUninstall(ModuleList: TStringList);
 begin
   ModuleList.Clear;
-  Manager.EnumModulesUninstall(Name, ModuleList);
+  Manager.EnumModulesUninstall(Identification, ModuleList);
 end;
 
 constructor TModule.Create;
@@ -245,4 +260,4 @@ begin
 end;
 
 end.
-
+

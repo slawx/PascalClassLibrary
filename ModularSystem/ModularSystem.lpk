@@ -8,7 +8,7 @@
       <Version Value="11"/>
       <PathDelim Value="\"/>
       <SearchPaths>
-        <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)\"/>
+        <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
       </SearchPaths>
       <Other>
         <CompilerMessages>
@@ -23,6 +23,7 @@
     <Files Count="1">
       <Item1>
         <Filename Value="UModularSystem.pas"/>
+        <HasRegisterProc Value="True"/>
         <UnitName Value="UModularSystem"/>
       </Item1>
     </Files>

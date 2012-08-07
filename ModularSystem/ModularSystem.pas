@@ -13,6 +13,7 @@ implementation
 
 procedure Register;
 begin
+  RegisterUnit('UModularSystem', @UModularSystem.Register);
 end;
 
 initialization
