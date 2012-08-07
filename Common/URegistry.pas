@@ -16,6 +16,11 @@ type
     rrKeyCurrentConfig = HKEY($80000005),
     rrKeyDynData = HKEY($80000006));
 
+  TRegistryContext = record
+    RootKey: HKEY;
+    Key: string;
+  end;
+
   { TRegistryEx }
 
   TRegistryEx = class(TRegistry)
@@ -30,7 +35,16 @@ type
     function DeleteKeyRecursive(const Key: string): Boolean;
   end;
 
+function RegContext(RootKey: HKEY; Key: string): TRegistryContext;
+
+
 implementation
+
+function RegContext(RootKey: HKEY; Key: string): TRegistryContext;
+begin
+  Result.RootKey := RootKey;
+  Result.Key := Key;
+end;
 
 { TRegistryEx }
 
