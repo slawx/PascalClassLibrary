@@ -165,6 +165,26 @@ TListNotifyEvent = class(TListNotifyEventBase)
   procedure CallAll(Sender: TObject);
 end;
 
+
+TBaseEvent = procedure of object;
+
+// TListSimpleEventBase<Integer, TBaseEvent>
+{$DEFINE TGListIndex := Integer}
+{$DEFINE TGListItem := TBaseEvent}
+{$DEFINE TGList := TListSimpleEventBase}
+{$DEFINE TGListSortCompare := TListSimpleEventSortCompare}
+{$DEFINE TGListToStringConverter := TListSimpleEventToStringConverter}
+{$DEFINE TGListFromStringConverter := TListSimpleEventFromStringConverter}
+{$DEFINE TGListItemArray := TListSimpleEventItemArray}
+{$DEFINE INTERFACE}
+{$I 'GenericList.inc'}
+
+// TListSimpleEvent<Integer, TSimpleEvent>
+TListSimpleEvent = class(TListSimpleEventBase)
+  procedure CallAll;
+end;
+
+
 function StrToStr(Value: string): string;
 
 implementation
@@ -294,11 +314,37 @@ implementation
 {$DEFINE IMPLEMENTATION}
 {$I 'GenericList.inc'}
 
+// TListSimpleEventBase<Integer, TBaseEvent>
+{$DEFINE TGListIndex := Integer}
+{$DEFINE TGListItem := TBaseEvent}
+{$DEFINE TGList := TListSimpleEventBase}
+{$DEFINE TGListSortCompare := TListSimpleEventSortCompare}
+{$DEFINE TGListToStringConverter := TListSimpleEventToStringConverter}
+{$DEFINE TGListFromStringConverter := TListSimpleEventFromStringConverter}
+{$DEFINE TGListItemArray := TListSimpleEventItemArray}
+{$DEFINE IMPLEMENTATION}
+{$I 'GenericList.inc'}
+
+
 
 function StrToStr(Value: string): string;
 begin
   Result := Value;
 end;
+
+{ TListSimpleEvent }
+
+procedure TListSimpleEvent.CallAll;
+var
+  I: TGListIndex;
+begin
+  I := 0;
+  while (I < Count) do begin
+    TBaseEvent(Items[I])();
+    I := I + 1;
+  end;
+end;
+
 
 { TListChar }
 
