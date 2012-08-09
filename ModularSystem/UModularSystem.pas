@@ -36,7 +36,7 @@ type
     procedure Update; virtual;
     procedure EnumModulesInstall(ModuleList: TStringList);
     procedure EnumModulesUninstall(ModuleList: TStringList);
-    constructor Create; virtual;
+    constructor Create(Owner: TComponent); virtual;
     destructor Destroy; override;
     property Installed: Boolean read FInstalled write SetInstalled;
   published
@@ -115,7 +115,7 @@ begin
     Module := FindModuleByName(Dependencies[I]);
     if Assigned(Module) then begin
       if not Module.Installed then Module.Install;
-    end else raise Exception.CreateFmt(SModuleNotFound, [Module.Identification]);
+    end else raise Exception.CreateFmt(SModuleNotFound, [Dependencies[I]]);
   end;
 end;
 
@@ -245,8 +245,9 @@ begin
   Manager.EnumModulesUninstall(Identification, ModuleList);
 end;
 
-constructor TModule.Create;
+constructor TModule.Create(Owner: TComponent);
 begin
+  inherited;
   Dependencies := TStringList.Create;
   Description := TStringList.Create;
 end;
