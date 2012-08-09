@@ -1,0 +1,23 @@
+msgid ""
+msgstr "Content-Type: text/plain; charset=UTF-8"
+
+#: uconfirmationform.scancel
+msgid "Cancel"
+msgstr ""
+
+#: uconfirmationform.sconfirmmessagenotfound
+msgid "Confirm message id %s not found"
+msgstr ""
+
+#: uconfirmationform.sno
+msgid "No"
+msgstr ""
+
+#: uconfirmationform.sok
+msgid "Ok"
+msgstr ""
+
+#: uconfirmationform.syes
+msgid "Yes"
+msgstr ""
+
