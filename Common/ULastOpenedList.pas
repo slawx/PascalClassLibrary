@@ -22,8 +22,8 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure LoadToMenuItem(MenuItem: TMenuItem; ClickAction: TNotifyEvent);
-    procedure LoadFromRegistry(Root: HKEY; Key: string);
-    procedure SaveToRegistry(Root: HKEY; Key: string);
+    procedure LoadFromRegistry(Context: TRegistryContext);
+    procedure SaveToRegistry(Context: TRegistryContext);
     procedure AddItem(FileName: string);
   published
     property MaxCount: Integer read FMaxCount write SetMaxCount;
@@ -86,7 +86,7 @@ begin
   end;
 end;
 
-procedure TLastOpenedList.LoadFromRegistry(Root: HKEY; Key: string);
+procedure TLastOpenedList.LoadFromRegistry(Context: TRegistryContext);
 var
   I: Integer;
   Registry: TRegistryEx;
@@ -95,8 +95,8 @@ begin
   Registry := TRegistryEx.Create;
   with Registry do
   try
-    RootKey := Root;
-    OpenKey(Key, True);
+    RootKey := Context.RootKey;
+    OpenKey(Context.Key, True);
     Items.Clear;
     I := 0;
     while ValueExists('File' + IntToStr(I)) and (I < MaxCount) do begin
@@ -111,7 +111,7 @@ begin
   end;
 end;
 
-procedure TLastOpenedList.SaveToRegistry(Root: HKEY; Key: string);
+procedure TLastOpenedList.SaveToRegistry(Context: TRegistryContext);
 var
   I: Integer;
   Registry: TRegistryEx;
@@ -119,8 +119,8 @@ begin
   Registry := TRegistryEx.Create;
   with Registry do
   try
-    RootKey := Root;
-    OpenKey(Key, True);
+    RootKey := Context.RootKey;
+    OpenKey(Context.Key, True);
     for I := 0 to Items.Count - 1 do
       WriteString('File' + IntToStr(I), UTF8Decode(Items[I]));
   finally

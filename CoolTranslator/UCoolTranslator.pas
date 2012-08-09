@@ -42,7 +42,6 @@ type
     function GetLocaleFileName(const LangID, LCExt: string): string;
     procedure ReloadFiles;
     procedure SetPOFilesFolder(const AValue: string);
-    procedure Translate;
     procedure SetLanguage(const AValue: TLanguage);
     procedure TranslateProperty(Component: TPersistent; PropInfo: PPropInfo);
     function IsExcluded(Component: TPersistent; PropertyName: string): Boolean;
@@ -50,6 +49,7 @@ type
     ComponentExcludes: TComponentExcludesList;
     Languages: TLanguageList;
     procedure LanguageListToStrings(Strings: TStrings);
+    procedure Translate;
     procedure TranslateResourceStrings(PoFileName: string);
     procedure TranslateUnitResourceStrings(UnitName: string; PoFileName: string);
     procedure TranslateComponent(Component: TPersistent);
