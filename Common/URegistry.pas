@@ -33,6 +33,7 @@ type
     function ReadFloatWithDefault(const Name: string;
       DefaultValue: Double): Double;
     function DeleteKeyRecursive(const Key: string): Boolean;
+    function OpenKey(const Key: string; CanCreate: Boolean): Boolean;
   end;
 
 function RegContext(RootKey: HKEY; Key: string): TRegistryContext;
@@ -96,6 +97,14 @@ begin
   end;
 end;
 
+function TRegistryEx.OpenKey(const Key: string; CanCreate: Boolean): Boolean;
+begin
+  {$IFDEF Linux}
+  CloseKey;
+  {$ENDIF}
+  Result := inherited OpenKey(Key, CanCreate);
+end;
+
 function TRegistryEx.ReadBoolWithDefault(const Name: string;
   DefaultValue: Boolean): Boolean;
 begin
@@ -106,4 +115,4 @@ begin
     end;
 end;
 
-end.
+end.

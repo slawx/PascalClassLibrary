@@ -6,7 +6,7 @@ interface
 
 uses
   {$IFDEF Windows}Windows,{$ENDIF}
-  Classes, SysUtils, StrUtils, Dialogs, Process,
+  Classes, SysUtils, StrUtils, Dialogs, Process, LCLIntf,
   FileUtil; //, ShFolder, ShellAPI;
 
 type
@@ -403,7 +403,8 @@ var
   Process: TProcess;
   Browser, Params: string;
 begin
-  try
+  OpenURL(URL);
+  {try
     Process := TProcess.Create(nil);
     Browser := '';
     //FindDefaultBrowser(Browser, Params);
@@ -414,7 +415,7 @@ begin
     Process.Execute;
   finally
     Process.Free;
-  end;
+  end;}
 end;
 
 procedure OpenFileInShell(FileName: string);
@@ -431,4 +432,4 @@ finalization
 
 FreeLibraries;
 
-end.
+end.

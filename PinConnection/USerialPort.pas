@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, SynaSer, StdCtrls, Dialogs, UCommon, UThreading,
-  DateUtils;
+  DateUtils, FileUtil;
 
 type
   TBaudRate = (br110, br300, br600, br1200, br2400, br4800,
@@ -73,6 +73,7 @@ type
 
     property BaudRateNumeric: Integer read GetBaudRateNumeric write SetBaudRateNumeric;
     property OnReceiveData: TReceiveDataEvent read FOnReceiveData write FOnReceiveData;
+    procedure LoadAvailableToStrings(Strings: TStrings; Check: Boolean = False);
     constructor Create;
     destructor Destroy; override;
     procedure Assign(Source: TObject);
@@ -168,6 +169,45 @@ procedure TSerialPort.Close;
 begin
   FreeAndNil(FReceiveThread);
   CloseSocket;
+end;
+
+procedure TSerialPort.LoadAvailableToStrings(Strings: TStrings; Check: Boolean = False);
+var
+  I: Integer;
+  TestPort: TSerialPort;
+  Files: TStringList;
+begin
+  Strings.Clear;
+  {$IFDEF Windows}
+  if Check then
+  try
+    TestPort := TSerialPort.Create;
+    for I := 0 to Strings.Count - 1 do
+    with TestPort do begin
+      Name := Strings[I];
+      Active := True;
+      if Active then begin
+        Strings.AddObject(Name, TObject(I));
+      end;
+      Active := False;
+    end;
+  finally
+    TestPort.Free;
+  end else begin
+    for I := 1 to 255 do
+      Strings.AddObject('COM' + IntToStr(I), nil);
+  end;
+  {$ENDIF}
+  {$IFDEF Linux}
+  if Check then begin
+    Files := FindAllFiles('/dev', 'tty*', False);
+    Strings.Assign(Files);
+    Files.Free;
+  end else begin
+    for I := 1 to 63 do
+      Strings.AddObject('/dev/ttyS' + IntToStr(I), nil);
+  end;
+  {$ENDIF}
 end;
 
 constructor TSerialPort.Create;
@@ -321,4 +361,4 @@ begin
 end;
 
 end.
-
+

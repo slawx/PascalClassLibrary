@@ -5,7 +5,7 @@ unit UUpdateChecker;
 interface
 
 uses
-  Windows, ShellApi, Forms, Classes, SysUtils, httpsend, DOM, XMLWrite, XMLRead, UXMLUtils,
+  {$IFDEF Windows}Windows, ShellApi, {$ENDIF}Forms, Classes, SysUtils, httpsend, DOM, XMLWrite, XMLRead, UXMLUtils,
   FileUtil, Dialogs, Process, Blcksock, UFormDownloadProgress;
 
 type
@@ -28,7 +28,7 @@ type
     FVersionInfoURL: string;
     function DownloadHTTP(URL, TargetFile: string): Boolean;
     function InstallerFileName: string;
-    function IsWindowsAdmin: Boolean;
+    function IsSystemAdmin: Boolean;
     procedure SockStatus(Sender: TObject; Reason: THookSocketReason;
     const Value: String);
   public
@@ -57,12 +57,14 @@ resourcestring
 
 implementation
 
+{$IFDEF Windows}
 const
   SECURITY_NT_AUTHORITY: TSIDIdentifierAuthority = (Value: (0, 0, 0, 0, 0, 5)) ;
 
 const
   SECURITY_BUILTIN_DOMAIN_RID = $00000020;
   DOMAIN_ALIAS_RID_ADMINS = $00000220;
+{$ENDIF}
 
 procedure Register;
 begin
@@ -144,9 +146,17 @@ var
   Process: TProcess;
 begin
   if FileExistsUTF8(InstallerFileName) then begin
-    if not IsWindowsAdmin then
-      ShellExecute(0, PChar('runas'), PChar(InstallerFileName),
-        0, 0, SW_SHOWNORMAL)
+    if not IsSystemAdmin then
+      try
+        Process := TProcess.Create(nil);
+        Process.CommandLine := 'runas ' + InstallerFileName;
+        Process.Options := Process.Options + [];
+        Process.Execute;
+      finally
+        Process.Free;
+      end
+      //ShellExecute(0, PChar('runas'), PChar(InstallerFileName),
+      //  0, 0, SW_SHOWNORMAL)
     else
     try
       Process := TProcess.Create(nil);
@@ -231,7 +241,8 @@ begin
   inherited;
 end;
 
-function TUpdateChecker.IsWindowsAdmin: Boolean;
+{$IFDEF Windows}
+function TUpdateChecker.IsSystemAdmin: Boolean;
 var
   hAccessToken: THandle;
   ptgGroups: PTokenGroups;
@@ -241,7 +252,6 @@ var
   bSuccess: BOOL;
 begin
   Result := False;
-
   bSuccess := OpenThreadToken(GetCurrentThread, TOKEN_QUERY, True, hAccessToken) ;
   if not bSuccess then
   begin
@@ -275,6 +285,13 @@ begin
     FreeMem(ptgGroups) ;
   end;
 end;
+{$ELSE}
+function TUpdateChecker.IsSystemAdmin: Boolean;
+begin
+  Result := False;
+end;
+
+{$ENDIF}
 
 procedure TUpdateChecker.SockStatus(Sender: TObject; Reason: THookSocketReason;
   const Value: String);
@@ -298,4 +315,4 @@ begin
 end;
 
 end.
-
+

@@ -58,7 +58,7 @@ type
   public
     Modules: TObjectList; // TObjectList<TModule>
     function FindModuleByName(Name: string): TModule;
-    procedure InstallDependencies(Dependencies: TStringList);
+    procedure InstallDependencies(ModuleName: string; Dependencies: TStringList);
     procedure UninstallDependencies(ModuleName: string);
     procedure EnumModulesInstall(Dependencies, ModuleList: TStringList);
     procedure EnumModulesUninstall(ModuleName: string; ModuleList: TStringList);
@@ -77,7 +77,7 @@ procedure Register;
 implementation
 
 resourcestring
-  SModuleNotFound = 'Module %s not found';
+  SModuleNotFound = 'Module "%1:s" not found as dependency for module "%0:s"';
 
 procedure Register;
 begin
@@ -106,7 +106,7 @@ begin
     else Result := nil;
 end;
 
-procedure TModuleManager.InstallDependencies(Dependencies: TStringList);
+procedure TModuleManager.InstallDependencies(ModuleName: string; Dependencies: TStringList);
 var
   Module: TModule;
   I: Integer;
@@ -115,7 +115,7 @@ begin
     Module := FindModuleByName(Dependencies[I]);
     if Assigned(Module) then begin
       if not Module.Installed then Module.Install;
-    end else raise Exception.CreateFmt(SModuleNotFound, [Dependencies[I]]);
+    end else raise Exception.CreateFmt(SModuleNotFound, [ModuleName, Dependencies[I]]);
   end;
 end;
 
@@ -217,7 +217,7 @@ end;
 procedure TModule.Install;
 begin
   if Installed then Exit;
-  Manager.InstallDependencies(Dependencies);
+  Manager.InstallDependencies(Identification, Dependencies);
   FInstalled := True;
 end;
 
@@ -261,4 +261,4 @@ begin
 end;
 
 end.
-
+
