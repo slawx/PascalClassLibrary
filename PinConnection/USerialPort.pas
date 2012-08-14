@@ -36,7 +36,7 @@ type
     FRTS: Boolean;
     FDTR: Boolean;
     FActive: Boolean;
-    FBaudRate: TBaudRate;
+    FBaudRate: Integer;
     FDataBits: TDataBits;
     FFlowControl: TFlowControl;
     FName: string;
@@ -45,10 +45,8 @@ type
     FStopBits: TStopBits;
     FReceiveThread: TSerialPortReceiveThread;
     FReceiveBuffer: TListByte;
-    function GetBaudRateNumeric: Integer;
     function GetName: string;
-    procedure SetBaudRate(const AValue: TBaudRate);
-    procedure SetBaudRateNumeric(const AValue: Integer);
+    procedure SetBaudRate(const AValue: Integer);
     procedure SetDataBits(const AValue: TDataBits);
     procedure SetDTR(const AValue: Boolean);
     procedure SetFlowControl(const AValue: TFlowControl);
@@ -65,13 +63,12 @@ type
     property DataBits: TDataBits read FDataBits write SetDataBits;
     property StopBits: TStopBits read FStopBits write SetStopBits;
     property Parity: TParity read FParity write SetParity;
-    property BaudRate: TBaudRate read FBaudRate write SetBaudRate;
+    property BaudRate: Integer read FBaudRate write SetBaudRate;
     property Active: Boolean read FActive write SetActive;
     property RTS: Boolean read FRTS write SetRTS;
     property DTR: Boolean read FDTR write SetDTR;
     property ReceiveBuffer: TListByte read FReceiveBuffer;
 
-    property BaudRateNumeric: Integer read GetBaudRateNumeric write SetBaudRateNumeric;
     property OnReceiveData: TReceiveDataEvent read FOnReceiveData write FOnReceiveData;
     procedure LoadAvailableToStrings(Strings: TStrings; Check: Boolean = False);
     constructor Create;
@@ -214,7 +211,7 @@ constructor TSerialPort.Create;
 begin
   inherited Create;
   FReceiveBuffer := TListByte.Create;
-  FBaudRate := br9600;
+  FBaudRate := 9600;
   FName := 'COM1';
   FDataBits := 8;
   FStopBits := sb1_0;
@@ -247,46 +244,19 @@ begin
   end else raise Exception.Create(SAssignmentError);
 end;
 
-procedure TSerialPort.SetBaudRate(const AValue: TBaudRate);
+procedure TSerialPort.SetBaudRate(const AValue: Integer);
 begin
   FBaudRate := AValue;
   if FActive then begin
     GetCommState;
-    DCB.BaudRate := BaudRateNumeric;
+    DCB.BaudRate := AValue;
     SetCommState;
   end;
-end;
-
-function TSerialPort.GetBaudRateNumeric: Integer;
-begin
-  Result := BaudRateNumericTable[FBaudRate];
 end;
 
 function TSerialPort.GetName: string;
 begin
   Result := FName;
-end;
-
-procedure TSerialPort.SetBaudRateNumeric(const AValue: Integer);
-begin
-  case AValue of
-    110: BaudRate := br110;
-    300: BaudRate := br300;
-    600: BaudRate := br600;
-    1200: BaudRate := br1200;
-    2400: BaudRate := br2400;
-    4800: BaudRate := br4800;
-    9600: BaudRate := br9600;
-    14400: BaudRate := br14400;
-    19200: BaudRate := br19200;
-    38400: BaudRate := br38400;
-    56000: BaudRate := br56000;
-    57600: BaudRate := br57600;
-    115200: BaudRate := br115200;
-    128000: BaudRate := br128000;
-    256000: BaudRate := br256000;
-    else raise Exception.CreateFmt(SWrongNumericBaudRate, [AValue]);
-  end;
 end;
 
 procedure TSerialPort.SetDataBits(const AValue: TDataBits);

@@ -40,7 +40,7 @@ type
   public
     Timeout: TDateTime;
     Identification: string;
-    BaudRate: TBaudRate;
+    BaudRate: Integer;
     procedure LoadFromRegistry(Root: HKEY; Key: string); override;
     procedure SaveToRegistry(Root: HKEY; Key: string); override;
     procedure Read(Job: TJob); override;
@@ -186,7 +186,7 @@ begin
     try
       RootKey := Root;
       OpenKey(Key + '\ISPProgrammer\Dallas', True);
-      BaudRate := TBaudRate(ReadIntegerWithDefault('FirmwareBaudRate', Integer(br57600)));
+      BaudRate := ReadIntegerWithDefault('FirmwareBaudRate', 57600);
     finally
       Free;
     end;
@@ -413,7 +413,7 @@ begin
   ResponseTemp.OwnsList := True;
   Pin := TCommPin.Create;
   Pin.OnReceive := ReceiveData;
-  BaudRate := br9600;
+  BaudRate := 9600;
   SerialPortBackup := TCommSerialPort.Create;
 end;
 
