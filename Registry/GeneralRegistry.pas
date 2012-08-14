@@ -7,7 +7,7 @@ unit GeneralRegistry;
 interface
 
 uses
-  UGeneralRegistry, LazarusPackageIntf;
+  UGeneralRegistry, UTest, LazarusPackageIntf;
 
 implementation
 

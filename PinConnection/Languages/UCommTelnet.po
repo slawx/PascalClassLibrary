@@ -1,0 +1,11 @@
+msgid ""
+msgstr "Content-Type: text/plain; charset=UTF-8"
+
+#: ucommtelnet.sunknownstate
+msgid "Unknown state"
+msgstr ""
+
+#: ucommtelnet.swrongresponseoption
+msgid "Wrong response option"
+msgstr ""
+

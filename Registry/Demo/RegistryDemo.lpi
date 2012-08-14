@@ -48,6 +48,7 @@
         <Filename Value="UFormMain.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="FormMain"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UFormMain"/>
       </Unit1>
@@ -55,6 +56,7 @@
         <Filename Value="UCore.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="Core"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
         <UnitName Value="UCore"/>
       </Unit2>
