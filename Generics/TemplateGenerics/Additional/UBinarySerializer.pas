@@ -1,6 +1,6 @@
 unit UBinarySerializer;
 
-{$mode objfpc}{$H+}
+{$mode delphi}{$H+}
 
 interface
 
@@ -14,12 +14,18 @@ type
 
   TBinarySerializer = class
   private
-    FStream: TStreamByte;
+    FGrow: Boolean;
+    FList: TListByte;
     FEndianness: TEndianness;
     SwapData: Boolean;
     procedure SetEndianness(const AValue: TEndianness);
     procedure ReverseByteOrder(var Buffer; Count: Integer);
   public
+    Position: Integer;
+    OwnsList: Boolean;
+    procedure Write(var Buffer; Count: Integer); inline;
+    procedure Read(var Buffer; Count: Integer); inline;
+
     procedure Assign(Source: TBinarySerializer);
     procedure WriteByte(Data: Byte);
     procedure WriteWord(Data: Word);
@@ -47,12 +53,13 @@ type
     function ReadSingle: Single;
     procedure ReadStream(AStream: TStream; Count: Integer);
     procedure ReadStreamPart(AStream: TStream; Count: Integer);
+    procedure ReadList(List: TListByte; StartIndex, Count: Integer);
     constructor Create; overload;
-    constructor Create(AStream: TStreamByte); overload;
     procedure Clear;
     destructor Destroy; override;
     property Endianness: TEndianness read FEndianness write SetEndianness;
-    property Stream: TStreamByte read FStream write FStream;
+    property List: TListByte read FList write FList;
+    property Grow: Boolean read FGrow write FGrow;
   end;
 
 
@@ -64,7 +71,7 @@ function TBinarySerializer.ReadAnsiString: string;
 var
   StringLength: Longint;
 begin
-  FStream.ReadBuffer(StringLength, SizeOf(StringLength));
+  FList.ReadBuffer(StringLength, SizeOf(StringLength));
   Result := ReadString(StringLength);
 end;
 
@@ -74,11 +81,11 @@ var
   I: Integer;
   OldPosition: Integer;
 begin
-  OldPosition := FStream.Position;
+  OldPosition := Position;
   Result := '';
   I := 1;
   repeat
-    if FStream.Position >= FStream.Size then Break;
+    if Position >= FList.Count then Break;
     Data := Chr(ReadByte);
     if Data <> Terminator[I] then begin
       Result := Result + Data;
@@ -87,24 +94,24 @@ begin
   until I > Length(Terminator);
   if not (I > Length(Terminator)) then begin
     Result := '';
-    FStream.Position := OldPosition;
+    Position := OldPosition;
   end;
 end;
 
 function TBinarySerializer.ReadByte: Byte;
 begin
-  FStream.ReadBuffer(Result, SizeOf(Byte));
+  Read(Result, SizeOf(Byte));
 end;
 
 function TBinarySerializer.ReadCardinal: Cardinal;
 begin
-  FStream.ReadBuffer(Result, SizeOf(Cardinal));
+  Read(Result, SizeOf(Cardinal));
   if SwapData then Result := SwapEndian(Result);
 end;
 
 function TBinarySerializer.ReadInt64: Int64;
 begin
-  FStream.ReadBuffer(Result, SizeOf(Int64));
+  Read(Result, SizeOf(Int64));
   if SwapData then Result := SwapEndian(Result);
 end;
 
@@ -112,7 +119,7 @@ function TBinarySerializer.ReadString(Length: Integer): string;
 begin
   if Length > 0 then begin
     SetLength(Result, Length);
-    FStream.ReadBuffer(Result[1], Length);
+    Read(Result[1], Length);
   end else Result := '';
 end;
 
@@ -120,7 +127,7 @@ function TBinarySerializer.ReadShortString: string;
 var
   Count: Byte;
 begin
-  FStream.ReadBuffer(Count, 1);
+  Read(Count, 1);
   Result := ReadString(Count);
 end;
 
@@ -130,7 +137,7 @@ var
 begin
   if Count > 0 then begin
     SetLength(Buffer, Count);
-    FStream.ReadBuffer(Buffer[0], Count);
+    Read(Buffer[0], Count);
     AStream.Size := Count;
     AStream.Position := 0;
     AStream.Write(Buffer[0], Count);
@@ -143,10 +150,23 @@ var
 begin
   if Count > 0 then begin
     SetLength(Buffer, Count);
-    FStream.ReadBuffer(Buffer[0], Count);
+    Read(Buffer[0], Count);
     if AStream.Size < (AStream.Position + Count) then
       AStream.Size := AStream.Position + Count;
-    AStream.Write(Buffer[0], Count);
+    Write(Buffer[0], Count);
+  end;
+end;
+
+procedure TBinarySerializer.ReadList(List: TListByte; StartIndex, Count: Integer
+  );
+var
+  Buffer: array of Byte;
+begin
+  if Count > (List.Count - StartIndex) then Count := (List.Count - StartIndex); // Limit max. stream size
+  if Count > 0 then begin
+    SetLength(Buffer, Count);
+    Read(Pointer(Buffer)^, Count);
+    List.ReplaceBuffer(StartIndex, Pointer(Buffer)^, Count);
   end;
 end;
 
@@ -158,7 +178,7 @@ begin
   if Count > 0 then begin
     SetLength(Buffer, Count);
     AStream.ReadBuffer(Pointer(Buffer)^, Count);
-    FStream.WriteBuffer(Pointer(Buffer)^, Count);
+    Write(Pointer(Buffer)^, Count);
   end;
 end;
 
@@ -169,8 +189,8 @@ begin
   if Count > (List.Count - StartIndex) then Count := (List.Count - StartIndex); // Limit max. stream size
   if Count > 0 then begin
     SetLength(Buffer, Count);
-    List.ReadBuffer(Pointer(Buffer)^, Count);
-    FStream.WriteBuffer(Pointer(Buffer)^, Count);
+    List.GetBuffer(StartIndex, PByte(Buffer), Count);
+    Write(Pointer(Buffer)^, Count);
   end;
 end;
 
@@ -178,23 +198,18 @@ constructor TBinarySerializer.Create;
 begin
   inherited;
   Endianness := enLittle;
-  FStream := nil;
-end;
-
-constructor TBinarySerializer.Create(AStream: TStreamByte);
-begin
-  inherited Create;
-  Endianness := enLittle;
-  FStream := AStream;
+  FList := nil;
+  FGrow := True;
 end;
 
 procedure TBinarySerializer.Clear;
 begin
-  Stream.Size := 0;
+  FList.Count := 0;
 end;
 
 destructor TBinarySerializer.Destroy;
 begin
+  if OwnsList then FList.Free;
   inherited Destroy;
 end;
 
@@ -205,17 +220,17 @@ end;
 
 function TBinarySerializer.ReadDouble: Double;
 begin
-  FStream.ReadBuffer(Result, SizeOf(Double));
+  Read(Result, SizeOf(Double));
 end;
 
 function TBinarySerializer.ReadSingle: Single;
 begin
-  FStream.ReadBuffer(Result, SizeOf(Single));
+  Read(Result, SizeOf(Single));
 end;
 
 function TBinarySerializer.ReadWord: Word;
 begin
-  FStream.ReadBuffer(Result, SizeOf(Word));
+  Read(Result, SizeOf(Word));
   if SwapData then Result := SwapEndian(Result);
 end;
 
@@ -245,9 +260,28 @@ begin
   end;
 end;
 
+procedure TBinarySerializer.Write(var Buffer; Count: Integer);
+var
+  NewCount: Integer;
+begin
+  if FGrow then begin
+    NewCount := Position + Count;
+    if FList.Count < NewCount then
+      FList.Count := NewCount;
+  end;
+  FList.ReplaceBuffer(Position, Buffer, Count);
+  Inc(Position, Count);
+end;
+
+procedure TBinarySerializer.Read(var Buffer; Count: Integer);
+begin
+  FList.GetBuffer(Position, Buffer, Count);
+  Inc(Position, Count);
+end;
+
 procedure TBinarySerializer.Assign(Source: TBinarySerializer);
 begin
-  FStream := Source.FStream;
+  FList := Source.FList;
 end;
 
 procedure TBinarySerializer.WriteAnsiString(Data: string);
@@ -261,7 +295,7 @@ end;
 
 procedure TBinarySerializer.WriteByte(Data: Byte);
 begin
-  FStream.WriteBuffer(Data, SizeOf(Byte));
+  Write(Data, SizeOf(Byte));
 end;
 
 procedure TBinarySerializer.WriteCardinal(Data: Cardinal);
@@ -297,7 +331,7 @@ begin
   if Count > 0 then begin
     SetLength(Buffer, Count);
     AStream.ReadBuffer(Pointer(Buffer)^, Count);
-    FStream.WriteBuffer(Pointer(Buffer)^, Count);
+    Write(Pointer(Buffer)^, Count);
   end;
 end;
 

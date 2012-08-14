@@ -38,6 +38,8 @@
     procedure Put(Index: TGListIndex; const AValue: TGListItem); virtual;
     procedure SetCount(const AValue: TGListIndex); virtual;
   public
+    type
+      PItem = ^TGListItem;
     function CompareMem(P1, P2: Pointer; Length: cardinal): Boolean; inline;
     function Add(Item: TGListItem): TGListIndex;
     procedure AddArray(Values: array of TGListItem);
@@ -56,6 +58,7 @@
     procedure Fill(Start, Count: TGListIndex; Value: TGListItem);
     function GetArray(Index, ACount: TGListIndex): TGListItemArray;
     procedure GetList(List: TGList; Index, ACount: TGListIndex);
+    procedure GetBuffer(Index: TGListIndex; var Buffer; Count: TGListIndex);
     function Implode(Separator: string; Converter: TGListToStringConverter): string;
     function IndexOf(Item: TGListItem; Start: TGListIndex = 0): TGListIndex; virtual;
     function IndexOfList(List: TGList; Start: TGListIndex = 0): TGListIndex;
@@ -72,6 +75,7 @@
     procedure ReplaceList(Index: TGListIndex; Source: TGList);
     procedure ReplaceListPart(Index: TGListIndex; Source: TGList;
       SourceIndex, SourceCount: TGListIndex);
+    procedure ReplaceBuffer(Index: TGListIndex; var Buffer; Count: TGListIndex);
     procedure Sort(Compare: TGListSortCompare);
     procedure SetArray(Values: array of TGListItem);
     procedure BeginUpdate;
@@ -101,6 +105,38 @@ uses
 constructor TGList.Create;
 begin
   FCount := 0;
+end;
+
+procedure TGList.GetBuffer(Index: TGListIndex; var Buffer; Count: TGListIndex);
+var
+  P: PItem;
+  I: TGListIndex;
+begin
+  if (Index + Count) > FCount then
+    raise EListError.CreateFmt(SListIndexError, [Index + Count]);
+  P := PItem(@Buffer);
+  I := 0;
+  while I < Count do begin
+    P^ := Items[Index + I];
+    Inc(P, 1);
+    I := I + 1;
+  end;
+end;
+
+procedure TGList.ReplaceBuffer(Index: TGListIndex; var Buffer; Count: TGListIndex);
+var
+  P: PItem;
+  I: TGListIndex;
+begin
+  if (Index + Count) > FCount then
+    raise EListError.CreateFmt(SListIndexError, [Index + Count]);
+  P := PItem(@Buffer);
+  I := 0;
+  while I < Count do begin
+    Items[Index + I] := P^;
+    Inc(P, 1);
+    I := I + 1;
+  end;
 end;
 
 procedure TGList.ReplaceArray(Index: TGListIndex; Values: array of TGListItem);

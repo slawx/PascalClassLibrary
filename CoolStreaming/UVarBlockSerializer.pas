@@ -37,6 +37,8 @@ type
     procedure ReadVarBlock(Block: TVarBlockSerializer);
     procedure WriteVarStream(AStream: TStream);
     procedure ReadVarStream(AStream: TStream);
+    procedure WriteVarList(List: TListByte);
+    procedure ReadVarList(List: TListByte);
     function GetVarSize: Integer;
     function GetVarCount: Integer;
     function TryVarBlock: Boolean;
@@ -79,6 +81,8 @@ type
     procedure ReadVarBlock(Index: Integer; Block: TVarBlockSerializer);
     procedure WriteVarStream(Index: Integer; Stream: TStream);
     procedure ReadVarStream(Index: Integer; Stream: TStream);
+    procedure WriteVarList(Index: Integer; List: TListByte);
+    procedure ReadVarList(Index: Integer; List: TListByte);
     procedure WriteVarIndexedBlock(Index: Integer; Block: TVarBlockIndexed);
     procedure ReadVarIndexedBlock(Index: Integer; Block: TVarBlockIndexed);
 
@@ -100,6 +104,8 @@ type
     procedure ReadFromVarBlock(VarBlock: TVarBlockSerializer);
     procedure WriteToStream(Stream: TStream);
     procedure ReadFromStream(Stream: TStream);
+    procedure WriteToList(List: TListByte);
+    procedure ReadFromList(List: TListByte);
     constructor Create;
     destructor Destroy; override;
   end;
@@ -412,6 +418,33 @@ begin
   AStream.Position := 0;
 end;
 
+procedure TVarBlockSerializer.WriteVarList(List: TListByte);
+var
+  Mem: TMemoryStream;
+begin
+  try
+    Mem := TMemoryStream.Create;
+    List.WriteToStream(Mem);
+    WriteVarStream(Mem);
+  finally
+    Mem.Free
+  end;
+end;
+
+procedure TVarBlockSerializer.ReadVarList(List: TListByte);
+var
+  Mem: TMemoryStream;
+begin
+  try
+    Mem := TMemoryStream.Create;
+    ReadVarStream(Mem);
+    List.Count := Mem.Size;
+    List.ReplaceStream(Mem);
+  finally
+    Mem.Free
+  end;
+end;
+
 function TVarBlockSerializer.GetVarSize: Integer;
 var
   Data: Byte;
@@ -696,6 +729,17 @@ begin
   TVarBlockSerializer(Items[Index]).ReadVarStream(Stream);
 end;
 
+procedure TVarBlockIndexed.WriteVarList(Index: Integer; List: TListByte);
+begin
+  CheckItem(Index);
+  TVarBlockSerializer(Items[Index]).WriteVarList(List);
+end;
+
+procedure TVarBlockIndexed.ReadVarList(Index: Integer; List: TListByte);
+begin
+  TVarBlockSerializer(Items[Index]).ReadVarList(List);
+end;
+
 procedure TVarBlockIndexed.WriteVarIndexedBlock(Index: Integer;
   Block: TVarBlockIndexed);
 var
@@ -911,6 +955,33 @@ begin
     ReadFromVarBlock(VarBlock);
   finally
     VarBlock.Free;
+  end;
+end;
+
+procedure TVarBlockIndexed.WriteToList(List: TListByte);
+var
+  Mem: TMemoryStream;
+begin
+  try
+    Mem := TMemoryStream.Create;
+    WriteToStream(Mem);
+    List.Count := Mem.Size;
+    List.ReplaceStream(Mem);
+  finally
+    Mem.Free;
+  end;
+end;
+
+procedure TVarBlockIndexed.ReadFromList(List: TListByte);
+var
+  Mem: TMemoryStream;
+begin
+  try
+    Mem := TMemoryStream.Create;
+    List.WriteToStream(Mem);
+    ReadFromStream(Mem);
+  finally
+    Mem.Free;
   end;
 end;
 
