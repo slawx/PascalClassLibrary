@@ -19,6 +19,8 @@ type
   TISPProgrammer = class
   private
     FActive: Boolean;
+    FOnActivate: TNotifyEvent;
+    FOnDeactivate: TNotifyEvent;
     FOnLog: TLogEvent;
     FCPUType: TCPUType;
   protected
@@ -44,6 +46,8 @@ type
     property OnLog: TLogEvent read FOnLog write FOnLog;
     property Active: Boolean read FActive write SetActive;
     property CPUType: TCPUType read GetCPUType write SetCPUType;
+    property OnActivate: TNotifyEvent read FOnActivate write FOnActivate;
+    property OnDeactivate: TNotifyEvent read FOnDeactivate write FOnDeactivate;
   end;
 
 implementation
@@ -67,6 +71,13 @@ procedure TISPProgrammer.SetActive(AValue: Boolean);
 begin
   if FActive = AValue then Exit;
   FActive := AValue;
+  if AValue then begin
+    if Assigned(FOnActivate) then
+      FOnActivate(Self);
+  end else begin
+    if Assigned(FOnDeactivate) then
+      FOnDeactivate(Self);
+  end;
 end;
 
 procedure TISPProgrammer.Log(Text: string);

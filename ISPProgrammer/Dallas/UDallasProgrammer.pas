@@ -6,8 +6,8 @@ interface
 
 uses
   Classes, SysUtils, USerialPort, UCommSerialPort, UCommPin,
-  UJobProgressView, UStreamHelper, SyncObjs, DateUtils, Dialogs, URegistry,
-  Forms, UISPProgrammer, Registry;
+  UJobProgressView, SyncObjs, DateUtils, Dialogs, URegistry,
+  Forms, UISPProgrammer, Registry, UBinarySerializer, SpecializedList;
 
 const
   NewLine = #$0D#$0A;
@@ -21,20 +21,20 @@ type
   private
     FOnLogData: TOnLogDataEvent;
     Pin: TCommPin;
-    Response: TStreamHelper; // should be thread safe
+    Response: TBinarySerializer; // should be thread safe
     ResponseLock: TCriticalSection;
-    ResponseTemp: TStreamHelper;
+    ResponseTemp: TBinarySerializer;
     ReceiveEvent: TEvent;
-    FwSerialPort: TCommSerialPort;
+    SerialPortBackup: TCommSerialPort;
+    SerialPortBackupPin: TCommPin;
     HexData: TStringList;
-    Request: TStreamHelper;
+    Request: TBinarySerializer;
     StartTime: TDateTime;
     WaitResult: TWaitResult;
-    procedure ReceiveData(Sender: TCommPin; Stream: TStream);
+    procedure ReceiveData(Sender: TCommPin; Stream: TListByte);
     function WaitForString(EndString: string; Timeout: TDateTime): TWaitResult;
     procedure ResponseClear;
     procedure CheckErrorCode(Value: string);
-    procedure TruncateBeginOfStream(Stream: TStream);
   protected
     procedure SetActive(AValue: Boolean); override;
   public
@@ -73,15 +73,15 @@ resourcestring
 
 { TDallasProgrammer }
 
-procedure TDallasProgrammer.ReceiveData(Sender: TCommPin; Stream:TStream);
+procedure TDallasProgrammer.ReceiveData(Sender: TCommPin; Stream: TListByte);
 var
   OldPosition: Integer;
 begin
   try
     ResponseLock.Acquire;
     OldPosition := Response.Position;
-    Response.Position := Response.Size;
-    Response.WriteStream(Stream, Stream.Size);
+    Response.Position := Response.List.Count;
+    Response.WriteList(Stream, 0, Stream.Count);
     Response.Position := OldPosition;
   finally
     ResponseLock.Release;
@@ -133,26 +133,33 @@ begin
   if Active = AValue then Exit;
   inherited;
   if AValue then begin
-    Request := TStreamHelper.Create;
+    Request := TBinarySerializer.Create;
+    Request.List := TListByte.Create;
+    Request.OwnsList := True;
     HexData := TStringList.Create;
 
     SerialPort.Active := False;
-    FwSerialPort := TCommSerialPort.Create;
-    FwSerialPort.Name := SerialPort.Name;
-    FwSerialPort.FlowControl := fcNone;
-    FwSerialPort.BaudRate := BaudRate;
-    FwSerialPort.DTR := True;
-    FwSerialPort.Flush;
-    FwSerialPort.Purge;
+    SerialPortBackup.Assign(SerialPort);
+    SerialPortBackupPin := SerialPort.Pin.RemotePin;
+    SerialPort.Pin.Disconnect;
+
+    //SerialPort.Name := SerialPort.Name;
+    SerialPort.FlowControl := fcNone;
+    SerialPort.BaudRate := BaudRate;
+    SerialPort.DTR := True;
+    SerialPort.Pin.Connect(Pin);
+    SerialPort.Flush;
+    SerialPort.Purge;
     ResponseClear;
-    FwSerialPort.Pin.Connect(Pin);
-    FwSerialPort.Active := True;
+    SerialPort.Active := True;
     if Assigned(FOnLogData) then
       Pin.OnLogData := FOnLogData;
 
     ReadIdentification;
   end else begin
-    FwSerialPort.Free;
+    SerialPort.Active := False;
+    SerialPort.Assign(SerialPortBackup);
+    SerialPort.Pin.Connect(SerialPortBackupPin);
     SerialPort.Active := True;
     HexData.Free;
     Request.Free;
@@ -171,20 +178,6 @@ begin
   else if Value = 'V' then raise Exception.Create(SVerifyError)
   else if Value = '' then raise Exception.Create(SInvalidResponse)
   else if Value <> 'G' then raise Exception.Create(Format(SUnknownProgrammerResponse, [Value]));
-end;
-
-procedure TDallasProgrammer.TruncateBeginOfStream(Stream: TStream);
-begin
-  // Delete start of Response stream
-  //Stream.Position := Stream.Position - 1;
-  if (Stream.Size - Stream.Position) > 0 then begin
-    ResponseTemp.Clear;
-    ResponseTemp.CopyFrom(Stream, Stream.Size - Stream.Position);
-    Stream.Size := 0;
-    ResponseTemp.Position := 0;
-    Stream.CopyFrom(ResponseTemp, ResponseTemp.Size);
-    Stream.Position := 0;
-  end else Stream.Size := 0;
 end;
 
 procedure TDallasProgrammer.LoadFromRegistry(Root: HKEY; Key: string);
@@ -218,18 +211,19 @@ var
 begin
   Active := True;
 
-  Request.Size := 0;
+  Request.List.Count := 0;
   ResponseClear;
   Request.WriteByte(Ord('D'));
   Request.WriteByte($0D);
-  Pin.Send(Request);
+  Pin.Send(Request.List);
   if WaitForString(NewLine, Timeout) <> wrSignaled then begin
     raise Exception.Create(STimeout);
   end;
   Response.ReadStringTerminated(NewLine); // D
   try
     ResponseLock.Acquire;
-    TruncateBeginOfStream(Response);
+    Response.List.DeleteItems(0, Response.Position);
+    Response.Position := 0;
   finally
     ResponseLock.Release;
   end;
@@ -255,7 +249,8 @@ begin
       //  raise Exception.Create(SEmptyBuffer);
       Value := Response.ReadStringTerminated(NewLine);
       if Value <> '' then begin
-        TruncateBeginOfStream(Response);
+        Response.List.DeleteItems(0, Response.Position);
+        Response.Position := 0;
         //Log(Value);
         HexData.Add(Value);
         //Response.Size := 0;
@@ -268,7 +263,7 @@ begin
     Job.Progress.Value := I;
     if Job.Terminate then Break;
   until False;
-  //for I := 0 to HexData.Count - 1 do
+  //for I := 0 to 10 do //HexData.Count - 1 do
   //  Log(HexData[I]);
   if not Job.Terminate then
     HexFile.LoadFromStringList(HexData);
@@ -281,29 +276,29 @@ var
 begin
   Active := True;
 
-  Request.Size := 0;
+  Request.List.Count := 0;
   ResponseClear;
   Request.WriteByte(Ord('V'));
   Request.WriteByte($0D);
-  Pin.Send(Request);
+  Pin.Send(Request.List);
   if WaitForString(NewLine, Timeout) <> wrSignaled then begin
-    Pin.Send(Request);
+    Pin.Send(Request.List);
     raise Exception.Create(STimeout);
   end;
   HexFile.SaveToStringList(HexData);
   Job.Progress.Max := HexData.Count;
   for I := 0 to HexData.Count - 1 do begin
-    Request.Size := 0;
+    Request.List.Count := 0;
     ResponseClear;
     Request.WriteString(HexData[I]);
     Request.WriteByte($0D);
-    Pin.Send(Request);
+    Pin.Send(Request.List);
     if ReceiveEvent.WaitFor(Round(Timeout / OneMillisecond)) <> wrSignaled then
       raise Exception.Create(STimeout);
     try
       ResponseLock.Acquire;
       Response.Position := 0;
-      if Response.Size = 0 then
+      if Response.List.Count = 0 then
         raise Exception.Create(SEmptyBuffer);
       Value := Chr(Response.ReadByte);
     finally
@@ -321,30 +316,29 @@ var
   I: Integer;
 begin
   Active := True;
-
-  Request.Size := 0;
+  Request.Clear;
   ResponseClear;
   Request.WriteByte(Ord('L'));
   Request.WriteByte($0D);
-  Pin.Send(Request);
+  Pin.Send(Request.List);
   if WaitForString(NewLine, Timeout) <> wrSignaled then begin
-    Pin.Send(Request);
+    Pin.Send(Request.List);
     raise Exception.Create(STimeout);
   end;
   HexFile.SaveToStringList(HexData);
   Job.Progress.Max := HexData.Count;
   for I := 0 to HexData.Count - 1 do begin
-    Request.Size := 0;
+    Request.List.Count := 0;
     ResponseClear;
     Request.WriteString(HexData[I]);
     Request.WriteByte($0D);
-    Pin.Send(Request);
+    Pin.Send(Request.List);
     if ReceiveEvent.WaitFor(Round(Timeout / OneMillisecond)) <> wrSignaled then
       raise Exception.Create(STimeout);
     try
       ResponseLock.Acquire;
       Response.Position := 0;
-      if Response.Size = 0 then
+      if Response.List.Count = 0 then
         raise Exception.Create(SEmptyBuffer);
       Value := Chr(Response.ReadByte);
     finally
@@ -359,12 +353,11 @@ end;
 procedure TDallasProgrammer.Erase;
 begin
   Active := True;
-
-  Request.Size := 0;
+  Request.Clear;
   ResponseClear;
   Request.WriteByte(Ord('K'));
   Request.WriteByte($0D);
-  Pin.Send(Request);
+  Pin.Send(Request.List);
   if WaitForString('>', Timeout) <> wrSignaled then
     raise Exception.Create(STimeout);
 end;
@@ -386,9 +379,9 @@ begin
   StartTime := Now;
   repeat
     ResponseClear;
-    Request.Size := 0;
+    Request.List.Count := 0;
     Request.WriteByte($0D);
-    Pin.Send(Request);
+    Pin.Send(Request.List);
     WaitResult := WaitForString('>', Timeout);
   until (WaitResult = wrSignaled) or ((Now - StartTime) > InitTimeout);
   if WaitResult <> wrSignaled then
@@ -411,16 +404,23 @@ begin
   Capabilities := [ipcErase, ipcRead, ipcWrite, ipcReset];
   Timeout := 3000 * OneMillisecond;
   ReceiveEvent := TSimpleEvent.Create;
-  Response := TStreamHelper.Create;
+  Response := TBinarySerializer.Create;
+  Response.List := TListByte.Create;
+  Response.OwnsList := True;
   ResponseLock := TCriticalSection.Create;
-  ResponseTemp := TStreamHelper.Create;
+  ResponseTemp := TBinarySerializer.Create;
+  ResponseTemp.List := TListByte.Create;
+  ResponseTemp.OwnsList := True;
   Pin := TCommPin.Create;
   Pin.OnReceive := ReceiveData;
   BaudRate := br9600;
+  SerialPortBackup := TCommSerialPort.Create;
 end;
 
 destructor TDallasProgrammer.Destroy;
 begin
+  Active := False;
+  SerialPortBackup.Free;
   Pin.Free;
   Response.Free;
   ResponseLock.Free;
