@@ -186,10 +186,10 @@ procedure TBinarySerializer.WriteList(List: TListByte; StartIndex, Count: Intege
 var
   Buffer: array of Byte;
 begin
-  if Count > (List.Count - StartIndex) then Count := (List.Count - StartIndex); // Limit max. stream size
+//  if Count > (List.Count - StartIndex) then Count := (List.Count - StartIndex); // Limit max. stream size
   if Count > 0 then begin
     SetLength(Buffer, Count);
-    List.GetBuffer(StartIndex, PByte(Buffer), Count);
+    List.GetBuffer(StartIndex, PByte(Buffer)^, Count);
     Write(Pointer(Buffer)^, Count);
   end;
 end;
@@ -205,6 +205,7 @@ end;
 procedure TBinarySerializer.Clear;
 begin
   FList.Count := 0;
+  Position := 0;
 end;
 
 destructor TBinarySerializer.Destroy;

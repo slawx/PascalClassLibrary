@@ -5,7 +5,8 @@ unit UCommDelay;
 interface
 
 uses
-  Classes, SysUtils, UCommPin, UThreading, SyncObjs, SpecializedList, UStreamHelper;
+  Classes, SysUtils, UCommPin, UThreading, SyncObjs, SpecializedList, UStreamHelper,
+  UBinarySerializer;
 
 type
   TCommDelay = class;
@@ -14,7 +15,7 @@ type
 
   TDelayedPacket = class
     ReceiveTime: TDateTime;
-    Data: TStreamHelper;
+    Data: TListByte;
     constructor Create;
     destructor Destroy; override;
   end;
@@ -39,8 +40,8 @@ type
     PacketQueue2: TListObject; // TListObject<TDelayedPacket>
     Thread1: TCommDelayThread;
     Thread2: TCommDelayThread;
-    procedure ReceiveData1(Sender: TCommPin; AStream: TStream);
-    procedure ReceiveData2(Sender: TCommPin; AStream: TStream);
+    procedure ReceiveData1(Sender: TCommPin; AStream: TListByte);
+    procedure ReceiveData2(Sender: TCommPin; AStream: TListByte);
     procedure SetActive(AValue: Boolean);
   public
     Lock1: TCriticalSection;
@@ -61,11 +62,11 @@ procedure TCommDelayThread.Execute;
 var
   I: Integer;
   CurrentTime: TDateTime;
-  SendData: TStreamHelper;
+  SendData: TListByte;
   DoSleep: Boolean;
 begin
   try
-    SendData := TStreamHelper.Create;
+    SendData := TListByte.Create;
     repeat
       DoSleep := True;
         try
@@ -75,12 +76,11 @@ begin
           while (I < PacketQueue.Count) do
             if TDelayedPacket(PacketQueue[I]).ReceiveTime < (CurrentTime - Parent.Delay) then begin
               DoSleep := False;
-              SendData.Clear;
-              SendData.WriteStream(TDelayedPacket(PacketQueue[I]).Data, TDelayedPacket(PacketQueue[I]).Data.Size);
+              SendData.Assign(TDelayedPacket(PacketQueue[I]).Data);
               PacketQueue.Delete(I);
               try
                 Lock.Release;
-                Pin.Send(SendData.Stream);
+                Pin.Send(SendData);
               finally
                 Lock.Acquire;
               end;
@@ -99,7 +99,7 @@ end;
 
 constructor TDelayedPacket.Create;
 begin
-  Data := TStreamHelper.Create;
+  Data := TListByte.Create;
 end;
 
 destructor TDelayedPacket.Destroy;
@@ -110,7 +110,7 @@ end;
 
 { TCommDelay }
 
-procedure TCommDelay.ReceiveData1(Sender: TCommPin; AStream: TStream);
+procedure TCommDelay.ReceiveData1(Sender: TCommPin; AStream: TListByte);
 begin
   try
     Lock2.Acquire;
@@ -118,14 +118,14 @@ begin
     else
     with TDelayedPacket(PacketQueue2.AddNew(TDelayedPacket.Create)) do begin
       ReceiveTime := Now;
-      Data.WriteStream(AStream, AStream.Size);
+      Data.Assign(AStream);
     end;
   finally
     Lock2.Release;
   end;
 end;
 
-procedure TCommDelay.ReceiveData2(Sender: TCommPin; AStream: TStream);
+procedure TCommDelay.ReceiveData2(Sender: TCommPin; AStream: TListByte);
 begin
   try
     Lock1.Acquire;
@@ -133,7 +133,7 @@ begin
     else
     with TDelayedPacket(PacketQueue1.AddNew(TDelayedPacket.Create)) do begin
       ReceiveTime := Now;
-      Data.WriteStream(AStream, AStream.Size);
+      Data.Assign(AStream);
     end;
   finally
     Lock1.Release;

@@ -5,14 +5,14 @@ unit UCommPin;
 interface
 
 uses
-  Classes;
+  Classes, SpecializedList;
 
 type
   TCommPin = class;
 
   TDataDiretion = (ddReceive, ddSend);
-  TOnLogDataEvent = procedure (Stream: TStream; Direction: TDataDiretion) of object;
-  TOnStreamEvent = procedure (Sender: TCommPin; Stream: TStream) of object;
+  TOnLogDataEvent = procedure (Stream: TListByte; Direction: TDataDiretion) of object;
+  TOnStreamEvent = procedure (Sender: TCommPin; Stream: TListByte) of object;
   TOnSetStatus = procedure (Sender: TCommPin; Status: Integer) of object;
 
   { TCommPin }
@@ -30,7 +30,7 @@ type
     function GetConnected: Boolean;
     procedure SetStatus(AValue: Integer);
   protected
-    procedure Receive(Stream: TStream);
+    procedure Receive(Stream: TListByte);
     procedure ReceiveStatus(AValue: Integer);
   public
     RemotePin: TCommPin;
@@ -38,7 +38,7 @@ type
     destructor Destroy; override;
     procedure Connect(Pin: TCommPin);
     procedure Disconnect;
-    procedure Send(Stream: TStream);
+    procedure Send(Stream: TListByte);
     procedure ResetCounters;
     property Connected: Boolean read GetConnected;
     property OnLogData: TOnLogDataEvent read FOnLogData write FOnLogData;
@@ -99,12 +99,11 @@ begin
   RemotePin := nil;
 end;
 
-procedure TCommPin.Receive(Stream: TStream);
+procedure TCommPin.Receive(Stream: TListByte);
 begin
-  Inc(FDataRxCount, Stream.Size);
+  Inc(FDataRxCount, Stream.Count);
   Inc(FFrameRxCount);
   if Assigned(FOnLogData) then FOnLogData(Stream, ddReceive);
-  Stream.Position := 0;
   if Assigned(FOnReceive) then FOnReceive(Self, Stream);
 end;
 
@@ -121,9 +120,9 @@ begin
   FFrameRxCount := 0;
 end;
 
-procedure TCommPin.Send(Stream: TStream);
+procedure TCommPin.Send(Stream: TListByte);
 begin
-  Inc(FDataTxCount, Stream.Size);
+  Inc(FDataTxCount, Stream.Count);
   Inc(FFrameTxCount);
   if Assigned(FOnLogData) then FOnLogData(Stream, ddSend);
   if Assigned(RemotePin) then RemotePin.Receive(Stream);

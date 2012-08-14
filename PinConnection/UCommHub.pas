@@ -5,7 +5,7 @@ unit UCommHub;
 interface
 
 uses
-  Classes, SysUtils, Contnrs, UCommPin;
+  Classes, SysUtils, Contnrs, UCommPin, SpecializedList;
 
 type
   TCommHub = class;
@@ -26,7 +26,7 @@ type
   private
     FActive: Boolean;
     FPins: TPinList;
-    procedure Receive(Sender: TCommPin; Stream: TStream);
+    procedure Receive(Sender: TCommPin; Stream: TListByte);
     procedure SetStatus(Sender: TCommPin; Status: Integer);
   public
     constructor Create;
@@ -67,7 +67,7 @@ end;
 
 { TCommHub }
 
-procedure TCommHub.Receive(Sender: TCommPin; Stream: TStream);
+procedure TCommHub.Receive(Sender: TCommPin; Stream: TListByte);
 var
   I: Integer;
 begin

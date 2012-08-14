@@ -5,7 +5,7 @@ unit UCommSerialPort;
 interface
 
 uses
-  Classes, USerialPort, UCommPin, SysUtils, DateUtils,
+  Classes, USerialPort, UCommPin, SysUtils, DateUtils, SpecializedList,
   SyncObjs;
 
 type
@@ -14,9 +14,9 @@ type
 
   TCommSerialPort = class(TSerialPort)
   private
-    procedure Receive(Sender: TCommPin; Stream: TStream);
+    procedure Receive(Sender: TCommPin; Stream: TListByte);
     procedure SetStatus(Sender: TCommPin; AValue: Integer);
-    procedure ReceiveData(Stream: TMemoryStream);
+    procedure ReceiveData(Stream: TListByte);
   public
     Lock: TCriticalSection;
     Pin: TCommPin;
@@ -30,7 +30,7 @@ implementation
 
 { TCommSerialPort }
 
-procedure TCommSerialPort.ReceiveData(Stream: TMemoryStream);
+procedure TCommSerialPort.ReceiveData(Stream: TListByte);
 begin
   if Active then Pin.Send(Stream);
 end;
@@ -63,21 +63,29 @@ begin
   inherited;
 end;
 
-procedure TCommSerialPort.Receive(Sender: TCommPin; Stream: TStream);
+procedure TCommSerialPort.Receive(Sender: TCommPin; Stream: TListByte);
+var
+  S: TMemoryStream;
 begin
-  if Active then begin
-    Stream.Position := 0;
-    repeat
-      try
-        Lock.Acquire;
-        if CanWrite(0) then
-          SendStreamRaw(Stream);
-      finally
-        Lock.Release;
-      end;
-      if Stream.Position <> Stream.Size then
-        Sleep(1);
-    until Stream.Position = Stream.Size;
+  try
+    S := TMemoryStream.Create;
+    Stream.WriteToStream(S);
+    if Active then begin
+      S.Position := 0;
+      repeat
+        try
+          Lock.Acquire;
+          if CanWrite(0) then
+            SendStreamRaw(S);
+        finally
+          Lock.Release;
+        end;
+        if S.Position <> S.Size then
+          Sleep(1);
+      until S.Position = S.Size;
+    end;
+  finally
+    S.Free;
   end;
 end;
 

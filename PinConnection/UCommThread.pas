@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, blcksock, UCommPin, SyncObjs, UStreamHelper, UCommon,
-  DateUtils, UThreading;
+  DateUtils, UThreading, SpecializedList, UBinarySerializer;
 
 type
   TCommThread = class;
@@ -18,7 +18,7 @@ type
   TCommThreadReceiveThread = class(TTermThread)
   public
     Parent: TCommThread;
-    Stream: TStreamHelper;
+    Stream: TBinarySerializer;
     procedure Execute; override;
     constructor Create(CreateSuspended: Boolean;
       const StackSize: SizeUInt = DefaultStackSize);
@@ -32,14 +32,14 @@ type
     FActive: Boolean;
     FOnReceiveData: TReceiveDataEvent;
     FReceiveThread: TCommThreadReceiveThread;
-    FInputBuffer: TMemoryStream;
+    FInputBuffer: TBinarySerializer;
     FInputBufferLock: TCriticalSection;
     FDataAvailable: TEvent;
     FStatusEvent: TEvent;
     FStatusValue: Integer;
-    procedure PinReceiveData(Sender: TCommPin; Stream: TStream);
+    procedure PinReceiveData(Sender: TCommPin; Stream: TListByte);
     procedure PinSetStatus(Sender: TCommPin; Status: Integer);
-    procedure ExtReceiveData(Sender: TCommPin; Stream: TStream);
+    procedure ExtReceiveData(Sender: TCommPin; Stream: TListByte);
     procedure ExtSetStatus(Sender: TCommPin; AStatus: Integer);
     procedure SetActive(const AValue: Boolean);
   public
@@ -54,7 +54,7 @@ implementation
 
 { TCommThread }
 
-procedure TCommThread.PinReceiveData(Sender: TCommPin; Stream:TStream);
+procedure TCommThread.PinReceiveData(Sender: TCommPin; Stream: TListByte);
 begin
   if FActive then Ext.Send(Stream);
 end;
@@ -64,18 +64,14 @@ begin
   if FActive then Ext.Status := Status;
 end;
 
-procedure TCommThread.ExtReceiveData(Sender: TCommPin; Stream: TStream);
-var
-  StreamHelper: TStreamHelper;
+procedure TCommThread.ExtReceiveData(Sender: TCommPin; Stream: TListByte);
 begin
   try
-    StreamHelper := TStreamHelper.Create(FInputBuffer);
     FInputBufferLock.Acquire;
-    StreamHelper.WriteStream(Stream, Stream.Size);
+    FInputBuffer.WriteList(Stream, 0, Stream.Count);
     FDataAvailable.SetEvent;
   finally
     FInputBufferLock.Release;
-    StreamHelper.Free;
   end;
 end;
 
@@ -109,7 +105,9 @@ end;
 constructor TCommThread.Create;
 begin
   inherited Create;
-  FInputBuffer := TMemoryStream.Create;
+  FInputBuffer := TBinarySerializer.Create;
+  FInputBuffer.List := TListByte.Create;
+  FInputBuffer.OwnsList := True;
   FInputBufferLock := TCriticalSection.Create;
   Ext := TCommPin.Create;
   Ext.OnReceive := ExtReceiveData;
@@ -149,14 +147,13 @@ begin
       DoSleep := False;
       try
         FInputBufferLock.Acquire;
-        Stream.Size := 0;
-        Stream.WriteStream(FInputBuffer, FInputBuffer.Size);
+        Stream.List.Assign(FInputBuffer.List);
         FDataAvailable.ResetEvent;
         FInputBuffer.Clear;
       finally
         FInputBufferLock.Release;
       end; // else Yield;
-      Pin.Send(Stream);
+      Pin.Send(Stream.List);
     end;
 
     // Check if state changed
@@ -181,7 +178,9 @@ constructor TCommThreadReceiveThread.Create(CreateSuspended: Boolean;
   const StackSize: SizeUInt);
 begin
   inherited;
-  Stream := TStreamHelper.Create;
+  Stream := TBinarySerializer.Create;
+  Stream.List := TListByte.Create;
+  Stream.OwnsList := True;
 end;
 
 destructor TCommThreadReceiveThread.Destroy;

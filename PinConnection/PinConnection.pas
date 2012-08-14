@@ -2,21 +2,21 @@
   This source is only used to compile and install the package.
  }
 
-unit PinConnection; 
+unit PinConnection;
 
 interface
 
 uses
   UCommFrame, UCommHub, UCommPin, UCommSerialPort, UCommThread, UPacketBurst, 
   USerialPort, UCommConcentrator, UCommDelay, UCommTCPClient, UCommTCPServer, 
-  LazarusPackageIntf;
+  UCommTelnet, UCommTelnetComPortOption, LazarusPackageIntf;
 
 implementation
 
-procedure Register; 
+procedure Register;
 begin
-end; 
+end;
 
 initialization
-  RegisterPackage('PinConnection', @Register); 
+  RegisterPackage('PinConnection', @Register);
 end.

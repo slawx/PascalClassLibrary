@@ -21,7 +21,7 @@
     <Description Value="System for class bidirectional communication interconnection."/>
     <License Value="GNU/GPL"/>
     <Version Minor="3"/>
-    <Files Count="11">
+    <Files Count="13">
       <Item1>
         <Filename Value="UCommFrame.pas"/>
         <UnitName Value="UCommFrame"/>
@@ -64,8 +64,16 @@
       </Item10>
       <Item11>
         <Filename Value="UCommTCPServer.pas"/>
-        <UnitName Value="UCommSocket"/>
+        <UnitName Value="UCommTCPServer"/>
       </Item11>
+      <Item12>
+        <Filename Value="UCommTelnet.pas"/>
+        <UnitName Value="UCommTelnet"/>
+      </Item12>
+      <Item13>
+        <Filename Value="UCommTelnetComPortOption.pas"/>
+        <UnitName Value="UCommTelnetComPortOption"/>
+      </Item13>
     </Files>
     <i18n>
       <EnableI18N Value="True"/>

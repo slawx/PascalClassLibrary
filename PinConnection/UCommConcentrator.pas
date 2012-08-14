@@ -8,7 +8,7 @@ unit UCommConcentrator;
 interface
 
 uses
-  Classes, SysUtils, Contnrs, UCommPin;
+  Classes, SysUtils, Contnrs, UCommPin, SpecializedList;
 
 type
   TCommConcentrator = class;
@@ -30,9 +30,9 @@ type
     FActive: Boolean;
     FPins: TPinList;
     FMain: TCommPin;
-    procedure MainReceive(Sender: TCommPin; Stream: TStream);
+    procedure MainReceive(Sender: TCommPin; Stream: TListByte);
     procedure MainSetStatus(Sender: TCommPin; Status: Integer);
-    procedure Receive(Sender: TCommPin; Stream: TStream);
+    procedure Receive(Sender: TCommPin; Stream: TListByte);
     procedure SetStatus(Sender: TCommPin; Status: Integer);
   public
     constructor Create;
@@ -74,7 +74,7 @@ end;
 
 { TCommConcentrator }
 
-procedure TCommConcentrator.MainReceive(Sender: TCommPin; Stream: TStream);
+procedure TCommConcentrator.MainReceive(Sender: TCommPin; Stream: TListByte);
 var
   I: Integer;
 begin
@@ -98,7 +98,7 @@ begin
   end;
 end;
 
-procedure TCommConcentrator.Receive(Sender: TCommPin; Stream: TStream);
+procedure TCommConcentrator.Receive(Sender: TCommPin; Stream: TListByte);
 begin
   if FActive then FMain.Send(Stream);
 end;

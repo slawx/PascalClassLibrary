@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, SynaSer, StdCtrls, Dialogs, UCommon, UThreading,
-  DateUtils, FileUtil;
+  DateUtils, FileUtil, SpecializedList;
 
 type
   TBaudRate = (br110, br300, br600, br1200, br2400, br4800,
@@ -18,7 +18,7 @@ type
   TFlowControl = (fcNone, fcSoftware, fcHardware);
 
   TSerialPort = class;
-  TReceiveDataEvent = procedure(Stream: TMemoryStream) of object;
+  TReceiveDataEvent = procedure(Stream: TListByte) of object;
 
   { TSerialPortReceiveThread }
 
@@ -44,7 +44,7 @@ type
     FParity: TParity;
     FStopBits: TStopBits;
     FReceiveThread: TSerialPortReceiveThread;
-    FReceiveBuffer: TMemoryStream;
+    FReceiveBuffer: TListByte;
     function GetBaudRateNumeric: Integer;
     function GetName: string;
     procedure SetBaudRate(const AValue: TBaudRate);
@@ -69,7 +69,7 @@ type
     property Active: Boolean read FActive write SetActive;
     property RTS: Boolean read FRTS write SetRTS;
     property DTR: Boolean read FDTR write SetDTR;
-    property ReceiveBuffer: TMemoryStream read FReceiveBuffer;
+    property ReceiveBuffer: TListByte read FReceiveBuffer;
 
     property BaudRateNumeric: Integer read GetBaudRateNumeric write SetBaudRateNumeric;
     property OnReceiveData: TReceiveDataEvent read FOnReceiveData write FOnReceiveData;
@@ -213,7 +213,7 @@ end;
 constructor TSerialPort.Create;
 begin
   inherited Create;
-  FReceiveBuffer := TMemoryStream.Create;
+  FReceiveBuffer := TListByte.Create;
   FBaudRate := br9600;
   FName := 'COM1';
   FDataBits := 8;
@@ -334,6 +334,7 @@ procedure TSerialPortReceiveThread.Execute;
 var
   InBufferUsed: Integer;
   Buffer: array of Byte;
+  Read: Integer;
 begin
   InBufferUsed := 0;
   with Parent do repeat
@@ -343,11 +344,11 @@ begin
         InBufferUsed := WaitingData;
         if InBufferUsed > 0 then begin
           SetLength(Buffer, InBufferUsed);
-          RecvBuffer(Buffer, Length(Buffer));
+          Read := RecvBuffer(Buffer, Length(Buffer));
+          SetLength(Buffer, Read);
 
-          Parent.FReceiveBuffer.Size := Length(Buffer);
-          Parent.FReceiveBuffer.Position := 0;
-          Parent.FReceiveBuffer.Write(Buffer[0], Length(Buffer));
+          Parent.FReceiveBuffer.Count := Length(Buffer);
+          Parent.FReceiveBuffer.ReplaceBuffer(0, PByte(Buffer)^, Length(Buffer));
           if Assigned(Parent.FOnReceiveData) then
             Parent.FOnReceiveData(Parent.FReceiveBuffer);
         end else InBufferUsed := 0;
@@ -361,4 +362,4 @@ begin
 end;
 
 end.
-
+

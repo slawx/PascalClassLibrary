@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, blcksock, synsock, UCommPin, UCommon, UThreading,
-  DateUtils;
+  DateUtils, SpecializedList;
 
 type
   TCommTCPClient = class;
@@ -18,7 +18,7 @@ type
   TCommSocketReceiveThread = class(TListedThread)
   public
     Parent: TCommTCPClient;
-    Stream: TMemoryStream;
+    Stream: TListByte;
     procedure Execute; override;
     constructor Create(CreateSuspended: Boolean;
       const StackSize: SizeUInt = DefaultStackSize);
@@ -32,7 +32,7 @@ type
     FActive: Boolean;
     FOnReceiveData: TReceiveDataEvent;
     FReceiveThread: TCommSocketReceiveThread;
-    procedure ReceiveData(Sender: TCommPin; Stream: TStream);
+    procedure ReceiveData(Sender: TCommPin; Stream: TListByte);
     procedure SetActive(const AValue: Boolean);
   public
     Socket: TTCPBlockSocket;
@@ -52,10 +52,18 @@ resourcestring
 
 { TCommTCPClient }
 
-procedure TCommTCPClient.ReceiveData(Sender: TCommPin; Stream:TStream);
+procedure TCommTCPClient.ReceiveData(Sender: TCommPin; Stream: TListByte);
+var
+  Mem: TMemoryStream;
 begin
   if FActive then begin
-    Socket.SendStreamRaw(Stream);
+    try
+      Mem := TMemoryStream.Create;
+      Stream.WriteToStream(Mem);
+      Socket.SendStreamRaw(Mem);
+    finally
+      Mem.Free;
+    end;
   end;
 end;
 
@@ -119,9 +127,8 @@ begin
           SetLength(Buffer, InBufferUsed);
           RecvBuffer(Buffer, Length(Buffer));
 
-          Stream.Size := Length(Buffer);
-          Stream.Position := 0;
-          Stream.Write(Buffer[0], Length(Buffer));
+          Stream.Count := Length(Buffer);
+          Stream.ReplaceBuffer(0, Pointer(Buffer)^, Length(Buffer));
           Pin.Send(Stream);
         end else InBufferUsed := 0;
       end else InBufferUsed := 0;
@@ -133,7 +140,7 @@ constructor TCommSocketReceiveThread.Create(CreateSuspended: Boolean;
   const StackSize: SizeUInt);
 begin
   inherited;
-  Stream := TMemoryStream.Create;
+  Stream := TListByte.Create;
 end;
 
 destructor TCommSocketReceiveThread.Destroy;
