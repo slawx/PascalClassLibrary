@@ -9,7 +9,7 @@ interface
 uses
   UCommFrame, UCommHub, UCommPin, UCommSerialPort, UCommThread, UPacketBurst, 
   USerialPort, UCommConcentrator, UCommDelay, UCommTCPClient, UCommTCPServer, 
-  UCommTelnet, UCommTelnetComPortOption, LazarusPackageIntf;
+  UCommTelnet, UCommTelnetComPortOption, UCommMark, LazarusPackageIntf;
 
 implementation
 

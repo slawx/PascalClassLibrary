@@ -18,6 +18,7 @@ type
     FList: TListByte;
     FEndianness: TEndianness;
     SwapData: Boolean;
+    procedure SetList(const AValue: TListByte);
     procedure SetEndianness(const AValue: TEndianness);
     procedure ReverseByteOrder(var Buffer; Count: Integer);
   public
@@ -58,7 +59,7 @@ type
     procedure Clear;
     destructor Destroy; override;
     property Endianness: TEndianness read FEndianness write SetEndianness;
-    property List: TListByte read FList write FList;
+    property List: TListByte read FList write SetList;
     property Grow: Boolean read FGrow write FGrow;
   end;
 
@@ -233,6 +234,12 @@ function TBinarySerializer.ReadWord: Word;
 begin
   Read(Result, SizeOf(Word));
   if SwapData then Result := SwapEndian(Result);
+end;
+
+procedure TBinarySerializer.SetList(const AValue: TListByte);
+begin
+  if OwnsList then FList.Free;
+  FList := AValue;
 end;
 
 procedure TBinarySerializer.SetEndianness(const AValue: TEndianness);
