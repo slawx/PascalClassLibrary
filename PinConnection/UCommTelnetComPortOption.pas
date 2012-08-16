@@ -87,9 +87,11 @@ end;
 procedure TTelnetOptionComPort.SetActive(AValue: Boolean);
 begin
   inherited;
-  //SetBaudRate(FBaudRate);
-  //SetDTR(FDTR);
-  //SetRTS(FRTS);
+  if AValue then begin
+    SetBaudRate(FBaudRate);
+    SetDTR(FDTR);
+    SetRTS(FRTS);
+  end;
 end;
 
 procedure TTelnetOptionComPort.SetBaudRate(Value: Cardinal);
@@ -100,6 +102,7 @@ begin
   if Telnet.Active then
   try
     Request := TBinarySerializer.Create;
+    Request.Endianness := enBig;
     Request.List := TListByte.Create;
     Request.OwnsList := True;
     Request.WriteByte(Byte(cpcSetBaudRate));
@@ -120,9 +123,11 @@ begin
     Request := TBinarySerializer.Create;
     Request.List := TListByte.Create;
     Request.OwnsList := True;
+    Request.Endianness := enBig;
     Response := TBinarySerializer.Create;
     Response.List := TListByte.Create;
     Response.OwnsList := True;
+    Response.Endianness := enBig;
     Request.WriteByte(Byte(cpcSetBaudRate));
     Request.WriteCardinal(0);
     Telnet.SendSubCommand(tmComPortControlOption, Request.List, Response.List);

@@ -84,6 +84,7 @@ type
     Timeout: TDateTime;
     PortType: TTelnetPortType;
     ErrorCount: Integer;
+    OptionsNegotationEnable: Boolean;
     procedure Register(Option: TTelnetOption);
     procedure Unregister(Option: TTelnetOption);
     function CheckOption(OptionCode: TTelnetCommand): Boolean;
@@ -146,7 +147,7 @@ var
   ResponseData: TBinarySerializer;
   I: Integer;
 begin
-  CheckOption;
+  if Telnet.OptionsNegotationEnable then CheckOption;
   try
     RequestData := TBinarySerializer.Create;
     RequestData.List := TListByte.Create;
@@ -157,14 +158,16 @@ begin
 
     RequestData.WriteByte(Byte(Code));
     RequestData.WriteList(Request, 0, Request.Count);
-    Telnet.SendCommand(tcSB, RequestData.List, ResponseData.List);
-    if ResponseData.List[0] <> Byte(Code) then
-      raise Exception.Create(SWrongResponseOption);
-    ResponseData.List.Delete(0);
-    Response.Assign(ResponseData.List);
+    if Assigned(Response) then begin
+      Telnet.SendCommand(tcSB, RequestData.List, ResponseData.List);
+      if ResponseData.List[0] <> Byte(Code) then
+        raise Exception.Create(SWrongResponseOption);
+      ResponseData.List.Delete(0);
+      Response.Assign(ResponseData.List);
+    end else Telnet.SendCommand(tcSB, RequestData.List, nil);
   finally
     RequestData.Free;
-    RequestData.Free;
+    ResponseData.Free;
   end;
 end;
 
@@ -200,7 +203,10 @@ begin
   if FActive = AValue then Exit;
   FActive := AValue;
   for I := 0 to Options.Count - 1 do
-    TTelnetOption(Options[I]).Active := AValue;
+  with TTelnetOption(Options[I]) do begin
+    if (not ServerChecked) and OptionsNegotationEnable then CheckOption;
+    Active := AValue;
+  end;
 end;
 
 procedure TCommTelnet.RawDataReceive(Sender: TCommPin; Stream: TListByte);
@@ -223,6 +229,10 @@ begin
         end else RawData.WriteByte(Data);
       end else
       if FState = tsIAC then begin
+        if Data = Byte(tcIAC) then begin
+          RawData.WriteByte(Data);
+          FState := tsNormal;
+        end else
         if Data = Byte(tcSB) then begin
           // Subnegotation
           FCommandData.WriteByte(Data);
