@@ -9,12 +9,14 @@ interface
 uses
   USerialPort, UPacketBurst, UCommFrame, UCommHub, UCommPin, UCommSerialPort, 
   UCommThread, UCommConcentrator, UCommDelay, UCommTCPClient, UCommTCPServer, 
-  UCommTelnet, UCommTelnetComPortOption, UCommMark, LazarusPackageIntf;
+  UCommTelnet, UCommTelnetComPortOption, UCommMark, UPinConnection, 
+  LazarusPackageIntf;
 
 implementation
 
 procedure Register;
 begin
+  RegisterUnit('UPinConnection', @UPinConnection.Register);
 end;
 
 initialization

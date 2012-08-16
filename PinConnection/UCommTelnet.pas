@@ -66,7 +66,7 @@ type
 
   { TCommTelnet }
 
-  TCommTelnet = class
+  TCommTelnet = class(TCommNode)
   private
     FResponses: TListObject; // TListObject<TListByte>
     FActive: Boolean;
@@ -91,7 +91,7 @@ type
     function SearchOption(OptionCode: TTelnetCommand): TTelnetOption;
     procedure SendSubCommand(OptionCode: TTelnetCommand; Request, Response: TListByte);
     procedure SendCommand(Code: TTelnetCode; Request, Response: TListByte);
-    constructor Create;
+    constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     property Active: Boolean read FActive write SetActive;
   end;
@@ -398,16 +398,19 @@ begin
   end;
 end;
 
-constructor TCommTelnet.Create;
+constructor TCommTelnet.Create(AOwner: TComponent);
 begin
+  inherited;
   FResponses := TListObject.Create;
   FCommandData := TBinarySerializer.Create;
   FCommandData.List := TListByte.Create;
   FCommandData.OwnsList := True;
   TelnetPin := TCommPin.Create;
   TelnetPin.OnReceive := TelnetDataReceive;
+  TelnetPin.Node := Self;
   RawPin := TCommPin.Create;
   RawPin.OnReceive := RawDataReceive;
+  RawPin.Node := Self;
   Options := TListObject.Create;
   Options.OwnsObjects := False;
   Timeout := 2 * OneSecond;

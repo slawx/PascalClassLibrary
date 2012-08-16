@@ -13,7 +13,7 @@ type
 
   { TCommFrame }
 
-  TCommFrame = class
+  TCommFrame = class(TCommNode)
   private
     LastCharIsSpecialChar: Boolean;
     ReceiveBuffer: TBinarySerializer;
@@ -34,7 +34,7 @@ type
     ControlCodeFrameEnd: Byte;
     ControlCodeSpecialChar: Byte;
     function ComputeRawSize(DataStream: TListByte): Integer;
-    constructor Create;
+    constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     property FrameErrorCount: Integer read FFrameErrorCount;
     property CRCErrorCount: Integer read FCRCErrorCount;
@@ -45,15 +45,18 @@ implementation
 
 { TCommFrame }
 
-constructor TCommFrame.Create;
+constructor TCommFrame.Create(AOwner: TComponent);
 begin
+  inherited;
   ReceiveBuffer := TBinarySerializer.Create;
   ReceiveBuffer.List := TListByte.Create;
   ReceiveBuffer.OwnsList := True;
   RawDataPin := TCommPin.Create;
   RawDataPin.OnReceive := RawDataReceive;
+  RawDataPin.Node := Self;
   FrameDataPin := TCommPin.Create;
   FrameDataPin.OnReceive := FrameDataReceive;
+  FrameDataPin.Node := Self;
   PacketLoss := 0;
   SpecialChar := $fe;
   ControlCodeFrameStart := $fd;

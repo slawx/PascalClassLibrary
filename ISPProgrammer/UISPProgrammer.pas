@@ -5,8 +5,8 @@ unit UISPProgrammer;
 interface
 
 uses
-  Classes, SysUtils, Registry, UIntelHexFile, UCommSerialPort,
-  UCPUType, UJobProgressView;
+  Classes, SysUtils, Registry, UIntelHexFile,
+  UCPUType, UJobProgressView, UCommPin;
 
 type
   TLogEvent = procedure (Text: string) of object;
@@ -30,8 +30,8 @@ type
   public
     HexFile: TIntelHexFile;
     FileName: string;
-    SerialPort: TCommSerialPort;
     Capabilities: TISPProgCapabilities;
+    ExtPin: TCommPin;
     procedure Log(Text: string);
     procedure LoadFromRegistry(Root: HKEY; Key: string); virtual;
     procedure SaveToRegistry(Root: HKEY; Key: string); virtual;
@@ -129,14 +129,15 @@ end;
 
 constructor TISPProgrammer.Create;
 begin
+  ExtPin := TCommPin.Create;
   HexFile := TIntelHexFile.Create;
   HexFile.BytePerLine := 20;
-  SerialPort := nil;
 end;
 
 destructor TISPProgrammer.Destroy;
 begin
   Active := False;
+  ExtPin.Free;
   HexFile.Free;
   inherited Destroy;
 end;

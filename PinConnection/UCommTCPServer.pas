@@ -42,7 +42,7 @@ type
 
   { TCommTCPServer }
 
-  TCommTCPServer = class
+  TCommTCPServer = class(TCommNode)
   private
     FActive: Boolean;
     FOnConnect: TSocketConnectEvent;
@@ -58,7 +58,7 @@ type
     property Active: Boolean read FActive write SetActive;
     property OnConnect: TSocketConnectEvent read FOnConnect write FOnConnect;
     property OnDisconnect: TSocketConnectEvent read FOnDisconnect write FOnDisconnect;
-    constructor Create;
+    constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
   end;
 
@@ -84,6 +84,7 @@ begin
   Socket := TTCPBlockSocket.Create;
   Pin := TCommPin.Create;
   Pin.OnReceive := ReceiveData;
+  Pin.Node := Server;
 end;
 
 destructor TCommTCPServerSession.Destroy;
@@ -186,9 +187,9 @@ begin
   end;
 end;
 
-constructor TCommTCPServer.Create;
+constructor TCommTCPServer.Create(AOwner: TComponent);
 begin
-  inherited Create;
+  inherited;
   Sessions := TListObject.Create;
   Socket := TTCPBlockSocket.Create;
 end;

@@ -27,7 +27,7 @@ type
 
   { TCommTCPClient }
 
-  TCommTCPClient = class
+  TCommTCPClient = class(TCommNode)
   private
     FActive: Boolean;
     FOnReceiveData: TReceiveDataEvent;
@@ -40,7 +40,7 @@ type
     Address: string;
     Port: Word;
     property Active: Boolean read FActive write SetActive;
-    constructor Create;
+    constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
   end;
 
@@ -92,12 +92,13 @@ begin
   end;
 end;
 
-constructor TCommTCPClient.Create;
+constructor TCommTCPClient.Create(AOwner: TComponent);
 begin
-  inherited Create;
+  inherited;
   Socket := TTCPBlockSocket.Create;
   Pin := TCommPin.Create;
   Pin.OnReceive := ReceiveData;
+  Pin.Node := Self;
 end;
 
 destructor TCommTCPClient.Destroy;

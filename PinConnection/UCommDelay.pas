@@ -32,7 +32,7 @@ type
 
   { TCommDelay }
 
-  TCommDelay = class
+  TCommDelay = class(TCommNode)
   private
     FActive: Boolean;
     FDelay: TDateTime;
@@ -48,7 +48,7 @@ type
     Lock2: TCriticalSection;
     Pin1: TCommPin;
     Pin2: TCommPin;
-    constructor Create;
+    constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     property Delay: TDateTime read FDelay write FDelay;
     property Active: Boolean read FActive write SetActive;
@@ -168,16 +168,19 @@ begin
   end;
 end;
 
-constructor TCommDelay.Create;
+constructor TCommDelay.Create(AOwner: TComponent);
 begin
+  inherited;
   Lock1 := TCriticalSection.Create;
   Lock2 := TCriticalSection.Create;
   PacketQueue1 := TListObject.Create;
   PacketQueue2 := TListObject.Create;
   Pin1 := TCommPin.Create;
   Pin1.OnReceive := ReceiveData1;
+  Pin1.Node := Self;
   Pin2 := TCommPin.Create;
   Pin2.OnReceive := ReceiveData2;
+  Pin2.Node := Self;
 end;
 
 destructor TCommDelay.Destroy;

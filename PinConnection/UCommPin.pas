@@ -9,6 +9,7 @@ uses
 
 type
   TCommPin = class;
+  TCommNode = class;
 
   TDataDiretion = (ddReceive, ddSend);
   TOnLogDataEvent = procedure (Stream: TListByte; Direction: TDataDiretion) of object;
@@ -34,6 +35,7 @@ type
     procedure ReceiveStatus(AValue: Integer);
   public
     RemotePin: TCommPin;
+    Node: TCommNode;
     constructor Create;
     destructor Destroy; override;
     procedure Connect(Pin: TCommPin);
@@ -51,8 +53,27 @@ type
     property OnSetSatus: TOnSetStatus read FOnSetStatus write FOnSetStatus;
   end;
 
+  { TCommNode }
+
+  TCommNode = class(TComponent)
+  private
+    FActive: Boolean;
+  protected
+    procedure SetActive(AValue: Boolean); virtual;
+  public
+    property Active: Boolean read FActive write SetActive;
+  end;
+
 
 implementation
+
+{ TCommNode }
+
+procedure TCommNode.SetActive(AValue: Boolean);
+begin
+  if FActive = AValue then Exit;
+  FActive := AValue;
+end;
 
 { TCommPin }
 

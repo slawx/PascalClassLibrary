@@ -7,7 +7,8 @@ interface
 uses
   Classes, SysUtils, USerialPort, UCommSerialPort, UCommPin, UCommMark,
   UJobProgressView, SyncObjs, DateUtils, Dialogs, URegistry,
-  Forms, UISPProgrammer, Registry, UBinarySerializer, SpecializedList;
+  Forms, UISPProgrammer, Registry, UBinarySerializer, SpecializedList,
+  UCommTelnet;
 
 const
   Mark = #13#10;
@@ -134,6 +135,9 @@ begin
 end;
 
 procedure TDallasProgrammer.SetActive(AValue: Boolean);
+var
+  SerialPort: TCommSerialPort;
+  Telnet: TCommTelnet;
 begin
   if Active = AValue then Exit;
   inherited;
@@ -143,31 +147,42 @@ begin
     Request.OwnsList := True;
     HexData := TStringList.Create;
 
-    SerialPort.Active := False;
-    SerialPortBackup.Assign(SerialPort);
-    SerialPortBackupPin := SerialPort.Pin.RemotePin;
-    SerialPort.Pin.Disconnect;
+    if ExtPin.Connected and (ExtPin.RemotePin.Node is TCommSerialPort) then begin
+      SerialPort := TCommSerialPort(ExtPin.RemotePin.Node);
+      SerialPort.Active := False;
+      SerialPortBackup.Assign(SerialPort);
+      SerialPortBackupPin := SerialPort.Pin.RemotePin;
+      SerialPort.Pin.Disconnect;
 
-    //SerialPort.Name := SerialPort.Name;
-    SerialPort.FlowControl := fcNone;
-    SerialPort.BaudRate := BaudRate;
-    SerialPort.DTR := True;
-    SerialPort.Pin.Connect(CommMark.PinRaw);
-    SerialPort.Flush;
-    SerialPort.Purge;
-    SerialPort.Active := True;
-    if Assigned(FOnLogData) then
-      Pin.OnLogData := FOnLogData;
+      //SerialPort.Name := SerialPort.Name;
+      SerialPort.SerialPort.FlowControl := fcNone;
+      SerialPort.SerialPort.BaudRate := BaudRate;
+      SerialPort.SerialPort.DTR := True;
+      SerialPort.Pin.Connect(CommMark.PinRaw);
+      SerialPort.SerialPort.Flush;
+      SerialPort.SerialPort.Purge;
+      SerialPort.Active := True;
+      if Assigned(FOnLogData) then
+        Pin.OnLogData := FOnLogData;
+    end;
+    if ExtPin.Connected and (ExtPin.RemotePin.Node is TCommTelnet) then begin
+      Telnet := TCommTelnet(ExtPin.RemotePin.Node);
+    end;
     ResponseClear;
     CommMark.Active := True;
-
     ReadIdentification;
   end else begin
     CommMark.Active := False;
-    SerialPort.Active := False;
-    SerialPort.Assign(SerialPortBackup);
-    SerialPort.Pin.Connect(SerialPortBackupPin);
-    SerialPort.Active := True;
+    if ExtPin.Connected and (ExtPin.RemotePin.Node is TCommSerialPort) then begin
+      SerialPort := TCommSerialPort(ExtPin.Node);
+      SerialPort.Active := False;
+      SerialPort.Assign(SerialPortBackup);
+      SerialPort.Pin.Connect(SerialPortBackupPin);
+      SerialPort.Active := True;
+    end;
+    if ExtPin.Connected and (ExtPin.RemotePin.Node is TCommTelnet) then begin
+      Telnet := TCommTelnet(ExtPin.RemotePin.Node);
+    end;
     HexData.Free;
     Request.Free;
   end;
@@ -358,11 +373,11 @@ begin
   Pin.OnReceive := ReceiveData;
   Mark := TListByte.Create;
   Mark.SetArray([13, 10]);
-  CommMark := TCommMark.Create;
+  CommMark := TCommMark.Create(nil);
   CommMark.Mark.Assign(Mark);
   CommMark.PinFrame.Connect(Pin);
   BaudRate := 9600;
-  SerialPortBackup := TCommSerialPort.Create;
+  SerialPortBackup := TCommSerialPort.Create(nil);
 end;
 
 destructor TDallasProgrammer.Destroy;

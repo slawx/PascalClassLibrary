@@ -11,7 +11,7 @@ type
 
   { TCommMark }
 
-  TCommMark = class
+  TCommMark = class(TCommNode)
   private
     FActive: Boolean;
     FMarkIndex: Integer;
@@ -26,7 +26,7 @@ type
     PinFrame: TCommPin;
     Mark: TListByte;
     procedure Reset;
-    constructor Create;
+    constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     property Active: Boolean read FActive write SetActive;
   end;
@@ -87,14 +87,17 @@ begin
   FFrameData.Clear;
 end;
 
-constructor TCommMark.Create;
+constructor TCommMark.Create(AOwner: TComponent);
 begin
+  inherited;
   PinRaw := TCommPin.Create;
   PinRaw.OnReceive := RawDataReceive;
   PinRaw.OnSetSatus := RawSetStatus;
+  PinRaw.Node := Self;
   PinFrame := TCommPin.Create;
   PinFrame.OnReceive := FrameDataReceive;
   PinFrame.OnSetSatus := FrameSetStatus;
+  PinFrame.Node := Self;
   Mark := TListByte.Create;
   FMarkIndex := 0;
   FFrameData := TListByte.Create;

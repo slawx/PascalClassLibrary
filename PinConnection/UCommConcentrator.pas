@@ -25,7 +25,7 @@ type
 
   { TCommConcentrator }
 
-  TCommConcentrator = class
+  TCommConcentrator = class(TCommNode)
   private
     FActive: Boolean;
     FPins: TPinList;
@@ -35,7 +35,7 @@ type
     procedure Receive(Sender: TCommPin; Stream: TListByte);
     procedure SetStatus(Sender: TCommPin; Status: Integer);
   public
-    constructor Create;
+    constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     property Pins: TPinList read FPins write FPins;
     property Main: TCommPin read FMain write FMain;
@@ -56,6 +56,7 @@ end;
 function TPinList.AddNew: TCommPin;
 begin
   Result := TCommPin(Items[Add(TCommPin.Create)]);
+  Result.Node := Concentrator;
 end;
 
 function TPinList.Extract(Item: TObject): TObject;
@@ -108,8 +109,9 @@ begin
   if FActive then FMain.Status := Status;
 end;
 
-constructor TCommConcentrator.Create;
+constructor TCommConcentrator.Create(AOwner: TComponent);
 begin
+  inherited;
   FPins := TPinList.Create;
   FPins.Concentrator := Self;
   FMain := TCommPin.Create;

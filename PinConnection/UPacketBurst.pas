@@ -18,7 +18,7 @@ type
 
   { TPacketBurst }
 
-  TPacketBurst = class
+  TPacketBurst = class(TCommNode)
   private
     FActive: Boolean;
     SendThreadEvent: TEvent;
@@ -35,7 +35,7 @@ type
     PacketSinglePin: TCommPin;
     PacketBurstPin: TCommPin;
     destructor Destroy; override;
-    constructor Create;
+    constructor Create(AOwner: TComponent); override;
     property Active: Boolean read FActive write SetActive;
   end;
 
@@ -43,12 +43,15 @@ implementation
 
 { TSerialPort }
 
-constructor TPacketBurst.Create;
+constructor TPacketBurst.Create(AOwner: TComponent);
 begin
+  inherited;
   PacketSinglePin := TCommPin.Create;
   PacketSinglePin.OnReceive := PacketSingleReceive;
+  PacketSinglePin.Node := Self;
   PacketBurstPin := TCommPin.Create;
   PacketBurstPin.OnReceive := PacketBurstReceive;
+  PacketBurstPin.Node := Self;
   SendThreadEvent := TSimpleEvent.Create;
   SendPeriod := 1;
 end;

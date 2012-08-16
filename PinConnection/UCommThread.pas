@@ -27,7 +27,7 @@ type
 
   { TCommThread }
 
-  TCommThread = class
+  TCommThread = class(TCommNode)
   private
     FActive: Boolean;
     FOnReceiveData: TReceiveDataEvent;
@@ -46,7 +46,7 @@ type
     Ext: TCommPin;
     Pin: TCommPin;
     property Active: Boolean read FActive write SetActive;
-    constructor Create;
+    constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
   end;
 
@@ -102,9 +102,9 @@ begin
   end;
 end;
 
-constructor TCommThread.Create;
+constructor TCommThread.Create(AOwner: TComponent);
 begin
-  inherited Create;
+  inherited;
   FInputBuffer := TBinarySerializer.Create;
   FInputBuffer.List := TListByte.Create;
   FInputBuffer.OwnsList := True;
@@ -112,9 +112,11 @@ begin
   Ext := TCommPin.Create;
   Ext.OnReceive := ExtReceiveData;
   Ext.OnSetSatus := ExtSetStatus;
+  Ext.Node := Self;
   Pin := TCommPin.Create;
   Pin.OnReceive := PinReceiveData;
   Pin.OnSetSatus := PinSetStatus;
+  Pin.Node := Self;
   FDataAvailable := TSimpleEvent.Create;
   FStatusEvent := TSimpleEvent.Create;
 end;

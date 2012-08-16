@@ -20,8 +20,8 @@
     </CompilerOptions>
     <Description Value="System for class bidirectional communication interconnection."/>
     <License Value="GNU/GPL"/>
-    <Version Minor="3"/>
-    <Files Count="14">
+    <Version Minor="4"/>
+    <Files Count="15">
       <Item1>
         <Filename Value="USerialPort.pas"/>
         <UnitName Value="USerialPort"/>
@@ -78,6 +78,11 @@
         <Filename Value="UCommMark.pas"/>
         <UnitName Value="UCommMark"/>
       </Item14>
+      <Item15>
+        <Filename Value="UPinConnection.pas"/>
+        <HasRegisterProc Value="True"/>
+        <UnitName Value="UPinConnection"/>
+      </Item15>
     </Files>
     <i18n>
       <EnableI18N Value="True"/>
