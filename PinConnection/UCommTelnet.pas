@@ -47,37 +47,52 @@ type
 
   TTelnetOption = class
   private
+    FActive: Boolean;
     FOnRequest: TTelnetOptionEvent;
+  protected
+    procedure SetActive(AValue: Boolean); virtual;
   public
     Telnet: TCommTelnet;
-    Code: TTelnetOption;
+    Code: TTelnetCommand;
     ServerChecked: Boolean;
-    ServerSupport: Boolean;
+    SupportedByServer: Boolean;
+    function CheckOption: Boolean;
+    procedure SendCommand(Request, Response: TListByte);
     property OnRequest: TTelnetOptionEvent read FOnRequest write FOnRequest;
+    property Active: Boolean read FActive write SetActive;
   end;
 
-  { TTelnetOptionList }
+  TTelnetPortType = (ptClient, ptServer);
 
   { TCommTelnet }
 
   TCommTelnet = class
   private
+    FResponses: TListObject; // TListObject<TListByte>
+    FActive: Boolean;
     FState: TTelnetState;
-    FCommandData: TStreamHelper;
-    procedure TelnetDataReceive(Sender: TCommPin; Stream: TStream);
-    procedure RawDataReceive(Sender: TCommPin; Stream: TStream);
+    FCommandData: TBinarySerializer;
+    procedure SetActive(AValue: Boolean);
+    procedure TelnetDataReceive(Sender: TCommPin; Stream: TListByte);
+    procedure RawDataReceive(Sender: TCommPin; Stream: TListByte);
+    procedure ReadResponse(Response: TListByte);
+    function ResponseCount: Integer;
   public
     Options: TListObject;
     TelnetPin: TCommPin;
     RawPin: TCommPin;
     Timeout: TDateTime;
+    PortType: TTelnetPortType;
+    ErrorCount: Integer;
     procedure Register(Option: TTelnetOption);
     procedure Unregister(Option: TTelnetOption);
-    function CheckOption(Option: TTelnetCommand): Boolean;
-    procedure SendSubCommand(Option: TTelnetCommand; Request, Response: TListByte);
+    function CheckOption(OptionCode: TTelnetCommand): Boolean;
+    function SearchOption(OptionCode: TTelnetCommand): TTelnetOption;
+    procedure SendSubCommand(OptionCode: TTelnetCommand; Request, Response: TListByte);
     procedure SendCommand(Code: TTelnetCode; Request, Response: TListByte);
     constructor Create;
     destructor Destroy; override;
+    property Active: Boolean read FActive write SetActive;
   end;
 
 
@@ -86,21 +101,87 @@ implementation
 resourcestring
   SUnknownState = 'Unknown state';
   SWrongResponseOption = 'Wrong response option';
+  SWrongResponseCode = 'Wrong response code';
+  SWrongResponse = 'Wrong response';
+  SOptionNotFound = 'Option not found';
+  STimeout = 'Telnet command timout';
+
+{ TTelnetOption }
+
+procedure TTelnetOption.SetActive(AValue: Boolean);
+begin
+  if FActive = AValue then Exit;
+  FActive := AValue;
+end;
+
+function TTelnetOption.CheckOption: Boolean;
+var
+  RequestData: TBinarySerializer;
+  ResponseData: TBinarySerializer;
+begin
+  if not ServerChecked then
+  try
+    RequestData := TBinarySerializer.Create;
+    RequestData.List := TListByte.Create;
+    RequestData.OwnsList := True;
+    ResponseData := TBinarySerializer.Create;
+    ResponseData.List := TListByte.Create;
+    ResponseData.OwnsList := True;
+
+    RequestData.WriteByte(Byte(Code));
+    Telnet.SendCommand(tcDo, RequestData.List, ResponseData.List);
+    if ResponseData.List[0] = Byte(tcWILL) then SupportedByServer := True
+      else if ResponseData.List[0] = Byte(tcWONT) then SupportedByServer := False
+      else raise Exception.Create(SWrongResponse);
+    ServerChecked := True;
+  finally
+    RequestData.Free;
+    RequestData.Free;
+  end;
+end;
+
+procedure TTelnetOption.SendCommand(Request, Response: TListByte);
+var
+  RequestData: TBinarySerializer;
+  ResponseData: TBinarySerializer;
+  I: Integer;
+begin
+  CheckOption;
+  try
+    RequestData := TBinarySerializer.Create;
+    RequestData.List := TListByte.Create;
+    RequestData.OwnsList := True;
+    ResponseData := TBinarySerializer.Create;
+    ResponseData.List := TListByte.Create;
+    ResponseData.OwnsList := True;
+
+    RequestData.WriteByte(Byte(Code));
+    RequestData.WriteList(Request, 0, Request.Count);
+    Telnet.SendCommand(tcSB, RequestData.List, ResponseData.List);
+    if ResponseData.List[0] <> Byte(Code) then
+      raise Exception.Create(SWrongResponseOption);
+    ResponseData.List.Delete(0);
+    Response.Assign(ResponseData.List);
+  finally
+    RequestData.Free;
+    RequestData.Free;
+  end;
+end;
 
 { TCommTelnet }
 
-procedure TCommTelnet.TelnetDataReceive(Sender: TCommPin; Stream: TStream);
+procedure TCommTelnet.TelnetDataReceive(Sender: TCommPin; Stream: TListByte);
 var
   Data: Byte;
   RawData: TBinarySerializer;
+  I: Integer;
 begin
   try
     RawData := TBinarySerializer.Create;
     RawData.List := TListByte.Create;
     RawData.OwnsList := True;
-    Stream.Position := 0;
-    while Stream.Position < Stream.Size do begin
-      Data := Stream.ReadByte;
+    for I := 0 to Stream.Count - 1 do begin
+      Data := Stream[I];
       if Data = Byte(tcIAC) then begin
         RawData.WriteByte(Byte(tcIAC));
         RawData.WriteByte(Byte(tcIAC));
@@ -112,53 +193,79 @@ begin
   end;
 end;
 
-procedure TCommTelnet.RawDataReceive(Sender: TCommPin; Stream: TStream);
+procedure TCommTelnet.SetActive(AValue: Boolean);
+var
+  I: Integer;
+begin
+  if FActive = AValue then Exit;
+  FActive := AValue;
+  for I := 0 to Options.Count - 1 do
+    TTelnetOption(Options[I]).Active := AValue;
+end;
+
+procedure TCommTelnet.RawDataReceive(Sender: TCommPin; Stream: TListByte);
 var
   Data: Byte;
   RawData: TBinarySerializer;
+  I: Integer;
 begin
   try
     RawData := TBinarySerializer.Create;
     RawData.List := TListByte.Create;
     RawData.OwnsList := True;
 
-    Stream.Position := 0;
-    while Stream.Position < Stream.Size do begin
-      Data := Stream.ReadByte;
+    for I := 0 to Stream.Count - 1 do begin
+      Data := Stream[I];
       if FState = tsNormal then begin
-        if Data = Byte(tcIAC) then FState := tsIAC
-          else RawData.WriteByte(Data);
+        if Data = Byte(tcIAC) then begin
+          FCommandData.Clear;
+          FState := tsIAC;
+        end else RawData.WriteByte(Data);
       end else
       if FState = tsIAC then begin
         if Data = Byte(tcSB) then begin
+          // Subnegotation
+          FCommandData.WriteByte(Data);
           FState := tsSB;
-          FCommandData.Size := 0;
-        end
-        else if Data = Byte(tcDO) then begin
+        end else
+        if (Data = Byte(tcWILL)) or (Data = Byte(tcDONT)) or (Data = Byte(tcWONT)) or (Data = Byte(tcDO))
+        then begin
+          // Three byte negotation commands
           FCommandData.WriteByte(Data);
           FState := tsOption;
         end else
-        if Data = Byte(tcDONT) then begin
+        if (Data = Byte(tcAYT)) or (Data = Byte(tcNOP)) or (Data = Byte(tcGA)) or
+        (Data = Byte(tcEL)) or (Data = Byte(tcEC)) or (Data = Byte(tcAO)) or
+        (Data = Byte(tcIP)) or (Data = Byte(tcBREAK)) or (Data = Byte(tcDATA_MARK)) or
+        (Data = Byte(tcEOR)) then begin
+          // Two byte commands
           FCommandData.WriteByte(Data);
-          FState := tsOption;
+          FResponses.AddNew(TListByte.Create);
+          TListByte(FResponses.Last).Assign(FCommandData.List);         FState := tsNormal;
         end else
-        if Data = Byte(tcWONT) then begin
-          FCommandData.WriteByte(Data);
-          FState := tsOption;
-        end else FState := tsNormal;
+          FState := tsNormal;
       end else
       if FState = tsSB then begin
+        // Data inside subnegotation
         if Data = Byte(tcIAC) then FState := tsSB_IAC
-        else FCommandData.WriteByte(Data);
+          else FCommandData.WriteByte(Data);
       end else
       if FState = tsSB_IAC then begin
+        // End of subnegotation data
         if Data = Byte(tcSE) then begin
+          FResponses.AddNew(TListByte.Create);
+          TListByte(FResponses.Last).Assign(FCommandData.List);
           FState := tsNormal;
-        end else
-
+        end else begin
+          Inc(ErrorCount);
+          FState := tsNormal;
+        end;
       end else
       if FState = tsOption then begin
+        // Third byte of negotation
         FCommandData.WriteByte(Data);
+        FResponses.AddNew(TListByte.Create);
+        TListByte(FResponses.Last).Assign(FCommandData.List);
         FState := tsNormal;
       end else raise Exception.Create(SUnknownState);
     end;
@@ -166,6 +273,26 @@ begin
   finally
     RawData.Free;
   end;
+end;
+
+procedure TCommTelnet.ReadResponse(Response: TListByte);
+var
+  TimeStart: TDateTime;
+  ElapsedTime: TDateTime;
+begin
+  TimeStart := Now;
+  repeat
+    ElapsedTime := Now - TimeStart;
+  until (ElapsedTime > Timeout) or (ResponseCount > 0);
+  if ElapsedTime > Timeout then
+    raise Exception.Create(STimeout);
+  Response.Assign(TListByte(FResponses.First));
+  FResponses.Delete(0);
+end;
+
+function TCommTelnet.ResponseCount: Integer;
+begin
+  Result := FResponses.Count;
 end;
 
 procedure TCommTelnet.Register(Option: TTelnetOption);
@@ -179,54 +306,42 @@ begin
   Options.Remove(Option);
 end;
 
-function TCommTelnet.CheckOption(Option: TTelnetCommand): Boolean;
+function TCommTelnet.CheckOption(OptionCode: TTelnetCommand): Boolean;
 var
-  Data: TBinarySerializer;
+  Option: TTelnetOption;
 begin
-  try
-    Data := TBinarySerializer.Create;
-    Data.List := TListByte.Create;
-    Data.OwnsList := True;
-    Data.WriteByte(Byte(tcWILL));
-    Data.WriteByte(Byte(Option));
-    RawPin.Send(Data.List);
-  finally
-    Data.Free;
-  end;
+  Option := SearchOption(OptionCode);
+  if Assigned(Option) then Result := Option.CheckOption
+    else raise Exception.Create(SOptionNotFound);
 end;
 
-procedure TCommTelnet.SendSubCommand(Option: TTelnetCommand; Request,
+function TCommTelnet.SearchOption(OptionCode: TTelnetCommand): TTelnetOption;
+var
+  I: Integer;
+begin
+  I := 0;
+  while (I < Options.Count) and (TTelnetOption(Options[I]).Code <> OptionCode) do
+    Inc(I);
+  if I < Options.Count then Result := TTelnetOption(Options[I])
+    else Result := nil;
+end;
+
+procedure TCommTelnet.SendSubCommand(OptionCode: TTelnetCommand; Request,
   Response: TListByte);
 var
-  RequestData: TBinarySerializer;
-  ResponseData: TBinarySerializer;
+  Option: TTelnetOption;
 begin
-  try
-    RequestData := TBinarySerializer.Create;
-    RequestData.List := TListByte.Create;
-    RequestData.OwnsList := True;
-    ResponseData := TBinarySerializer.Create;
-    ResponseData.List := TListByte.Create;
-    ResponseData.OwnsList := True;
-
-    RequestData.WriteByte(Byte(Option));
-    RequestData.WriteList(Request, 0, Request.Count);
-    RequestData.WriteByte(Byte(tcIAC));
-    RequestData.WriteByte(Byte(tcSE));
-    SendCommand(tcSB, RequestData.List, ResponseData.List);
-    ResponseData.Position := 0;
-    if ResponseData.ReadByte <> Byte(Option) then
-      raise Exception.Create(SWrongResponseOption);
-  finally
-    RequestData.Free;
-    RequestData.Free;
-  end;
+  Option := SearchOption(OptionCode);
+  if Assigned(Option) then Option.SendCommand(Request, Response)
+    else raise Exception.Create(SOptionNotFound);
 end;
 
 procedure TCommTelnet.SendCommand(Code: TTelnetCode; Request,
   Response: TListByte);
 var
   Data: TBinarySerializer;
+  LastIAC: Boolean;
+  I: Integer;
 begin
   try
     Data := TBinarySerializer.Create;
@@ -234,10 +349,40 @@ begin
     Data.OwnsList := True;
     Data.WriteByte(Byte(tcIAC));
     Data.WriteByte(Byte(Code));
+    for I := 0 to Request.Count - 1 do begin
+      if Request[I] = Byte(tcIAC) then Data.WriteByte(Byte(tcIAC));
+      Data.WriteByte(Request[I]);
+    end;
+    if Code = tcSB then begin
+      Data.WriteByte(Byte(tcIAC));
+      Data.WriteByte(Byte(tcSE));
+    end;
     RawPin.Send(Data.List);
-//    repeat
-
-//    until ;
+    if Assigned(Response) then begin
+      ReadResponse(Response);
+      if Response[0] <> Byte(Code) then
+        raise Exception.Create(SWrongResponseCode);
+      Response.Delete(0);
+      if Code = tcSB then begin
+        if (Response[Response.Count - 2] <> Byte(tcIAC)) or
+        (Response[Response.Count - 1] <> Byte(tcSE)) then
+          raise Exception.Create(SWrongResponse);
+        Response.DeleteItems(Response.Count - 2, 2);
+      end;
+      // Remove IAC escape character from data
+      I := 0;
+      while (I < Response.Count) do begin
+        if Response[I] = Byte(tcIAC) then begin
+          if not LastIAC then LastIAC := True
+          else begin
+            LastIAC := False;
+            Response.Delete(I);
+            Dec(I);
+          end;
+        end;
+        Inc(I);
+      end;
+    end;
   finally
     Data.Free;
   end;
@@ -245,10 +390,16 @@ end;
 
 constructor TCommTelnet.Create;
 begin
-  FCommandData := TStreamHelper.Create;
+  FResponses := TListObject.Create;
+  FCommandData := TBinarySerializer.Create;
+  FCommandData.List := TListByte.Create;
+  FCommandData.OwnsList := True;
   TelnetPin := TCommPin.Create;
+  TelnetPin.OnReceive := TelnetDataReceive;
   RawPin := TCommPin.Create;
+  RawPin.OnReceive := RawDataReceive;
   Options := TListObject.Create;
+  Options.OwnsObjects := False;
   Timeout := 2 * OneSecond;
 end;
 
@@ -258,6 +409,7 @@ begin
   Options.Free;
   TelnetPin.Free;
   RawPin.Free;
+  FResponses.Free;
   inherited Destroy;
 end;
 

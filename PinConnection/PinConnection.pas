@@ -7,8 +7,8 @@ unit PinConnection;
 interface
 
 uses
-  UCommFrame, UCommHub, UCommPin, UCommSerialPort, UCommThread, UPacketBurst, 
-  USerialPort, UCommConcentrator, UCommDelay, UCommTCPClient, UCommTCPServer, 
+  USerialPort, UPacketBurst, UCommFrame, UCommHub, UCommPin, UCommSerialPort, 
+  UCommThread, UCommConcentrator, UCommDelay, UCommTCPClient, UCommTCPServer, 
   UCommTelnet, UCommTelnetComPortOption, UCommMark, LazarusPackageIntf;
 
 implementation

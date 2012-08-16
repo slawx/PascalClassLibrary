@@ -23,32 +23,32 @@
     <Version Minor="3"/>
     <Files Count="14">
       <Item1>
-        <Filename Value="UCommFrame.pas"/>
-        <UnitName Value="UCommFrame"/>
-      </Item1>
-      <Item2>
-        <Filename Value="UCommHub.pas"/>
-        <UnitName Value="UCommHub"/>
-      </Item2>
-      <Item3>
-        <Filename Value="UCommPin.pas"/>
-        <UnitName Value="UCommPin"/>
-      </Item3>
-      <Item4>
-        <Filename Value="UCommSerialPort.pas"/>
-        <UnitName Value="UCommSerialPort"/>
-      </Item4>
-      <Item5>
-        <Filename Value="UCommThread.pas"/>
-        <UnitName Value="UCommThread"/>
-      </Item5>
-      <Item6>
-        <Filename Value="UPacketBurst.pas"/>
-        <UnitName Value="UPacketBurst"/>
-      </Item6>
-      <Item7>
         <Filename Value="USerialPort.pas"/>
         <UnitName Value="USerialPort"/>
+      </Item1>
+      <Item2>
+        <Filename Value="UPacketBurst.pas"/>
+        <UnitName Value="UPacketBurst"/>
+      </Item2>
+      <Item3>
+        <Filename Value="UCommFrame.pas"/>
+        <UnitName Value="UCommFrame"/>
+      </Item3>
+      <Item4>
+        <Filename Value="UCommHub.pas"/>
+        <UnitName Value="UCommHub"/>
+      </Item4>
+      <Item5>
+        <Filename Value="UCommPin.pas"/>
+        <UnitName Value="UCommPin"/>
+      </Item5>
+      <Item6>
+        <Filename Value="UCommSerialPort.pas"/>
+        <UnitName Value="UCommSerialPort"/>
+      </Item6>
+      <Item7>
+        <Filename Value="UCommThread.pas"/>
+        <UnitName Value="UCommThread"/>
       </Item7>
       <Item8>
         <Filename Value="UCommConcentrator.pas"/>

@@ -104,7 +104,6 @@ begin
     RawData.WriteByte(ControlCodeFrameEnd);
     if Random >= PacketLoss then
       RawDataPin.Send(RawData.List);
-
   finally
     RawData.Free;
   end;

@@ -60,6 +60,7 @@ begin
     try
       Mem := TMemoryStream.Create;
       Stream.WriteToStream(Mem);
+      Mem.Position := 0;
       Socket.SendStreamRaw(Mem);
     finally
       Mem.Free;
