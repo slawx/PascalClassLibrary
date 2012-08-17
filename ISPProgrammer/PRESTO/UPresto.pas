@@ -401,7 +401,7 @@ end;
 
 constructor TPrestoProgrammer.Create;
 begin
-  inherited Create;
+  inherited;
   Capabilities := [ipcErase, ipcWrite, ipcReset];
   Presto := TPresto.Create;
   Presto.SPIMode := smMode3;
@@ -413,8 +413,8 @@ end;
 
 destructor TPrestoProgrammer.Destroy;
 begin
-  Presto.Free;
-  inherited Destroy;
+  FreeAndNil(Presto);
+  inherited;
 end;
 
 procedure TPrestoProgrammer.ISPReadFlashPage(Address: Integer; Buffer: TStream);

@@ -20,7 +20,6 @@ type
 
   TPacketBurst = class(TCommNode)
   private
-    FActive: Boolean;
     SendThreadEvent: TEvent;
     SendThread: TPacketBurstSendThread;
     SendStreamLock: TCriticalSection;
@@ -28,7 +27,8 @@ type
     ReceiveStream: TBinarySerializer;
     procedure PacketSingleReceive(Sender: TCommPin; Stream: TListByte);
     procedure PacketBurstReceive(Sender: TCommPin; Stream: TListByte);
-    procedure SetActive(const AValue: Boolean);
+  protected
+    procedure SetActive(const AValue: Boolean); override;
   public
     SendPeriod: Integer;
     SendBurstSize: Integer;
@@ -36,7 +36,6 @@ type
     PacketBurstPin: TCommPin;
     destructor Destroy; override;
     constructor Create(AOwner: TComponent); override;
-    property Active: Boolean read FActive write SetActive;
   end;
 
 implementation
@@ -100,6 +99,7 @@ begin
   end else begin
     FreeAndNil(SendThread);
   end;
+  inherited;
 end;
 
 procedure TPacketBurst.PacketSingleReceive(Sender: TCommPin; Stream: TListByte);

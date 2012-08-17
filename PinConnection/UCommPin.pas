@@ -57,9 +57,9 @@ type
 
   TCommNode = class(TComponent)
   private
-    FActive: Boolean;
   protected
-    procedure SetActive(AValue: Boolean); virtual;
+    FActive: Boolean;
+    procedure SetActive(const AValue: Boolean); virtual;
   public
     property Active: Boolean read FActive write SetActive;
   end;
@@ -69,7 +69,7 @@ implementation
 
 { TCommNode }
 
-procedure TCommNode.SetActive(AValue: Boolean);
+procedure TCommNode.SetActive(const AValue: Boolean);
 begin
   if FActive = AValue then Exit;
   FActive := AValue;

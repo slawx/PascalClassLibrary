@@ -39,7 +39,6 @@ type
     destructor Destroy; override;
     property Pins: TPinList read FPins write FPins;
     property Main: TCommPin read FMain write FMain;
-    property Active: Boolean read FActive write FActive;
   end;
 
 implementation
@@ -121,9 +120,9 @@ end;
 
 destructor TCommConcentrator.Destroy;
 begin
-  FActive := False;
-  FPins.Free;
-  FMain.Free;
+  Active := False;
+  FreeAndNil(FPins);
+  FreeAndNil(FMain);
   inherited Destroy;
 end;
 

@@ -34,7 +34,6 @@ type
 
   TCommDelay = class(TCommNode)
   private
-    FActive: Boolean;
     FDelay: TDateTime;
     PacketQueue1: TListObject; // TListObject<TDelayedPacket>
     PacketQueue2: TListObject; // TListObject<TDelayedPacket>
@@ -42,7 +41,8 @@ type
     Thread2: TCommDelayThread;
     procedure ReceiveData1(Sender: TCommPin; AStream: TListByte);
     procedure ReceiveData2(Sender: TCommPin; AStream: TListByte);
-    procedure SetActive(AValue: Boolean);
+  protected
+    procedure SetActive(const AValue: Boolean); override;
   public
     Lock1: TCriticalSection;
     Lock2: TCriticalSection;
@@ -51,7 +51,6 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     property Delay: TDateTime read FDelay write FDelay;
-    property Active: Boolean read FActive write SetActive;
   end;
 
 implementation
@@ -140,7 +139,7 @@ begin
   end;
 end;
 
-procedure TCommDelay.SetActive(AValue: Boolean);
+procedure TCommDelay.SetActive(const AValue: Boolean);
 begin
   if FActive = AValue then Exit;
   FActive := AValue;
@@ -166,6 +165,7 @@ begin
     FreeAndNil(Thread1);
     FreeAndNil(Thread2);
   end;
+  inherited;
 end;
 
 constructor TCommDelay.Create(AOwner: TComponent);

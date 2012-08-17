@@ -13,14 +13,14 @@ type
 
   TCommMark = class(TCommNode)
   private
-    FActive: Boolean;
     FMarkIndex: Integer;
     FFrameData: TListByte;
     procedure RawDataReceive(Sender: TCommPin; Stream: TListByte);
     procedure RawSetStatus(Sender: TCommPin; Status: Integer);
     procedure FrameDataReceive(Sender: TCommPin; Stream: TListByte);
     procedure FrameSetStatus(Sender: TCommPin; Status: Integer);
-    procedure SetActive(AValue: Boolean);
+  protected
+    procedure SetActive(const AValue: Boolean); override;
   public
     PinRaw: TCommPin;
     PinFrame: TCommPin;
@@ -28,7 +28,6 @@ type
     procedure Reset;
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-    property Active: Boolean read FActive write SetActive;
   end;
 
 implementation
@@ -74,11 +73,12 @@ begin
   PinRaw.Status := Status;
 end;
 
-procedure TCommMark.SetActive(AValue: Boolean);
+procedure TCommMark.SetActive(const AValue: Boolean);
 begin
   if FActive = AValue then Exit;
   FActive := AValue;
   if FActive then Reset;
+  inherited;
 end;
 
 procedure TCommMark.Reset;

@@ -418,11 +418,11 @@ end;
 
 destructor TCommTelnet.Destroy;
 begin
-  FCommandData.Free;
-  Options.Free;
-  TelnetPin.Free;
-  RawPin.Free;
-  FResponses.Free;
+  FreeAndNil(FCommandData);
+  FreeAndNil(Options);
+  FreeAndNil(TelnetPin);
+  FreeAndNil(RawPin);
+  FreeAndNil(FResponses);
   inherited Destroy;
 end;
 

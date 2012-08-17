@@ -18,7 +18,7 @@ type
     procedure SetStatus(Sender: TCommPin; AValue: Integer);
     procedure ReceiveData(Stream: TListByte);
   protected
-    procedure SetActive(AValue: Boolean); override;
+    procedure SetActive(const AValue: Boolean); override;
   public
     SerialPort: TSerialPort;
     Lock: TCriticalSection;
@@ -38,9 +38,9 @@ begin
   if SerialPort.Active then Pin.Send(Stream);
 end;
 
-procedure TCommSerialPort.SetActive(AValue: Boolean);
+procedure TCommSerialPort.SetActive(const AValue: Boolean);
 begin
-  inherited SetActive(AValue);
+  inherited;
   SerialPort.Active := AValue;
 end;
 

@@ -29,7 +29,6 @@ type
 
   TCommThread = class(TCommNode)
   private
-    FActive: Boolean;
     FOnReceiveData: TReceiveDataEvent;
     FReceiveThread: TCommThreadReceiveThread;
     FInputBuffer: TBinarySerializer;
@@ -41,11 +40,11 @@ type
     procedure PinSetStatus(Sender: TCommPin; Status: Integer);
     procedure ExtReceiveData(Sender: TCommPin; Stream: TListByte);
     procedure ExtSetStatus(Sender: TCommPin; AStatus: Integer);
-    procedure SetActive(const AValue: Boolean);
+  protected
+    procedure SetActive(const AValue: Boolean); override;
   public
     Ext: TCommPin;
     Pin: TCommPin;
-    property Active: Boolean read FActive write SetActive;
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
   end;
@@ -100,6 +99,7 @@ begin
   end else begin
     FreeAndNil(FReceiveThread);
   end;
+  inherited;
 end;
 
 constructor TCommThread.Create(AOwner: TComponent);

@@ -85,6 +85,7 @@
     property Capacity: TGListIndex read GetCapacity write SetCapacity;
     property Items[Index: TGListIndex]: TGListItem read Get write Put; default;
     property Last: TGListItem read GetLast write SetLast;
+    property OnUpdate: TNotifyEvent read FOnUpdate write FOnUpdate;
   end;
   
 {$UNDEF INTERFACE}

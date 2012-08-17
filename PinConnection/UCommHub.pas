@@ -24,7 +24,6 @@ type
 
   TCommHub = class(TCommNode)
   private
-    FActive: Boolean;
     FPins: TPinList;
     procedure Receive(Sender: TCommPin; Stream: TListByte);
     procedure SetStatus(Sender: TCommPin; Status: Integer);
@@ -32,7 +31,6 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     property Pins: TPinList read FPins write FPins;
-    property Active: Boolean read FActive write FActive;
   end;
 
 implementation
@@ -102,8 +100,8 @@ end;
 destructor TCommHub.Destroy;
 begin
   Active := False;
-  FPins.Free;
-  inherited Destroy;
+  FreeAndNil(FPins);
+  inherited;
 end;
 
 end.

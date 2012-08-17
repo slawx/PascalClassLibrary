@@ -137,8 +137,8 @@ end;
 destructor TISPProgrammer.Destroy;
 begin
   Active := False;
-  ExtPin.Free;
-  HexFile.Free;
+  FreeAndNil(ExtPin);
+  FreeAndNil(HexFile);
   inherited Destroy;
 end;
 
