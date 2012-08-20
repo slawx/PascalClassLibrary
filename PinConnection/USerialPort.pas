@@ -8,6 +8,9 @@ uses
   Classes, SysUtils, SynaSer, StdCtrls, Dialogs, UCommon, UThreading,
   DateUtils, FileUtil, SpecializedList;
 
+const
+  MaxPort = 255;
+
 type
   TBaudRate = (br110, br300, br600, br1200, br2400, br4800,
     br9600, br14400, br19200, br38400, br56000,
@@ -179,26 +182,28 @@ begin
   if Check then
   try
     TestPort := TSerialPort.Create;
-    for I := 0 to Strings.Count - 1 do
+    for I := 0 to MaxPort - 1 do
     with TestPort do begin
-      Name := Strings[I];
+      Name := 'COM' + IntToStr(I);
       Active := True;
       if Active then begin
-        Strings.AddObject(Name, TObject(I));
+        Strings.AddObject(Name, nil);
       end;
       Active := False;
     end;
   finally
     TestPort.Free;
   end else begin
-    for I := 1 to 255 do
+    for I := 1 to MaxPort do
       Strings.AddObject('COM' + IntToStr(I), nil);
   end;
   {$ENDIF}
   {$IFDEF Linux}
-  if Check then begin
+  if Check then
+  try
     Files := FindAllFiles('/dev', 'tty*', False);
     Strings.Assign(Files);
+  finally
     Files.Free;
   end else begin
     for I := 1 to 63 do
