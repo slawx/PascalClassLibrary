@@ -9,8 +9,8 @@ interface
 uses
   USerialPort, UPacketBurst, UCommFrame, UCommHub, UCommPin, UCommSerialPort, 
   UCommThread, UCommConcentrator, UCommDelay, UCommTCPClient, UCommTCPServer, 
-  UCommTelnet, UCommTelnetComPortOption, UCommMark, UPinConnection, 
-  LazarusPackageIntf;
+  UCommTelnet, UCommTelnetComPortOption, UCommMark, UCommConnector, 
+  UPinConnection, LazarusPackageIntf;
 
 implementation
 

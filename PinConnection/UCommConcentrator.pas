@@ -114,6 +114,7 @@ begin
   FPins := TPinList.Create;
   FPins.Concentrator := Self;
   FMain := TCommPin.Create;
+  FMain.Node := Self;
   FMain.OnSetSatus := MainSetStatus;
   FMain.OnReceive := MainReceive;
 end;

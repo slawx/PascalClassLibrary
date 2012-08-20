@@ -19,6 +19,7 @@ type
     procedure ReceiveData(Stream: TListByte);
   protected
     procedure SetActive(const AValue: Boolean); override;
+    procedure AssignTo(Dest: TPersistent); override;
   public
     SerialPort: TSerialPort;
     Lock: TCriticalSection;
@@ -42,6 +43,13 @@ procedure TCommSerialPort.SetActive(const AValue: Boolean);
 begin
   inherited;
   SerialPort.Active := AValue;
+end;
+
+procedure TCommSerialPort.AssignTo(Dest: TPersistent);
+begin
+  if Dest is TCommSerialPort then begin
+    TCommSerialPort(Dest).SerialPort.Assign(SerialPort);
+  end else inherited;
 end;
 
 procedure TCommSerialPort.SetStatus(Sender: TCommPin; AValue: Integer);

@@ -34,6 +34,8 @@ type
     FReceiveThread: TCommSocketReceiveThread;
     procedure ReceiveData(Sender: TCommPin; Stream: TListByte);
     procedure SetActive(const AValue: Boolean);
+  protected
+    procedure AssignTo(Dest: TPersistent); override;
   public
     Socket: TTCPBlockSocket;
     Pin: TCommPin;
@@ -90,6 +92,15 @@ begin
     FReceiveThread.WaitFor;
     FreeAndNil(FReceiveThread);
   end;
+end;
+
+procedure TCommTCPClient.AssignTo(Dest: TPersistent);
+begin
+  if Dest is TCommTCPClient then begin
+    TCommTCPClient(Dest).Address := Address;
+    TCommTCPClient(Dest).Port := Port;
+  end
+  else inherited;
 end;
 
 constructor TCommTCPClient.Create(AOwner: TComponent);

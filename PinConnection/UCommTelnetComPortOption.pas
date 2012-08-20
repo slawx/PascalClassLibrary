@@ -40,6 +40,7 @@ type
   public
     constructor Create;
     destructor Destroy; override;
+    procedure Assign(Source: TTelnetOption); override;
     property FlowControl: TFlowControl read GetFlowControl write SetFlowControl;
     property DataBits: TDataBits read GetDataBits write SetDataBits;
     property StopBits: TStopBits read GetStopBits write SetStopBits;
@@ -221,6 +222,14 @@ end;
 destructor TTelnetOptionComPort.Destroy;
 begin
   inherited Destroy;
+end;
+
+procedure TTelnetOptionComPort.Assign(Source: TTelnetOption);
+begin
+  FBaudRate := TTelnetOptionComPort(Source).FBaudRate;
+  FDTR := TTelnetOptionComPort(Source).FDTR;
+  FRTS := TTelnetOptionComPort(Source).FRTS;
+  inherited Assign(Source);
 end;
 
 end.

@@ -56,6 +56,7 @@ type
     Code: TTelnetCommand;
     ServerChecked: Boolean;
     SupportedByServer: Boolean;
+    procedure Assign(Source: TTelnetOption); virtual;
     function CheckOption: Boolean;
     procedure SendCommand(Request, Response: TListByte);
     property OnRequest: TTelnetOptionEvent read FOnRequest write FOnRequest;
@@ -77,6 +78,8 @@ type
     procedure RawDataReceive(Sender: TCommPin; Stream: TListByte);
     procedure ReadResponse(Response: TListByte);
     function ResponseCount: Integer;
+  protected
+    procedure AssignTo(Dest: TPersistent); override;
   public
     Options: TListObject;
     TelnetPin: TCommPin;
@@ -91,6 +94,7 @@ type
     function SearchOption(OptionCode: TTelnetCommand): TTelnetOption;
     procedure SendSubCommand(OptionCode: TTelnetCommand; Request, Response: TListByte);
     procedure SendCommand(Code: TTelnetCode; Request, Response: TListByte);
+    procedure Purge;
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     property Active: Boolean read FActive write SetActive;
@@ -113,6 +117,15 @@ procedure TTelnetOption.SetActive(AValue: Boolean);
 begin
   if FActive = AValue then Exit;
   FActive := AValue;
+end;
+
+procedure TTelnetOption.Assign(Source: TTelnetOption);
+begin
+  SupportedByServer := Source.SupportedByServer;
+  ServerChecked := Source.ServerChecked;
+  Code := Source.Code;
+  FOnRequest := Source.FOnRequest;
+  Active := Source.FActive;
 end;
 
 function TTelnetOption.CheckOption: Boolean;
@@ -305,6 +318,22 @@ begin
   Result := FResponses.Count;
 end;
 
+procedure TCommTelnet.AssignTo(Dest: TPersistent);
+var
+  I: Integer;
+begin
+  if Dest is TCommTelnet then begin
+    TCommTelnet(Dest).Timeout := Timeout;
+    TCommTelnet(Dest).PortType := PortType;
+    TCommTelnet(Dest).ErrorCount := ErrorCount;
+    TCommTelnet(Dest).OptionsNegotationEnable := OptionsNegotationEnable;
+    for I := 0 to Options.Count - 1 do begin
+      TTelnetOption(TCommTelnet(Dest).Options[I]).Assign(TTelnetOption(Options[I]));
+      TTelnetOption(TCommTelnet(Dest).Options[I]).Telnet := TCommTelnet(Dest);
+    end;
+  end else inherited;
+end;
+
 procedure TCommTelnet.Register(Option: TTelnetOption);
 begin
   Option.Telnet := Self;
@@ -396,6 +425,12 @@ begin
   finally
     Data.Free;
   end;
+end;
+
+procedure TCommTelnet.Purge;
+begin
+  FState := tsNormal;
+  FResponses.Clear;
 end;
 
 constructor TCommTelnet.Create(AOwner: TComponent);
