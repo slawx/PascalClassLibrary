@@ -8,7 +8,7 @@ uses
   Classes, SysUtils, USerialPort, UCommSerialPort, UCommPin, UCommMark,
   UJobProgressView, SyncObjs, DateUtils, Dialogs, URegistry,
   Forms, UISPProgrammer, Registry, UBinarySerializer, SpecializedList,
-  UCommTelnet;
+  UCommTelnet, UCommTCPClient, UCommTelnetComPortOption, UCommConnector;
 
 const
   Mark = #13#10;
@@ -26,8 +26,8 @@ type
     ResponseQueue: TListObject;
     ResponseLock: TCriticalSection;
     ResponseTemp: TBinarySerializer;
-    SerialPortBackup: TCommSerialPort;
-    SerialPortBackupPin: TCommPin;
+    ConnectorBackup: TDeviceConnector;
+    ConnectorBackupPin: TCommPin;
     HexData: TStringList;
     Request: TBinarySerializer;
     Mark: TListByte;
@@ -35,13 +35,15 @@ type
     function ReadResponse: string;
     function ResponseCount: Integer;
     procedure ResponseClear;
-    procedure CheckErrorCode(Value: string);
+    procedure CheckWriteErrorCode(Value: string);
+    procedure CheckResponseErrorCode(Value: string);
   protected
     procedure SetActive(AValue: Boolean); override;
   public
     Timeout: TDateTime;
     Identification: string;
     BaudRate: Integer;
+    Connector: TDeviceConnector;
     procedure LoadFromRegistry(Root: HKEY; Key: string); override;
     procedure SaveToRegistry(Root: HKEY; Key: string); override;
     procedure Read(Job: TJob); override;
@@ -138,6 +140,7 @@ procedure TDallasProgrammer.SetActive(AValue: Boolean);
 var
   SerialPort: TCommSerialPort;
   Telnet: TCommTelnet;
+  TelnetOption: TTelnetOptionComPort;
 begin
   if Active = AValue then Exit;
   inherited;
@@ -147,48 +150,45 @@ begin
     Request.OwnsList := True;
     HexData := TStringList.Create;
 
-    if ExtPin.Connected and (ExtPin.RemotePin.Node is TCommSerialPort) then begin
-      SerialPort := TCommSerialPort(ExtPin.RemotePin.Node);
-      SerialPort.Active := False;
-      SerialPortBackup.Assign(SerialPort);
-      SerialPortBackupPin := SerialPort.Pin.RemotePin;
-      SerialPort.Pin.Disconnect;
-
+    Connector.Active := False;
+    ConnectorBackup.Assign(Connector);
+    ConnectorBackupPin := Connector.Pin.RemotePin;
+    Connector.Pin.Disconnect;
+    if Connector.ConnectionType = ctSerialPort then begin
       //SerialPort.Name := SerialPort.Name;
-      SerialPort.SerialPort.FlowControl := fcNone;
-      SerialPort.SerialPort.BaudRate := BaudRate;
-      SerialPort.SerialPort.DTR := True;
-      SerialPort.Pin.Connect(CommMark.PinRaw);
-      SerialPort.SerialPort.Flush;
-      SerialPort.SerialPort.Purge;
-      SerialPort.Active := True;
-      if Assigned(FOnLogData) then
-        Pin.OnLogData := FOnLogData;
+      Connector.CommSerial.SerialPort.FlowControl := fcNone;
+      Connector.CommSerial.SerialPort.BaudRate := BaudRate;
+      Connector.CommSerial.SerialPort.DTR := True;
+      Connector.CommSerial.SerialPort.Flush;
+    end else
+    if Connector.ConnectionType = ctNetworkClient then begin
+      TelnetOption := TTelnetOptionComPort(Connector.CommTelnet.SearchOption(tmComPortControlOption));
+      TelnetOption.FlowControl := fcNone;
+      TelnetOption.BaudRate := BaudRate;
+      TelnetOption.DTR := True;
     end;
-    if ExtPin.Connected and (ExtPin.RemotePin.Node is TCommTelnet) then begin
-      Telnet := TCommTelnet(ExtPin.RemotePin.Node);
-    end;
-    ResponseClear;
+    Connector.CommSerial.SerialPort.Purge;
+    Connector.CommTelnet.Purge;
+    Connector.Pin.Connect(CommMark.PinRaw);
+    if Assigned(FOnLogData) then
+      Pin.OnLogData := FOnLogData;
     CommMark.Active := True;
+    Connector.Active := True;
+    ResponseClear;
+    Sleep(1000);
     ReadIdentification;
   end else begin
     CommMark.Active := False;
-    if ExtPin.Connected and (ExtPin.RemotePin.Node is TCommSerialPort) then begin
-      SerialPort := TCommSerialPort(ExtPin.Node);
-      SerialPort.Active := False;
-      SerialPort.Assign(SerialPortBackup);
-      SerialPort.Pin.Connect(SerialPortBackupPin);
-      SerialPort.Active := True;
-    end;
-    if ExtPin.Connected and (ExtPin.RemotePin.Node is TCommTelnet) then begin
-      Telnet := TCommTelnet(ExtPin.RemotePin.Node);
-    end;
+    Connector.Active := False;
+    Connector.Assign(ConnectorBackup);
+    Connector.Pin.Connect(ConnectorBackupPin);
+    Connector.Active := True;
     HexData.Free;
     Request.Free;
   end;
 end;
 
-procedure TDallasProgrammer.CheckErrorCode(Value: string);
+procedure TDallasProgrammer.CheckWriteErrorCode(Value: string);
 begin
   if Value = 'H' then raise Exception.Create(SInvalidHexFormat)
   else if Value = 'F' then raise Exception.Create(SFlashControllerError)
@@ -200,6 +200,14 @@ begin
   else if Value = 'V' then raise Exception.Create(SVerifyError)
   else if Value = '' then raise Exception.Create(SInvalidResponse)
   else if Value <> 'G' then raise Exception.Create(Format(SUnknownProgrammerResponse, [Value]));
+end;
+
+procedure TDallasProgrammer.CheckResponseErrorCode(Value: string);
+begin
+  if Value <> '' then begin
+    if Value[1] = 'E' then
+      raise Exception.Create('Dallas error: ' + Value);
+  end;
 end;
 
 procedure TDallasProgrammer.LoadFromRegistry(Root: HKEY; Key: string);
@@ -238,7 +246,8 @@ begin
   Request.WriteByte(Ord('D'));
   Pin.Send(Request.List);
   Value := ReadResponse;
-  ReadResponse; // Empty line
+  Value := ReadResponse; // Empty line
+  CheckResponseErrorCode(Value);
 
   //HexFile.SaveToStringList(HexData);
   Job.Progress.Max := 65535 div 32;
@@ -286,7 +295,7 @@ begin
       Request.WriteList(Mark, 0, Mark.Count);
       Pin.Send(Request.List);
       Value := ReadResponse;
-      CheckErrorCode(Value);
+      CheckWriteErrorCode(Value);
       Job.Progress.Value := I;
       if Job.Terminate then Break;
     end;
@@ -318,7 +327,7 @@ begin
       Request.WriteList(Mark, 0, Mark.Count);
       Pin.Send(Request.List);
       Value := ReadResponse;
-      CheckErrorCode(Value);
+      CheckWriteErrorCode(Value);
       Job.Progress.Value := I;
       if Job.Terminate then Break;
     end;
@@ -334,7 +343,7 @@ begin
   ResponseClear;
   Request.WriteByte(Ord('K'));
   Pin.Send(Request.List);
-  ReadResponse;
+  CheckResponseErrorCode(ReadResponse);
 end;
 
 procedure TDallasProgrammer.Reset;
@@ -353,9 +362,9 @@ begin
   ResponseClear;
   Request.Clear;
   Pin.Send(Request.List);
-  ReadResponse; // Empty line
+  Value := ReadResponse; // Empty line
   Identification := ReadResponse;
-  Result := Identification;
+
   Log(SIdentification + ': ' + Identification);
 end;
 
@@ -377,20 +386,20 @@ begin
   CommMark.Mark.Assign(Mark);
   CommMark.PinFrame.Connect(Pin);
   BaudRate := 9600;
-  SerialPortBackup := TCommSerialPort.Create(nil);
+  ConnectorBackup := TDeviceConnector.Create;
 end;
 
 destructor TDallasProgrammer.Destroy;
 begin
   Active := False;
-  Mark.Free;
-  CommMark.Free;
-  SerialPortBackup.Free;
-  Pin.Free;
-  ResponseQueue.Free;
-  ResponseLock.Free;
-  ResponseTemp.Free;
-  inherited Destroy;
+  FreeAndNil(Mark);
+  FreeAndNil(CommMark);
+  FreeAndNil(ConnectorBackup);
+  FreeAndNil(Pin);
+  FreeAndNil(ResponseQueue);
+  FreeAndNil(ResponseLock);
+  FreeAndNil(ResponseTemp);
+  inherited;
 end;
 
 end.

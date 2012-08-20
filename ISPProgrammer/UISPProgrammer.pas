@@ -31,7 +31,6 @@ type
     HexFile: TIntelHexFile;
     FileName: string;
     Capabilities: TISPProgCapabilities;
-    ExtPin: TCommPin;
     procedure Log(Text: string);
     procedure LoadFromRegistry(Root: HKEY; Key: string); virtual;
     procedure SaveToRegistry(Root: HKEY; Key: string); virtual;
@@ -129,7 +128,7 @@ end;
 
 constructor TISPProgrammer.Create;
 begin
-  ExtPin := TCommPin.Create;
+  //ExtPin := TCommPin.Create;
   HexFile := TIntelHexFile.Create;
   HexFile.BytePerLine := 20;
 end;
@@ -137,7 +136,7 @@ end;
 destructor TISPProgrammer.Destroy;
 begin
   Active := False;
-  FreeAndNil(ExtPin);
+  //FreeAndNil(ExtPin);
   FreeAndNil(HexFile);
   inherited Destroy;
 end;

@@ -7,7 +7,7 @@ interface
 {$IFDEF Windows}
 
 uses
-  Classes, SysUtils, UISPProgrammer, UPrestoDLL,
+  Classes, SysUtils, UISPProgrammer, UPrestoDLL, UCommPin,
   UStreamHelper, Globals, Processors, Delays, UCPUType, Registry,
   UJobProgressView;
 
