@@ -12,7 +12,7 @@ type
   { TConfirmMessage }
 
   TConfirmMessage = class
-    Index: Integer;
+    SysName: string;
     Enabled: Boolean;
     Title: string;
     Text: string;
@@ -26,13 +26,13 @@ type
   TConfirmMessageList = class(TListObject)
   public
     constructor Create; override;
-    function AddItem(Index: Integer; Title, Text: string; Buttons: TMsgDlgButtons;
+    function AddItem(SysName: string; Title, Text: string; Buttons: TMsgDlgButtons;
       DefaultAction: TModalResult = mrNone): TConfirmMessage;
     procedure Register(Message: TConfirmMessage);
     procedure Unregister(Message: TConfirmMessage);
     procedure LoadFromRegistry(Context: TRegistryContext);
     procedure SaveToRegistry(Context: TRegistryContext);
-    function SearchByIndex(Index: Integer): TConfirmMessage;
+    function SearchByName(Name: string): TConfirmMessage;
   end;
 
   { TConfirmationForm }
@@ -67,6 +67,10 @@ resourcestring
   SNo = 'No';
   SCancel = 'Cancel';
   SOk = 'Ok';
+  SAbort = 'Abort';
+  SRetry = 'Retry';
+  SIgnore = 'Ignore';
+  SClose = 'Close';
   SConfirmMessageNotFound = 'Confirm message id %s not found';
 
 
@@ -84,7 +88,6 @@ end;
 function TConfirmationForm.ShowDialog(Message: TConfirmMessage; Parameters: array of const): Integer;
 var
   RightPos: Integer;
-  I: Integer;
 const
   Space = 10;
 begin
@@ -134,13 +137,13 @@ begin
   inherited;
 end;
 
-function TConfirmMessageList.AddItem(Index: Integer; Title, Text: string;
+function TConfirmMessageList.AddItem(SysName: string; Title, Text: string;
   Buttons: TMsgDlgButtons; DefaultAction: TModalResult = mrNone): TConfirmMessage;
 var
   NewMessage: TConfirmMessage;
 begin
   NewMessage := TConfirmMessage.Create;
-  NewMessage.Index := Index;
+  NewMessage.SysName := SysName;
   NewMessage.Title := Title;
   NewMessage.Text := Text;
   NewMessage.Enabled := DefaultAction = mrNone;
@@ -170,7 +173,7 @@ begin
       for I := 0 to Count - 1 do
       with TConfirmMessage(Items[I]) do
       begin
-        OpenKey(Context.Key + '\' + IntToStr(Index), True);
+        OpenKey(Context.Key + '\' + SysName, True);
         Enabled := ReadBoolWithDefault('Enabled', Enabled);
         DefaultAction := ReadIntegerWithDefault('DefaultAction', DefaultAction);
       end;
@@ -189,7 +192,7 @@ begin
       for I := 0 to Count - 1 do
       with TConfirmMessage(Items[I]) do
       begin
-        OpenKey(Context.Key + '\' + IntToStr(Index), True);
+        OpenKey(Context.Key + '\' + SysName, True);
         WriteBool('Enabled', Enabled);
         WriteInteger('DefaultAction', DefaultAction);
       end;
@@ -198,12 +201,12 @@ begin
   end;
 end;
 
-function TConfirmMessageList.SearchByIndex(Index: Integer): TConfirmMessage;
+function TConfirmMessageList.SearchByName(Name: string): TConfirmMessage;
 var
   I: Integer;
 begin
   I := 0;
-  while (I < Count) and (TConfirmMessage(Items[I]).Index <> Index) do Inc(I);
+  while (I < Count) and (TConfirmMessage(Items[I]).SysName <> Name) do Inc(I);
   if I < Count then Result := TConfirmMessage(Items[I])
     else Result := nil;
 end;
@@ -216,7 +219,11 @@ begin
   else if DefaultAction = mrYes then Result := SYes
   else if DefaultAction = mrNo then Result := SNo
   else if DefaultAction = mrCancel then Result := SCancel
-  else if DefaultAction = mrOK then Result := SOk;
+  else if DefaultAction = mrOK then Result := SOk
+  else if DefaultAction = mrAbort then Result := SAbort
+  else if DefaultAction = mrRetry then Result := SRetry
+  else if DefaultAction = mrIgnore then Result := SIgnore
+  else if DefaultAction = mrClose then Result := SClose;
 end;
 
 

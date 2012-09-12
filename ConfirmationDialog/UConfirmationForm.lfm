@@ -9,7 +9,7 @@ object ConfirmationForm: TConfirmationForm
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   Position = poMainFormCenter
-  LCLVersion = '0.9.30'
+  LCLVersion = '1.1'
   object LabelDescription: TLabel
     Left = 56
     Height = 1
@@ -24,7 +24,7 @@ object ConfirmationForm: TConfirmationForm
     Left = 8
     Height = 17
     Top = 88
-    Width = 141
+    Width = 139
     Anchors = [akLeft, akBottom]
     Caption = 'Do same action next time'
     TabOrder = 0
