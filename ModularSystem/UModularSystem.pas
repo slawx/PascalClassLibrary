@@ -18,6 +18,7 @@ type
 
   TModule = class(TComponent)
   private
+    FRunning: Boolean;
     FInstalled: Boolean;
     Manager: TModuleManager;
     FVersion: string;
@@ -28,16 +29,23 @@ type
     FDependencies: TStringList;
     FDescription: TStringList;
     procedure SetInstalled(AValue: Boolean);
+    procedure SetRunning(AValue: Boolean);
   public
     API: TAPI;
     MarkForInstall: Boolean;
+    procedure Start; virtual;
+    procedure Stop; virtual;
     procedure Install; virtual;
     procedure Uninstall; virtual;
-    procedure Update; virtual;
+    procedure Upgrade; virtual;
+    procedure EnumModulesStart(ModuleList: TStringList);
+    procedure EnumModulesStop(ModuleList: TStringList);
     procedure EnumModulesInstall(ModuleList: TStringList);
     procedure EnumModulesUninstall(ModuleList: TStringList);
-    constructor Create(Owner: TComponent); virtual;
+    procedure SetInstalledState(Value: Boolean);
+    constructor Create(Owner: TComponent); override;
     destructor Destroy; override;
+    property Running: Boolean read FRunning write SetRunning;
     property Installed: Boolean read FInstalled write SetInstalled;
   published
     property Version: string read FVersion write FVersion;
@@ -49,26 +57,37 @@ type
     property Description: TStringList read FDescription write FDescription;
   end;
 
+  TModuleEvent = procedure (Sender: TObject; Module: TModule) of object;
+
   { TModuleManager }
 
   TModuleManager = class(TComponent)
   private
     FAPI: TAPI;
+    FOnModuleChange: TModuleEvent;
     procedure SetAPI(AValue: TAPI);
   public
     Modules: TObjectList; // TObjectList<TModule>
     function FindModuleByName(Name: string): TModule;
+    function ModuleRunning(Name: string): Boolean;
+    procedure StartDependencies(ModuleName: string; Dependencies: TStringList);
+    procedure StopDependencies(ModuleName: string);
+    procedure EnumModulesStart(Dependencies, ModuleList: TStringList);
+    procedure EnumModulesStop(ModuleName: string; ModuleList: TStringList);
     procedure InstallDependencies(ModuleName: string; Dependencies: TStringList);
     procedure UninstallDependencies(ModuleName: string);
     procedure EnumModulesInstall(Dependencies, ModuleList: TStringList);
     procedure EnumModulesUninstall(ModuleName: string; ModuleList: TStringList);
     procedure RegisterModule(Module: TModule; MarkForInstall: Boolean = False);
     procedure UnregisterModule(Module: TModule);
+    procedure StartInstalled;
     procedure InstallMarked;
+    procedure StopAll;
     procedure UninstallAll;
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     property API: TAPI read FAPI write SetAPI;
+    property OnModuleChange: TModuleEvent read FOnModuleChange write FOnModuleChange;
   end;
 
 procedure Register;
@@ -106,7 +125,73 @@ begin
     else Result := nil;
 end;
 
-procedure TModuleManager.InstallDependencies(ModuleName: string; Dependencies: TStringList);
+function TModuleManager.ModuleRunning(Name: string): Boolean;
+var
+  Module: TModule;
+begin
+  Module := FindModuleByName(Name);
+  if Assigned(Module) then begin
+    Result := Module.Running;
+  end else Result := False;
+end;
+
+procedure TModuleManager.StartDependencies(ModuleName: string; Dependencies: TStringList);
+var
+  Module: TModule;
+  I: Integer;
+begin
+  for I := 0 to Dependencies.Count - 1 do begin
+    Module := FindModuleByName(Dependencies[I]);
+    if Assigned(Module) then begin
+      if not Module.Running then Module.Start;
+    end else raise Exception.CreateFmt(SModuleNotFound, [ModuleName, Dependencies[I]]);
+  end;
+end;
+
+procedure TModuleManager.StopDependencies(ModuleName: string);
+var
+  I: Integer;
+begin
+  for I := 0 to Modules.Count - 1 do
+  with TModule(Modules[I]) do begin
+    if (Dependencies.IndexOf(ModuleName) <> - 1) and Running then Stop;
+  end;
+end;
+
+procedure TModuleManager.EnumModulesStart(Dependencies,
+  ModuleList: TStringList);
+var
+  Module: TModule;
+  I: Integer;
+begin
+  for I := 0 to Dependencies.Count - 1 do begin
+    Module := FindModuleByName(Dependencies[I]);
+    if Assigned(Module) then begin
+      if not Module.Running and (ModuleList.IndexOf(Module.Identification) = -1) then begin
+        ModuleList.Add(Module.Identification);
+        EnumModulesStart(Module.Dependencies, ModuleList);
+      end;
+    end else raise Exception.CreateFmt(SModuleNotFound, [Module.Identification]);
+  end;
+end;
+
+procedure TModuleManager.EnumModulesStop(ModuleName: string;
+  ModuleList: TStringList);
+var
+  I: Integer;
+begin
+  for I := 0 to Modules.Count - 1 do
+  with TModule(Modules[I]) do begin
+    if (Dependencies.IndexOf(ModuleName) <> -1) and Running and
+      (ModuleList.IndexOf(Identification) = -1) then begin
+      ModuleList.Add(Identification);
+      Self.EnumModulesStop(Identification, ModuleList);
+    end;
+  end;
+end;
+
+procedure TModuleManager.InstallDependencies(ModuleName: string;
+  Dependencies: TStringList);
 var
   Module: TModule;
   I: Integer;
@@ -175,6 +260,15 @@ begin
   Modules.Remove(Module);
 end;
 
+procedure TModuleManager.StartInstalled;
+var
+  I: Integer;
+begin
+  for I := 0 to Modules.Count - 1 do
+  with TModule(Modules[I]) do
+    if not Running and Installed then Start;
+end;
+
 procedure TModuleManager.InstallMarked;
 var
   I: Integer;
@@ -182,6 +276,15 @@ begin
   for I := 0 to Modules.Count - 1 do
   with TModule(Modules[I]) do
     if not Installed and MarkForInstall then Install;
+end;
+
+procedure TModuleManager.StopAll;
+var
+  I: Integer;
+begin
+  for I := 0 to Modules.Count - 1 do
+  with TModule(Modules[I]) do
+    if Running then Stop;
 end;
 
 procedure TModuleManager.UninstallAll;
@@ -201,12 +304,18 @@ end;
 
 destructor TModuleManager.Destroy;
 begin
-  UninstallAll;
+  StopAll;
   FreeAndNil(Modules);
   inherited Destroy;
 end;
 
 { TModule }
+
+procedure TModule.SetRunning(AValue: Boolean);
+begin
+  if FRunning = AValue then Exit;
+  if AValue then Start else Stop;
+end;
 
 procedure TModule.SetInstalled(AValue: Boolean);
 begin
@@ -214,23 +323,54 @@ begin
   if AValue then Install else Uninstall;
 end;
 
+procedure TModule.Start;
+begin
+  if Running then Exit;
+  Manager.StartDependencies(Identification, Dependencies);
+  FRunning := True;
+end;
+
+procedure TModule.Stop;
+begin
+  if not Running then Exit;
+  Manager.StopDependencies(Identification);
+  FRunning := False;
+end;
+
 procedure TModule.Install;
 begin
   if Installed then Exit;
   Manager.InstallDependencies(Identification, Dependencies);
   FInstalled := True;
+  if Assigned(Manager.FOnModuleChange) then
+    Manager.FOnModuleChange(Manager, Self);
 end;
 
 procedure TModule.Uninstall;
 begin
   if not Installed then Exit;
+  if Running then Stop;
   Manager.UninstallDependencies(Identification);
   FInstalled := False;
+  if Assigned(Manager.FOnModuleChange) then
+    Manager.FOnModuleChange(Manager, Self);
 end;
 
-procedure TModule.Update;
+procedure TModule.Upgrade;
 begin
-  if not Installed then Exit;
+  if not Running then Exit;
+end;
+
+procedure TModule.EnumModulesStart(ModuleList: TStringList);
+begin
+  ModuleList.Clear;
+  Manager.EnumModulesStart(Dependencies, ModuleList);
+end;
+
+procedure TModule.EnumModulesStop(ModuleList: TStringList);
+begin
+  ModuleList.Clear;
+  Manager.EnumModulesStop(Identification, ModuleList);
 end;
 
 procedure TModule.EnumModulesInstall(ModuleList: TStringList);
@@ -245,6 +385,13 @@ begin
   Manager.EnumModulesUninstall(Identification, ModuleList);
 end;
 
+procedure TModule.SetInstalledState(Value: Boolean);
+begin
+  FInstalled := Value;
+  if Assigned(Manager.FOnModuleChange) then
+    Manager.FOnModuleChange(Manager, Self);
+end;
+
 constructor TModule.Create(Owner: TComponent);
 begin
   inherited;
@@ -254,7 +401,7 @@ end;
 
 destructor TModule.Destroy;
 begin
-  Installed := False;
+  Running := False;
   Description.Free;
   Dependencies.Free;
   inherited Destroy;
