@@ -26,16 +26,46 @@ type
     procedure SetFirst(const AValue: TItem); virtual;
     function GetCount: TIndex; virtual; abstract;
     procedure SetCount(const AValue: TIndex); virtual; abstract;
-    procedure SetCapacity(const AValue: TIndex); virtual; abstract;
-    function GetCapacity: TIndex; virtual; abstract;
     function Get(Index: TIndex): TItem; virtual; abstract;
     procedure Put(Index: TIndex; const AValue: TItem); virtual; abstract;
+    procedure QuickSort(L, R : TIndex; Compare: TSortCompare);
   public
+    function Add(const Item: TItem): TIndex; virtual;
+    procedure AddArray(Values: array of TItem);
+    procedure AddList(List: TGAbstractList<TItem>);
+    procedure AddListPart(List: TGAbstractList<TItem>; ItemIndex, ItemCount: TIndex);
+    procedure Assign(Source: TGAbstractList<TItem>); virtual;
     constructor Create; virtual;
     procedure Clear; virtual;
-    function Add(const Item: TItem): TIndex; virtual;
+    function CompareItem(const Item1, Item2: TItem): Boolean; virtual; abstract;
+    procedure CopyItems(CurIndex, NewIndex, ACount: TIndex); virtual;
+    procedure Delete(const Index: TIndex); virtual;
+    procedure DeleteItems(const Index, ACount: TIndex); virtual;
+    function EqualTo(List: TGAbstractList<TItem>): Boolean; virtual;
+    procedure Exchange(const Index1, Index2: TIndex); virtual;
+    procedure Explode(Text, Separator: string; Converter: TFromStringConverter; SlicesCount: Integer = -1);
+    function Extract(Item: TItem): TItem; virtual;
+    procedure Fill(Start, Count: TIndex; Value: TItem); virtual;
+    function GetArray(Index, ACount: TIndex): TItemArray; virtual;
+    procedure GetList(List: TGAbstractList<TItem>; Index, ACount: TIndex); virtual;
+    function IndexOfList(List: TGAbstractList<TItem>; Start: TIndex = 0): TIndex; virtual;
+    procedure Insert(const Index: TIndex; Item: TItem); virtual;
+    procedure InsertCount(const Index: TIndex; ACount: TIndex); virtual;
+    procedure InsertList(const Index: TIndex; List: TGAbstractList<TItem>); virtual;
+    procedure InsertArray(const Index: TIndex; Values: array of TItem); virtual;
+    function IndexOf(Item: TItem; Start: TIndex = 0): TIndex; virtual;
+    function Implode(Separator: string; Converter: TToStringConverter): string;
+    procedure Move(const CurIndex, NewIndex: TIndex); virtual;
+    procedure MoveItems(CurIndex, NewIndex, ACount: TIndex); virtual;
+    procedure ReplaceArray(const Index: TIndex; Values: array of TItem); virtual;
+    procedure ReplaceList(const Index: TIndex; Source: TGAbstractList<TItem>); virtual;
+    procedure ReplaceListPart(const Index: TIndex; Source: TGAbstractList<TItem>;
+      SourceIndex, SourceCount: TIndex); virtual;
+    function Remove(const Item: TItem): TIndex;
+    procedure Reverse;
+    procedure Sort(Compare: TSortCompare); virtual;
+    procedure SetArray(Values: array of TItem); virtual;
     property Count: TIndex read GetCount write SetCount;
-    property Capacity: TIndex read GetCapacity write SetCapacity;
     property Items[Index: TIndex]: TItem read Get write Put; default;
     property First: TItem read GetFirst write SetFirst;
     property Last: TItem read GetLast write SetLast;
@@ -49,45 +79,19 @@ type
     FItems: array of TItem;
   protected
     function Get(Index: TIndex): TItem; override;
-    function GetCapacity: TIndex; override;
+    function GetCapacity: TIndex;
     function GetCount: TIndex; override;
-    procedure SetCapacity(const AValue: TIndex); override;
+    procedure SetCapacity(const AValue: TIndex);
     procedure SetCapacityOptimized(const NewCapacity: TIndex);
     procedure SetCount(const AValue: TIndex); override;
     procedure Put(Index: TIndex; const AValue: TItem); override;
-    procedure QuickSort(L, R : TIndex; Compare: TSortCompare);
   public
-    function Add(const Item: TItem): TIndex; override;
-    procedure AddArray(Values: array of TItem);
-    procedure AddList(List: TGList<TItem>);
-    procedure AddListPart(List: TGList<TItem>; ItemIndex, ItemCount: TIndex);
-    procedure Assign(Source: TGList<TItem>); virtual;
-    procedure Delete(Index: TIndex); virtual;
-    procedure DeleteItems(Index, Count: TIndex);
-    function EqualTo(List: TGList<TItem>): Boolean;
-    procedure Exchange(Index1, Index2: TIndex);
-    procedure Explode(Text, Separator: string; Converter: TFromStringConverter; SlicesCount: Integer = -1);
-    function Extract(Item: TItem): TItem;
-    procedure Fill(Start, Count: TIndex; Value: TItem);
-    function GetArray(Index, ACount: TIndex): TItemArray;
-    procedure GetList(List: TGList<TItem>; Index, ACount: TIndex);
-    function Implode(Separator: string; Converter: TToStringConverter): string;
-    function IndexOf(Item: TItem; Start: TIndex = 0): TIndex;
-    function IndexOfList(List: TGList<TItem>; Start: TIndex = 0): TIndex;
-    procedure Insert(Index: TIndex; Item: TItem);
-    procedure InsertList(Index: TIndex; List: TGList<TItem>);
-    procedure InsertArray(Index: TIndex; Values: array of TItem);
-    procedure InsertCount(Index: TIndex; ACount: TIndex);
-    procedure Move(CurIndex, NewIndex: TIndex);
-    procedure MoveItems(CurIndex, NewIndex, Count: TIndex);
-    function Remove(Item: TItem): TIndex;
-    procedure Reverse;
-    procedure ReplaceArray(Index: TIndex; Values: array of TItem);
-    procedure ReplaceList(Index: TIndex; Source: TGList<TItem>);
-    procedure ReplaceListPart(Index: TIndex; Source: TGList<TItem>;
-      SourceIndex, SourceCount: TIndex);
-    procedure Sort(Compare: TSortCompare);
-    procedure SetArray(Values: array of TItem);
+    procedure Fill(Start, Count: TIndex; Value: TItem); override;
+    procedure Clear; override;
+    procedure ReplaceList(const Index: TIndex; Source: TGAbstractList<TItem>); override;
+    function CompareItem(const Item1, Item2: TItem): Boolean; override;
+    procedure CopyItems(CurIndex, NewIndex, ACount: TIndex); override;
+    property Capacity: TIndex read GetCapacity write SetCapacity;
   end;
 
   TGObjectList<TItem> = class(TGList<TItem>)
@@ -95,9 +99,9 @@ type
     procedure Put(Index: Integer; const AValue: TItem); override;
   public
     OwnsObjects: Boolean;
-    procedure Delete(Index: Integer); override;
+    procedure Delete(const Index: Integer); override;
     procedure Clear; override;
-    procedure Assign(Source: TGList<TItem>); override;
+    procedure Assign(Source: TGAbstractList<TItem>); override;
     constructor Create; override;
     destructor Destroy; override;
   end;
@@ -107,7 +111,7 @@ type
   public
     procedure Delete(Index: Integer); override;
     procedure Clear; override;
-    procedure Assign(Source: TGList<TItem>); override;
+    procedure Assign(Source: TGAbstractList<TItem>); override;
     constructor Create; override;
     destructor Destroy; override;
   end;
@@ -191,6 +195,29 @@ begin
   FItems[Index] := AValue;
 end;
 
+procedure TGList<TItem>.Fill(Start, Count: TIndex; Value: TItem);
+begin
+  (*if SizeOf(Value) = 1 then System.FillByte(FItems[Start], Count, Byte(Value))
+  else if SizeOf(Value) = 2 then System.FillWord(FItems[Start], Count, Word(Value))
+  else if SizeOf(Value) = 4 then System.FillDWord(FItems[Start], Count, DWord(Value))
+  else if SizeOf(Value) = 8 then System.FillQWord(FItems[Start], Count, QWord(Value))
+  else*) inherited;
+end;
+
+procedure TGList<TItem>.Clear;
+begin
+  inherited;
+  Capacity := 0;
+end;
+
+procedure TGList<TItem>.ReplaceList(const Index: TIndex; Source: TGAbstractList<TItem>
+  );
+begin
+  if Source is TGList<TItem> then begin
+    System.Move(TGList<TItem>(Source).FItems[0], FItems[Index], Source.Count * SizeOf(TItem));
+  end else inherited;
+end;
+
 procedure TGList<TItem>.SetCount(const AValue: TIndex);
 begin
   if (AValue < 0) then
@@ -200,119 +227,9 @@ begin
   if AValue < Capacity then SetCapacityOptimized(AValue); // After FCount change
 end;
 
-function TGList<TItem>.GetArray(Index, ACount: TIndex): TItemArray;
-var
-  I: Integer;
+function TGList<TItem>.CompareItem(const Item1, Item2: TItem): Boolean;
 begin
-  SetLength(Result, ACount);
-  I := 0;
-  while I < Count do begin
-    Result[I] := FItems[Index + I];
-    I := I + 1;
-  end;
-end;
-
-procedure TGList<TItem>.GetList(List: TGList<TItem>; Index, ACount: TIndex);
-begin
- List.Clear;
- List.AddListPart(Self, Index, ACount);
-end;
-
-procedure TGList<TItem>.QuickSort(L, R: TIndex; Compare: TSortCompare);
-var
-  I, J: TIndex;
-  P, Q: TItem;
-begin
- repeat
-   I := L;
-   J := R;
-   P := FItems[(L + R) div 2];
-   repeat
-     while Compare(P, FItems[I]) > 0 do
-       I := I + 1;
-     while Compare(P, FItems[J]) < 0 do
-       J := J - 1;
-     if I <= J then
-     begin
-       Q := FItems[I];
-       FItems[I] := FItems[J];
-       FItems[J] := Q;
-       I := I + 1;
-       J := J - 1;
-     end;
-   until I > J;
-   if L < J then
-     QuickSort(L, J, Compare);
-   L := I;
-  until I >= R;
-end;
-
-procedure TGList<TItem>.Assign(Source: TGList<TItem>);
-var
-  I: TIndex;
-begin
-  Count := Source.Count;
-  I := 0;
-  while I < Count do begin
-    FItems[I] := Source[I];
-    I := I + 1;
-  end;
-end;
-
-function TGList<TItem>.Extract(Item: TItem): TItem;
-var
-  I: TIndex;
-begin
-  I := IndexOf(Item);
-  if I >= 0 then begin
-    Result := Item;
-    Delete(I);
-  end else
-    raise EListError.CreateFmt(SListIndexError, [0]);
-end;
-
-function TGList<TItem>.IndexOf(Item: TItem; Start: TIndex): TIndex;
-begin
-  Result := Start;
-  while (Result < FCount) and
-  not CompareMem(Addr(FItems[Result]), Addr(Item), SizeOf(TItem)) do
-    Result := Result + 1;
-  if Result = FCount then Result := -1;
-end;
-
-procedure TGList<TItem>.Insert(Index: TIndex; Item: TItem);
-begin
-  if (Index < 0) or (Index > FCount) then
-    raise EListError.CreateFmt(SListIndexError, [Index]);
-  InsertCount(Index, 1);
-  FItems[Index] := Item;
-end;
-
-procedure TGList<TItem>.InsertList(Index: TIndex; List: TGList<TItem>);
-begin
-  if (Index < 0) or (Index > FCount) then
-    raise EListError.CreateFmt(SListIndexError, [Index]);
-  InsertCount(Index, List.Count);
-  ReplaceList(Index, List);
-end;
-
-function TGList<TItem>.IndexOfList(List: TGList<TItem>; Start: TIndex): TIndex;
-var
-  I: TIndex;
-begin
-  if List.Count > 0 then begin
-    Result := IndexOf(List[0], Start);
-    if Result <> -1 then begin
-      I := 1;
-      while I < List.Count do begin
-        if not CompareMem(Addr(FItems[Result + I]), Addr(List.FItems[I]), SizeOf(TItem)) then begin
-          Result := -1;
-          Break;
-        end;
-        I := I + 1;
-      end;
-    end;
-  end else Result := -1;
+  Result := CompareMem(Addr(Item1), Addr(Item2), SizeOf(TItem));
 end;
 
 function TGList<TItem>.GetCount: TIndex;
@@ -320,272 +237,14 @@ begin
   Result := FCount;
 end;
 
-procedure TGList<TItem>.Move(CurIndex, NewIndex: TIndex);
-var
-  Temp: TItem;
+procedure TGList<TItem>.CopyItems(CurIndex, NewIndex, ACount: TIndex);
 begin
-  if ((CurIndex < 0) or (CurIndex > Count - 1)) then
-    raise EListError.CreateFmt(SListIndexError, [CurIndex]);
-  if ((NewIndex < 0) or (NewIndex > Count -1)) then
-    raise EListError.CreateFmt(SlistIndexError, [NewIndex]);
-  Temp := FItems[CurIndex];
-  if NewIndex > CurIndex then begin
-    System.Move(FItems[CurIndex + 1], FItems[CurIndex], (NewIndex - CurIndex) * SizeOf(TItem));
-  end else
-  if NewIndex < CurIndex then begin
-    System.Move(FItems[NewIndex], FItems[NewIndex + 1], (CurIndex - NewIndex) * SizeOf(TItem));
-  end;
-  FItems[NewIndex] := Temp;
-  //Delete(CurIndex);
-  //Insert(NewIndex, Temp);
-end;
-
-procedure TGList<TItem>.MoveItems(CurIndex, NewIndex, Count: TIndex);
-var
-  S: Integer;
-  D: Integer;
-begin
-  if CurIndex < NewIndex then begin
-    S := CurIndex + Count - 1;
-    D := NewIndex + Count - 1;
-    while S >= CurIndex do begin
-      Move(S, D);
-      S := S - 1;
-      D := D - 1;
-    end;
-  end else
-  if CurIndex > NewIndex then begin
-    S := CurIndex;
-    D := NewIndex;
-    while S < (CurIndex + Count) do begin
-      Move(S, D);
-      S := S + 1;
-      D := D + 1;
-    end;
-  end;
-end;
-
-function TGList<TItem>.Remove(Item: TItem): TIndex;
-begin
-  Result := IndexOf(Item);
-  if Result <> -1 then
-    Delete(Result);
-end;
-
-function TGList<TItem>.EqualTo(List: TGList<TItem>): Boolean;
-var
-  I: TIndex;
-begin
-  Result := Count = List.Count;
-  if Result then begin
-    I := 0;
-    while I < Count do begin
-      if not CompareMem(Addr(FItems[I]), Addr(List.FItems[I]), SizeOf(TItem)) then begin
-        Result := False;
-        Break;
-      end;
-      I := I + 1;
-    end;
-  end;
-end;
-
-procedure TGList<TItem>.Reverse;
-var
-  I: TIndex;
-begin
-  I := 0;
-  while I < (Count div 2) do begin
-    Exchange(I, Count - 1 - I);
-    I := I + 1;
-  end;
-end;
-
-procedure TGList<TItem>.ReplaceArray(Index: TIndex;
-  Values: array of TItem);
-var
-  I: TIndex;
-begin
-  I := 0;
-  while I < Length(Values) do begin
-    Items[Index + I] := Values[I];
-    I := I + 1;
-  end;
-end;
-
-procedure TGList<TItem>.ReplaceList(Index: TIndex; Source: TGList<TItem>);
-var
-  I: TIndex;
-begin
-  I := 0;
-  while I < Source.Count do begin
-    Items[Index + I] := Source[I];
-    I := I + 1;
-  end;
-end;
-
-procedure TGList<TItem>.ReplaceListPart(Index: TIndex; Source: TGList<TItem>;
-  SourceIndex, SourceCount: TIndex);
-var
-  I: TIndex;
-begin
-  I := 0;
-  while I < SourceCount do begin
-    Items[Index + I] := Source[SourceIndex + I];
-    I := I + 1;
-  end;
-end;
-
-procedure TGList<TItem>.Sort(Compare: TSortCompare);
-begin
-  if FCount > 1 then
-    QuickSort(0, FCount - 1, Compare);
-end;
-
-procedure TGList<TItem>.AddArray(Values: array of TItem);
-var
-  I: TIndex;
-begin
-  I := 0;
-  while I <= High(Values) do begin
-    Add(Values[I]);
-    I := I + 1;
-  end;
-end;
-
-procedure TGList<TItem>.SetArray(Values: array of TItem);
-var
-  I: TIndex;
-begin
-  Clear;
-  I := 0;
-  while I <= High(Values) do begin
-    Add(Values[I]);
-    I := I + 1;
-  end;
-end;
-
-procedure TGList<TItem>.InsertArray(Index: TIndex; Values: array of TItem);
-begin
-  if (Index < 0) or (Index > FCount) then
-    raise EListError.CreateFmt(SListIndexError, [Index]);
-  InsertCount(Index, Length(Values));
-  ReplaceArray(Index, Values);
-end;
-
-procedure TGList<TItem>.InsertCount(Index: TIndex; ACount: TIndex);
-begin
-  if (Index < 0) or (Index > FCount) then
-    raise EListError.CreateFmt(SListIndexError, [Index]);
-  Count := Count + ACount;
-  if Index < FCount then
-    System.Move(FItems[Index], FItems[Index + ACount], (FCount - ACount - Index) * SizeOf(TItem));
-end;
-
-function TGList<TItem>.Implode(Separator: string; Converter: TToStringConverter): string;
-var
-  I: TIndex;
-begin
-  Result := '';
-  I := 0;
-  while I < Count do begin
-    Result := Result + Converter(FItems[I]);
-    if I < (Count - 1) then
-      Result := Result + Separator;
-    I := I + 1;
-  end;
-end;
-
-procedure TGList<TItem>.Explode(Text, Separator: string; Converter: TFromStringConverter; SlicesCount: Integer = -1);
-begin
-  Clear;
-  while (Pos(Separator, Text) > 0) and
-  ((Count < (SlicesCount - 1)) or (SlicesCount = -1)) do begin
-    Add(Converter(Copy(Text, 1, Pos(Separator, Text) - 1)));
-    System.Delete(Text, 1, Pos(Separator, Text) + Length(Separator) - 1);
-  end;
-  Add(Converter(Text));
-end;
-
-function TGList<TItem>.Add(const Item: TItem): TIndex;
-begin
-  Count := Count + 1;
-  Result := FCount - 1;
-  Items[Result] := Item;
-end;
-
-procedure TGList<TItem>.AddList(List: TGList<TItem>);
-var
-  I: TIndex;
-begin
-  I := 0;
-  while I < List.Count do begin
-    Add(List[I]);
-    I := I + 1;
-  end;
-end;
-
-procedure TGList<TItem>.AddListPart(List: TGList<TItem>; ItemIndex, ItemCount: TIndex);
-var
-  I: TIndex;
-  J: TIndex;
-begin
-  I := Count;
-  J := ItemIndex;
-  Count := Count + ItemCount;
-  while I < Count do begin
-    Items[I] := List[J];
-    I := I + 1;
-    J := J + 1;
-  end;
-end;
-
-procedure TGList<TItem>.Delete(Index: TIndex);
-begin
-  if (Index < 0) or (Index >= FCount) then
-    raise EListError.CreateFmt(SListIndexError, [Index]);
-  FCount := FCount - 1;
-  System.Move(FItems[Index + 1], FItems[Index], (FCount - Index) * SizeOf(TItem));
-  SetCapacityOptimized(Capacity - 1);
-end;
-
-procedure TGList<TItem>.DeleteItems(Index, Count: TIndex);
-var
-  I: TIndex;
-begin
-  I := Index;
-  while I < (Index + Count) do begin
-    Delete(Index);
-    I := I + 1;
-  end;
-end;
-
-procedure TGList<TItem>.Fill(Start, Count: TIndex; Value: TItem);
-var
-  I: TIndex;
-begin
-  I := Start;
-  while I < Count do begin
-    FItems[I] := Value;
-    I := I + 1;
-  end;
-end;
-
-procedure TGList<TItem>.Exchange(Index1, Index2: TIndex);
-var
-  Temp: TItem;
-begin
-  if ((Index1 >= FCount) or (Index1 < 0)) then
-    raise EListError.CreateFmt(SListIndexError, [Index1]);
-  if ((Index2 >= FCount) or (Index2 < 0)) then
-    raise EListError.CreateFmt(SListIndexError, [Index2]);
-  Temp := FItems[Index1];
-  FItems[Index1] := FItems[Index2];
-  FItems[Index2] := Temp;
+  System.Move(FItems[CurIndex], FItems[NewIndex], ACount * SizeOf(TItem));
 end;
 
 { TGObjectList }
 
-procedure TGObjectList<TItem>.Assign(Source: TGList<TItem>);
+procedure TGObjectList<TItem>.Assign(Source: TGAbstractList<TItem>);
 begin
   Clear;
   OwnsObjects := False;
@@ -598,7 +257,7 @@ begin
   inherited Put(Index, AValue);
 end;
 
-procedure TGObjectList<TItem>.Delete(Index: Integer);
+procedure TGObjectList<TItem>.Delete(const Index: Integer);
 begin
   if OwnsObjects then FItems[Index].Free;
   inherited Delete(Index);
@@ -632,7 +291,7 @@ end;
 
 { TGStringList }
 
-procedure TGStringList<TItem>.Assign(Source: TGList<TItem>);
+procedure TGStringList<TItem>.Assign(Source: TGAbstractList<TItem>);
 begin
   Clear;
   inherited;
@@ -701,6 +360,35 @@ begin
     Items[0] := AValue;
 end;
 
+procedure TGAbstractList<TItem>.QuickSort(L, R: TIndex; Compare: TSortCompare);
+var
+  I, J: TIndex;
+  P, Q: TItem;
+begin
+ repeat
+   I := L;
+   J := R;
+   P := Items[(L + R) div 2];
+   repeat
+     while Compare(P, Items[I]) > 0 do
+       I := I + 1;
+     while Compare(P, Items[J]) < 0 do
+       J := J - 1;
+     if I <= J then
+     begin
+       Q := Items[I];
+       Items[I] := Items[J];
+       Items[J] := Q;
+       I := I + 1;
+       J := J - 1;
+     end;
+   until I > J;
+   if L < J then
+     QuickSort(L, J, Compare);
+   L := I;
+  until I >= R;
+end;
+
 constructor TGAbstractList<TItem>.Create;
 begin
 end;
@@ -708,7 +396,297 @@ end;
 procedure TGAbstractList<TItem>.Clear;
 begin
   Count := 0;
-  Capacity := 0;
+end;
+
+procedure TGAbstractList<TItem>.Delete(const Index: TIndex);
+begin
+  DeleteItems(Index, 1);
+end;
+
+procedure TGAbstractList<TItem>.DeleteItems(const Index, ACount: TIndex);
+begin
+  if (Index < 0) or (Index >= (Count - ACount)) then
+    raise EListError.CreateFmt(SListIndexError, [Index]);
+  CopyItems(Index + ACount, Index, Count - Index - ACount);
+  //SetCapacityOptimized(Capacity - ACount);
+  Count := Count - ACount;
+end;
+
+function TGAbstractList<TItem>.EqualTo(List: TGAbstractList<TItem>): Boolean;
+var
+  I: TIndex;
+begin
+  Result := Count = List.Count;
+  if Result then begin
+    I := 0;
+    while I < Count do begin
+      if not CompareItem(Items[I], List.Items[I]) then begin
+        Result := False;
+        Break;
+      end;
+      I := I + 1;
+    end;
+  end;
+end;
+
+procedure TGAbstractList<TItem>.Exchange(const Index1, Index2: TIndex);
+var
+  Temp: TItem;
+begin
+  if ((Index1 >= Count) or (Index1 < 0)) then
+    raise EListError.CreateFmt(SListIndexError, [Index1]);
+  if ((Index2 >= Count) or (Index2 < 0)) then
+    raise EListError.CreateFmt(SListIndexError, [Index2]);
+  Temp := Items[Index1];
+  Items[Index1] := Items[Index2];
+  Items[Index2] := Temp;
+end;
+
+procedure TGAbstractList<TItem>.Explode(Text, Separator: string;
+  Converter: TFromStringConverter; SlicesCount: Integer);
+begin
+  Clear;
+  while (Pos(Separator, Text) > 0) and
+  ((Count < (SlicesCount - 1)) or (SlicesCount = -1)) do begin
+    Add(Converter(Copy(Text, 1, Pos(Separator, Text) - 1)));
+    System.Delete(Text, 1, Pos(Separator, Text) + Length(Separator) - 1);
+  end;
+  Add(Converter(Text));
+end;
+
+function TGAbstractList<TItem>.Extract(Item: TItem): TItem;
+var
+  I: TIndex;
+begin
+  I := IndexOf(Item);
+  if I >= 0 then begin
+    Result := Item;
+    Delete(I);
+  end else
+    raise EListError.CreateFmt(SListIndexError, [0]);
+end;
+
+procedure TGAbstractList<TItem>.Fill(Start, Count: TIndex; Value: TItem);
+var
+  I: TIndex;
+begin
+  I := Start;
+  while I < Count do begin
+    Items[I] := Value;
+    I := I + 1;
+  end;
+end;
+
+function TGAbstractList<TItem>.GetArray(Index, ACount: TIndex): TItemArray;
+var
+  I: Integer;
+begin
+  SetLength(Result, ACount);
+  I := 0;
+  while I < Count do begin
+    Result[I] := Items[Index + I];
+    I := I + 1;
+  end;
+end;
+
+procedure TGAbstractList<TItem>.GetList(List: TGAbstractList<TItem>; Index, ACount: TIndex);
+begin
+  List.Clear;
+  List.AddListPart(Self, Index, ACount);
+end;
+
+function TGAbstractList<TItem>.IndexOfList(List: TGAbstractList<TItem>; Start: TIndex
+  ): TIndex;
+var
+  I: TIndex;
+begin
+  if List.Count > 0 then begin
+    Result := IndexOf(List[0], Start);
+    if Result <> -1 then begin
+      I := 1;
+      while I < List.Count do begin
+        if not CompareItem(Items[Result + I], List.Items[I]) then begin
+          Result := -1;
+          Break;
+        end;
+        I := I + 1;
+      end;
+    end;
+  end else Result := -1;
+end;
+
+function TGAbstractList<TItem>.IndexOf(Item: TItem; Start: TIndex): TIndex;
+begin
+  Result := Start;
+  while (Result < Count) and (not CompareItem(Items[Result], Item)) do
+    Result := Result + 1;
+  if Result = Count then Result := -1;
+end;
+
+procedure TGAbstractList<TItem>.Insert(const Index: TIndex; Item: TItem);
+begin
+  if (Index > Count) then
+    raise EListError.CreateFmt(SListIndexError, [Index]);
+  InsertCount(Index, 1);
+  Items[Index] := Item;
+end;
+
+procedure TGAbstractList<TItem>.InsertList(const Index: TIndex; List: TGAbstractList<TItem>);
+begin
+  if (Index < 0) or (Index > Count) then
+    raise EListError.CreateFmt(SListIndexError, [Index]);
+  InsertCount(Index, List.Count);
+  ReplaceList(Index, List);
+end;
+
+procedure TGAbstractList<TItem>.InsertArray(const Index: TIndex;
+  Values: array of TItem);
+begin
+  if (Index < 0) or (Index > Count) then
+    raise EListError.CreateFmt(SListIndexError, [Index]);
+  InsertCount(Index, Length(Values));
+  ReplaceArray(Index, Values);
+end;
+
+procedure TGAbstractList<TItem>.InsertCount(const Index: TIndex; ACount: TIndex);
+begin
+  if (Index < 0) or (Index > Count) then
+    raise EListError.CreateFmt(SListIndexError, [Index]);
+  Count := Count + ACount;
+  CopyItems(Index, Index + ACount, Count - ACount - Index);
+end;
+
+function TGAbstractList<TItem>.Implode(Separator: string;
+  Converter: TToStringConverter): string;
+var
+  I: TIndex;
+begin
+  Result := '';
+  I := 0;
+  while I < Count do begin
+    Result := Result + Converter(Items[I]);
+    if I < (Count - 1) then
+      Result := Result + Separator;
+    I := I + 1;
+  end;
+end;
+
+procedure TGAbstractList<TItem>.CopyItems(CurIndex, NewIndex, ACount: TIndex);
+var
+  I: Integer;
+begin
+  if CurIndex > NewIndex then begin
+    I := 0;
+    while I < ACount do begin
+      Items[NewIndex] := Items[CurIndex];
+      CurIndex := CurIndex + 1;
+      NewIndex := NewIndex + 1;
+      I := I + 1;
+    end;
+  end else begin
+    I := ACount - 1;
+    NewIndex := NewIndex + ACount - 1;
+    CurIndex := CurIndex + ACount - 1;
+    while I >= 0 do begin
+      Items[NewIndex] := Items[CurIndex];
+      NewIndex := NewIndex - 1;
+      CurIndex := CurIndex - 1;
+      I := I - 1;
+    end;
+  end;
+end;
+
+procedure TGAbstractList<TItem>.Move(const CurIndex, NewIndex: TIndex);
+begin
+  MoveItems(CurIndex, NewIndex, 1);
+end;
+
+procedure TGAbstractList<TItem>.MoveItems(CurIndex, NewIndex,
+  ACount: TIndex);
+var
+  I: Integer;
+  Temp: TGList<TItem>;
+begin
+  try
+    Temp := TGList<TItem>.Create;
+    Temp.AddListPart(Self, NewIndex, ACount);
+    CopyItems(CurIndex, NewIndex, ACount);
+    ReplaceList(CurIndex, Temp);
+  finally
+    Temp.Free;
+  end;
+end;
+
+procedure TGAbstractList<TItem>.ReplaceArray(const Index: TIndex;
+  Values: array of TItem);
+var
+  I: TIndex;
+begin
+  I := 0;
+  while I < Length(Values) do begin
+    Items[Index + I] := Values[I];
+    I := I + 1;
+  end;
+end;
+
+procedure TGAbstractList<TItem>.ReplaceList(const Index: TIndex; Source: TGAbstractList<TItem>
+  );
+var
+  I: TIndex;
+begin
+  I := 0;
+  while I < Source.Count do begin
+    Items[Index + I] := Source[I];
+    I := I + 1;
+  end;
+end;
+
+procedure TGAbstractList<TItem>.ReplaceListPart(const Index: TIndex;
+  Source: TGAbstractList<TItem>; SourceIndex, SourceCount: TIndex);
+var
+  I: TIndex;
+begin
+  I := 0;
+  while I < SourceCount do begin
+    Items[Index + I] := Source[SourceIndex + I];
+    I := I + 1;
+  end;
+end;
+
+function TGAbstractList<TItem>.Remove(const Item: TItem): TIndex;
+begin
+  Result := IndexOf(Item);
+  if Result <> -1 then
+    Delete(Result);
+end;
+
+procedure TGAbstractList<TItem>.Reverse;
+var
+  I: TIndex;
+begin
+  I := 0;
+  while I < (Count div 2) do begin
+    Exchange(I, Count - 1 - I);
+    I := I + 1;
+  end;
+end;
+
+procedure TGAbstractList<TItem>.Sort(Compare: TSortCompare);
+begin
+  if Count > 1 then
+    QuickSort(0, Count - 1, Compare);
+end;
+
+procedure TGAbstractList<TItem>.SetArray(Values: array of TItem);
+var
+  I: TIndex;
+begin
+  Clear;
+  I := 0;
+  while I <= High(Values) do begin
+    Add(Values[I]);
+    I := I + 1;
+  end;
 end;
 
 function TGAbstractList<TItem>.Add(const Item: TItem): TIndex;
@@ -716,6 +694,36 @@ begin
   Count := Count + 1;
   Result := Count - 1;
   Items[Result] := Item;
+end;
+
+procedure TGAbstractList<TItem>.AddArray(Values: array of TItem);
+var
+  I: TIndex;
+begin
+  I := 0;
+  while I <= High(Values) do begin
+    Add(Values[I]);
+    I := I + 1;
+  end;
+end;
+
+procedure TGAbstractList<TItem>.AddList(List: TGAbstractList<TItem>);
+begin
+  Count := Count + List.Count;
+  ReplaceList(Count - List.Count, List);
+end;
+
+procedure TGAbstractList<TItem>.AddListPart(List: TGAbstractList<TItem>; ItemIndex,
+  ItemCount: TIndex);
+begin
+  Count := Count + ItemCount;
+  ReplaceListPart(Count - ItemCount, List, ItemIndex, ItemCount);
+end;
+
+procedure TGAbstractList<TItem>.Assign(Source: TGAbstractList<TItem>);
+begin
+  Count := Source.Count;
+  ReplaceList(0, Source);
 end;
 
 { TGFileList<TItem> }

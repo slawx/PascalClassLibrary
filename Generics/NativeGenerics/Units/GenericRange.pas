@@ -5,7 +5,7 @@ unit GenericRange;
 interface
 
 uses
-  SysUtils, Classes, GenericList;
+  SysUtils, Classes;
 
 type
   TGRange<TItem> = class
