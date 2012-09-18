@@ -19,11 +19,11 @@ type
     TToStringConverter = function(Item: TItem): string;
     TFromStringConverter = function(Text: string): TItem;
     TItemArray = array of TItem;
-  private
-    function GetLast: TItem; virtual; abstract;
-    procedure SetLast(AValue: TItem); virtual; abstract;
-    function GetFirst: TItem; virtual; abstract;
-    procedure SetFirst(AValue: TItem); virtual; abstract;
+  protected
+    function GetLast: TItem; virtual;
+    procedure SetLast(const AValue: TItem); virtual;
+    function GetFirst: TItem; virtual;
+    procedure SetFirst(const AValue: TItem); virtual;
     function GetCount: TIndex; virtual; abstract;
     procedure SetCount(const AValue: TIndex); virtual; abstract;
     procedure SetCapacity(const AValue: TIndex); virtual; abstract;
@@ -32,7 +32,8 @@ type
     procedure Put(Index: TIndex; const AValue: TItem); virtual; abstract;
   public
     constructor Create; virtual;
-    function Add(Item: TItem): TIndex; virtual; abstract;
+    procedure Clear; virtual;
+    function Add(const Item: TItem): TIndex; virtual;
     property Count: TIndex read GetCount write SetCount;
     property Capacity: TIndex read GetCapacity write SetCapacity;
     property Items[Index: TIndex]: TItem read Get write Put; default;
@@ -46,25 +47,21 @@ type
   private
     FCount: TIndex;
     FItems: array of TItem;
+  protected
     function Get(Index: TIndex): TItem; override;
     function GetCapacity: TIndex; override;
-    function GetFirst: TItem; override;
-    function GetLast: TItem; override;
     function GetCount: TIndex; override;
     procedure SetCapacity(const AValue: TIndex); override;
     procedure SetCapacityOptimized(const NewCapacity: TIndex);
     procedure SetCount(const AValue: TIndex); override;
-    procedure SetFirst(AValue: TItem); override;
-    procedure SetLast(AValue: TItem); override;
     procedure Put(Index: TIndex; const AValue: TItem); override;
     procedure QuickSort(L, R : TIndex; Compare: TSortCompare);
   public
-    function Add(Item: TItem): TIndex; override;
+    function Add(const Item: TItem): TIndex; override;
     procedure AddArray(Values: array of TItem);
     procedure AddList(List: TGList<TItem>);
     procedure AddListPart(List: TGList<TItem>; ItemIndex, ItemCount: TIndex);
     procedure Assign(Source: TGList<TItem>); virtual;
-    procedure Clear; virtual;
     procedure Delete(Index: TIndex); virtual;
     procedure DeleteItems(Index, Count: TIndex);
     function EqualTo(List: TGList<TItem>): Boolean;
@@ -94,7 +91,7 @@ type
   end;
 
   TGObjectList<TItem> = class(TGList<TItem>)
-  private
+  protected
     procedure Put(Index: Integer; const AValue: TItem); override;
   public
     OwnsObjects: Boolean;
@@ -111,15 +108,36 @@ type
     procedure Delete(Index: Integer); override;
     procedure Clear; override;
     procedure Assign(Source: TGList<TItem>); override;
+    constructor Create; override;
+    destructor Destroy; override;
+  end;
+
+  { TGFileList }
+
+  TGFileList<TItem> = class(TGList<TItem>)
+  private
+    FHandle: THandle;
+  protected
+    function GetCount: TIndex; override;
+    procedure SetCount(const AValue: TIndex); override;
+    procedure SetCapacity(const AValue: TIndex); override;
+    function GetCapacity: TIndex; override;
+    function Get(Index: TIndex): TItem; override;
+    procedure Put(Index: TIndex; const AValue: TItem); override;
+  public
+    procedure Open(FileName: string; Mode: Integer);
+    procedure Close;
     constructor Create;
     destructor Destroy; override;
   end;
 
 
-implementation
+resourcestring
+  SListIndexError               = 'List index (%d) out of bounds';
+  SListCapacityError            = 'List capacity (%d) exceeded.';
+  SListCountError               = 'List count (%d) out of bounds.';
 
-uses
-  RtlConsts;
+implementation
 
 { TGList<TItem> }
 
@@ -297,41 +315,9 @@ begin
   end else Result := -1;
 end;
 
-function TGList<TItem>.GetLast: TItem;
-begin
-  if FCount = 0 then
-    raise EListError.CreateFmt(SListIndexError, [0])
-  else
-    Result := FItems[FCount - 1];
-end;
-
 function TGList<TItem>.GetCount: TIndex;
 begin
   Result := FCount;
-end;
-
-procedure TGList<TItem>.SetLast(AValue: TItem);
-begin
-  if FCount = 0 then
-    raise EListError.CreateFmt(SListIndexError, [0])
-  else
-    FItems[FCount - 1] := AValue;
-end;
-
-function TGList<TItem>.GetFirst: TItem;
-begin
-  if FCount = 0 then
-    raise EListError.CreateFmt(SListIndexError, [0])
-  else
-    Result := FItems[0];
-end;
-
-procedure TGList<TItem>.SetFirst(AValue: TItem);
-begin
-  if FCount = 0 then
-    raise EListError.CreateFmt(SListIndexError, [0])
-  else
-    FItems[0] := AValue;
 end;
 
 procedure TGList<TItem>.Move(CurIndex, NewIndex: TIndex);
@@ -520,11 +506,11 @@ begin
   Add(Converter(Text));
 end;
 
-function TGList<TItem>.Add(Item: TItem): TIndex;
+function TGList<TItem>.Add(const Item: TItem): TIndex;
 begin
   Count := Count + 1;
   Result := FCount - 1;
-  FItems[Result] := Item;
+  Items[Result] := Item;
 end;
 
 procedure TGList<TItem>.AddList(List: TGList<TItem>);
@@ -551,12 +537,6 @@ begin
     I := I + 1;
     J := J + 1;
   end;
-end;
-
-procedure TGList<TItem>.Clear;
-begin
-  Count := 0;
-  Capacity := 0;
 end;
 
 procedure TGList<TItem>.Delete(Index: TIndex);
@@ -689,8 +669,114 @@ end;
 
 { TGAbstractList<TItem> }
 
+function TGAbstractList<TItem>.GetLast: TItem;
+begin
+  if Count = 0 then
+    raise EListError.CreateFmt(SListIndexError, [0])
+  else
+    Result := Items[Count - 1];
+end;
+
+procedure TGAbstractList<TItem>.SetLast(const AValue: TItem);
+begin
+  if Count = 0 then
+    raise EListError.CreateFmt(SListIndexError, [0])
+  else
+    Items[Count - 1] := AValue;
+end;
+
+function TGAbstractList<TItem>.GetFirst: TItem;
+begin
+  if Count = 0 then
+    raise EListError.CreateFmt(SListIndexError, [0])
+  else
+    Result := Items[0];
+end;
+
+procedure TGAbstractList<TItem>.SetFirst(const AValue: TItem);
+begin
+  if Count = 0 then
+    raise EListError.CreateFmt(SListIndexError, [0])
+  else
+    Items[0] := AValue;
+end;
+
 constructor TGAbstractList<TItem>.Create;
 begin
+end;
+
+procedure TGAbstractList<TItem>.Clear;
+begin
+  Count := 0;
+  Capacity := 0;
+end;
+
+function TGAbstractList<TItem>.Add(const Item: TItem): TIndex;
+begin
+  Count := Count + 1;
+  Result := Count - 1;
+  Items[Result] := Item;
+end;
+
+{ TGFileList<TItem> }
+
+function TGFileList<TItem>.GetCount: TIndex;
+var
+  OldPos: TIndex;
+begin
+  OldPos := FileSeek(FHandle, 0, 1);
+  Result := FileSeek(FHandle, 0, 2);
+  FileSeek(FHandle, OldPos, 0);
+end;
+
+procedure TGFileList<TItem>.SetCount(const AValue: TIndex);
+begin
+  FileTruncate(FHandle, AValue);
+end;
+
+procedure TGFileList<TItem>.SetCapacity(const AValue: TIndex);
+begin
+  inherited SetCapacity(AValue);
+end;
+
+function TGFileList<TItem>.GetCapacity: TIndex;
+begin
+  Result := inherited GetCapacity;
+end;
+
+function TGFileList<TItem>.Get(Index: TIndex): TItem;
+begin
+  FileSeek(FHandle, Index, 0);
+  FileRead(FHandle, Result, SizeOf(Result));
+end;
+
+procedure TGFileList<TItem>.Put(Index: TIndex; const AValue: TItem);
+begin
+  FileSeek(FHandle, Index, 0);
+  FileWrite(FHandle, AValue, SizeOf(AValue));
+end;
+
+procedure TGFileList<TItem>.Open(FileName: string; Mode: Integer);
+begin
+  Close;
+  if Mode = fmCreate then FHandle := FileCreate(FileName, Mode)
+    else FileOpen(FileName, Mode);
+end;
+
+procedure TGFileList<TItem>.Close;
+begin
+  if FHandle <> feInvalidHandle then FileClose(FHandle);
+end;
+
+constructor TGFileList<TItem>.Create;
+begin
+  FHandle := feInvalidHandle;
+end;
+
+destructor TGFileList<TItem>.Destroy;
+begin
+  Close;
+  inherited;
 end;
 
 end.

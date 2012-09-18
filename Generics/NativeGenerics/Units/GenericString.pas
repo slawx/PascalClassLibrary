@@ -28,7 +28,7 @@ var
   I: TIndex;
 begin
   for I := 0 to Count - 1 do
-    if (Items[I] in ['a'..'z']) then
+    if (Items[I] >= 'a') and (Items[I] <= 'z') then
       Items[I] := Char(Byte(Items[I]) - 32);
 end;
 
@@ -37,7 +37,7 @@ var
   I: TIndex;
 begin
   for I := 0 to Count - 1 do
-    if (Items[I] in ['A'..'Z']) then
+    if (Items[I] >= 'A') and (Items[I] <= 'Z') then
       Items[I] := Char(Byte(Items[I]) + 32);
 end;
 
