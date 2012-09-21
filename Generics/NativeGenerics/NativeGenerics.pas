@@ -9,7 +9,8 @@ interface
 uses
   GenericList, GenericTree, GenericDictionary, GenericQueue, GenericRange, 
   GenericSet, GenericStack, GenericStream, GenericMatrix, GenericString, 
-  GenericBitmap, LazarusPackageIntf;
+  GenericBitmap, GenericRectangle, GenericPoint, UBinarySerializer, 
+  LazarusPackageIntf;
 
 implementation
 

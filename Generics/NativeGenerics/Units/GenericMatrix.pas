@@ -122,11 +122,8 @@ type
 resourcestring
   SMatrixIndexError = 'Matrix index error [X: %d, Y: %d]';
 
+
 implementation
-
-uses
-  RtlConsts;
-
 
 { TGRawMatrix }
 

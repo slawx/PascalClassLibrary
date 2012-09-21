@@ -4,12 +4,12 @@
     <PathDelim Value="\"/>
     <Name Value="NativeGenerics"/>
     <AddToProjectUsesSection Value="True"/>
-    <Author Value="Chronos"/>
+    <Author Value="Chronos (robie@centrum.cz)"/>
     <CompilerOptions>
       <Version Value="11"/>
       <PathDelim Value="\"/>
       <SearchPaths>
-        <OtherUnitFiles Value="Units"/>
+        <OtherUnitFiles Value="Units;Additional"/>
         <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
       </SearchPaths>
       <CodeGeneration>
@@ -24,10 +24,11 @@
         <CompilerPath Value="$(CompPath)"/>
       </Other>
     </CompilerOptions>
-    <Description Value="Native generics library."/>
+    <Description Value="Native generics library. 
+Require FPC 2.7.1"/>
     <License Value="GNU/GPL"/>
-    <Version Minor="1"/>
-    <Files Count="12">
+    <Version Minor="2"/>
+    <Files Count="15">
       <Item1>
         <Filename Value="ReadMe.txt"/>
         <Type Value="Text"/>
@@ -76,6 +77,18 @@
         <Filename Value="Units\GenericBitmap.pas"/>
         <UnitName Value="GenericBitmap"/>
       </Item12>
+      <Item13>
+        <Filename Value="Units\GenericRectangle.pas"/>
+        <UnitName Value="GenericRectangle"/>
+      </Item13>
+      <Item14>
+        <Filename Value="Units\GenericPoint.pas"/>
+        <UnitName Value="GenericPoint"/>
+      </Item14>
+      <Item15>
+        <Filename Value="Additional\UBinarySerializer.pas"/>
+        <UnitName Value="UBinarySerializer"/>
+      </Item15>
     </Files>
     <Type Value="RunAndDesignTime"/>
     <RequiredPkgs Count="2">

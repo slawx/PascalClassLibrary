@@ -20,12 +20,13 @@ type
     procedure SetPosition(AValue: TIndex);
     function GetPosition: TIndex;
   public
-    procedure Assign(Source: TGAbstractStream<TItem>); virtual;
+    procedure Assign(Source: TGAbstractStream<TItem>); virtual; abstract;
     procedure Write(Item: TItem); virtual; abstract;
     procedure WriteArray(Item: array of TItem); virtual; abstract;
     procedure WriteList(List: TGList<TItem>); virtual; abstract;
     function Read: TItem; virtual; abstract;
     function ReadArray(Count: TIndex): TItemArray; virtual; abstract;
+    function ReadBuffer(var Buffer; Count: Integer): Integer; virtual; abstract;
     function Insert(Count: TIndex): TIndex; virtual; abstract;
     function Remove(Count: TIndex): TIndex; virtual; abstract;
     function Seek(Offset: TIndex; Origin: TSeekOrigin = soCurrent):
@@ -40,6 +41,8 @@ type
     FList: TGList<TItem>;
     FPosition: TIndex;
   public
+    type
+      PItem = ^TItem;
     procedure Assign(Source: TGAbstractStream<TItem>); override;
     procedure Write(Item: TItem); override;
     procedure WriteArray(Values: array of TItem); override;
@@ -47,6 +50,7 @@ type
     function Read: TItem; override;
     function ReadArray(Count: TIndex): TItemArray; override;
     function ReadList(List: TGList<TItem>; Count: TIndex): TIndex;
+    function ReadBuffer(var Buffer; Count: Integer): Integer; override;
     function Insert(Count: TIndex): Integer; override;
     function Remove(Count: TIndex): Integer; override;
     function Seek(Offset: TIndex; Origin: TSeekOrigin = soCurrent): TIndex; override;
@@ -55,15 +59,13 @@ type
     property List: TGList<TItem> read FList;
   end;
 
+    TStreamByte = TGStream<Byte>;
+
 
 implementation
 
 
 { TGStream }
-
-procedure TGAbstractStream<TItem>.Assign(Source: TGAbstractStream<TItem>);
-begin
-end;
 
 procedure TGAbstractStream<TItem>.SetPosition(AValue: TIndex);
 begin
@@ -111,7 +113,6 @@ end;
 
 procedure TGStream<TItem>.Assign(Source: TGAbstractStream<TItem>);
 begin
-  inherited;
   if Source is TGStream<TItem> then begin
     FList.Assign(TGStream<TItem>(Source).FList);
     FPosition := TGStream<TItem>(Source).FPosition;
@@ -193,6 +194,11 @@ destructor TGStream<TItem>.Destroy;
 begin
   FList.Free;
   inherited Destroy;
+end;
+
+function TGStream<TItem>.ReadBuffer(var Buffer; Count: Integer): Integer;
+begin
+  List.GetBuffer(Position, Buffer, Count);
 end;
 
 
