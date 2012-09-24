@@ -11,12 +11,12 @@
   //   ReplaceArray, GetArray, IndexOfArray)
   // - all items operations (Clear, Reverse, Sort)
 
-  TGAbstractList = class
+  //TGAbstractList = class
 
-  end;
+  //end;
 
   // TGList<TGListIndex, TGListItem> = class
-  TGList = class(TGAbstractList)
+  TGList = class//(TGAbstractList)
   public
     type
       PItem = ^TGListItem;
