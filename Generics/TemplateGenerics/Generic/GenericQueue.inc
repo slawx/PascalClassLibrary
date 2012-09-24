@@ -3,10 +3,6 @@
 {$DEFINE TGListIndex := TGQueueIndex}
 {$DEFINE TGListItem := TGQueueItem}
 {$DEFINE TGList := TGQueueList}
-{$DEFINE TGListSortCompare := TGQueueSortCompare}
-{$DEFINE TGListToStringConverter := TGQueueToStringConverter}
-{$DEFINE TGListFromStringConverter := TGQueueFromStringConverter}
-{$DEFINE TGListItemArray := TGQueueItemArray}
 {$DEFINE INTERFACE}
 {$I 'GenericList.inc'}
 
@@ -43,10 +39,6 @@
 {$DEFINE TGListIndex := TGQueueIndex}
 {$DEFINE TGListItem := TGQueueItem}
 {$DEFINE TGList := TGQueueList}
-{$DEFINE TGListSortCompare := TGQueueSortCompare}
-{$DEFINE TGListToStringConverter := TGQueueToStringConverter}
-{$DEFINE TGListFromStringConverter := TGQueueFromStringConverter}
-{$DEFINE TGListItemArray := TGQueueItemArray}
 {$DEFINE IMPLEMENTATION}
 {$I 'GenericList.inc'}
 

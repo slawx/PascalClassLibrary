@@ -15,10 +15,6 @@ type
 {$DEFINE TGTree := TTreeInteger}
 {$DEFINE TGTreeNode := TTreeNodeInteger}
 {$DEFINE TGTreeNodeList := TTreeNodeListInteger}
-{$DEFINE TGTreeSortCompare := TTreeSortCompareInteger}
-{$DEFINE TGTreeToStringConverter := TTreeToStringConverterInteger}
-{$DEFINE TGTreeFromStringConverter := TTreeFromStringConverterInteger}
-{$DEFINE TGTreeItemArray := TTreeIntegerItemArray}
 {$DEFINE INTERFACE}
 {$I 'GenericTree.inc'}
 
@@ -28,10 +24,6 @@ type
 {$DEFINE TGTree := TTreeString}
 {$DEFINE TGTreeNode := TTreeNodeString}
 {$DEFINE TGTreeNodeList := TTreeNodeListString}
-{$DEFINE TGTreeSortCompare := TTreeSortCompareString}
-{$DEFINE TGTreeToStringConverter := TTreeToStringConverterString}
-{$DEFINE TGTreeFromStringConverter := TTreeFromStringConverterString}
-{$DEFINE TGTreeItemArray := TTreeStringItemArray}
 {$DEFINE INTERFACE}
 {$I 'GenericTree.inc'}
 
@@ -41,10 +33,6 @@ type
 {$DEFINE TGTree := TTreePointer}
 {$DEFINE TGTreeNode := TTreeNodePointer}
 {$DEFINE TGTreeNodeList := TTreeNodeListPointer}
-{$DEFINE TGTreeSortCompare := TTreeSortComparePointer}
-{$DEFINE TGTreeToStringConverter := TTreeToStringConverterPointer}
-{$DEFINE TGTreeFromStringConverter := TTreeFromStringConverterPointer}
-{$DEFINE TGTreeItemArray := TTreePointerItemArray}
 {$DEFINE INTERFACE}
 {$I 'GenericTree.inc'}
 
@@ -59,10 +47,6 @@ implementation
 {$DEFINE TGTree := TTreeInteger}
 {$DEFINE TGTreeNode := TTreeNodeInteger}
 {$DEFINE TGTreeNodeList := TTreeNodeListInteger}
-{$DEFINE TGTreeSortCompare := TTreeSortCompareInteger}
-{$DEFINE TGTreeToStringConverter := TTreeToStringConverterInteger}
-{$DEFINE TGTreeFromStringConverter := TTreeFromStringConverterInteger}
-{$DEFINE TGTreeItemArray := TTreeIntegerItemArray}
 {$DEFINE IMPLEMENTATION}
 {$I 'GenericTree.inc'}
 
@@ -72,10 +56,6 @@ implementation
 {$DEFINE TGTree := TTreeString}
 {$DEFINE TGTreeNode := TTreeNodeString}
 {$DEFINE TGTreeNodeList := TTreeNodeListString}
-{$DEFINE TGTreeSortCompare := TTreeSortCompareString}
-{$DEFINE TGTreeToStringConverter := TTreeToStringConverterString}
-{$DEFINE TGTreeFromStringConverter := TTreeFromStringConverterString}
-{$DEFINE TGTreeItemArray := TTreeStringItemArray}
 {$DEFINE IMPLEMENTATION}
 {$I 'GenericTree.inc'}
 
@@ -85,10 +65,6 @@ implementation
 {$DEFINE TGTree := TTreePointer}
 {$DEFINE TGTreeNode := TTreeNodePointer}
 {$DEFINE TGTreeNodeList := TTreeNodeListPointer}
-{$DEFINE TGTreeSortCompare := TTreeSortComparePointer}
-{$DEFINE TGTreeToStringConverter := TTreeToStringConverterPointer}
-{$DEFINE TGTreeFromStringConverter := TTreeFromStringConverterPointer}
-{$DEFINE TGTreeItemArray := TTreePointerItemArray}
 {$DEFINE IMPLEMENTATION}
 {$I 'GenericTree.inc'}
 

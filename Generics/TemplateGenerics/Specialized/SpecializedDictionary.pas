@@ -17,10 +17,6 @@ type
 {$DEFINE TGPairValue := string}
 {$DEFINE TGDictionary := TDictionaryStringString}
 {$DEFINE TGDictionaryList := TDictionaryStringStringList}
-{$DEFINE TGDictionarySortCompare := TDictionaryStringStringSortCompare}
-{$DEFINE TGDictionaryToStringConverter := TDictionaryStringStringToStringConverter}
-{$DEFINE TGDictionaryFromStringConverter := TDictionaryStringStringFromStringConverter}
-{$DEFINE TGDictionaryItemArray := TDictionaryStringStringItemArray}
 {$DEFINE INTERFACE}
 {$I 'GenericDictionary.inc'}
 
@@ -31,10 +27,6 @@ type
 {$DEFINE TGPairValue := string}
 {$DEFINE TGDictionary := TDictionaryIntegerString}
 {$DEFINE TGDictionaryList := TDictionaryIntegerStringList}
-{$DEFINE TGDictionarySortCompare := TDictionaryIntegerStringSortCompare}
-{$DEFINE TGDictionaryToStringConverter := TDictionaryIntegerStringToStringConverter}
-{$DEFINE TGDictionaryFromStringConverter := TDictionaryIntegerStringFromStringConverter}
-{$DEFINE TGDictionaryItemArray := TDictionaryIntegerStringItemArray}
 {$DEFINE INTERFACE}
 {$I 'GenericDictionary.inc'}
 
@@ -52,10 +44,6 @@ implementation
 {$DEFINE TGPairValue := string}
 {$DEFINE TGDictionary := TDictionaryStringString}
 {$DEFINE TGDictionaryList := TDictionaryStringStringList}
-{$DEFINE TGDictionarySortCompare := TDictionaryStringStringSortCompare}
-{$DEFINE TGDictionaryToStringConverter := TDictionaryStringStringToStringConverter}
-{$DEFINE TGDictionaryFromStringConverter := TDictionaryStringStringFromStringConverter}
-{$DEFINE TGDictionaryItemArray := TDictionaryStringStringItemArray}
 {$DEFINE IMPLEMENTATION}
 {$I 'GenericDictionary.inc'}
 
@@ -66,10 +54,6 @@ implementation
 {$DEFINE TGPairValue := string}
 {$DEFINE TGDictionary := TDictionaryIntegerString}
 {$DEFINE TGDictionaryList := TDictionaryIntegerStringList}
-{$DEFINE TGDictionarySortCompare := TDictionaryIntegerStringSortCompare}
-{$DEFINE TGDictionaryToStringConverter := TDictionaryIntegerStringToStringConverter}
-{$DEFINE TGDictionaryFromStringConverter := TDictionaryIntegerStringFromStringConverter}
-{$DEFINE TGDictionaryItemArray := TDictionaryIntegerStringItemArray}
 {$DEFINE IMPLEMENTATION}
 {$I 'GenericDictionary.inc'}
 

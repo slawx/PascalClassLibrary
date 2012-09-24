@@ -3,10 +3,6 @@
 {$DEFINE TGListIndex := TGListObjectIndex}
 {$DEFINE TGListItem := TGListObjectItem}
 {$DEFINE TGList := TGListObjectList}
-{$DEFINE TGListSortCompare := TGListObjectSortCompare}
-{$DEFINE TGListToStringConverter := TGListObjectToStringConverter}
-{$DEFINE TGListFromStringConverter := TGListObjectFromStringConverter}
-{$DEFINE TGListItemArray := TGListObjectItemArray}
 {$DEFINE INTERFACE}
 {$I 'GenericList.inc'}
 
@@ -41,10 +37,6 @@
 {$DEFINE TGListIndex := TGListObjectIndex}
 {$DEFINE TGListItem := TGListObjectItem}
 {$DEFINE TGList := TGListObjectList}
-{$DEFINE TGListSortCompare := TGListObjectSortCompare}
-{$DEFINE TGListToStringConverter := TGListObjectToStringConverter}
-{$DEFINE TGListFromStringConverter := TGListObjectFromStringConverter}
-{$DEFINE TGListItemArray := TGListObjectItemArray}
 {$DEFINE IMPLEMENTATION}
 {$I 'GenericList.inc'}
 
@@ -107,7 +99,7 @@ end;
 destructor TGListObject.Destroy;
 begin
   Clear;
-  inherited Destroy;
+  inherited;
 end;
 
 {$UNDEF IMPLEMENTATION}

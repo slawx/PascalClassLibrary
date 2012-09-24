@@ -17,10 +17,6 @@ type
 {$DEFINE TGStreamItem := Integer}
 {$DEFINE TGStreamList := TListStreamInteger}
 {$DEFINE TGStream := TStreamInteger}
-{$DEFINE TGStreamSortCompare := TStreamIntegerSortCompare}
-{$DEFINE TGStreamToStringConverter := TStreamIntegerToStringConverter}
-{$DEFINE TGStreamFromStringConverter := TStreamIntegerFromStringConverter}
-{$DEFINE TGStreamItemArray := TStreamIntegerItemArray}
 {$DEFINE INTERFACE}
 {$I 'GenericStream.inc'}
 
@@ -29,10 +25,6 @@ type
 {$DEFINE TGStreamItem := Byte}
 {$DEFINE TGStreamList := TListStreamByte}
 {$DEFINE TGStream := TBaseStreamByte}
-{$DEFINE TGStreamSortCompare := TStreamByteSortCompare}
-{$DEFINE TGStreamToStringConverter := TStreamByteToStringConverter}
-{$DEFINE TGStreamFromStringConverter := TStreamByteFromStringConverter}
-{$DEFINE TGStreamItemArray := TStreamByteItemArray}
 {$DEFINE INTERFACE}
 {$I 'GenericStream.inc'}
 
@@ -41,10 +33,6 @@ type
 {$DEFINE TGStreamItem := Pointer}
 {$DEFINE TGStreamList := TListStreamPointer}
 {$DEFINE TGStream := TStreamPointer}
-{$DEFINE TGStreamSortCompare := TStreamPointerSortCompare}
-{$DEFINE TGStreamToStringConverter := TStreamPointerToStringConverter}
-{$DEFINE TGStreamFromStringConverter := TStreamPointerFromStringConverter}
-{$DEFINE TGStreamItemArray := TStreamPointerItemArray}
 {$DEFINE INTERFACE}
 {$I 'GenericStream.inc'}
 
@@ -68,7 +56,7 @@ type
     function WriteBuffer(var Buffer; Count: Integer): Integer; override;
     procedure WriteStream(Stream: TBaseStreamByte; Count: Integer); override;
     function Read: Byte; override;
-    function ReadArray(Count: Integer): TStreamByteItemArray; override;
+    function ReadArray(Count: Integer): TItemArray; override;
     function ReadList(List: TListByte; Count: Integer): Integer;
     function ReadBuffer(var Buffer; Count: Integer): Integer; override;
     function ReadStream(Stream: TBaseStreamByte; Count: Integer): Integer; override;
@@ -133,7 +121,7 @@ begin
   Inc(FPosition);
 end;
 
-function TMemoryStreamByte.ReadArray(Count: Integer): TStreamByteItemArray;
+function TMemoryStreamByte.ReadArray(Count: Integer): TItemArray;
 begin
   Result := FList.GetArray(FPosition, Count);
 end;
@@ -210,10 +198,6 @@ end;
 {$DEFINE TGStreamItem := Integer}
 {$DEFINE TGStreamList := TListStreamInteger}
 {$DEFINE TGStream := TStreamInteger}
-{$DEFINE TGStreamSortCompare := TStreamIntegerSortCompare}
-{$DEFINE TGStreamToStringConverter := TStreamIntegerToStringConverter}
-{$DEFINE TGStreamFromStringConverter := TStreamIntegerFromStringConverter}
-{$DEFINE TGStreamItemArray := TStreamIntegerItemArray}
 {$DEFINE IMPLEMENTATION}
 {$I 'GenericStream.inc'}
 
@@ -222,10 +206,6 @@ end;
 {$DEFINE TGStreamItem := Byte}
 {$DEFINE TGStreamList := TListStreamByte}
 {$DEFINE TGStream := TBaseStreamByte}
-{$DEFINE TGStreamSortCompare := TStreamByteSortCompare}
-{$DEFINE TGStreamToStringConverter := TStreamByteToStringConverter}
-{$DEFINE TGStreamFromStringConverter := TStreamByteFromStringConverter}
-{$DEFINE TGStreamItemArray := TStreamByteItemArray}
 {$DEFINE IMPLEMENTATION}
 {$I 'GenericStream.inc'}
 
@@ -234,10 +214,6 @@ end;
 {$DEFINE TGStreamItem := Pointer}
 {$DEFINE TGStreamList := TListStreamPointer}
 {$DEFINE TGStream := TStreamPointer}
-{$DEFINE TGStreamSortCompare := TStreamPointerSortCompare}
-{$DEFINE TGStreamToStringConverter := TStreamPointerToStringConverter}
-{$DEFINE TGStreamFromStringConverter := TStreamPointerFromStringConverter}
-{$DEFINE TGStreamItemArray := TStreamPointerItemArray}
 {$DEFINE IMPLEMENTATION}
 {$I 'GenericStream.inc'}
 

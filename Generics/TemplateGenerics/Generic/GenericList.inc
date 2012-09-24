@@ -11,15 +11,19 @@
   //   ReplaceArray, GetArray, IndexOfArray)
   // - all items operations (Clear, Reverse, Sort)
 
-  TGList = class;
+  TGAbstractList = class
 
-  TGListSortCompare = function(Item1, Item2: TGListItem): Integer of object;
-  TGListToStringConverter = function(Item: TGListItem): string;
-  TGListFromStringConverter = function(Text: string): TGListItem;
-  TGListItemArray = array of TGListItem;
+  end;
 
   // TGList<TGListIndex, TGListItem> = class
-  TGList = class
+  TGList = class(TGAbstractList)
+  public
+    type
+      PItem = ^TGListItem;
+      TSortCompare = function(Item1, Item2: TGListItem): Integer of object;
+      TToStringConverter = function(Item: TGListItem): string;
+      TFromStringConverter = function(Text: string): TGListItem;
+      TItemArray = array of TGListItem;
   private
     FItems: array of TGListItem;
     FCount: TGListIndex;
@@ -33,13 +37,11 @@
     procedure SetCapacityOptimized(const NewCapacity: TGListIndex);
     procedure SetLast(AValue: TGListItem);
     procedure SetFirst(AValue: TGListItem);
-    procedure QuickSort(L, R : TGListIndex; Compare: TGListSortCompare);
+    procedure QuickSort(L, R : TGListIndex; Compare: TSortCompare);
   protected
     procedure Put(Index: TGListIndex; const AValue: TGListItem); virtual;
     procedure SetCount(const AValue: TGListIndex); virtual;
   public
-    type
-      PItem = ^TGListItem;
     function CompareMem(P1, P2: Pointer; Length: cardinal): Boolean; inline;
     function Add(Item: TGListItem): TGListIndex;
     procedure AddArray(Values: array of TGListItem);
@@ -52,14 +54,14 @@
     procedure DeleteItems(Index, Count: TGListIndex);
     function EqualTo(List: TGList): Boolean;
     procedure Exchange(Index1, Index2: TGListIndex);
-    procedure Explode(Text, Separator: string; Converter: TGListFromStringConverter; SlicesCount: Integer = -1);
+    procedure Explode(Text, Separator: string; Converter: TFromStringConverter; SlicesCount: Integer = -1);
     function Extract(Item: TGListItem): TGListItem;
     property First: TGListItem read GetFirst write SetFirst;
     procedure Fill(Start, Count: TGListIndex; Value: TGListItem);
-    function GetArray(Index, ACount: TGListIndex): TGListItemArray;
+    function GetArray(Index, ACount: TGListIndex): TItemArray;
     procedure GetList(List: TGList; Index, ACount: TGListIndex);
     procedure GetBuffer(Index: TGListIndex; var Buffer; Count: TGListIndex);
-    function Implode(Separator: string; Converter: TGListToStringConverter): string;
+    function Implode(Separator: string; Converter: TToStringConverter): string;
     function IndexOf(Item: TGListItem; Start: TGListIndex = 0): TGListIndex; virtual;
     function IndexOfList(List: TGList; Start: TGListIndex = 0): TGListIndex;
     function IndexOfArray(Values: array of TGListItem; Start: TGListIndex = 0): TGListIndex;
@@ -76,7 +78,7 @@
     procedure ReplaceListPart(Index: TGListIndex; Source: TGList;
       SourceIndex, SourceCount: TGListIndex);
     procedure ReplaceBuffer(Index: TGListIndex; var Buffer; Count: TGListIndex);
-    procedure Sort(Compare: TGListSortCompare);
+    procedure Sort(Compare: TSortCompare);
     procedure SetArray(Values: array of TGListItem);
     procedure BeginUpdate;
     procedure EndUpdate;
@@ -87,7 +89,7 @@
     property Last: TGListItem read GetLast write SetLast;
     property OnUpdate: TNotifyEvent read FOnUpdate write FOnUpdate;
   end;
-  
+
 {$UNDEF INTERFACE}
 {$ENDIF}
 
@@ -236,7 +238,7 @@ begin
   if AValue < Capacity then SetCapacityOptimized(AValue); // After FCount change
 end;
 
-function TGList.GetArray(Index, ACount: TGListIndex): TGListItemArray;
+function TGList.GetArray(Index, ACount: TGListIndex): TItemArray;
 var
   I: Integer;
 begin
@@ -254,7 +256,7 @@ begin
   List.AddListPart(Self, Index, ACount);
 end;
 
-procedure TGList.QuickSort(L, R: TGListIndex; Compare: TGListSortCompare);
+procedure TGList.QuickSort(L, R: TGListIndex; Compare: TSortCompare);
 var
   I, J: TGListIndex;
   P, Q: TGListItem;
@@ -523,7 +525,7 @@ begin
   Update;
 end;
 
-procedure TGList.Sort(Compare: TGListSortCompare);
+procedure TGList.Sort(Compare: TSortCompare);
 begin
   if FCount > 1 then
     QuickSort(0, FCount - 1, Compare);
@@ -570,7 +572,7 @@ begin
   if Assigned(FOnUpdate) and (FUpdateCount = 0) then FOnUpdate(Self);
 end;
 
-function TGList.Implode(Separator: string; Converter: TGListToStringConverter): string;
+function TGList.Implode(Separator: string; Converter: TToStringConverter): string;
 var
   I: TGListIndex;
 begin
@@ -584,7 +586,7 @@ begin
   end;
 end;
 
-procedure TGList.Explode(Text, Separator: string; Converter: TGListFromStringConverter; SlicesCount: Integer = -1);
+procedure TGList.Explode(Text, Separator: string; Converter: TFromStringConverter; SlicesCount: Integer = -1);
 begin
   Clear;
   while (Pos(Separator, Text) > 0) and

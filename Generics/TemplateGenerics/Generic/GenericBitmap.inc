@@ -7,10 +7,6 @@
 {$DEFINE TGMatrixIndex := TGBitmapIndex}
 {$DEFINE TGMatrixRow := TGBitmapRow}
 {$DEFINE TGMatrix := TGBitmapMatrix}
-{$DEFINE TGMatrixSortCompare := TGBitmapSortCompare}
-{$DEFINE TGMatrixToStringConverter := TGBitmapToStringConverter}
-{$DEFINE TGMatrixFromStringConverter := TGBitmapFromStringConverter}
-{$DEFINE TGMatrixMerge := TGBitmapMerge}
 {$DEFINE INTERFACE}
 {$I 'GenericMatrix.inc'}
 
@@ -48,10 +44,6 @@
 {$DEFINE TGMatrixIndex := TGBitmapIndex}
 {$DEFINE TGMatrixRow := TGBitmapRow}
 {$DEFINE TGMatrix := TGBitmapMatrix}
-{$DEFINE TGMatrixSortCompare := TGBitmapSortCompare}
-{$DEFINE TGMatrixToStringConverter := TGBitmapToStringConverter}
-{$DEFINE TGMatrixFromStringConverter := TGBitmapFromStringConverter}
-{$DEFINE TGMatrixMerge := TGBitmapMerge}
 {$DEFINE IMPLEMENTATION}
 {$I 'GenericMatrix.inc'}
 

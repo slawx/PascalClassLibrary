@@ -5,10 +5,6 @@
 {$DEFINE TGListIndex := TGTreeIndex}
 {$DEFINE TGListItem := TGTreeNode}
 {$DEFINE TGList := TGTreeNodeList}
-{$DEFINE TGListSortCompare := TGTreeSortCompare}
-{$DEFINE TGListToStringConverter := TGTreeToStringConverter}
-{$DEFINE TGListFromStringConverter := TGTreeFromStringConverter}
-{$DEFINE TGListItemArray := TGTreeItemArray}
 {$DEFINE INTERFACE}
 {$I 'GenericList.inc'}
 
@@ -43,10 +39,6 @@
 {$DEFINE TGListIndex := TGTreeIndex}
 {$DEFINE TGListItem := TGTreeNode}
 {$DEFINE TGList := TGTreeNodeList}
-{$DEFINE TGListSortCompare := TGTreeSortCompare}
-{$DEFINE TGListToStringConverter := TGTreeToStringConverter}
-{$DEFINE TGListFromStringConverter := TGTreeFromStringConverter}
-{$DEFINE TGListItemArray := TGTreeItemArray}
 {$DEFINE IMPLEMENTATION}
 {$I 'GenericList.inc'}
 

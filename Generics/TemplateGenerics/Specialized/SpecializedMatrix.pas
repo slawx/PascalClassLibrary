@@ -17,10 +17,6 @@ type
 {$DEFINE TGMatrixIndex := TMatrixIntegerIndex}
 {$DEFINE TGMatrixRow := TMatrixIntegerRow}
 {$DEFINE TGMatrix := TMatrixInteger}
-{$DEFINE TGMatrixSortCompare := TMatrixIntegerSortCompare}
-{$DEFINE TGMatrixToStringConverter := TMatrixIntegerToStringConverter}
-{$DEFINE TGMatrixFromStringConverter := TMatrixIntegerFromStringConverter}
-{$DEFINE TGMatrixMerge := TMatrixIntegerMerge}
 {$DEFINE INTERFACE}
 {$I 'GenericMatrix.inc'}
 
@@ -31,10 +27,6 @@ type
 {$DEFINE TGMatrixIndex := TMatrixByteIndex}
 {$DEFINE TGMatrixRow := TMatrixByteRow}
 {$DEFINE TGMatrix := TMatrixByte}
-{$DEFINE TGMatrixSortCompare := TMatrixByteSortCompare}
-{$DEFINE TGMatrixToStringConverter := TMatrixByteToStringConverter}
-{$DEFINE TGMatrixFromStringConverter := TMatrixByteFromStringConverter}
-{$DEFINE TGMatrixMerge := TMatrixByteMerge}
 {$DEFINE INTERFACE}
 {$I 'GenericMatrix.inc'}
 
@@ -45,10 +37,6 @@ type
 {$DEFINE TGMatrixIndex := TMatrixObjectIndex}
 {$DEFINE TGMatrixRow := TMatrixObjectRow}
 {$DEFINE TGMatrix := TMatrixObject}
-{$DEFINE TGMatrixSortCompare := TMatrixObjectSortCompare}
-{$DEFINE TGMatrixToStringConverter := TMatrixObjectToStringConverter}
-{$DEFINE TGMatrixFromStringConverter := TMatrixObjectFromStringConverter}
-{$DEFINE TGMatrixMerge := TMatrixStringMerge}
 {$DEFINE INTERFACE}
 {$I 'GenericMatrix.inc'}
 
@@ -64,10 +52,6 @@ implementation
 {$DEFINE TGMatrixIndex := TMatrixIntegerIndex}
 {$DEFINE TGMatrixRow := TMatrixIntegerRow}
 {$DEFINE TGMatrix := TMatrixInteger}
-{$DEFINE TGMatrixSortCompare := TMatrixIntegerSortCompare}
-{$DEFINE TGMatrixToStringConverter := TMatrixIntegerToStringConverter}
-{$DEFINE TGMatrixFromStringConverter := TMatrixIntegerFromStringConverter}
-{$DEFINE TGMatrixMerge := TMatrixIntegerMerge}
 {$DEFINE IMPLEMENTATION}
 {$I 'GenericMatrix.inc'}
 
@@ -78,10 +62,6 @@ implementation
 {$DEFINE TGMatrixIndex := TMatrixByteIndex}
 {$DEFINE TGMatrixRow := TMatrixByteRow}
 {$DEFINE TGMatrix := TMatrixByte}
-{$DEFINE TGMatrixSortCompare := TMatrixByteSortCompare}
-{$DEFINE TGMatrixToStringConverter := TMatrixByteToStringConverter}
-{$DEFINE TGMatrixFromStringConverter := TMatrixByteFromStringConverter}
-{$DEFINE TGMatrixMerge := TMatrixByteMerge}
 {$DEFINE IMPLEMENTATION}
 {$I 'GenericMatrix.inc'}
 
@@ -92,10 +72,6 @@ implementation
 {$DEFINE TGMatrixIndex := TMatrixObjectIndex}
 {$DEFINE TGMatrixRow := TMatrixObjectRow}
 {$DEFINE TGMatrix := TMatrixObject}
-{$DEFINE TGMatrixSortCompare := TMatrixObjectSortCompare}
-{$DEFINE TGMatrixToStringConverter := TMatrixObjectToStringConverter}
-{$DEFINE TGMatrixFromStringConverter := TMatrixObjectFromStringConverter}
-{$DEFINE TGMatrixMerge := TMatrixStringMerge}
 {$DEFINE IMPLEMENTATION}
 {$I 'GenericMatrix.inc'}
 

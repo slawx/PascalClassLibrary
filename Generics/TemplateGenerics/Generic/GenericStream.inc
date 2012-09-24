@@ -1,10 +1,13 @@
 {$IFDEF INTERFACE}
 
-TGStreamItemArray = array of TGStreamItem;
 
 // TGStream<TGStreamIndex, TGStreamItem> = class
 TGStream = class
-  procedure SetSize(AValue: TGStreamIndex);
+public
+  type
+    TItemArray = array of TGStreamItem;
+private
+procedure SetSize(AValue: TGStreamIndex);
   function GetSize: TGStreamIndex;
   procedure SetPosition(AValue: TGStreamIndex);
   function GetPosition: TGStreamIndex;
@@ -14,7 +17,7 @@ public
   procedure WriteArray(Item: array of TGStreamItem); virtual; abstract;
   procedure WriteStream(Stream: TGStream; Count: TGStreamIndex); virtual; abstract;
   function Read: TGStreamItem; virtual; abstract;
-  function ReadArray(Count: TGStreamIndex): TGStreamItemArray; virtual; abstract;
+  function ReadArray(Count: TGStreamIndex): TItemArray; virtual; abstract;
   function ReadStream(Stream: TGStream; Count: TGStreamIndex): TGStreamIndex; virtual; abstract;
   function Insert(Count: TGStreamIndex): TGStreamIndex; virtual; abstract;
   function Remove(Count: TGStreamIndex): TGStreamIndex; virtual; abstract;

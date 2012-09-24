@@ -1,73 +1,74 @@
+// Work in progress...
+
 {$IFDEF INTERFACE}
-
-  TGMatrix = class;
-
-  TGMatrixSortCompare = function(const Item1, Item2: TGMatrixItem): Integer of object;
-  TGMatrixToStringConverter = function(Item: TGMatrixItem): string;
-  TGMatrixFromStringConverter = function(Text: string): TGMatrixItem;
-  TGMatrixRow = array of TGMatrixItem;
-  TGMatrixMerge = function(Item1, Item2: TGMatrixItem): TGMatrixItem of object;
-
-  TGMatrixIndex = record
-    X: TGMatrixIndexX;
-    Y: TGMatrixIndexY;
-  end;
 
   // TGMatrix<TGMatrixIndex, TGMatrixIndex, TGMatrixItem> = class
   TGMatrix = class
+  public
+    type
+      TSortCompare = function(const Item1, Item2: TGMatrixItem): Integer of object;
+      TToStringConverter = function(Item: TGMatrixItem): string;
+      TFromStringConverter = function(Text: string): TGMatrixItem;
+      TRow = array of TGMatrixItem;
+      TMerge = function(Item1, Item2: TGMatrixItem): TGMatrixItem of object;
+
+      TIndex = record
+        X: TGMatrixIndexX;
+        Y: TGMatrixIndexY;
+      end;
   private
     FItems: array of array of TGMatrixItem;
-    FCount: TGMatrixIndex;
+    FCount: TIndex;
     function GetItemXY(X: TGMatrixIndexX; Y: TGMatrixIndexY): TGMatrixItem;
-    function GetItem(Index: TGMatrixIndex): TGMatrixItem;
-    function GetCapacity: TGMatrixIndex;
+    function GetItem(Index: TIndex): TGMatrixItem;
+    function GetCapacity: TIndex;
     function GetLast: TGMatrixItem;
     function GetFirst: TGMatrixItem;
-    procedure SetCapacity(const AValue: TGMatrixIndex);
+    procedure SetCapacity(const AValue: TIndex);
     procedure SetLast(AValue: TGMatrixItem);
     procedure SetFirst(AValue: TGMatrixItem);
     procedure PutItemXY(X: TGMatrixIndexX; Y: TGMatrixIndexY; const AValue: TGMatrixItem); virtual;
-    procedure PutItem(Index: TGMatrixIndex; const AValue: TGMatrixItem); virtual;
-    procedure SetCount(const AValue: TGMatrixIndex);
+    procedure PutItem(Index: TIndex; const AValue: TGMatrixItem); virtual;
+    procedure SetCount(const AValue: TIndex);
   public
-    function Add(Item: TGMatrixItem): TGMatrixIndex;
-    procedure AddMatrix(Values: array of TGMatrixRow);
+    function Add(Item: TGMatrixItem): TIndex;
+    procedure AddMatrix(Values: array of TRow);
     procedure AddList(List: TGMatrix);
     procedure Assign(Source: TGMatrix);
     procedure Clear; virtual;
     procedure Contract;
-    function CreateIndex(X: TGMatrixIndexY; Y: TGMatrixIndexX): TGMatrixIndex;
-    procedure Delete(Index: TGMatrixIndex); virtual;
-    procedure DeleteItems(Index, Count: TGMatrixIndex);
+    function CreateIndex(X: TGMatrixIndexY; Y: TGMatrixIndexX): TIndex;
+    procedure Delete(Index: TIndex); virtual;
+    procedure DeleteItems(Index, Count: TIndex);
     function EqualTo(List: TGMatrix): Boolean;
     procedure Expand;
     function Extract(Item: TGMatrixItem): TGMatrixItem;
-    procedure Exchange(Index1, Index2: TGMatrixIndex);
+    procedure Exchange(Index1, Index2: TIndex);
     property First: TGMatrixItem read GetFirst write SetFirst;
     procedure FillAll(Value: TGMatrixItem);
-    procedure Fill(Start, Count: TGMatrixIndex; Value: TGMatrixItem);
-    function Implode(RowSeparator, ColSeparator: string; Converter: TGMatrixToStringConverter): string;
-    procedure Explode(Text, Separator: string; Converter: TGMatrixFromStringConverter; SlicesCount: Integer = -1);
-    function IndexOf(Item: TGMatrixItem; Start: TGMatrixIndex = 0): TGMatrixIndex;
-    function IndexOfList(List: TGMatrix; Start: TGMatrixIndex = 0): TGMatrixIndex;
-    procedure Insert(Index: TGMatrixIndex; Item: TGMatrixItem);
-    procedure InsertList(Index: TGMatrixIndex; List: TGMatrix);
-    procedure InsertArray(Index: TGMatrixIndex; Values: array of TGMatrixItem);
-    procedure Move(CurIndex, NewIndex: TGMatrixIndex);
-    procedure MoveItems(CurIndex, NewIndex, Count: TGMatrixIndex);
-    procedure Merge(Index: TGMatrixIndex; Source: TGMatrix; Proc: TGMatrixMerge);
-    procedure Replace(Index: TGMatrixIndex; Source: TGMatrix);
-    function Remove(Item: TGMatrixItem): TGMatrixIndex;
+    procedure Fill(Start, Count: TIndex; Value: TGMatrixItem);
+    function Implode(RowSeparator, ColSeparator: string; Converter: TToStringConverter): string;
+    procedure Explode(Text, Separator: string; Converter: TFromStringConverter; SlicesCount: Integer = -1);
+    function IndexOf(Item: TGMatrixItem; Start: TIndex = 0): TIndex;
+    function IndexOfList(List: TGMatrix; Start: TIndex = 0): TIndex;
+    procedure Insert(Index: TIndex; Item: TGMatrixItem);
+    procedure InsertList(Index: TIndex; List: TGMatrix);
+    procedure InsertArray(Index: TIndex; Values: array of TGMatrixItem);
+    procedure Move(CurIndex, NewIndex: TIndex);
+    procedure MoveItems(CurIndex, NewIndex, Count: TIndex);
+    procedure Merge(Index: TIndex; Source: TGMatrix; Proc: TMerge);
+    procedure Replace(Index: TIndex; Source: TGMatrix);
+    function Remove(Item: TGMatrixItem): TIndex;
     procedure Reverse;
     procedure ReverseHorizontal;
     procedure ReverseVertical;
-    procedure Sort(Compare: TGMatrixSortCompare);
+    procedure Sort(Compare: TSortCompare);
     procedure SetArray(Values: array of TGMatrixItem);
-    property Count: TGMatrixIndex read FCount write SetCount;
-    property Capacity: TGMatrixIndex read GetCapacity write SetCapacity;
+    property Count: TIndex read FCount write SetCount;
+    property Capacity: TIndex read GetCapacity write SetCapacity;
     property ItemsXY[X: TGMatrixIndexX; Y: TGMatrixIndexY]: TGMatrixItem
       read GetItemXY write PutItemXY; default;
-    property Items[Index: TGMatrixIndex]: TGMatrixItem
+    property Items[Index: TIndex]: TGMatrixItem
       read GetItem write PutItem;
     property Last: TGMatrixItem read GetLast write SetLast;
   end;
@@ -90,7 +91,7 @@ resourcestring
 
 { TGMatrix }
 
-procedure TGMatrix.Replace(Index: TGMatrixIndex; Source: TGMatrix);
+procedure TGMatrix.Replace(Index: TIndex; Source: TGMatrix);
 var
   X: TGMatrixIndexX;
   Y: TGMatrixIndexY;
@@ -106,7 +107,7 @@ begin
   end;
 end;
 
-procedure TGMatrix.Merge(Index: TGMatrixIndex; Source: TGMatrix; Proc: TGMatrixMerge);
+procedure TGMatrix.Merge(Index: TIndex; Source: TGMatrix; Proc: TMerge);
 var
   X: TGMatrixIndexX;
   Y: TGMatrixIndexY;
@@ -122,19 +123,19 @@ begin
   end;
 end;
 
-function TGMatrix.CreateIndex(X: TGMatrixIndexY; Y: TGMatrixIndexX): TGMatrixIndex;
+function TGMatrix.CreateIndex(X: TGMatrixIndexY; Y: TGMatrixIndexX): TIndex;
 begin
   Result.X := X;
   Result.Y := Y;
 end;
 
-function TGMatrix.GetCapacity: TGMatrixIndex;
+function TGMatrix.GetCapacity: TIndex;
 begin
   Result.Y := Length(FItems);
   if Result.Y > 0 then Result.X := Length(FItems[0]) else Result.X := 0;
 end;
 
-procedure TGMatrix.SetCapacity(const AValue: TGMatrixIndex);
+procedure TGMatrix.SetCapacity(const AValue: TIndex);
 var
   Y: TGMatrixIndexY;
 begin
@@ -159,7 +160,7 @@ begin
   Result := FItems[Y, X];
 end;
 
-function TGMatrix.GetItem(Index: TGMatrixIndex): TGMatrixItem;
+function TGMatrix.GetItem(Index: TIndex): TGMatrixItem;
 begin
   if (Index.X < 0) or (Index.X >= Count.X) or
     (Index.Y < 0) or (Index.Y >= Count.Y) then
@@ -175,7 +176,7 @@ begin
   FItems[Y, X] := AValue;
 end;
 
-procedure TGMatrix.PutItem(Index: TGMatrixIndex; const AValue: TGMatrixItem);
+procedure TGMatrix.PutItem(Index: TIndex; const AValue: TGMatrixItem);
 begin
   if (Index.X < 0) or (Index.X >= Count.X) or
     (Index.Y < 0) or (Index.Y >= Count.Y) then
@@ -183,7 +184,7 @@ begin
   FItems[Index.Y, Index.X] := AValue;
 end;
 
-procedure TGMatrix.SetCount(const AValue: TGMatrixIndex);
+procedure TGMatrix.SetCount(const AValue: TIndex);
 begin
   Capacity := AValue;
   FCount := AValue;
@@ -191,7 +192,7 @@ end;
 
 procedure TGMatrix.Assign(Source: TGMatrix);
 var
-  Index: TGMatrixIndex;
+  Index: TIndex;
 begin
   Count := Source.Count;
   Index.Y := 0;
@@ -207,8 +208,8 @@ end;
 
 procedure TGMatrix.Expand;
 var
-  IncSize: TGMatrixIndex;
-  NewCapacity: TGMatrixIndex;
+  IncSize: TIndex;
+  NewCapacity: TIndex;
 begin
   if (FCount.X = Capacity.X) then begin
     IncSize.X := 4;
@@ -229,7 +230,7 @@ end;
 
 procedure TGMatrix.Contract;
 var
-  NewCapacity: TGMatrixIndex;
+  NewCapacity: TIndex;
 begin
   if (Capacity.X > 256) and (FCount.X < Capacity.X shr 2) then
   begin
@@ -244,7 +245,7 @@ end;
 
 function TGMatrix.Extract(Item: TGMatrixItem): TGMatrixItem;
 var
-  I: TGMatrixIndex;
+  I: TIndex;
 begin
 (*  I := IndexOf(Item);
   if I >= 0 then begin
@@ -255,7 +256,7 @@ begin
     *)
 end;
 
-function TGMatrix.IndexOf(Item: TGMatrixItem; Start: TGMatrixIndex): TGMatrixIndex;
+function TGMatrix.IndexOf(Item: TGMatrixItem; Start: TIndex): TIndex;
 begin
 (*  Result := Start;
   while (Result < FCount) and
@@ -265,7 +266,7 @@ begin
   *)
 end;
 
-procedure TGMatrix.Insert(Index: TGMatrixIndex; Item: TGMatrixItem);
+procedure TGMatrix.Insert(Index: TIndex; Item: TGMatrixItem);
 begin
 (*  if (Index < 0) or (Index > FCount ) then
     raise EListError.CreateFmt(SListIndexError, [Index]);
@@ -277,9 +278,9 @@ begin
   *)
 end;
 
-procedure TGMatrix.InsertList(Index: TGMatrixIndex; List: TGMatrix);
+procedure TGMatrix.InsertList(Index: TIndex; List: TGMatrix);
 var
-  I: TGMatrixIndex;
+  I: TIndex;
 begin
 (*  I := 0;
   while (I < List.Count) do begin
@@ -289,9 +290,9 @@ begin
   *)
 end;
 
-function TGMatrix.IndexOfList(List: TGMatrix; Start: TGMatrixIndex): TGMatrixIndex;
+function TGMatrix.IndexOfList(List: TGMatrix; Start: TIndex): TIndex;
 var
-  I: TGMatrixIndex;
+  I: TIndex;
 begin
 (*  if List.Count > 0 then begin
     Result := IndexOf(List[0], Start);
@@ -345,7 +346,7 @@ begin
     *)
 end;
 
-procedure TGMatrix.Move(CurIndex, NewIndex: TGMatrixIndex);
+procedure TGMatrix.Move(CurIndex, NewIndex: TIndex);
 var
   Temp: TGMatrixItem;
 begin
@@ -365,7 +366,7 @@ begin
   //Insert(NewIndex, Temp);*)
 end;
 
-procedure TGMatrix.MoveItems(CurIndex, NewIndex, Count: TGMatrixIndex);
+procedure TGMatrix.MoveItems(CurIndex, NewIndex, Count: TIndex);
 var
   S: Integer;
   D: Integer;
@@ -390,7 +391,7 @@ begin
   end;*)
 end;
 
-function TGMatrix.Remove(Item: TGMatrixItem): TGMatrixIndex;
+function TGMatrix.Remove(Item: TGMatrixItem): TIndex;
 begin
 (*  Result := IndexOf(Item);
   if Result <> -1 then
@@ -399,7 +400,7 @@ end;
 
 function TGMatrix.EqualTo(List: TGMatrix): Boolean;
 var
-  I: TGMatrixIndex;
+  I: TIndex;
 begin
 (*  Result := Count = List.Count;
   if Result then begin
@@ -462,15 +463,15 @@ begin
   end;
 end;
 
-procedure TGMatrix.Sort(Compare: TGMatrixSortCompare);
+procedure TGMatrix.Sort(Compare: TSortCompare);
 begin
 (*  if FCount > 1 then
     QuickSort(0, FCount - 1, Compare); *)
 end;
 
-procedure TGMatrix.AddMatrix(Values: array of TGMatrixRow);
+procedure TGMatrix.AddMatrix(Values: array of TRow);
 var
-  I: TGMatrixIndex;
+  I: TIndex;
 begin
 (*  I := 0;
   while I <= High(Values) do begin
@@ -481,7 +482,7 @@ end;
 
 procedure TGMatrix.SetArray(Values: array of TGMatrixItem);
 var
-  I: TGMatrixIndex;
+  I: TIndex;
 begin
 (*  Clear;
   I := 0;
@@ -491,9 +492,9 @@ begin
   end; *)
 end;
 
-procedure TGMatrix.InsertArray(Index: TGMatrixIndex; Values: array of TGMatrixItem);
+procedure TGMatrix.InsertArray(Index: TIndex; Values: array of TGMatrixItem);
 var
-  I: TGMatrixIndex;
+  I: TIndex;
 begin
 (*  I := 0;
   while I <= High(Values) do begin
@@ -502,7 +503,7 @@ begin
   end; *)
 end;
 
-function TGMatrix.Implode(RowSeparator, ColSeparator: string; Converter: TGMatrixToStringConverter): string;
+function TGMatrix.Implode(RowSeparator, ColSeparator: string; Converter: TToStringConverter): string;
 var
   Y: TGMatrixIndexY;
   X: TGMatrixIndexX;
@@ -523,7 +524,7 @@ begin
   end;
 end;
 
-procedure TGMatrix.Explode(Text, Separator: string; Converter: TGMatrixFromStringConverter; SlicesCount: Integer = -1);
+procedure TGMatrix.Explode(Text, Separator: string; Converter: TFromStringConverter; SlicesCount: Integer = -1);
 begin
 (*  Clear;
   while (Pos(Separator, Text) > 0) and
@@ -534,7 +535,7 @@ begin
   Add(Converter(Text)); *)
 end;
 
-function TGMatrix.Add(Item: TGMatrixItem): TGMatrixIndex;
+function TGMatrix.Add(Item: TGMatrixItem): TIndex;
 begin
 (*  if FCount = Capacity then
     Self.Expand;
@@ -545,7 +546,7 @@ end;
 
 procedure TGMatrix.AddList(List: TGMatrix);
 var
-  I: TGMatrixIndex;
+  I: TIndex;
 begin
 (*  I := 0;
   while I < List.Count do begin
@@ -560,7 +561,7 @@ begin
   Capacity := CreateIndex(0, 0);
 end;
 
-procedure TGMatrix.Delete(Index: TGMatrixIndex);
+procedure TGMatrix.Delete(Index: TIndex);
 begin
 (*  if (Index < 0) or (Index >= FCount) then
     raise EListError.CreateFmt(SListIndexError, [Index]);
@@ -570,9 +571,9 @@ begin
   *)
 end;
 
-procedure TGMatrix.DeleteItems(Index, Count: TGMatrixIndex);
+procedure TGMatrix.DeleteItems(Index, Count: TIndex);
 var
-  I: TGMatrixIndex;
+  I: TIndex;
 begin
 (*  I := Index;
   while I < (Index + Count) do begin
@@ -582,7 +583,7 @@ begin
   *)
 end;
 
-procedure TGMatrix.Fill(Start, Count: TGMatrixIndex; Value: TGMatrixItem);
+procedure TGMatrix.Fill(Start, Count: TIndex; Value: TGMatrixItem);
 var
   X: TGMatrixIndexX;
   Y: TGMatrixIndexY;
@@ -603,7 +604,7 @@ begin
   Fill(CreateIndex(0, 0), CreateIndex(Count.X - 1, Count.Y - 1), Value);
 end;
 
-procedure TGMatrix.Exchange(Index1, Index2: TGMatrixIndex);
+procedure TGMatrix.Exchange(Index1, Index2: TIndex);
 var
   Temp: TGMatrixItem;
 begin
