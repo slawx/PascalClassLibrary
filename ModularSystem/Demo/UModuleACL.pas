@@ -11,7 +11,7 @@ type
   { TModuleACL }
 
   TModuleACL = class(TModule)
-    constructor Create; override;
+    constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
   end;
 
@@ -20,10 +20,10 @@ implementation
 
 { TModuleACL }
 
-constructor TModuleACL.Create;
+constructor TModuleACL.Create(AOwner: TComponent);
 begin
   inherited;
-  Name := 'UserACL';
+  Identification := 'UserACL';
   Title := 'User ACL';
   Version := '1.0';
   License := 'GNU/LGPLv3';

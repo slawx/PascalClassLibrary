@@ -14,6 +14,8 @@ type
 
   TMainForm = class(TForm)
   published
+    AModuleStart: TAction;
+    AModuleStop: TAction;
     AModuleInstall: TAction;
     AModuleUninstall: TAction;
     AModuleUpdate: TAction;
@@ -21,11 +23,17 @@ type
     ButtonUpdate: TButton;
     ButtonUninstall: TButton;
     ButtonInstall: TButton;
+    ButtonUpdate1: TButton;
+    ButtonUpdate2: TButton;
     ListViewModules: TListView;
     MenuItem1: TMenuItem;
     MenuItem2: TMenuItem;
     MenuItem3: TMenuItem;
+    MenuItem4: TMenuItem;
+    MenuItem5: TMenuItem;
     PopupMenu1: TPopupMenu;
+    procedure AModuleStartExecute(Sender: TObject);
+    procedure AModuleStopExecute(Sender: TObject);
     procedure ButtonInstallClick(Sender: TObject);
     procedure ButtonUninstallClick(Sender: TObject);
     procedure ButtonUpdateClick(Sender: TObject);
@@ -43,7 +51,7 @@ type
   end;
 
 const
-  InstalledText: array[Boolean] of string = ('Not installed', 'Installed');
+  BoolText: array[Boolean] of string = ('No', 'Yes');
 
 var
   MainForm: TMainForm;
@@ -65,9 +73,10 @@ begin
   with TModule(ModuleManager.Modules[Item.Index]) do begin
     Item.Caption := Title;
     Item.Data := ModuleManager.Modules[Item.Index];
-    Item.SubItems.Add(Name);
+    Item.SubItems.Add(Identification);
     Item.SubItems.Add(Version);
-    Item.SubItems.Add(InstalledText[Installed]);
+    Item.SubItems.Add(BoolText[Installed]);
+    Item.SubItems.Add(BoolText[Running]);
     Item.SubItems.Add(License);
     Item.SubItems.Add(StringReplace(Dependencies.Text, LineEnding, ', ', [rfReplaceAll]));
     Item.SubItems.Add(StringReplace(Description.Text, LineEnding, ', ', [rfReplaceAll]));
@@ -78,18 +87,22 @@ procedure TMainForm.ListViewModulesSelectItem(Sender: TObject; Item: TListItem;
   Selected: Boolean);
 var
   Installed: Boolean;
+  Running: Boolean;
 begin
   if Assigned(ListViewModules.Selected) then Installed := TModule(ListViewModules.Selected.Data).Installed;
+  if Assigned(ListViewModules.Selected) then Running := TModule(ListViewModules.Selected.Data).Running;
   AModuleInstall.Enabled := Assigned(ListViewModules.Selected) and not Installed;
   AModuleUninstall.Enabled := Assigned(ListViewModules.Selected) and Installed;
   AModuleUpdate.Enabled := Assigned(ListViewModules.Selected) and Installed;
+  AModuleStart.Enabled := Assigned(ListViewModules.Selected) and not Running;
+  AModuleStop.Enabled := Assigned(ListViewModules.Selected) and Running;
 end;
 
 procedure TMainForm.RegisterModules;
 begin
-  ModuleManager.RegisterModule(TModuleUser.Create);
-  ModuleManager.RegisterModule(TModuleBase.Create);
-  ModuleManager.RegisterModule(TModuleACL.Create);
+  ModuleManager.RegisterModule(TModuleUser.Create(nil));
+  ModuleManager.RegisterModule(TModuleBase.Create(nil));
+  ModuleManager.RegisterModule(TModuleACL.Create(nil));
 end;
 
 procedure TMainForm.RefreshList;
@@ -128,6 +141,51 @@ begin
   end;
 end;
 
+procedure TMainForm.AModuleStartExecute(Sender: TObject);
+var
+  ModuleList: TStringList;
+begin
+  if Assigned(ListViewModules.Selected) then begin
+    try
+      ModuleList := TStringList.Create;
+      TModule(ListViewModules.Selected.Data).EnumModulesStart(ModuleList);
+      if ModuleList.Count > 0 then begin
+        if MessageDlg('These modules will be started in addition to ' +
+          TModule(ListViewModules.Selected.Data).Name + ': ' +
+          StringReplace(ModuleList.Text, LineEnding, ', ', [rfReplaceAll]),
+          mtConfirmation, [mbYes, mbNo], 0) = mrYes then
+           TModule(ListViewModules.Selected.Data).Start;
+      end else TModule(ListViewModules.Selected.Data).Start;
+    finally
+      ModuleList.Free;
+    end;
+    RefreshList;
+  end;
+end;
+
+procedure TMainForm.AModuleStopExecute(Sender: TObject);
+var
+  ModuleList: TStringList;
+begin
+  if Assigned(ListViewModules.Selected) then begin
+    try
+      ModuleList := TStringList.Create;
+      TModule(ListViewModules.Selected.Data).EnumModulesStop(ModuleList);
+      if ModuleList.Count > 0 then begin
+        if MessageDlg('These modules will be stopped in addition to ' +
+          TModule(ListViewModules.Selected.Data).Name + ': ' +
+          StringReplace(ModuleList.Text, LineEnding, ', ', [rfReplaceAll]),
+          mtConfirmation, [mbYes, mbNo], 0) = mrYes then
+            TModule(ListViewModules.Selected.Data).Stop;
+      end else TModule(ListViewModules.Selected.Data).Stop;
+    finally
+      ModuleList.Free;
+    end;
+
+    RefreshList;
+  end;
+end;
+
 procedure TMainForm.ButtonUninstallClick(Sender: TObject);
 var
   ModuleList: TStringList;
@@ -154,14 +212,14 @@ end;
 procedure TMainForm.ButtonUpdateClick(Sender: TObject);
 begin
   if Assigned(ListViewModules.Selected) then begin
-    TModule(ListViewModules.Selected.Data).Update;
+    TModule(ListViewModules.Selected.Data).Upgrade;
     RefreshList;
   end;
 end;
 
 procedure TMainForm.FormDestroy(Sender: TObject);
 begin
-  ModuleManager.Free;
+  FreeAndNil(ModuleManager);
 end;
 
 procedure TMainForm.FormShow(Sender: TObject);
@@ -170,4 +228,4 @@ begin
 end;
 
 end.
-
+

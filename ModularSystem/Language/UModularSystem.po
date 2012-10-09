@@ -1,0 +1,7 @@
+msgid ""
+msgstr "Content-Type: text/plain; charset=UTF-8"
+
+#: umodularsystem.smodulenotfound
+msgid "Module \"%1:s\" not found as dependency for module \"%0:s\""
+msgstr ""
+

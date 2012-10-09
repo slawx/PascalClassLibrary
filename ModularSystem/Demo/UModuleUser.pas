@@ -12,7 +12,7 @@ type
   { TModuleUser }
 
   TModuleUser = class(TModule)
-    constructor Create; override;
+    constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
   end;
 
@@ -20,10 +20,10 @@ implementation
 
 { TModuleUser }
 
-constructor TModuleUser.Create;
+constructor TModuleUser.Create(AOwner: TComponent);
 begin
   inherited;
-  Name := 'User';
+  Identification := 'User';
   Title := 'User';
   Version := '1.0';
   License := 'GNU/LGPLv3';

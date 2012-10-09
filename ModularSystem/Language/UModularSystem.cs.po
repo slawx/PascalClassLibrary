@@ -1,0 +1,14 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Project-Id-Version: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: Jiří Hajda <robie@centrum.cz>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: umodularsystem.smodulenotfound
+msgid "Module \"%1:s\" not found as dependency for module \"%0:s\""
+msgstr "Pro modul \"%0:s\" nenalezen závislý modul \"%1:s\""

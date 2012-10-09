@@ -34,6 +34,7 @@
     <RequiredPackages Count="2">
       <Item1>
         <PackageName Value="ModularSystem"/>
+        <DefaultFilename Value="..\ModularSystem.lpk" Prefer="True"/>
       </Item1>
       <Item2>
         <PackageName Value="LCL"/>
@@ -112,4 +113,4 @@
       </Item3>
     </Exceptions>
   </Debugging>
-</CONFIG>
+</CONFIG>

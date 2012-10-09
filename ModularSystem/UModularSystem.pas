@@ -5,7 +5,7 @@ unit UModularSystem;
 interface
 
 uses
-  Classes, SysUtils, Contnrs;
+  Classes, SysUtils, Contnrs, URegistry;
 
 type
   TModuleManager = class;
@@ -18,6 +18,7 @@ type
 
   TModule = class(TComponent)
   private
+    FEnabled: Boolean;
     FRunning: Boolean;
     FInstalled: Boolean;
     Manager: TModuleManager;
@@ -28,11 +29,16 @@ type
     FAuthor: string;
     FDependencies: TStringList;
     FDescription: TStringList;
+    procedure SetEnabled(AValue: Boolean);
     procedure SetInstalled(AValue: Boolean);
     procedure SetRunning(AValue: Boolean);
+  protected
+    procedure BeforeStart; virtual;
+    procedure AfterStart; virtual;
+    procedure BeforeStop; virtual;
+    procedure AfterStop; virtual;
   public
     API: TAPI;
-    MarkForInstall: Boolean;
     procedure Start; virtual;
     procedure Stop; virtual;
     procedure Install; virtual;
@@ -47,6 +53,7 @@ type
     destructor Destroy; override;
     property Running: Boolean read FRunning write SetRunning;
     property Installed: Boolean read FInstalled write SetInstalled;
+    property Enabled: Boolean read FEnabled write SetEnabled;
   published
     property Version: string read FVersion write FVersion;
     property Identification: string read FIdentification write FIdentification;
@@ -78,12 +85,14 @@ type
     procedure UninstallDependencies(ModuleName: string);
     procedure EnumModulesInstall(Dependencies, ModuleList: TStringList);
     procedure EnumModulesUninstall(ModuleName: string; ModuleList: TStringList);
-    procedure RegisterModule(Module: TModule; MarkForInstall: Boolean = False);
+    procedure RegisterModule(Module: TModule; Enabled: Boolean = True);
     procedure UnregisterModule(Module: TModule);
     procedure StartInstalled;
-    procedure InstallMarked;
+    procedure InstallEnabled;
     procedure StopAll;
     procedure UninstallAll;
+    procedure LoadFromRegistry(Context: TRegistryContext);
+    procedure SaveToRegistry(Context: TRegistryContext);
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     property API: TAPI read FAPI write SetAPI;
@@ -142,7 +151,7 @@ var
 begin
   for I := 0 to Dependencies.Count - 1 do begin
     Module := FindModuleByName(Dependencies[I]);
-    if Assigned(Module) then begin
+    if Assigned(Module) and Module.Enabled then begin
       if not Module.Running then Module.Start;
     end else raise Exception.CreateFmt(SModuleNotFound, [ModuleName, Dependencies[I]]);
   end;
@@ -198,7 +207,7 @@ var
 begin
   for I := 0 to Dependencies.Count - 1 do begin
     Module := FindModuleByName(Dependencies[I]);
-    if Assigned(Module) then begin
+    if Assigned(Module) and Module.Enabled then begin
       if not Module.Installed then Module.Install;
     end else raise Exception.CreateFmt(SModuleNotFound, [ModuleName, Dependencies[I]]);
   end;
@@ -247,12 +256,12 @@ begin
 end;
 
 procedure TModuleManager.RegisterModule(Module: TModule;
-  MarkForInstall: Boolean = False);
+  Enabled: Boolean = True);
 begin
   Modules.Add(Module);
   Module.Manager := Self;
   Module.API := API;
-  Module.MarkForInstall := MarkForInstall;
+  Module.Enabled := Enabled;
 end;
 
 procedure TModuleManager.UnregisterModule(Module: TModule);
@@ -269,13 +278,13 @@ begin
     if not Running and Installed then Start;
 end;
 
-procedure TModuleManager.InstallMarked;
+procedure TModuleManager.InstallEnabled;
 var
   I: Integer;
 begin
   for I := 0 to Modules.Count - 1 do
   with TModule(Modules[I]) do
-    if not Installed and MarkForInstall then Install;
+    if not Installed and Enabled then Install;
 end;
 
 procedure TModuleManager.StopAll;
@@ -309,6 +318,40 @@ begin
   inherited Destroy;
 end;
 
+procedure TModuleManager.LoadFromRegistry(Context: TRegistryContext);
+var
+  I: Integer;
+begin
+  with TRegistryEx.Create do
+  try
+    RootKey := Context.RootKey;
+    for I := 0 to Modules.Count - 1 do
+    with TModule(Modules[I]) do begin
+      OpenKey(Context.Key + '\' + Identification, True);
+      Running := ReadBoolWithDefault('Run',  Enabled);
+    end;
+  finally
+    Free;
+  end;
+end;
+
+procedure TModuleManager.SaveToRegistry(Context: TRegistryContext);
+var
+  I: Integer;
+begin
+  with TRegistryEx.Create do
+  try
+    RootKey := Context.RootKey;
+    for I := 0 to Modules.Count - 1 do
+    with TModule(Modules[I]) do begin
+      OpenKey(Context.Key + '\' + Identification, True);
+      WriteBool('Run', Running);
+    end;
+  finally
+    Free;
+  end;
+end;
+
 { TModule }
 
 procedure TModule.SetRunning(AValue: Boolean);
@@ -317,24 +360,52 @@ begin
   if AValue then Start else Stop;
 end;
 
+procedure TModule.BeforeStart;
+begin
+  if Running then Exit;
+  if not Installed then Install;
+  Manager.StartDependencies(Identification, Dependencies);
+end;
+
+procedure TModule.AfterStart;
+begin
+  FRunning := True;
+end;
+
+procedure TModule.BeforeStop;
+begin
+  if not Running then Exit;
+  FRunning := False;
+  Manager.StopDependencies(Identification);
+end;
+
+procedure TModule.AfterStop;
+begin
+end;
+
 procedure TModule.SetInstalled(AValue: Boolean);
 begin
   if FInstalled = AValue then Exit;
   if AValue then Install else Uninstall;
 end;
 
+procedure TModule.SetEnabled(AValue: Boolean);
+begin
+  if FEnabled = AValue then Exit;
+  FEnabled := AValue;
+  if not FEnabled and FInstalled then Uninstall;
+end;
+
 procedure TModule.Start;
 begin
-  if Running then Exit;
-  Manager.StartDependencies(Identification, Dependencies);
-  FRunning := True;
+  BeforeStart;
+  AfterStart;
 end;
 
 procedure TModule.Stop;
 begin
-  if not Running then Exit;
-  Manager.StopDependencies(Identification);
-  FRunning := False;
+  BeforeStop;
+  AfterStop;
 end;
 
 procedure TModule.Install;
@@ -408,4 +479,4 @@ begin
 end;
 
 end.
-
+

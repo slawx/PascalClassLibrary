@@ -9,7 +9,7 @@ uses
 
 type
   TModuleBase = class(TModule)
-    constructor Create; override;
+    constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
   end;
 
@@ -18,10 +18,10 @@ implementation
 
 { TModuleUser }
 
-constructor TModuleBase.Create;
+constructor TModuleBase.Create(AOwner: TComponent);
 begin
 inherited;
-  Name := 'Base';
+  Identification := 'Base';
   Title := 'Base';
   Version := '1.0';
   License := 'GNU/LGPLv3';
