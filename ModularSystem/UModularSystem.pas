@@ -21,7 +21,7 @@ type
     FEnabled: Boolean;
     FRunning: Boolean;
     FInstalled: Boolean;
-    Manager: TModuleManager;
+    FManager: TModuleManager;
     FVersion: string;
     FIdentification: string;
     FTitle: string;
@@ -33,17 +33,18 @@ type
     procedure SetInstalled(AValue: Boolean);
     procedure SetRunning(AValue: Boolean);
   protected
-    procedure BeforeStart; virtual;
-    procedure AfterStart; virtual;
-    procedure BeforeStop; virtual;
-    procedure AfterStop; virtual;
+    procedure DoStart; virtual;
+    procedure DoStop; virtual;
+    procedure DoInstall; virtual;
+    procedure DoUninstall; virtual;
+    procedure DoUpgrade; virtual;
   public
     API: TAPI;
-    procedure Start; virtual;
-    procedure Stop; virtual;
-    procedure Install; virtual;
-    procedure Uninstall; virtual;
-    procedure Upgrade; virtual;
+    procedure Start;
+    procedure Stop;
+    procedure Install;
+    procedure Uninstall;
+    procedure Upgrade;
     procedure EnumModulesStart(ModuleList: TStringList);
     procedure EnumModulesStop(ModuleList: TStringList);
     procedure EnumModulesInstall(ModuleList: TStringList);
@@ -55,6 +56,7 @@ type
     property Installed: Boolean read FInstalled write SetInstalled;
     property Enabled: Boolean read FEnabled write SetEnabled;
   published
+    property Manager: TModuleManager read FManager;
     property Version: string read FVersion write FVersion;
     property Identification: string read FIdentification write FIdentification;
     property Title: string read FTitle write FTitle;
@@ -259,7 +261,7 @@ procedure TModuleManager.RegisterModule(Module: TModule;
   Enabled: Boolean = True);
 begin
   Modules.Add(Module);
-  Module.Manager := Self;
+  Module.FManager := Self;
   Module.API := API;
   Module.Enabled := Enabled;
 end;
@@ -309,13 +311,14 @@ constructor TModuleManager.Create(AOwner: TComponent);
 begin
   inherited;
   Modules := TObjectList.Create;
+  //Modules.OwnsObjects := False;
 end;
 
 destructor TModuleManager.Destroy;
 begin
   StopAll;
   FreeAndNil(Modules);
-  inherited Destroy;
+  inherited;
 end;
 
 procedure TModuleManager.LoadFromRegistry(Context: TRegistryContext);
@@ -343,7 +346,8 @@ begin
   try
     RootKey := Context.RootKey;
     for I := 0 to Modules.Count - 1 do
-    with TModule(Modules[I]) do begin
+    with TModule(Modules[I]) do
+    if Enabled then begin
       OpenKey(Context.Key + '\' + Identification, True);
       WriteBool('Run', Running);
     end;
@@ -360,27 +364,29 @@ begin
   if AValue then Start else Stop;
 end;
 
-procedure TModule.BeforeStart;
+procedure TModule.DoStart;
 begin
-  if Running then Exit;
-  if not Installed then Install;
-  Manager.StartDependencies(Identification, Dependencies);
+
 end;
 
-procedure TModule.AfterStart;
+procedure TModule.DoStop;
 begin
-  FRunning := True;
+
 end;
 
-procedure TModule.BeforeStop;
+procedure TModule.DoInstall;
 begin
-  if not Running then Exit;
-  FRunning := False;
-  Manager.StopDependencies(Identification);
+
 end;
 
-procedure TModule.AfterStop;
+procedure TModule.DoUninstall;
 begin
+
+end;
+
+procedure TModule.DoUpgrade;
+begin
+
 end;
 
 procedure TModule.SetInstalled(AValue: Boolean);
@@ -398,23 +404,29 @@ end;
 
 procedure TModule.Start;
 begin
-  BeforeStart;
-  AfterStart;
+  if not Enabled or Running then Exit;
+  if not Installed then Install;
+  Manager.StartDependencies(Identification, Dependencies);
+  DoStart;
+  FRunning := True;
 end;
 
 procedure TModule.Stop;
 begin
-  BeforeStop;
-  AfterStop;
+  if not Running then Exit;
+  FRunning := False;
+  Manager.StopDependencies(Identification);
+  DoStop;
 end;
 
 procedure TModule.Install;
 begin
-  if Installed then Exit;
+  if not Enabled or Installed then Exit;
   Manager.InstallDependencies(Identification, Dependencies);
   FInstalled := True;
   if Assigned(Manager.FOnModuleChange) then
     Manager.FOnModuleChange(Manager, Self);
+  DoInstall;
 end;
 
 procedure TModule.Uninstall;
@@ -423,13 +435,20 @@ begin
   if Running then Stop;
   Manager.UninstallDependencies(Identification);
   FInstalled := False;
+  DoUninstall;
   if Assigned(Manager.FOnModuleChange) then
     Manager.FOnModuleChange(Manager, Self);
 end;
 
 procedure TModule.Upgrade;
 begin
-  if not Running then Exit;
+  if not Enabled or not Installed then Exit;
+  if Running then try
+    Stop;
+    DoUpgrade;
+  finally
+    Start;
+  end else DoUpgrade;
 end;
 
 procedure TModule.EnumModulesStart(ModuleList: TStringList);
@@ -473,9 +492,9 @@ end;
 destructor TModule.Destroy;
 begin
   Running := False;
-  Description.Free;
-  Dependencies.Free;
-  inherited Destroy;
+  FreeAndNil(FDescription);
+  FreeAndNil(FDependencies);
+  inherited;
 end;
 
 end.

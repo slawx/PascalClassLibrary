@@ -1,6 +1,6 @@
 unit UMainForm;
 
-{$mode objfpc}{$H+}
+{$mode delphi}{$H+}
 
 interface
 
@@ -31,6 +31,7 @@ type
     MenuItem3: TMenuItem;
     MenuItem4: TMenuItem;
     MenuItem5: TMenuItem;
+    ModuleManager: TModuleManager;
     PopupMenu1: TPopupMenu;
     procedure AModuleStartExecute(Sender: TObject);
     procedure AModuleStopExecute(Sender: TObject);
@@ -46,7 +47,7 @@ type
   private
     procedure RegisterModules;
   public
-    ModuleManager: TModuleManager;
+    procedure Log(Text: string);
     procedure RefreshList;
   end;
 
@@ -62,7 +63,7 @@ implementation
 {$R *.lfm}
 
 uses
-  UModuleUser, UModuleBase, UModuleACL;
+  UModuleUser, UModuleBase, UModuleACL, ULogForm;
 
 
 { TMainForm }
@@ -105,6 +106,11 @@ begin
   ModuleManager.RegisterModule(TModuleACL.Create(nil));
 end;
 
+procedure TMainForm.Log(Text: string);
+begin
+  LogForm.Memo1.Lines.Add(Text);
+end;
+
 procedure TMainForm.RefreshList;
 begin
   ListViewModules.Items.Count := ModuleManager.Modules.Count;
@@ -115,7 +121,6 @@ end;
 
 procedure TMainForm.FormCreate(Sender: TObject);
 begin
-  ModuleManager := TModuleManager.Create(nil);
   RegisterModules;
 end;
 
@@ -219,12 +224,12 @@ end;
 
 procedure TMainForm.FormDestroy(Sender: TObject);
 begin
-  FreeAndNil(ModuleManager);
 end;
 
 procedure TMainForm.FormShow(Sender: TObject);
 begin
   RefreshList;
+  LogForm.Show;
 end;
 
 end.

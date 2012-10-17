@@ -1,0 +1,21 @@
+object LogForm: TLogForm
+  Left = 74
+  Height = 240
+  Top = 183
+  Width = 320
+  Caption = 'Log'
+  ClientHeight = 240
+  ClientWidth = 320
+  LCLVersion = '1.0.1.3'
+  object Memo1: TMemo
+    Left = 2
+    Height = 236
+    Top = 2
+    Width = 316
+    Align = alClient
+    BorderSpacing.Around = 2
+    ReadOnly = True
+    ScrollBars = ssAutoBoth
+    TabOrder = 0
+  end
+end

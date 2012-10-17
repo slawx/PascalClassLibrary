@@ -11,6 +11,12 @@ type
   { TModuleACL }
 
   TModuleACL = class(TModule)
+  protected
+    procedure DoInstall; override;
+    procedure DoStart; override;
+    procedure DoStop; override;
+    procedure DoUninstall; override;
+  public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
   end;
@@ -18,7 +24,30 @@ type
 
 implementation
 
+uses
+  UMainForm;
+
 { TModuleACL }
+
+procedure TModuleACL.DoStart;
+begin
+  MainForm.Log(Identification + ' started');
+end;
+
+procedure TModuleACL.DoStop;
+begin
+  MainForm.Log(Identification + ' stopped');
+end;
+
+procedure TModuleACL.DoInstall;
+begin
+  MainForm.Log(Identification + ' installed');
+end;
+
+procedure TModuleACL.DoUninstall;
+begin
+  MainForm.Log(Identification + ' uninstalled');
+end;
 
 constructor TModuleACL.Create(AOwner: TComponent);
 begin
