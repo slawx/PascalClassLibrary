@@ -74,8 +74,8 @@ end;
 
 destructor TCDManagerTabsItem.Destroy;
 begin
-  IconImage.Free;
-  inherited Destroy;
+  FreeAndNil(IconImage);
+  inherited;
 end;
 
 procedure TCDManagerTabsItem.VisibleChange(Sender: TObject);
@@ -210,17 +210,17 @@ end;
 
 destructor TCDManagerTabs.Destroy;
 begin
-  FDockItems.Free;
-  PageControl.Free;
-  TabImageList.Free;
-  inherited Destroy;
+  FreeAndNil(FDockItems);
+  FreeAndNil(PageControl);
+  FreeAndNil(TabImageList);
+  inherited;
 end;
 
 procedure TCDManagerTabs.PaintSite(DC: HDC);
 var
   I: Integer;
 begin
-  inherited PaintSite(DC);
+  inherited;
   //PageControl.Invalidate;
 end;
 
@@ -280,16 +280,16 @@ begin
       if Assigned(Parent) then begin
         TCDManagerItem(DockItems[0]).Control.ManualDock(HostDockSite);
       end else TCDManagerItem(DockItems[0]).Control.ManualFloat(Rect(Left, Top, Left + Width, Top + Height));
-      ManualFloat(Rect(Left, Top, Left + Width, Top + Height));
+      if FreeIfEmpty then ManualFloat(Rect(Left, Top, Left + Width, Top + Height));
       //Update;
-      inherited RemoveControl(Control);
-      Free;
+      inherited;
+      if FreeIfEmpty then Free;
       Exit;
     end;
   end;
   //if ClientCount > 0 then
   Update;
-  inherited RemoveControl(Control);
+  inherited;
 end;
 
 function TCDManagerTabs.GetHeaderPos: THeaderPos;
@@ -329,7 +329,7 @@ end;
 
 procedure TCDManagerTabs.BringToFront;
 begin
-  inherited BringToFront;
+  inherited;
   Update;
 end;
 
@@ -376,7 +376,9 @@ var
   I: Integer;
   NewTabSheet: TTabSheet;
   DeletedPage: TTabSheet;
+  LastIndex: Integer;
 begin
+  LastIndex := PageControl.TabIndex;
   if FUpdateCount = 0 then begin
   DebugLog('TCDManagerTabs.Update');
   for I := 0 to DockItems.Count - 1 do
@@ -424,6 +426,7 @@ begin
     if PageControl.PageIndex = I then begin
       TCDManager(Control.DockManager).DockSiteVisible := True;
       if not Control.Visible then Control.Show;
+      //PageControl.TabIndex := I;
     end else begin
       TCDManager(Control.DockManager).DockSiteVisible := False;
     end;
@@ -435,6 +438,8 @@ begin
   end;
   end;
   inherited;
+  //ShowMessage(IntToStr(PageControl.TabIndex));
+  PageControl.TabIndex := LastIndex;
 end;
 
 end.

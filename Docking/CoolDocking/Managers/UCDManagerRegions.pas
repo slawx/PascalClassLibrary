@@ -21,7 +21,7 @@ type
     procedure VisibleChange(Sender: TObject); override;
     procedure Paint(Sender: TObject); override;
     procedure PanelResize(Sender: TObject);
-    constructor Create;
+    constructor Create; override;
     destructor Destroy; override;
     procedure SetControl(const AValue: TWinControl); override;
     procedure SetCenter;
@@ -33,8 +33,6 @@ type
   private
     FDockItems: TObjectList; // TList<TCDManagerRegionsItem>
     FLastVisibleItemsCount: Integer;
-    function GetHeaderPos: THeaderPos; override;
-    procedure SetHeaderPos(const AValue: THeaderPos); override;
     function GetDirection(InsertAt: TAlign): TCDDirection;
     procedure ResizePanels;
     procedure ClearItemsAlignment;
@@ -42,8 +40,10 @@ type
     function PanelsVisible: Integer;
   protected
     FDockDirection: TCDDirection;
+    procedure SetHeaderPos(const AValue: THeaderPos); override;
   public
     //Panels: TObjectList; // TObjectList<TCDStyleRegionsPanel>
+    function GetHeaderPos: THeaderPos; override;
     procedure BringToFront; override;
     function FindControlInPanels(Control: TControl): TCDManagerItem; override;
     procedure InsertControlNoUpdate(Control: TControl; InsertAt: TAlign);
@@ -135,14 +135,14 @@ begin
   PanelHeader.Parent := nil;
   PanelHeader.Free;
   Splitter.Parent := nil;
-  Splitter.Free;
+  FreeAndNil(Splitter);
   if Assigned(Control) then Control.Parent := nil;
-  inherited Destroy;
+  inherited;
 end;
 
 procedure TCDManagerRegionsItem.SetControl(const AValue: TWinControl);
 begin
-  inherited SetControl(AValue);
+  inherited;
   PanelHeader.Header.Control := AValue;
 end;
 
@@ -364,13 +364,13 @@ begin
       if Assigned(Parent) then begin
         TCDManagerItem(DockItems[0]).Control.ManualDock(HostDockSite);
       end else TCDManagerItem(DockItems[0]).Control.ManualFloat(Rect(Left, Top, Left + Width, Top + Height));
-      ManualFloat(Rect(Left, Top, Left + Width, Top + Height));
-      inherited RemoveControl(Control);
-      Free;
+      if FreeIfEmpty then ManualFloat(Rect(Left, Top, Left + Width, Top + Height));
+      inherited;
+      if FreeIfEmpty then Free;
       Exit;
     end;
   end;
-  inherited RemoveControl(Control);
+  inherited;
   if ClientCount > 1 then Update;
 end;
 

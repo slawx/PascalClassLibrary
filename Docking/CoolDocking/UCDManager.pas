@@ -59,7 +59,7 @@ type
     DockItem: TCDManagerItem;
     property HeaderPos: THeaderPos read FHeaderPos write SetHeaderPos;
     property HeaderVisible: Boolean read GetHeaderVisible write SetHeaderVisible;
-    constructor Create(TheOwner: TComponent);
+    constructor Create(TheOwner: TComponent); override;
     destructor Destroy; override;
   end;
 
@@ -88,6 +88,7 @@ type
   protected
     FUpdateCount: Integer;
     FDockStyle: TCDStyleType;
+    procedure SetHeaderPos(const AValue: THeaderPos); virtual;
   private
     FDockSite: TWinControl;
     FDockSiteVisible: Boolean;
@@ -115,7 +116,6 @@ type
     procedure Assign(Source: TCDManager); virtual;
     procedure InsertControlPanel(Control: TControl; InsertAt: TAlign;
       DropCtl: TControl); virtual;
-    procedure SetHeaderPos(const AValue: THeaderPos); virtual;
     function GetHeaderPos: THeaderPos; virtual;
     procedure BringToFront; virtual;
 
@@ -551,7 +551,7 @@ var
 begin
   NewConjoinDockForm := TCDConjoinForm.Create(Application);
   NewConjoinDockForm.Name := GetUniqueName('ConjoinForm');
-  //NewConjoinDockForm.Visible := True;
+  NewConjoinDockForm.Visible := True;
   NewConjoinDockForm.BoundsRect := FDockSite.BoundsRect;
   NewConjoinDockForm.CoolDockClient.Master := Self.Master;
   NewDockSite := FDockSite.HostDockSite;

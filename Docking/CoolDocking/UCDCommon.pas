@@ -5,7 +5,7 @@ unit UCDCommon;
 interface
 
 uses
-  Classes, SysUtils, Forms, Controls, Contnrs, StdCtrls, ExtCtrls, ComCtrls;
+  Classes, SysUtils, Forms, Controls, Contnrs, ExtCtrls, ComCtrls;
 
 type
   TCDStyleType = (dsList, dsTabs, dsPopupTabs, dsPopupList);
@@ -27,6 +27,7 @@ type
   end;
 
   TCDConjoinFormBase = class(TForm)
+  public
     constructor Create(TheOwner: TComponent); override;
   end;
 

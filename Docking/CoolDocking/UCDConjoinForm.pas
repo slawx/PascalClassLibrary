@@ -11,7 +11,10 @@ type
   { TCDConjoinForm }
 
   TCDConjoinForm = class(TCDConjoinFormBase)
+  protected
+    procedure SetName(const NewName: TComponentName); override;
   public
+    FreeIfEmpty: Boolean;
     CoolDockClient: TCDClientBase;
     UpdateCaptionEnable: Boolean;
     procedure UpdateCaption;
@@ -19,8 +22,6 @@ type
     procedure FormHide(Sender : TObject);
     constructor Create(TheOwner: TComponent); override;
     destructor Destroy; override;
-  private
-    procedure SetName(const NewName: TComponentName); override;
   end;
 
 
@@ -47,6 +48,8 @@ begin
 
     if Assigned(HostDockSite) and (HostDockSite is TCDConjoinForm) then
       TCDConjoinForm(HostDockSite).UpdateCaption;
+    //if Assigned(HostDockSite) and (HostDockSite is TCDConjoinForm) then
+      TCDManager(DockManager).Update;
   end;
 end;
 
@@ -56,15 +59,13 @@ begin
 end;
 
 procedure TCDConjoinForm.FormHide(Sender: TObject);
-var
-  I: Integer;
 begin
   TCDManager(DockManager).Visible := False;
 end;
 
 constructor TCDConjoinForm.Create(TheOwner: TComponent);
 begin
-  inherited CreateNew(TheOwner);
+  inherited;
   CoolDockClient := TCDClient.Create(Self);
   with TCDClient(CoolDockClient) do begin
     Dockable := True;
@@ -72,6 +73,7 @@ begin
   OnShow := FormShow;
   OnHide := FormHide;
   UpdateCaptionEnable := True;
+  FreeIfEmpty := True;
 end;
 
 destructor TCDConjoinForm.Destroy;
