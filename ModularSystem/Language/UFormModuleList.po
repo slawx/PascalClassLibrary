@@ -1,0 +1,55 @@
+msgid ""
+msgstr "Content-Type: text/plain; charset=UTF-8"
+
+#: uformmodulelist.sadditionalmodulesinstall
+msgid "In addition to \"%0:s\" module also dependent modules will be installed: %1:s"
+msgstr ""
+
+#: uformmodulelist.sadditionalmodulesstart
+msgid "In addition to \"%0:s\" module also dependent modules will be started: %1:s"
+msgstr ""
+
+#: uformmodulelist.sadditionalmodulesstop
+msgid "In addition to \"%0:s\" module also dependent modules will be stopped: %1:s"
+msgstr ""
+
+#: uformmodulelist.sadditionalmodulesuninstall
+msgid "In addition to \"%0:s\" module alse dependent modules will be uninstalled: %1:s"
+msgstr ""
+
+#: uformmodulelist.sauthor
+msgid "Author"
+msgstr ""
+
+#: uformmodulelist.sdependencies
+msgid "Dependencies"
+msgstr ""
+
+#: uformmodulelist.sdescription
+msgid "Description"
+msgstr ""
+
+#: uformmodulelist.sidentification
+msgid "Identification"
+msgstr ""
+
+#: uformmodulelist.slicense
+msgid "License"
+msgstr ""
+
+#: uformmodulelist.sname
+msgid "Name"
+msgstr ""
+
+#: uformmodulelist.sno
+msgid "No"
+msgstr ""
+
+#: uformmodulelist.sversion
+msgid "Version"
+msgstr ""
+
+#: uformmodulelist.syes
+msgid "Yes"
+msgstr ""
+

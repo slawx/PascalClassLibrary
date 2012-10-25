@@ -7,7 +7,7 @@ unit ModularSystem;
 interface
 
 uses
-  UModularSystem, LazarusPackageIntf;
+  UModularSystem, UFormModuleList, LazarusPackageIntf;
 
 implementation
 
