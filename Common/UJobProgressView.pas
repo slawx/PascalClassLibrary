@@ -110,18 +110,21 @@ type
     FAutoClose: Boolean;
     Finished: Boolean;
     FOnJobFinish: TJobProgressViewMethod;
+    FOnOwnerDraw: TNotifyEvent;
+    FOwnerDraw: Boolean;
     FShowDelay: Integer;
     FTerminate: Boolean;
     FormList: TList;
     TotalStartTime: TDateTime;
     Log: TStringList;
-    Form: TFormJobProgressView;
     procedure SetTerminate(const AValue: Boolean);
     procedure UpdateProgress;
     procedure ReloadJobList;
     procedure StartJobs;
     procedure UpdateHeight;
+    procedure JobProgressChange(Sender: TObject);
   public
+    Form: TFormJobProgressView;
     Jobs: TObjectList; // TListObject<TJob>
     CurrentJob: TJob;
     CurrentJobIndex: Integer;
@@ -135,10 +138,13 @@ type
     procedure TermSleep(Delay: Integer);
     property Terminate: Boolean read FTerminate write SetTerminate;
   published
+    property OwnerDraw: Boolean read FOwnerDraw write FOwnerDraw;
     property ShowDelay: Integer read FShowDelay write FShowDelay;
     property AutoClose: Boolean read FAutoClose write FAutoClose;
     property OnJobFinish: TJobProgressViewMethod read FOnJobFinish
       write FOnJobFinish;
+    property OnOwnerDraw: TNotifyEvent read FOnOwnerDraw
+      write FOnOwnerDraw;
   end;
 
   //var
@@ -195,6 +201,7 @@ begin
   NewJob.WaitFor := WaitFor;
   NewJob.Progress.Max := 100;
   NewJob.Progress.Reset;
+  NewJob.Progress.OnChange := JobProgressChange;
   Jobs.Add(NewJob);
   //ReloadJobList;
 end;
@@ -211,7 +218,7 @@ var
 begin
   Terminate := False;
 
-  Form.BringToFront;
+  if not OwnerDraw then Form.BringToFront;
 
   Finished := False;
   Form.Caption := SPleaseWait;
@@ -243,6 +250,7 @@ begin
     with TJob(Jobs[I]) do begin
       CurrentJobIndex := I;
       CurrentJob := TJob(Jobs[I]);
+      JobProgressChange(Self);
       StartTime := Now;
       Form.LabelEstimatedTimePart.Caption := Format(SEstimatedTime, ['']);
       Form.ProgressBarPart.Position := 0;
@@ -338,6 +346,12 @@ begin
   end;
 end;
 
+procedure TJobProgressView.JobProgressChange(Sender: TObject);
+begin
+  if Assigned(FOnOwnerDraw) then
+    FOnOwnerDraw(Self);
+end;
+
 procedure TFormJobProgressView.TimerUpdateTimer(Sender: TObject);
 var
   ProgressBarPartVisible: Boolean;
@@ -356,7 +370,7 @@ begin
   end;
   if not Visible then begin
     TimerUpdate.Interval := UpdateInterval;
-    Show;
+    if not JobProgressView.OwnerDraw then Show;
   end;
 end;
 
@@ -508,9 +522,9 @@ end;
 
 destructor TJobProgressView.Destroy;
 begin
-  Log.Free;
-  Jobs.Free;
-  inherited Destroy;
+  FreeAndNil(Log);
+  FreeAndNil(Jobs);
+  inherited;
 end;
 
 procedure TProgress.SetMax(const AValue: Integer);
@@ -518,6 +532,7 @@ begin
   try
     FLock.Acquire;
     FMax := AValue;
+    if FMax < 1 then FMax := 1;
     if FValue >= FMax then FValue := FMax;
   finally
     FLock.Release;
@@ -609,7 +624,7 @@ end;
 destructor TJob.Destroy;
 begin
   Progress.Free;
-  inherited Destroy;
+  inherited;
 end;
 
 end.

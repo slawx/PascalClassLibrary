@@ -27,9 +27,9 @@ object FormJobProgressView: TFormJobProgressView
     TabOrder = 0
     object LabelOperation: TLabel
       Left = 8
-      Height = 14
+      Height = 13
       Top = 8
-      Width = 67
+      Width = 66
       Caption = 'Operations:'
       Font.Height = -11
       Font.Name = 'MS Sans Serif'
@@ -79,9 +79,9 @@ object FormJobProgressView: TFormJobProgressView
     end
     object LabelEstimatedTimePart: TLabel
       Left = 8
-      Height = 14
+      Height = 13
       Top = -2
-      Width = 72
+      Width = 71
       Caption = 'Estimated time:'
       ParentColor = False
     end
@@ -131,9 +131,9 @@ object FormJobProgressView: TFormJobProgressView
     TabOrder = 4
     object LabelEstimatedTimeTotal: TLabel
       Left = 8
-      Height = 14
+      Height = 13
       Top = 0
-      Width = 98
+      Width = 97
       Caption = 'Total estimated time:'
       ParentColor = False
     end

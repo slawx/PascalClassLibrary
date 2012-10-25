@@ -103,8 +103,8 @@ begin
 end;
 
 procedure TResetableThread.WaitForStart;
-var
-  WaitResult: TWaitResult;
+//var
+//  WaitResult: TWaitResult;
 begin
   //try
   //  FLock.Acquire;
@@ -126,8 +126,8 @@ begin
 end;
 
 procedure TResetableThread.WaitForStop;
-var
-  WaitState: TWaitResult;
+//var
+//  WaitState: TWaitResult;
 begin
   try
     FLock.Acquire;

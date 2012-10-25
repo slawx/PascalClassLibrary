@@ -21,7 +21,7 @@
     <Description Value="Various libraries"/>
     <License Value="GNU/GPL"/>
     <Version Minor="7"/>
-    <Files Count="15">
+    <Files Count="17">
       <Item1>
         <Filename Value="StopWatch.pas"/>
         <UnitName Value="StopWatch"/>
@@ -86,6 +86,14 @@
         <HasRegisterProc Value="True"/>
         <UnitName Value="UApplicationInfo"/>
       </Item15>
+      <Item16>
+        <Filename Value="USyncCounter.pas"/>
+        <UnitName Value="USyncCounter"/>
+      </Item16>
+      <Item17>
+        <Filename Value="UListViewSort.pas"/>
+        <UnitName Value="UListViewSort"/>
+      </Item17>
     </Files>
     <i18n>
       <EnableI18N Value="True"/>

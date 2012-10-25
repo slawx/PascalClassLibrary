@@ -17,6 +17,8 @@ type
     FOnChange: TNotifyEvent;
     procedure SetMaxCount(AValue: Integer);
     procedure LimitMaxCount;
+    procedure ItemsChange(Sender: TObject);
+    procedure DoChange;
   public
     Items: TStringList;
     constructor Create(AOwner: TComponent); override;
@@ -57,10 +59,22 @@ begin
     Items.Delete(Items.Count - 1);
 end;
 
+procedure TLastOpenedList.ItemsChange(Sender: TObject);
+begin
+  DoChange;
+end;
+
+procedure TLastOpenedList.DoChange;
+begin
+  if Assigned(FOnChange) then
+    FOnChange(Self);
+end;
+
 constructor TLastOpenedList.Create(AOwner: TComponent);
 begin
   inherited;
   Items := TStringList.Create;
+  Items.OnChange := ItemsChange;
   MaxCount := 10;
 end;
 
@@ -133,8 +147,7 @@ begin
   if Items.IndexOf(FileName) <> -1 then Items.Delete(Items.IndexOf(FileName));
   Items.Insert(0, FileName);
   LimitMaxCount;
-  if Assigned(FOnChange) then
-    FOnChange(Self);
+  DoChange;
 end;
 
 end.

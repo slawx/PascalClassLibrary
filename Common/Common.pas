@@ -9,7 +9,8 @@ interface
 uses
   StopWatch, UCommon, UDebugLog, UDelay, UPrefixMultiplier, UURI, UThreading, 
   UMemory, UResetableThread, UPool, ULastOpenedList, URegistry, 
-  UJobProgressView, UXMLUtils, UApplicationInfo, LazarusPackageIntf;
+  UJobProgressView, UXMLUtils, UApplicationInfo, USyncCounter, UListViewSort, 
+  LazarusPackageIntf;
 
 implementation
 
