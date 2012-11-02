@@ -8,26 +8,61 @@ msgstr ""
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.5.4\n"
 
 #: uupdatechecker.scantexecutefile
 msgid "Can't execute installer \"%s\""
 msgstr "Nelze spustit instalátor \"%s\""
 
+#: uupdatechecker.schangesinnewversion
+#| msgid "Changes in new version"
+msgid "Changes in new version:"
+msgstr "Změny v nové verzi:"
+
+#: uupdatechecker.scheckupdates
+msgid "Check updates"
+msgstr "Kontrola aktualizací"
+
 #: uupdatechecker.sdownloadprogress
 msgid "Download progress"
 msgstr "Průběh stahování"
+
+#: uupdatechecker.serrorcheckingnewversion
+msgid "New version check failed."
+msgstr "Kontrola nové verze selhala."
 
 #: uupdatechecker.sfile
 #| msgid "File"
 msgid "File:"
 msgstr "Soubor:"
 
+#: uupdatechecker.snewversionavailable
+msgid "New version available: %s. Do you want to download and install it now?"
+msgstr "Je dostupná nová verze: %s. Chcete ji nyní stáhnout a nainstalovat?"
+
+#: uupdatechecker.sno
+#| msgid "No"
+msgid "Later"
+msgstr "Později"
+
 #: uupdatechecker.sprogress
 #| msgid "Progress"
 msgid "Progress:"
 msgstr "Průběh:"
 
+#: uupdatechecker.swhatsnew
+msgid "What's new?"
+msgstr "Co je nového?"
+
 #: uupdatechecker.swrongfileformat
 msgid "Wrong file format"
 msgstr "Nesprávný formát souboru"
 
+#: uupdatechecker.syes
+#| msgid "Yes"
+msgid "Update"
+msgstr "Aktualizovat"
+
+#: uupdatechecker.syouhavelatestversion
+msgid "You have latest version"
+msgstr "Máte nejnovější verzi"

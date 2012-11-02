@@ -1,7 +1,7 @@
 object FormDownloadProgress: TFormDownloadProgress
-  Left = 599
+  Left = 410
   Height = 75
-  Top = 212
+  Top = 278
   Width = 376
   Caption = 'Download progress'
   ClientHeight = 75
@@ -19,33 +19,33 @@ object FormDownloadProgress: TFormDownloadProgress
   end
   object Label1: TLabel
     Left = 7
-    Height = 14
+    Height = 13
     Top = 8
-    Width = 21
+    Width = 20
     Caption = 'File:'
     ParentColor = False
   end
   object LabelFileName: TLabel
     Left = 72
-    Height = 14
+    Height = 13
     Top = 8
-    Width = 13
+    Width = 12
     Caption = '    '
     ParentColor = False
   end
   object Label2: TLabel
     Left = 8
-    Height = 14
+    Height = 13
     Top = 25
-    Width = 47
+    Width = 46
     Caption = 'Progress:'
     ParentColor = False
   end
   object LabelProgress: TLabel
     Left = 72
-    Height = 14
+    Height = 13
     Top = 25
-    Width = 13
+    Width = 12
     Caption = '    '
     ParentColor = False
   end

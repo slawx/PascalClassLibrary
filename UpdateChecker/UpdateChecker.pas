@@ -7,7 +7,8 @@ unit UpdateChecker;
 interface
 
 uses
-  UUpdateChecker, UFormDownloadProgress, LazarusPackageIntf;
+  UUpdateChecker, UFormDownloadProgress, UFormNewVersionOffer, 
+  LazarusPackageIntf;
 
 implementation
 

@@ -1,0 +1,264 @@
+<?xml version="1.0"?>
+<CONFIG>
+  <ProjectSession>
+    <PathDelim Value="\"/>
+    <Version Value="9"/>
+    <BuildModes Active="Default"/>
+    <Units Count="13">
+      <Unit0>
+        <Filename Value="Demo.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="Demo"/>
+        <UsageCount Value="20"/>
+      </Unit0>
+      <Unit1>
+        <Filename Value="UFormMain.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="Form1"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="UFormMain"/>
+        <EditorIndex Value="0"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="46"/>
+        <CursorPos X="1" Y="51"/>
+        <UsageCount Value="20"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="H:\Lazarus\1.1_2.6.0\fpc\2.6.0\source\rtl\objpas\dateutil.inc"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="293"/>
+        <CursorPos X="10" Y="128"/>
+        <UsageCount Value="10"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="..\UUpdateChecker.pas"/>
+        <UnitName Value="UUpdateChecker"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="2"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="223"/>
+        <CursorPos X="68" Y="235"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="..\..\synapse\httpsend.pas"/>
+        <UnitName Value="httpsend"/>
+        <EditorIndex Value="8"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="97"/>
+        <CursorPos X="15" Y="110"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="H:\Lazarus\1.1_2.6.0\fpc\2.6.0\source\rtl\objpas\classes\classesh.inc"/>
+        <EditorIndex Value="9"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="781"/>
+        <CursorPos X="14" Y="792"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit5>
+      <Unit6>
+        <Filename Value="H:\Lazarus\1.1_2.6.0\fpc\2.6.0\source\rtl\objpas\classes\streams.inc"/>
+        <EditorIndex Value="10"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="698"/>
+        <CursorPos X="3" Y="701"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit6>
+      <Unit7>
+        <Filename Value="H:\Lazarus\1.1_2.6.0\fpc\2.6.0\source\packages\fcl-process\src\process.pp"/>
+        <UnitName Value="process"/>
+        <EditorIndex Value="5"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="102"/>
+        <CursorPos X="15" Y="114"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit7>
+      <Unit8>
+        <Filename Value="H:\Lazarus\1.1_2.6.0\fpc\2.6.0\source\packages\fcl-process\src\win\process.inc"/>
+        <EditorIndex Value="6"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="251"/>
+        <CursorPos X="1" Y="259"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit8>
+      <Unit9>
+        <Filename Value="H:\Lazarus\1.1_2.6.0\fpc\2.6.0\source\rtl\win\wininc\redef.inc"/>
+        <EditorIndex Value="7"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="340"/>
+        <CursorPos X="1" Y="352"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit9>
+      <Unit10>
+        <Filename Value="H:\Lazarus\1.1_2.6.0\fpc\2.6.0\source\packages\winunits-base\src\shellapi.pp"/>
+        <UnitName Value="ShellApi"/>
+        <EditorIndex Value="3"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1063"/>
+        <CursorPos X="10" Y="1075"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit10>
+      <Unit11>
+        <Filename Value="H:\Lazarus\1.1_2.6.0\fpc\2.6.0\source\rtl\win\wininc\base.inc"/>
+        <EditorIndex Value="4"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="155"/>
+        <CursorPos X="6" Y="167"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit11>
+      <Unit12>
+        <Filename Value="..\UFormNewVersionOffer.pas"/>
+        <ComponentName Value="FormNewVersionOffer"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="UFormNewVersionOffer"/>
+        <EditorIndex Value="1"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="11"/>
+        <CursorPos X="1" Y="24"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit12>
+    </Units>
+    <General>
+      <ActiveWindowIndexAtStart Value="0"/>
+    </General>
+    <JumpHistory Count="30" HistoryIndex="29">
+      <Position1>
+        <Filename Value="..\UUpdateChecker.pas"/>
+        <Caret Line="197" Column="38" TopLine="187"/>
+      </Position1>
+      <Position2>
+        <Filename Value="..\UUpdateChecker.pas"/>
+        <Caret Line="209" Column="57" TopLine="197"/>
+      </Position2>
+      <Position3>
+        <Filename Value="..\UUpdateChecker.pas"/>
+        <Caret Line="210" Column="38" TopLine="197"/>
+      </Position3>
+      <Position4>
+        <Filename Value="..\UUpdateChecker.pas"/>
+        <Caret Line="209" Column="10" TopLine="197"/>
+      </Position4>
+      <Position5>
+        <Filename Value="..\UUpdateChecker.pas"/>
+        <Caret Line="210" Column="9" TopLine="197"/>
+      </Position5>
+      <Position6>
+        <Filename Value="..\UUpdateChecker.pas"/>
+        <Caret Line="209" Column="1" TopLine="197"/>
+      </Position6>
+      <Position7>
+        <Filename Value="..\UUpdateChecker.pas"/>
+        <Caret Line="210" Column="1" TopLine="197"/>
+      </Position7>
+      <Position8>
+        <Filename Value="..\UUpdateChecker.pas"/>
+        <Caret Line="209" Column="1" TopLine="197"/>
+      </Position8>
+      <Position9>
+        <Filename Value="..\UUpdateChecker.pas"/>
+        <Caret Line="98" Column="1" TopLine="86"/>
+      </Position9>
+      <Position10>
+        <Filename Value="..\UUpdateChecker.pas"/>
+        <Caret Line="99" Column="1" TopLine="86"/>
+      </Position10>
+      <Position11>
+        <Filename Value="..\UUpdateChecker.pas"/>
+        <Caret Line="100" Column="1" TopLine="86"/>
+      </Position11>
+      <Position12>
+        <Filename Value="..\UUpdateChecker.pas"/>
+        <Caret Line="101" Column="1" TopLine="86"/>
+      </Position12>
+      <Position13>
+        <Filename Value="..\UUpdateChecker.pas"/>
+        <Caret Line="102" Column="1" TopLine="86"/>
+      </Position13>
+      <Position14>
+        <Filename Value="..\UUpdateChecker.pas"/>
+        <Caret Line="103" Column="1" TopLine="86"/>
+      </Position14>
+      <Position15>
+        <Filename Value="..\UUpdateChecker.pas"/>
+        <Caret Line="104" Column="1" TopLine="86"/>
+      </Position15>
+      <Position16>
+        <Filename Value="..\UUpdateChecker.pas"/>
+        <Caret Line="105" Column="1" TopLine="86"/>
+      </Position16>
+      <Position17>
+        <Filename Value="..\UUpdateChecker.pas"/>
+        <Caret Line="107" Column="1" TopLine="87"/>
+      </Position17>
+      <Position18>
+        <Filename Value="..\UUpdateChecker.pas"/>
+        <Caret Line="109" Column="1" TopLine="89"/>
+      </Position18>
+      <Position19>
+        <Filename Value="..\UUpdateChecker.pas"/>
+        <Caret Line="110" Column="1" TopLine="90"/>
+      </Position19>
+      <Position20>
+        <Filename Value="..\UUpdateChecker.pas"/>
+        <Caret Line="209" Column="30" TopLine="198"/>
+      </Position20>
+      <Position21>
+        <Filename Value="..\UUpdateChecker.pas"/>
+        <Caret Line="213" Column="20" TopLine="197"/>
+      </Position21>
+      <Position22>
+        <Filename Value="UFormMain.pas"/>
+        <Caret Line="42" Column="7" TopLine="29"/>
+      </Position22>
+      <Position23>
+        <Filename Value="UFormMain.pas"/>
+        <Caret Line="41" Column="7" TopLine="28"/>
+      </Position23>
+      <Position24>
+        <Filename Value="UFormMain.pas"/>
+        <Caret Line="42" Column="7" TopLine="29"/>
+      </Position24>
+      <Position25>
+        <Filename Value="UFormMain.pas"/>
+        <Caret Line="62" Column="1" TopLine="38"/>
+      </Position25>
+      <Position26>
+        <Filename Value="..\UFormNewVersionOffer.pas"/>
+        <Caret Line="13" Column="14" TopLine="1"/>
+      </Position26>
+      <Position27>
+        <Filename Value="..\UFormNewVersionOffer.pas"/>
+        <Caret Line="47" Column="1" TopLine="40"/>
+      </Position27>
+      <Position28>
+        <Filename Value="..\UFormNewVersionOffer.pas"/>
+        <Caret Line="46" Column="1" TopLine="39"/>
+      </Position28>
+      <Position29>
+        <Filename Value="..\UFormNewVersionOffer.pas"/>
+        <Caret Line="59" Column="17" TopLine="43"/>
+      </Position29>
+      <Position30>
+        <Filename Value="..\UUpdateChecker.pas"/>
+        <Caret Line="106" Column="26" TopLine="89"/>
+      </Position30>
+    </JumpHistory>
+  </ProjectSession>
+  <EditorMacros Count="0"/>
+</CONFIG>

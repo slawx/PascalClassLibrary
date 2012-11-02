@@ -18,9 +18,9 @@
       </Other>
     </CompilerOptions>
     <Description Value="Check for updates and perform application update"/>
-    <License Value="GNU/GPL"/>
-    <Version Minor="1"/>
-    <Files Count="3">
+    <License Value="GNU/GPLv3"/>
+    <Version Minor="2"/>
+    <Files Count="4">
       <Item1>
         <Filename Value="UUpdateChecker.pas"/>
         <HasRegisterProc Value="True"/>
@@ -34,6 +34,10 @@
         <Filename Value="UFormDownloadProgress.pas"/>
         <UnitName Value="UFormDownloadProgress"/>
       </Item3>
+      <Item4>
+        <Filename Value="UFormNewVersionOffer.pas"/>
+        <UnitName Value="UFormNewVersionOffer"/>
+      </Item4>
     </Files>
     <i18n>
       <EnableI18N Value="True"/>

@@ -1,0 +1,75 @@
+object Form1: TForm1
+  Left = 350
+  Height = 365
+  Top = 194
+  Width = 458
+  Caption = 'Application updater demo'
+  ClientHeight = 365
+  ClientWidth = 458
+  OnClose = FormClose
+  OnShow = FormShow
+  LCLVersion = '1.1'
+  object ButtonCheck: TButton
+    Left = 8
+    Height = 25
+    Top = 72
+    Width = 136
+    Caption = 'Check new version'
+    OnClick = ButtonCheckClick
+    TabOrder = 0
+  end
+  object DateEdit1: TDateEdit
+    Left = 216
+    Height = 21
+    Top = 42
+    Width = 80
+    CalendarDisplaySettings = [dsShowHeadings, dsShowDayNames]
+    OKCaption = 'OK'
+    CancelCaption = 'Cancel'
+    DateOrder = doNone
+    ButtonWidth = 23
+    CharCase = ecNormal
+    NumGlyphs = 1
+    MaxLength = 0
+    TabOrder = 1
+  end
+  object Label1: TLabel
+    Left = 7
+    Height = 13
+    Top = 42
+    Width = 119
+    Caption = 'Application release date:'
+    ParentColor = False
+  end
+  object Label2: TLabel
+    Left = 7
+    Height = 13
+    Top = 14
+    Width = 132
+    Caption = 'Applciation release version:'
+    ParentColor = False
+  end
+  object Edit1: TEdit
+    Left = 216
+    Height = 21
+    Top = 14
+    Width = 80
+    TabOrder = 2
+    Text = '2.3'
+  end
+  object Memo1: TMemo
+    Left = 8
+    Height = 244
+    Top = 116
+    Width = 440
+    Anchors = [akTop, akLeft, akRight, akBottom]
+    TabOrder = 3
+  end
+  object UpdateChecker1: TUpdateChecker
+    VersionInfoURL = 'VersionInfo.xml'
+    BranchId = 1
+    OnTerminate = UpdateChecker1Terminate
+    left = 144
+    top = 168
+  end
+end

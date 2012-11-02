@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<SourceList>
+  <Items>
+    <Source>
+      <Id>56</Id>
+      <Version>1.0.3</Version>
+      <SourceURL>Demo.exe</SourceURL>
+      <ReleaseTime>2012-11-02T00:00:00+01:00</ReleaseTime>
+      <ReleaseNotes>
+* Fixed: Application crash on start.
+* Added: New useful feature.
+      </ReleaseNotes>
+    </Source>
+  </Items>
+</SourceList>

@@ -5,19 +5,51 @@ msgstr "Content-Type: text/plain; charset=UTF-8"
 msgid "Can't execute installer \"%s\""
 msgstr ""
 
+#: uupdatechecker.schangesinnewversion
+msgid "Changes in new version:"
+msgstr ""
+
+#: uupdatechecker.scheckupdates
+msgid "Check updates"
+msgstr ""
+
 #: uupdatechecker.sdownloadprogress
 msgid "Download progress"
+msgstr ""
+
+#: uupdatechecker.serrorcheckingnewversion
+msgid "New version check failed."
 msgstr ""
 
 #: uupdatechecker.sfile
 msgid "File:"
 msgstr ""
 
+#: uupdatechecker.snewversionavailable
+msgid "New version available: %s. Do you want to download and install it now?"
+msgstr ""
+
+#: uupdatechecker.sno
+msgid "Later"
+msgstr ""
+
 #: uupdatechecker.sprogress
 msgid "Progress:"
 msgstr ""
 
+#: uupdatechecker.swhatsnew
+msgid "What's new?"
+msgstr ""
+
 #: uupdatechecker.swrongfileformat
 msgid "Wrong file format"
+msgstr ""
+
+#: uupdatechecker.syes
+msgid "Update"
+msgstr ""
+
+#: uupdatechecker.syouhavelatestversion
+msgid "You have latest version"
 msgstr ""
 
