@@ -50,12 +50,12 @@ type
     procedure InsertControlPanel(Control: TControl; InsertAt: TAlign;
       DropCtl: TControl); override;
     procedure RemoveControl(Control: TControl); override;
-    constructor Create(ADockSite: TWinControl);
+    constructor Create(ADockSite: TWinControl); override;
     destructor Destroy; override;
     procedure PaintSite(DC: HDC); override;
     procedure Update; override;
     procedure SetVisible(const AValue: Boolean); override;
-    procedure ChangeVisible(Control: TWinControl; Visible: Boolean);
+    procedure ChangeVisible(Control: TWinControl; Visible: Boolean); override;
     property DockDirection: TCDDirection read FDockDirection
       write FDockDirection;
     property DockItems: TObjectList read FDockItems write FDockItems;
@@ -92,9 +92,6 @@ begin
 end;
 
 procedure TCDManagerRegionsItem.Paint(Sender: TObject);
-var
-  I: Integer;
-  R: TRect;
 begin
   inherited Paint(Sender);
   with PanelHeader do

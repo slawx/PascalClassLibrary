@@ -7,7 +7,7 @@ interface
 uses
   Classes, Controls, ExtCtrls, ComCtrls, SysUtils, Dialogs, Contnrs,
   Menus, Forms, UCDCommon, UCDManager, UCDConjoinForm,
-  LCLType, LMessages, Graphics;
+  LCLType, Graphics;
 
 type
 
@@ -34,13 +34,16 @@ type
       Shift: TShiftState; X, Y: Integer);
     procedure TabControlMouseUp(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
-    procedure InsertControlPanel(AControl: TControl; InsertAt: TAlign;
-      DropCtl: TControl); override;
-    function FindControlInPanels(Control: TControl): TCDManagerItem; override;
-    function GetHeaderPos: THeaderPos; override;
-    function FindTabSheet(TabSheet: TTabSheet): TCDManagerTabsItem;
     procedure PageControlContextPopup(Sender: TObject; MousePos: TPoint;
       var Handled: Boolean);
+    function FindTabSheet(TabSheet: TTabSheet): TCDManagerTabsItem;
+  protected
+    function GetHeaderPos: THeaderPos; override;
+    function FindControlInPanels(Control: TControl): TCDManagerItem; override;
+    procedure InsertControlPanel(AControl: TControl; InsertAt: TAlign;
+      DropCtl: TControl); override;
+    procedure InsertControlNoUpdate(Control: TControl; InsertAt: TAlign); virtual;
+    procedure TabControlChange(Sender: TObject); virtual;
   public
     MouseDownSkip: Boolean;
     TabImageList: TImageList;
@@ -48,11 +51,9 @@ type
     procedure BringToFront; override;
     procedure Update; override;
     procedure SetHeaderPos(const AValue: THeaderPos); override;
-    procedure InsertControlNoUpdate(Control: TControl; InsertAt: TAlign); virtual;
     procedure RemoveControl(Control: TControl); override;
     constructor Create(ADockSite: TWinControl); override;
     destructor Destroy; override;
-    procedure TabControlChange(Sender: TObject); virtual;
     procedure PaintSite(DC: HDC); override;
     procedure Switch(Index: Integer); override;
     procedure PopupMenuTabCloseClick(Sender: TObject);
@@ -83,6 +84,7 @@ var
   ControlVisible: Boolean;
   Temp: TControl;
   Temp2: TControl;
+  PI: Integer;
 begin
   DebugLog('TCDManagerTabsItem.VisibleChange');
   with TCDManagerTabs(Manager) do begin
@@ -91,7 +93,16 @@ begin
       Switch(DockItems.IndexOf(FindControlInPanels(TControl(Sender))));
       //TCDManagerTabsItem(DockItems[DockItems.IndexOf(
       //  FindControlInPanels(TControl(Sender)))]).HideType := dhtPermanent;
-    end else Update;
+    end else begin
+      TabSheet.TabVisible := False;
+
+      // Workaround for not showing current tab agter other tab is hidden
+      PI := PageControl.PageIndex;
+      PageControl.PageIndex := -1;
+      PageControl.PageIndex := PI;
+
+      Update;
+    end;
   end;
 
   // Show current dock clients in parent dock sites
@@ -378,7 +389,7 @@ var
   DeletedPage: TTabSheet;
   LastIndex: Integer;
 begin
-  LastIndex := PageControl.TabIndex;
+  LastIndex := PageControl.PageIndex;
   if FUpdateCount = 0 then begin
   DebugLog('TCDManagerTabs.Update');
   for I := 0 to DockItems.Count - 1 do
@@ -425,7 +436,8 @@ begin
     Control.Align := alClient;
     if PageControl.PageIndex = I then begin
       TCDManager(Control.DockManager).DockSiteVisible := True;
-      if not Control.Visible then Control.Show;
+      if not Control.Visible then
+        Control.Show;
       //PageControl.TabIndex := I;
     end else begin
       TCDManager(Control.DockManager).DockSiteVisible := False;
@@ -436,10 +448,11 @@ begin
     //TCDClientPanel(DockPanels[I]).ClientAreaPanel.Height := DockSite.Height - PageControl.Height;
     //TCDClientPanel(FDockPanels[I]).DockPanelPaint(Self);
   end;
+  //PageControl.TabIndex := LastIndex;
+  //if PageControl.PageIndex = PI then
+  //  PageControl.PageIndex := -1; // Workaround for bug in LCL TPageControl.TabVisible not updating PageIndex properly
   end;
   inherited;
-  //ShowMessage(IntToStr(PageControl.TabIndex));
-  PageControl.TabIndex := LastIndex;
 end;
 
 end.

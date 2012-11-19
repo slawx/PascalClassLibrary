@@ -65,7 +65,7 @@ type
     FMaster: TCDMasterBase;
     FPanel: TPanel;
     procedure SetMaster(const AValue: TCDMasterBase);
-  public
+  protected
     procedure SetPanel(const AValue: TPanel); virtual;
   published
     property Master: TCDMasterBase read FMaster

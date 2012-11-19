@@ -43,7 +43,7 @@ type
 implementation
 
 uses
-  UCDClient, UCDManagerTabs, UCDCustomize, UCDManager;
+  UCDManagerTabs, UCDCustomize, UCDManager;
 
 resourcestring
   SDockStyle = 'Style';
@@ -90,7 +90,6 @@ constructor TCDPopupMenu.Create(AManager: TCDManagerBase);
 var
   NewMenuItem: TMenuItem;
   NewMenuItem2: TMenuItem;
-  I: Integer;
 begin
   inherited Create(nil);
   Manager := AManager;
@@ -198,8 +197,6 @@ begin
 end;
 
 procedure TCDPopupMenu.PopupMenuCloseClick(Sender: TObject);
-var
-  Control: TControl;
 begin
   if PopupComponent is TPageControl then
   with TPageControl(PopupComponent) do begin

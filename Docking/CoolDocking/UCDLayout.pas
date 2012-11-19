@@ -72,7 +72,7 @@ procedure Register;
 implementation
 
 uses
-  UCDClient, UCDManager, UCDConjoinForm;
+  UCDManager, UCDConjoinForm;
 
 procedure Register;
 begin

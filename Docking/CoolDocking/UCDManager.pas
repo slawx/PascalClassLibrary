@@ -103,6 +103,11 @@ type
     procedure SetHeaderVisible(const AValue: Boolean);
     procedure SetMoveDuration(const AValue: Integer);
     procedure CloseHandler(Sender: TObject; var CloseAction: TCloseAction);
+  protected
+    procedure InsertControlPanel(Control: TControl; InsertAt: TAlign;
+      DropCtl: TControl); virtual;
+    function GetHeaderPos: THeaderPos; virtual;
+    function FindControlInPanels(Control: TControl): TCDManagerItem; virtual;
   public
     Locked: Boolean;
     PopupMenu: TCDPopupMenu;
@@ -113,10 +118,7 @@ type
     procedure Update; virtual;
     procedure Switch(Index: Integer); virtual;
     procedure ChangeVisible(Control: TWinControl; Visible: Boolean); virtual;
-    procedure Assign(Source: TCDManager); virtual;
-    procedure InsertControlPanel(Control: TControl; InsertAt: TAlign;
-      DropCtl: TControl); virtual;
-    function GetHeaderPos: THeaderPos; virtual;
+    procedure Assign(Source: TPersistent); override;
     procedure BringToFront; virtual;
 
     // Inherited from TDockManager
@@ -140,7 +142,6 @@ type
     procedure SetReplacingControl(Control: TControl); override;
     function AutoFreeByControl: Boolean; override;
 
-    function FindControlInPanels(Control: TControl): TCDManagerItem; virtual;
     function CreateConjoinForm: TCDConjoinForm;
     function CreateDockableForm: TCDPanelForm;
     property DockStyle: TCDStyleType read FDockStyle write SetDockStyle;
@@ -363,7 +364,7 @@ end;
 
 function TCDManager.GetMoveDuration: Integer;
 begin
-
+  Result := 0;
 end;
 
 procedure TCDManager.SetDockSiteVisible(AValue: Boolean);
@@ -378,9 +379,6 @@ begin
 end;
 
 constructor TCDManager.Create(ADockSite: TWinControl);
-var
-  NewMenuItem: TMenuItem;
-  NewMenuItem2: TMenuItem;
 begin
   inherited Create(ADockSite);
 
@@ -523,10 +521,6 @@ begin
 end;
 
 procedure TCDManager.ResetBounds(Force: Boolean);
-var
-  I: Integer;
-  Control: TControl;
-  R: TRect;
 begin
 end;
 
@@ -551,7 +545,7 @@ var
 begin
   NewConjoinDockForm := TCDConjoinForm.Create(Application);
   NewConjoinDockForm.Name := GetUniqueName('ConjoinForm');
-  NewConjoinDockForm.Visible := True;
+  NewConjoinDockForm.Visible := False;
   NewConjoinDockForm.BoundsRect := FDockSite.BoundsRect;
   NewConjoinDockForm.CoolDockClient.Master := Self.Master;
   NewDockSite := FDockSite.HostDockSite;
@@ -579,7 +573,6 @@ end;
 
 procedure TCDManager.SetDockStyle(const AValue: TCDStyleType);
 var
-  I: Integer;
   NewManager: TCDManager;
 begin
   if FDockStyle <> AValue then begin
@@ -645,10 +638,12 @@ begin
 
 end;
 
-procedure TCDManager.Assign(Source: TCDManager);
+procedure TCDManager.Assign(Source: TPersistent);
 begin
-  FDockStyle := Source.FDockStyle;
-  FDockSite := Source.FDockSite;
+  if Source is TCDManager then begin
+    FDockStyle := TCDManager(Source).FDockStyle;
+    FDockSite := TCDManager(Source).FDockSite;
+  end else inherited;
 end;
 
 { TCDHeader }
@@ -717,7 +712,6 @@ const
 var
   Points: array of TPoint;
   TitleLeft: Integer;
-  TitleWidth: Integer;
   TitleMaxWidth: Integer;
   I: Integer;
   Title: string;

@@ -7,10 +7,9 @@ unit UCDClient;
 interface
 
 uses
-  Classes, SysUtils, Controls, LCLType, LMessages, Graphics, StdCtrls,
-  Buttons, ExtCtrls, Contnrs, Forms, ComCtrls, Dialogs, Menus, FileUtil,
-  UCDCustomize, DOM, XMLWrite, XMLRead, UCDCommon,
-  DateUtils, UCDPopupMenu, UCDManager;
+  Classes, SysUtils, Controls, Graphics,
+  Buttons, ExtCtrls, Forms, Dialogs, Menus,
+  UCDCustomize, UCDCommon;
 
 const
   GrabberSize = 22;
@@ -25,6 +24,7 @@ type
     FFloatable: Boolean;
     procedure SetDockable(const AValue: Boolean);
     procedure SetFloatable(const AValue: Boolean);
+  protected
     procedure SetPanel(const AValue: TPanel); override;
   public
     constructor Create(AOwner: TComponent); override;

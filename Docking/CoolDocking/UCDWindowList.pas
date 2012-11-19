@@ -1,6 +1,6 @@
 unit UCDWindowList; 
 
-{$mode objfpc}{$H+}
+{$mode delphi}{$H+}
 
 interface
 

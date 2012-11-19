@@ -55,7 +55,6 @@ type
     SplitterMouseDrag: Boolean;
     SplitterMousePos: TPoint;
     procedure PageControlResize(Sender: TObject);
-    procedure InsertControlNoUpdate(Control: TControl; InsertAt: TAlign); override;
     procedure SplitterMouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     procedure SplitterMouseMove(Sender: TObject; Shift: TShiftState;
@@ -63,8 +62,10 @@ type
     procedure SplitterMouseUp(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     procedure UpdatePopupFormBounds;
-    procedure TabControlChange(Sender: TObject); override;
     procedure PopupFormMouseLeave(Sender: TObject);
+  protected
+    procedure TabControlChange(Sender: TObject); override;
+    procedure InsertControlNoUpdate(Control: TControl; InsertAt: TAlign); override;
   public
     AutoHideEnabled: Boolean;
     AutoHide: TCDAutoHide;
@@ -83,7 +84,7 @@ type
 implementation
 
 uses
-  UCDClient, UCDManagerRegions;
+  UCDManagerRegions;
 
 { TCDManagerTabsPopupItem }
 

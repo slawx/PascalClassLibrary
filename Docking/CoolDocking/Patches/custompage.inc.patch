@@ -1,0 +1,14 @@
+Index: lcl/include/custompage.inc
+===================================================================
+--- lcl/include/custompage.inc	(revision 39207)
++++ lcl/include/custompage.inc	(working copy)
+@@ -68,6 +68,9 @@
+       // check if there was no visible tab
+       if TCustomTabControl(Parent).PageIndex = -1 then
+         TCustomTabControl(Parent).PageIndex:=PageIndex;
++
++      if TCustomTabControl(Parent).PageIndex >= Self.PageIndex then
++        TCustomTabControl(Parent).PageIndex := TCustomTabControl(Parent).PageIndex + 1;
+     end
+     else
+       // Check if the page is active and set a new pageindex

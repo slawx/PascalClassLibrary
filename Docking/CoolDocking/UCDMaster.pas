@@ -1,11 +1,11 @@
 unit UCDMaster;
 
-{$mode objfpc}{$H+}
+{$mode delphi}{$H+}
 
 interface
 
 uses
-  Classes, SysUtils, UCDCommon, UCDManager;
+  Classes, SysUtils, UCDCommon;
 
 type
   TLogEvent = procedure (Sender: TObject; Text: string) of object;
@@ -67,8 +67,6 @@ begin
 end;
 
 destructor TCDMaster.Destroy;
-var
-  I: Integer;
 begin
   // Assigning nil to Client Master property cause unregistring client from list
   Customize := nil;

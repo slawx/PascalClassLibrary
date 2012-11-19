@@ -1,12 +1,12 @@
 unit UCDCustomize;
 
-{$mode Delphi}{$H+}
+{$mode delphi}{$H+}
 
 interface
 
 uses
-  Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs,
-  ComCtrls, StdCtrls, Spin, UCDLayout, UCDCommon, UCDManager;
+  Classes, LResources, Forms, Dialogs,
+  ComCtrls, StdCtrls, Spin, UCDLayout, UCDCommon;
 
 type
 
@@ -63,7 +63,7 @@ type
 implementation
 
 uses
-  UCDClient, UCDMaster;
+  UCDMaster;
 
 resourcestring
   SNewLayout = 'New Layout';
