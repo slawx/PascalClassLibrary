@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Registry, UIntelHexFile,
-  UCPUType, UJobProgressView, UCommPin;
+  UCPUType, UJobProgressView;
 
 type
   TLogEvent = procedure (Text: string) of object;

@@ -8,7 +8,7 @@ uses
   Classes, SysUtils, USerialPort, UCommSerialPort, UCommPin, UCommMark,
   UJobProgressView, SyncObjs, DateUtils, Dialogs, URegistry,
   Forms, UISPProgrammer, Registry, UBinarySerializer, SpecializedList,
-  UCommTelnet, UCommTCPClient, UCommTelnetComPortOption, UCommConnector;
+  UCommTelnet, UCommTelnetComPortOption, UCommConnector;
 
 const
   Mark = #13#10;
@@ -32,7 +32,7 @@ type
     Request: TBinarySerializer;
     Mark: TListByte;
     procedure ReceiveData(Sender: TCommPin; Stream: TListByte);
-    function ReadResponse: string;
+    function ReadResponse(Count: Integer = 0): string;
     function ResponseCount: Integer;
     procedure ResponseClear;
     procedure CheckWriteErrorCode(Value: string);
@@ -61,7 +61,7 @@ implementation
 
 resourcestring
   STimeout = 'Timeout';
-  SEmptyBuffer = 'Empty buffer';
+  //SEmptyBuffer = 'Empty buffer';
   SInvalidHexFormat = 'Invalid Intel Hex record format';
   SFlashControllerError = 'Flash controller error';
   SInvalidRecordAddress = 'Invalid address in Intel Hex record';
@@ -78,7 +78,6 @@ resourcestring
 
 procedure TDallasProgrammer.ReceiveData(Sender: TCommPin; Stream: TListByte);
 var
-  OldPosition: Integer;
   NewList: TListByte;
 begin
   try
@@ -91,7 +90,7 @@ begin
   end;
 end;
 
-function TDallasProgrammer.ReadResponse: string;
+function TDallasProgrammer.ReadResponse(Count: Integer = 0): string;
 var
   Serializer: TBinarySerializer;
   StartTime: TDateTime;
@@ -99,7 +98,12 @@ var
 begin
   StartTime := Now;
   repeat
-    if ResponseCount > 0 then Break;
+    if Count = 0 then begin
+      if ResponseCount > 0 then Break;
+    end else begin
+      if ResponseCount >= Count then Break;
+    end;
+    Sleep(1);
     ElapsedTime := Now - StartTime;
   until (ElapsedTime > Timeout);
   if ElapsedTime > Timeout then
@@ -108,7 +112,9 @@ begin
     ResponseLock.Acquire;
     Serializer := TBinarySerializer.Create;
     Serializer.List := TListByte(ResponseQueue.First);
-    Result := Serializer.ReadString(Serializer.List.Count);
+    if Count = 0 then
+      Result := Serializer.ReadString(Serializer.List.Count)
+      else Result := Serializer.ReadString(Count);
     ResponseQueue.Delete(0);
   finally
     Serializer.Free;
@@ -139,7 +145,6 @@ end;
 procedure TDallasProgrammer.SetActive(AValue: Boolean);
 var
   SerialPort: TCommSerialPort;
-  Telnet: TCommTelnet;
   TelnetOption: TTelnetOptionComPort;
 begin
   if Active = AValue then Exit;
@@ -216,7 +221,7 @@ begin
     try
       RootKey := Root;
       OpenKey(Key + '\ISPProgrammer\Dallas', True);
-      BaudRate := ReadIntegerWithDefault('FirmwareBaudRate', 57600);
+      BaudRate := ReadIntegerWithDefault('FirmwareBaudRateNumeric', 57600);
     finally
       Free;
     end;
@@ -228,7 +233,7 @@ begin
     try
       RootKey := Root;
       OpenKey(Key + '\ISPProgrammer\Dallas', True);
-      WriteInteger('FirmwareBaudRate', Integer(BaudRate));
+      WriteInteger('FirmwareBaudRateNumeric', Integer(BaudRate));
     finally
       Free;
     end;
@@ -320,14 +325,25 @@ begin
     CommMark.Mark.Clear;
     HexFile.SaveToStringList(HexData);
     Job.Progress.Max := HexData.Count;
-    for I := 0 to HexData.Count - 1 do begin
-      Request.Clear;
-      ResponseClear;
-      Request.WriteString(HexData[I]);
-      Request.WriteList(Mark, 0, Mark.Count);
-      Pin.Send(Request.List);
-      Value := ReadResponse;
-      CheckWriteErrorCode(Value);
+    // Delayed response check mechanism,
+    // to avoid thread sleep(1) to context switch after 16 ms
+    // During 16 ms delay: 57600 / 10 * 0.016 = 97 bytes can be transfered
+    // One line of hex file is 74 bytes long
+    // Then two during context switching next line should be written to output buffer
+    // On I = 0 do not check response
+    // On I = HexData.Count do not send data, only check response
+    ResponseClear;
+    for I := 0 to HexData.Count do begin
+      if I < HexData.Count then begin
+        Request.Clear;
+        Request.WriteString(HexData[I]);
+        Request.WriteList(Mark, 0, Mark.Count);
+        Pin.Send(Request.List);
+      end;
+      if I > 0 then begin
+        Value := ReadResponse;
+        CheckWriteErrorCode(Value);
+      end;
       Job.Progress.Value := I;
       if Job.Terminate then Break;
     end;
@@ -352,11 +368,9 @@ end;
 
 function TDallasProgrammer.ReadIdentification: string;
 var
-  InitTimeout: TDateTime;
   Value: string;
 begin
   Result := '';
-  InitTimeout := 6000 * OneMillisecond;
   Active := True;
 
   ResponseClear;
@@ -364,6 +378,12 @@ begin
   Pin.Send(Request.List);
   Value := ReadResponse; // Empty line
   Identification := ReadResponse;
+
+  // Make one empty command to clear possible previous data
+  ResponseClear;
+  Request.Clear;
+  Pin.Send(Request.List);
+  Value := ReadResponse; // Empty line
 
   Log(SIdentification + ': ' + Identification);
 end;
