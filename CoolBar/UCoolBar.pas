@@ -5,7 +5,7 @@ unit UCoolBar;
 interface
 
 uses
-  Classes, SysUtils, Contnrs, Controls, SpecializedList;
+  Classes, SysUtils, Controls, SpecializedList, Dialogs, ComCtrls, Forms;
 
 type
   TCoolBar = class;
@@ -35,12 +35,16 @@ type
   private
     FBands: TListObject;
     FRowSize: Integer;
+    DisableResize: Boolean;
     function GetBand(Index: Integer): TCoolBand;
     procedure SetBand(Index: Integer; AValue: TCoolBand);
     procedure BandsUpdate(Sender: TObject);
+    procedure AsyncResize(Param: PtrInt);
+    procedure ControlResize(Sender: TObject);
     procedure SetRowSize(AValue: Integer);
-    procedure Paint; override;
     function SearchBand(Control: TControl): TCoolBand;
+  protected
+    procedure Paint; override;
     procedure Resize; override;
   public
     procedure InsertControl(AControl: TControl; Index: integer); override;
@@ -55,6 +59,7 @@ type
     property Align;
     property Color;
     property RowSize: Integer read FRowSize write SetRowSize;
+    property OnResize;
   end;
 
 procedure Register;
@@ -115,6 +120,16 @@ begin
   Arrange;
 end;
 
+procedure TCoolBar.AsyncResize(Param: PtrInt);
+begin
+  Arrange;
+end;
+
+procedure TCoolBar.ControlResize(Sender: TObject);
+begin
+  Application.QueueAsyncCall(AsyncResize, 0);
+end;
+
 procedure TCoolBar.SetRowSize(AValue: Integer);
 begin
   if FRowSize = AValue then Exit;
@@ -132,9 +147,12 @@ var
   NewBand: TCoolBand;
 begin
   inherited InsertControl(AControl, Index);
-  NewBand := TCoolBand(FBands.AddNew(TCoolBand.Create));
+  AControl.Align := alCustom;
+  NewBand := TCoolBand.Create;
   NewBand.FCoolBar := Self;
   NewBand.Control := AControl;
+  NewBand.Control.OnResize := ControlResize;
+  FBands.Insert(Index, NewBand);
   Arrange;
 end;
 
@@ -144,6 +162,7 @@ var
 begin
   Band := SearchBand(AControl);
   FBands.Remove(Band);
+  AControl.OnResize := nil;
   inherited RemoveControl(AControl);
   Arrange;
 end;
@@ -161,7 +180,7 @@ end;
 procedure TCoolBar.Resize;
 begin
   inherited Resize;
-//  Arrange;
+  //if not DisableResize then Arrange;
 end;
 
 constructor TCoolBar.Create(TheOwner: TComponent);
@@ -177,7 +196,7 @@ end;
 
 destructor TCoolBar.Destroy;
 begin
-  FBands.Free;
+  FreeAndNil(FBands);
   inherited;
 end;
 
@@ -187,17 +206,27 @@ var
   I: Integer;
   NewHeight: Integer;
 begin
+  try
+    DisableResize := True;
   X := 0;
   Y := 0;
   for I := 0 to FBands.Count - 1 do
   with TCoolBand(FBands[I]) do begin
     if Assigned(Control) and Control.Visible then begin
       if (CoolBar.Width - X) > Control.Width then begin
+        // Place CoolBand right to the previous
         if (Control.Left <> X) or (Control.Top <> Y) or
           (Control.Width <> Control.Width) or (Control.Height <> RowSize) then
         Control.SetBounds(X, Y, Control.Width, RowSize);
         Inc(X, Control.Width);
       end else begin
+        // CoolBand do not fit in gap, place to next row
+        if I > 0 then begin
+          // Enlarge previous band
+          with TCoolBand(FBands[I - 1]).Control do begin
+            SetBounds(Left, Top, CoolBar.Width - Left, Height);
+          end;
+        end;
         Inc(Y, RowSize);
         X := 0;
         if (Control.Left <> X) or (Control.Top <> Y) or
@@ -211,6 +240,9 @@ begin
   if Y > RowSize then NewHeight := Y
     else NewHeight := RowSize;
   if NewHeight <> Height then Height := NewHeight;
+  finally
+    DisableResize := False;
+  end;
 end;
 
 end.
