@@ -66,8 +66,6 @@ TListByte = class(TListByteBase)
   procedure ReplaceStreamPart(Stream: TStream; ItemIndex, ItemCount: TGListIndex);
   procedure AddStream(Stream: TStream);
   procedure AddStreamPart(Stream: TStream; ItemCount: TGListIndex);
-  procedure WriteBuffer(var Buffer; Count: Integer);
-  procedure ReadBuffer(var Buffer; Count: Integer);
 end;
 
 // TListChar<Integer, Char>
@@ -332,10 +330,10 @@ procedure TListNotifyEvent.CallAll(Sender: TObject);
 var
   I: TGListIndex;
 begin
-  I := 0;
-  while (I < Count) do begin
+  I := Count - 1;
+  while (I >= 0) do begin
     TNotifyEvent(Items[I])(Sender);
-    I := I + 1;
+    I := I - 1;
   end;
 end;
 
@@ -411,16 +409,6 @@ begin
     Items[I] := Stream.ReadByte;
     I := I + 1;
   end;
-end;
-
-procedure TListByte.WriteBuffer(var Buffer; Count: Integer);
-begin
-
-end;
-
-procedure TListByte.ReadBuffer(var Buffer; Count: Integer);
-begin
-
 end;
 
 

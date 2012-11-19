@@ -87,7 +87,13 @@ begin
       I := I - 1;
     end;
   end;
+  I := FCount;
   inherited;
+  // Nil newly allocated items
+  while I < AValue do begin
+    FItems[I] := nil;
+    I := I + 1;
+  end;
 end;
 
 constructor TGListObject.Create;

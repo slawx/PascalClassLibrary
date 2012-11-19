@@ -38,6 +38,7 @@
     procedure SetLast(AValue: TGListItem);
     procedure SetFirst(AValue: TGListItem);
     procedure QuickSort(L, R : TGListIndex; Compare: TSortCompare);
+    procedure DoUpdate;
   protected
     procedure Put(Index: TGListIndex; const AValue: TGListItem); virtual;
     procedure SetCount(const AValue: TGListIndex); virtual;
@@ -108,6 +109,7 @@ uses
 constructor TGList.Create;
 begin
   FCount := 0;
+  FUpdateCount := 0;
 end;
 
 procedure TGList.GetBuffer(Index: TGListIndex; var Buffer; Count: TGListIndex);
@@ -340,9 +342,13 @@ procedure TGList.Insert(Index: TGListIndex; Item: TGListItem);
 begin
   if (Index < 0) or (Index > FCount) then
     raise EListError.CreateFmt(SListIndexError, [Index]);
-  InsertCount(Index, 1);
-  FItems[Index] := Item;
-  Update;
+  try
+    BeginUpdate;
+    InsertCount(Index, 1);
+    FItems[Index] := Item;
+  finally
+    EndUpdate;
+  end;
 end;
 
 procedure TGList.InsertList(Index: TGListIndex; List: TGList);
@@ -563,13 +569,18 @@ end;
 
 procedure TGList.EndUpdate;
 begin
-  Dec(FUpdateCount);
-  Update;
+  if FUpdateCount > 0 then Dec(FUpdateCount);
+  if FUpdateCount = 0 then DoUpdate;
+end;
+
+procedure TGList.DoUpdate;
+begin
+  if Assigned(FOnUpdate) then FOnUpdate(Self);
 end;
 
 procedure TGList.Update;
 begin
-  if Assigned(FOnUpdate) and (FUpdateCount = 0) then FOnUpdate(Self);
+  if FUpdateCount = 0 then DoUpdate;
 end;
 
 function TGList.Implode(Separator: string; Converter: TToStringConverter): string;

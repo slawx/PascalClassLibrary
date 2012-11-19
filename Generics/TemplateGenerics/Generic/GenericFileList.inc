@@ -14,6 +14,7 @@
     FHandle: THandle;
     procedure SetFileName(const Value: string);
     procedure SetMode(const Value: Word);
+    function GetOpenned: Boolean;
   public
     constructor Create; override;
     destructor Destroy; override;
@@ -21,6 +22,7 @@
     procedure Close;
     property FileName: string read FFileName write SetFileName;
     property Mode: Word read FMode write SetMode;
+    property Openned: Boolean read GetOpenned;
   end;
 
 {$UNDEF INTERFACE}
@@ -80,6 +82,10 @@ begin
   end;
 end;
 
+function TGFileList.GetOpenned: Boolean;
+begin
+  Result := FHandle <> feInvalidHandle;
+end;
 
 {$UNDEF IMPLEMENTATION}
 {$ENDIF}

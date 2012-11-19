@@ -24,8 +24,8 @@ type
   public
     Position: Integer;
     OwnsList: Boolean;
-    procedure Write(var Buffer; Count: Integer); inline;
-    procedure Read(var Buffer; Count: Integer); inline;
+    procedure Write(var Buffer; Count: Integer); //inline;
+    procedure Read(var Buffer; Count: Integer); //inline;
 
     procedure Assign(Source: TBinarySerializer);
     procedure WriteByte(Data: Byte);
@@ -72,7 +72,8 @@ function TBinarySerializer.ReadAnsiString: string;
 var
   StringLength: Longint;
 begin
-  FList.ReadBuffer(StringLength, SizeOf(StringLength));
+  StringLength := 0;
+  Read(StringLength, SizeOf(StringLength));
   Result := ReadString(StringLength);
 end;
 
@@ -101,17 +102,20 @@ end;
 
 function TBinarySerializer.ReadByte: Byte;
 begin
+  Result := 0;
   Read(Result, SizeOf(Byte));
 end;
 
 function TBinarySerializer.ReadCardinal: Cardinal;
 begin
+  Result := 0;
   Read(Result, SizeOf(Cardinal));
   if SwapData then Result := SwapEndian(Result);
 end;
 
 function TBinarySerializer.ReadInt64: Int64;
 begin
+  Result := 0;
   Read(Result, SizeOf(Int64));
   if SwapData then Result := SwapEndian(Result);
 end;
@@ -128,6 +132,7 @@ function TBinarySerializer.ReadShortString: string;
 var
   Count: Byte;
 begin
+  Count := 0;
   Read(Count, 1);
   Result := ReadString(Count);
 end;
@@ -222,16 +227,19 @@ end;
 
 function TBinarySerializer.ReadDouble: Double;
 begin
+  Result := 0;
   Read(Result, SizeOf(Double));
 end;
 
 function TBinarySerializer.ReadSingle: Single;
 begin
+  Result := 0;
   Read(Result, SizeOf(Single));
 end;
 
 function TBinarySerializer.ReadWord: Word;
 begin
+  Result := 0;
   Read(Result, SizeOf(Word));
   if SwapData then Result := SwapEndian(Result);
 end;
