@@ -47,6 +47,7 @@ type
     LabelDescription: TLabel;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
+    procedure FormShow(Sender: TObject);
   private
     ModalResult: Integer;
   public
@@ -71,7 +72,8 @@ resourcestring
   SRetry = 'Retry';
   SIgnore = 'Ignore';
   SClose = 'Close';
-  SConfirmMessageNotFound = 'Confirm message id %s not found';
+  SDoSameActionNextTime = 'Do same action next time';
+//  SConfirmMessageNotFound = 'Confirm message id %s not found';
 
 
 procedure TConfirmationForm.FormCreate(Sender: TObject);
@@ -82,7 +84,16 @@ end;
 
 procedure TConfirmationForm.FormDestroy(Sender: TObject);
 begin
-  ConfirmMessages.Free;
+  FreeAndNil(ConfirmMessages);
+end;
+
+procedure TConfirmationForm.FormShow(Sender: TObject);
+begin
+  BitBtnOk.Caption := SOk;
+  BitBtnCancel.Caption := SCancel;
+  BitBtnNo.Caption := SNo;
+  BitBtnYes.Caption := SYes;
+  CheckBoxAutoEnabled.Caption := SDoSameActionNextTime;
 end;
 
 function TConfirmationForm.ShowDialog(Message: TConfirmMessage; Parameters: array of const): Integer;

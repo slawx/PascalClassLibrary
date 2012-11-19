@@ -1,12 +1,24 @@
 msgid ""
 msgstr "Content-Type: text/plain; charset=UTF-8"
 
+#: uconfirmationform.sabort
+msgid "Abort"
+msgstr ""
+
 #: uconfirmationform.scancel
 msgid "Cancel"
 msgstr ""
 
-#: uconfirmationform.sconfirmmessagenotfound
-msgid "Confirm message id %s not found"
+#: uconfirmationform.sclose
+msgid "Close"
+msgstr ""
+
+#: uconfirmationform.sdosameactionnexttime
+msgid "Do same action next time"
+msgstr ""
+
+#: uconfirmationform.signore
+msgid "Ignore"
 msgstr ""
 
 #: uconfirmationform.sno
@@ -15,6 +27,10 @@ msgstr ""
 
 #: uconfirmationform.sok
 msgid "Ok"
+msgstr ""
+
+#: uconfirmationform.sretry
+msgid "Retry"
 msgstr ""
 
 #: uconfirmationform.syes

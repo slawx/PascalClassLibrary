@@ -8,8 +8,9 @@ object ConfirmationForm: TConfirmationForm
   ClientWidth = 503
   OnCreate = FormCreate
   OnDestroy = FormDestroy
+  OnShow = FormShow
   Position = poMainFormCenter
-  LCLVersion = '1.1'
+  LCLVersion = '1.0.1.3'
   object LabelDescription: TLabel
     Left = 56
     Height = 1
