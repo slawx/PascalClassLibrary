@@ -30,11 +30,11 @@ type
   TCommTCPClient = class(TCommNode)
   private
     FActive: Boolean;
-    FOnReceiveData: TReceiveDataEvent;
+    //FOnReceiveData: TReceiveDataEvent;
     FReceiveThread: TCommSocketReceiveThread;
     procedure ReceiveData(Sender: TCommPin; Stream: TListByte);
-    procedure SetActive(const AValue: Boolean);
   protected
+    procedure SetActive(const AValue: Boolean); override;
     procedure AssignTo(Dest: TPersistent); override;
   public
     Socket: TTCPBlockSocket;

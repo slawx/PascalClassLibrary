@@ -79,13 +79,13 @@
         <UnitName Value="UCommMark"/>
       </Item14>
       <Item15>
-        <Filename Value="UCommConnector.pas"/>
-        <UnitName Value="UCommConnector"/>
-      </Item15>
-      <Item16>
         <Filename Value="UPinConnection.pas"/>
         <HasRegisterProc Value="True"/>
         <UnitName Value="UPinConnection"/>
+      </Item15>
+      <Item16>
+        <Filename Value="UCommConnector.pas"/>
+        <UnitName Value="UCommConnector"/>
       </Item16>
     </Files>
     <i18n>

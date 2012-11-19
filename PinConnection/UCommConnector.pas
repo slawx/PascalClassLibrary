@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, UCommPin, UCommSerialPort, UCommTCPClient, UCommThread,
-  UCommHub, USerialPort, UCommTCPServer, UCommTelnet,
+  UCommHub, UCommTCPServer, UCommTelnet,
   UCommTelnetComPortOption;
 
 type

@@ -9,7 +9,3 @@ msgstr "Content-Type: text/plain; charset=UTF-8Content-Type: text/plain; charset
 msgid "Wrong data bits number %s"
 msgstr ""
 
-#: userialport.swrongnumericbaudrate
-msgid "Wrong numeric baud rate %s"
-msgstr ""
-

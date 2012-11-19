@@ -5,8 +5,7 @@ unit UCommDelay;
 interface
 
 uses
-  Classes, SysUtils, UCommPin, UThreading, SyncObjs, SpecializedList, UStreamHelper,
-  UBinarySerializer;
+  Classes, SysUtils, UCommPin, UThreading, SyncObjs, SpecializedList;
 
 type
   TCommDelay = class;

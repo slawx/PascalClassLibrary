@@ -5,7 +5,7 @@ unit UCommTelnetComPortOption;
 interface
 
 uses
-  Classes, SysUtils, UCommPin, UCommTelnet, USerialPort, UStreamHelper,
+  Classes, SysUtils, UCommTelnet, USerialPort,
   SpecializedList, UBinarySerializer;
 
 type
@@ -92,6 +92,7 @@ begin
     SetBaudRate(FBaudRate);
     SetDTR(FDTR);
     SetRTS(FRTS);
+    SetFlowControl(fcNone);
   end;
 end;
 

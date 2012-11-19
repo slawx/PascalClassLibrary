@@ -5,8 +5,8 @@ unit UCommTelnet;
 interface
 
 uses
-  Classes, SysUtils, UCommPin, SpecializedList, DateUtils, UStreamHelper,
-  SpecializedStream, UBinarySerializer;
+  Classes, SysUtils, UCommPin, SpecializedList, DateUtils, Dialogs,
+  UBinarySerializer;
 
 type
   TCommTelnet = class;
@@ -73,12 +73,12 @@ type
     FActive: Boolean;
     FState: TTelnetState;
     FCommandData: TBinarySerializer;
-    procedure SetActive(AValue: Boolean);
     procedure TelnetDataReceive(Sender: TCommPin; Stream: TListByte);
     procedure RawDataReceive(Sender: TCommPin; Stream: TListByte);
     procedure ReadResponse(Response: TListByte);
     function ResponseCount: Integer;
   protected
+    procedure SetActive(const AValue: Boolean); override;
     procedure AssignTo(Dest: TPersistent); override;
   public
     Options: TListObject;
@@ -152,13 +152,13 @@ begin
     RequestData.Free;
     RequestData.Free;
   end;
+  Result := SupportedByServer;
 end;
 
 procedure TTelnetOption.SendCommand(Request, Response: TListByte);
 var
   RequestData: TBinarySerializer;
   ResponseData: TBinarySerializer;
-  I: Integer;
 begin
   if Telnet.OptionsNegotationEnable then CheckOption;
   try
@@ -209,7 +209,7 @@ begin
   end;
 end;
 
-procedure TCommTelnet.SetActive(AValue: Boolean);
+procedure TCommTelnet.SetActive(const AValue: Boolean);
 var
   I: Integer;
 begin
@@ -375,6 +375,11 @@ begin
     else raise Exception.Create(SOptionNotFound);
 end;
 
+function ByteToStr(Value: Byte): string;
+begin
+  Result := IntToStr(Value);
+end;
+
 procedure TCommTelnet.SendCommand(Code: TTelnetCode; Request,
   Response: TListByte);
 var
@@ -404,12 +409,17 @@ begin
       Response.Delete(0);
       if Code = tcSB then begin
         if (Response[Response.Count - 2] <> Byte(tcIAC)) or
-        (Response[Response.Count - 1] <> Byte(tcSE)) then
+        (Response[Response.Count - 1] <> Byte(tcSE)) then begin
+          ShowMessage(Response.Implode(' ', ByteToStr));
+          ReadResponse(Response);
+          ShowMessage(Response.Implode(' ', ByteToStr));
           raise Exception.Create(SWrongResponse);
+        end;
         Response.DeleteItems(Response.Count - 2, 2);
       end;
       // Remove IAC escape character from data
       I := 0;
+      LastIAC := False;
       while (I < Response.Count) do begin
         if Response[I] = Byte(tcIAC) then begin
           if not LastIAC then LastIAC := True

@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, blcksock, synsock, UCommPin, UCommon, UThreading,
-  DateUtils, SpecializedList, tlntsend;
+  DateUtils, SpecializedList;
 
 type
   TCommTCPServer = class;
@@ -47,9 +47,10 @@ type
     FActive: Boolean;
     FOnConnect: TSocketConnectEvent;
     FOnDisconnect: TSocketConnectEvent;
-    FOnReceiveData: TReceiveDataEvent;
+    //FOnReceiveData: TReceiveDataEvent;
     FReceiveThread: TCommSocketReceiveThread;
-    procedure SetActive(const AValue: Boolean);
+  protected
+    procedure SetActive(const AValue: Boolean); override;
   public
     Sessions: TListObject; // TListObject<TCommTCPServerSession>
     Socket: TTCPBlockSocket;
@@ -73,6 +74,7 @@ begin
   try
     Mem := TMemoryStream.Create;
     Stream.WriteToStream(Mem);
+    Mem.Position := 0;
     Socket.SendStreamRaw(Mem);
   finally
     Mem.Free;
@@ -171,7 +173,7 @@ begin
 
   if AValue then begin
     Socket.Bind(Address, IntToStr(Port));
-    if Socket.LastError <> 0 then raise Exception.Create('Bind error');
+    if Socket.LastError <> 0 then raise Exception.Create('Bind error' + Socket.GetErrorDesc(Socket.LastError));
     Socket.Listen;
     if Socket.LastError <> 0 then raise Exception.Create('Listen error');
     FReceiveThread := TCommSocketReceiveThread.Create(True);

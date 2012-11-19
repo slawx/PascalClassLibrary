@@ -5,7 +5,8 @@ unit USerialPort;
 interface
 
 uses
-  Classes, SysUtils, SynaSer, StdCtrls, Dialogs, UCommon, UThreading,
+  {$IFDEF Windows}Windows, {$ENDIF}Registry,
+  Classes, SysUtils, SynaSer, Dialogs, UCommon, UThreading, Syncobjs,
   DateUtils, FileUtil, SpecializedList;
 
 const
@@ -48,7 +49,9 @@ type
     FStopBits: TStopBits;
     FReceiveThread: TSerialPortReceiveThread;
     FReceiveBuffer: TListByte;
+    function FindFriendlyName(Key: string; Port: string): string;
     function GetName: string;
+    procedure GetSerialPortNamesExt(Strings: TStrings);
     procedure SetBaudRate(const AValue: Integer);
     procedure SetDataBits(const AValue: TDataBits);
     procedure SetDTR(const AValue: Boolean);
@@ -61,6 +64,7 @@ type
     procedure Open;
     procedure Close;
   public
+    Lock: TCriticalSection;
     property Name: string read GetName write SetName;
     property FlowControl: TFlowControl read FFlowControl write SetFlowControl;
     property DataBits: TDataBits read FDataBits write SetDataBits;
@@ -76,6 +80,8 @@ type
     procedure LoadAvailableToStrings(Strings: TStrings; Check: Boolean = False);
     constructor Create;
     destructor Destroy; override;
+    procedure Flush;
+    procedure Purge;
     procedure Assign(Source: TObject);
   end;
 
@@ -89,7 +95,6 @@ implementation
 
 resourcestring
   SAssignmentError = 'Assignment error';
-  SWrongNumericBaudRate = 'Wrong numeric baud rate %s';
   SWrongDataBitsNumber = 'Wrong data bits number %s';
 
 { TSerialPort }
@@ -148,54 +153,145 @@ end;
 procedure TSerialPort.Open;
 begin
   Connect(FName);
-  //set_fDtrControl(DCB, 1);
-  //DCB.flags := ;
-  SetBaudRate(FBaudRate);
-  SetParity(FParity);
-  SetStopBits(FStopBits);
-  SetDataBits(FDataBits);
-  SetFlowControl(FFlowControl);
-  SetDTR(FDTR);
-  SetRTS(FRTS);
+  if FHandle <> INVALID_HANDLE_VALUE then begin
+    //set_fDtrControl(DCB, 1);
+    //DCB.flags := ;
+    {$IFDEF DEBUG}
+    RaiseExcept := True;
+    {$ENDIF}
+    SetBaudRate(FBaudRate);
+    SetParity(FParity);
+    SetStopBits(FStopBits);
+    SetDataBits(FDataBits);
+    SetFlowControl(FFlowControl);
+    SetDTR(FDTR);
+    SetRTS(FRTS);
 
-  FReceiveThread := TSerialPortReceiveThread.Create(True);
-  FReceiveThread.FreeOnTerminate := False;
-  FReceiveThread.Parent := Self;
-  FReceiveThread.Name := 'SerialPort';
-  FReceiveThread.Start;
+    FReceiveThread := TSerialPortReceiveThread.Create(True);
+    FReceiveThread.FreeOnTerminate := False;
+    FReceiveThread.Parent := Self;
+    FReceiveThread.Name := 'SerialPort';
+    FReceiveThread.Start;
+  end;
 end;
 
 procedure TSerialPort.Close;
 begin
-  FreeAndNil(FReceiveThread);
-  CloseSocket;
+  if FHandle <> INVALID_HANDLE_VALUE then begin
+    FreeAndNil(FReceiveThread);
+    CloseSocket;
+  end;
+end;
+
+function TSerialPort.FindFriendlyName(Key: string; Port: string): string;
+var
+  r: TRegistry;
+  k: TStringList;
+  i: Integer;
+  ck: string;
+  rs: string;
+begin
+  r := TRegistry.Create;
+  k := TStringList.Create;
+
+  r.RootKey := HKEY_LOCAL_MACHINE;
+  r.OpenKeyReadOnly(key);
+  r.GetKeyNames(k);
+  r.CloseKey;
+
+  try
+    for i := 0 to k.Count - 1 do
+    begin
+      ck := key + k[i] + '\'; // current key
+      // looking for "PortName" stringvalue in "Device Parameters" subkey
+      if r.OpenKeyReadOnly(ck + 'Device Parameters') then
+      begin
+        if r.ReadString('PortName') = port then
+        begin
+          r.CloseKey;
+          r.OpenKeyReadOnly(ck);
+          rs := UTF8Encode(r.ReadString('FriendlyName'));
+          Break;
+        end
+      end
+      // keep looking on subkeys for "PortName"
+      else
+      begin
+        if r.OpenKeyReadOnly(ck) and r.HasSubKeys then
+        begin
+          rs := FindFriendlyName(ck, port);
+          if rs <> '' then Break;
+        end;
+      end;
+    end;
+    result := rs;
+  finally
+    r.Free;
+    k.Free;
+  end;
+end;
+
+procedure TSerialPort.GetSerialPortNamesExt(Strings: TStrings);
+var
+  Reg: TRegistry;
+  l: TStringList;
+  n: integer;
+  pn, fn: string;
+begin
+  l := TStringList.Create;
+  Reg := TRegistry.Create;
+  try
+    Reg.RootKey := HKEY_LOCAL_MACHINE;
+    if reg.OpenKeyReadOnly('HARDWARE\DEVICEMAP\SERIALCOMM') then
+    begin
+      Reg.GetValueNames(l);
+      for n := 0 to l.Count - 1 do
+      begin
+        pn := Reg.ReadString(l[n]);
+        fn := FindFriendlyName('\System\CurrentControlSet\Enum\', pn);
+        if fn <> '' then
+          Strings.Add(pn + Strings.NameValueSeparator + fn)
+          else Strings.Add(pn + Strings.NameValueSeparator + pn)
+      end;
+    end;
+  finally
+    L.Free;
+    Reg.Free;
+  end;
 end;
 
 procedure TSerialPort.LoadAvailableToStrings(Strings: TStrings; Check: Boolean = False);
 var
   I: Integer;
+  {$IFDEF Linux}Files: TStringList;{$ENDIF}
   TestPort: TSerialPort;
-  Files: TStringList;
 begin
   Strings.Clear;
+  Strings.NameValueSeparator := '|';
   {$IFDEF Windows}
-  if Check then
-  try
-    TestPort := TSerialPort.Create;
-    for I := 0 to MaxPort - 1 do
-    with TestPort do begin
-      Name := 'COM' + IntToStr(I);
-      Active := True;
-      if Active then begin
-        Strings.AddObject(Name, nil);
+  if Check then begin
+    GetSerialPortNamesExt(Strings);
+    // If no ports with friendly names detected try open all ports (compatibility with Win98)
+    if Strings.Count = 0 then
+    try
+      TestPort := TSerialPort.Create;
+      for I := 0 to MaxPort - 1 do
+      with TestPort do begin
+        Name := 'COM' + IntToStr(I);
+        Active := True;
+        if (LastError = ERROR_SUCCESS) or (LastError = ERROR_ACCESS_DENIED) then
+        begin
+          Strings.AddObject(Name, nil);
+        end;
+        Active := False;
       end;
-      Active := False;
+    finally
+      TestPort.Free;
     end;
-  finally
-    TestPort.Free;
-  end else begin
+  end  else begin
     for I := 1 to MaxPort do
-      Strings.AddObject('COM' + IntToStr(I), nil);
+      Strings.AddObject('COM' + IntToStr(I) + Strings.NameValueSeparator +
+        'COM' + IntToStr(I), nil);
   end;
   {$ENDIF}
   {$IFDEF Linux}
@@ -203,11 +299,15 @@ begin
   try
     Files := FindAllFiles('/dev', 'tty*', False);
     Strings.Assign(Files);
+    for I := 0 to Strings.Count - 1 do
+      Strings.Strings[I] := Strings.Strings[I] + Strings.NameValueSeparator +
+        Strings.Strings[I];
   finally
     Files.Free;
   end else begin
     for I := 1 to 63 do
-      Strings.AddObject('/dev/ttyS' + IntToStr(I), nil);
+      Strings.AddObject('/dev/ttyS' + IntToStr(I) + Strings.NameValueSeparator +
+        '/dev/ttyS' + IntToStr(I), nil);
   end;
   {$ENDIF}
 end;
@@ -215,6 +315,7 @@ end;
 constructor TSerialPort.Create;
 begin
   inherited Create;
+  Lock := TCriticalSection.Create;
   FReceiveBuffer := TListByte.Create;
   FBaudRate := 9600;
   FName := 'COM1';
@@ -230,9 +331,23 @@ end;
 destructor TSerialPort.Destroy;
 begin
   Active := False;
-  FReceiveThread.Free;
-  ReceiveBuffer.Free;
-  inherited Destroy;
+  FreeAndNil(FReceiveThread);
+  FreeAndNil(FReceiveBuffer);
+  FreeAndNil(Lock);
+  inherited;
+end;
+
+procedure TSerialPort.Flush;
+begin
+  if FActive then begin
+    inherited Flush;
+  end;
+end;
+
+procedure TSerialPort.Purge;
+begin
+  if FActive then
+    inherited Purge;
 end;
 
 procedure TSerialPort.Assign(Source:TObject);
@@ -315,7 +430,9 @@ begin
   with Parent do repeat
       if InBufferUsed = 0 then Sleep(1);
         //else Yield;
-      if Active then begin
+      if Active then
+      try
+        Parent.Lock.Acquire;
         InBufferUsed := WaitingData;
         if InBufferUsed > 0 then begin
           SetLength(Buffer, InBufferUsed);
@@ -324,9 +441,17 @@ begin
 
           Parent.FReceiveBuffer.Count := Length(Buffer);
           Parent.FReceiveBuffer.ReplaceBuffer(0, PByte(Buffer)^, Length(Buffer));
-          if Assigned(Parent.FOnReceiveData) then
-            Parent.FOnReceiveData(Parent.FReceiveBuffer);
+          if Assigned(Parent.FOnReceiveData) then begin
+            try
+              Parent.Lock.Release;
+              Parent.FOnReceiveData(Parent.FReceiveBuffer);
+            finally
+              Parent.Lock.Acquire;
+            end;
+          end;
         end else InBufferUsed := 0;
+      finally
+        Parent.Lock.Release;
       end else InBufferUsed := 0;
   until Terminated;
 end;

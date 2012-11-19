@@ -5,7 +5,7 @@ unit UCommFrame;
 interface
 
 uses
-  Classes, UStreamHelper, Dialogs, SysUtils, SpecializedList, UBinarySerializer,
+  Classes, Dialogs, SysUtils, SpecializedList, UBinarySerializer,
   UCommPin;
 
 type

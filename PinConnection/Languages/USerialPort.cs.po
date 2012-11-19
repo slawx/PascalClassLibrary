@@ -17,7 +17,3 @@ msgstr "Chyba přiřazení"
 msgid "Wrong data bits number %s"
 msgstr "Nesprávné číslo datových bitů %s"
 
-#: userialport.swrongnumericbaudrate
-msgid "Wrong numeric baud rate %s"
-msgstr "Nesprávná číslená baudová rychlost %s"
-

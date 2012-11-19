@@ -5,7 +5,7 @@ unit UCommThread;
 interface
 
 uses
-  Classes, SysUtils, blcksock, UCommPin, SyncObjs, UStreamHelper, UCommon,
+  Classes, SysUtils, blcksock, UCommPin, SyncObjs, UCommon,
   DateUtils, UThreading, SpecializedList, UBinarySerializer;
 
 type
@@ -29,7 +29,7 @@ type
 
   TCommThread = class(TCommNode)
   private
-    FOnReceiveData: TReceiveDataEvent;
+    //FOnReceiveData: TReceiveDataEvent;
     FReceiveThread: TCommThreadReceiveThread;
     FInputBuffer: TBinarySerializer;
     FInputBufferLock: TCriticalSection;

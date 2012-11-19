@@ -5,7 +5,7 @@ unit UPacketBurst;
 interface
 
 uses
-  Classes, UCommPin, SyncObjs, UStreamHelper, UCommon, SysUtils, SpecializedList,
+  Classes, UCommPin, SyncObjs, UCommon, SysUtils, SpecializedList,
   DateUtils, UBinarySerializer;
 
 type
@@ -137,7 +137,7 @@ begin
         end else
         while (SendStream.List.Count - SendStream.Position) > SendBurstSize do begin
           Stream.Count := 0;
-          SendStream.ReadStream(TStream(Stream), SendBurstSize);
+          SendStream.ReadList(Stream, 0, SendBurstSize);
           PacketBurstPin.Send(Stream);
         end;
       finally
