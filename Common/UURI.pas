@@ -325,7 +325,9 @@ begin
     LeftCutString(AValue, Drive, DriveSeparator);
     Drive := Drive + DriveSeparator;
   end else Drive := '';
-  Directory.AsString := AValue;
+  if (Drive <> '') and (AValue = '') then
+    Directory.AsString := Directory.DirSeparator
+    else Directory.AsString := AValue;
 end;
 
 procedure TFileName.Assign(Source: TFileName);

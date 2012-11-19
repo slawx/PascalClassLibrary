@@ -22,6 +22,7 @@ type
     procedure Increment;
     constructor Create;
     destructor Destroy; override;
+    procedure Assign(Source: TSyncCounter);
   end;
 
 implementation
@@ -68,6 +69,12 @@ destructor TSyncCounter.Destroy;
 begin
   Lock.Free;
   inherited Destroy;
+end;
+
+procedure TSyncCounter.Assign(Source: TSyncCounter);
+begin
+  Current := Source.Current;
+  Top := Source.Top;
 end;
 
 end.

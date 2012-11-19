@@ -25,8 +25,8 @@ type
 
   TRegistryEx = class(TRegistry)
   private
-    function GetContext: TRegistryContext;
-    procedure SetContext(AValue: TRegistryContext);
+    function GetCurrentContext: TRegistryContext;
+    procedure SetCurrentContext(AValue: TRegistryContext);
   public
     function ReadBoolWithDefault(const Name: string;
       DefaultValue: Boolean): Boolean;
@@ -36,7 +36,7 @@ type
       DefaultValue: Double): Double;
     function DeleteKeyRecursive(const Key: string): Boolean;
     function OpenKey(const Key: string; CanCreate: Boolean): Boolean;
-    property Context: TRegistryContext read GetContext write SetContext;
+    property CurrentContext: TRegistryContext read GetCurrentContext write SetCurrentContext;
   end;
 
 function RegContext(RootKey: HKEY; Key: string): TRegistryContext;
@@ -108,13 +108,13 @@ begin
   Result := inherited OpenKey(Key, CanCreate);
 end;
 
-function TRegistryEx.GetContext: TRegistryContext;
+function TRegistryEx.GetCurrentContext: TRegistryContext;
 begin
   Result.Key := CurrentPath;
   Result.RootKey := RootKey;
 end;
 
-procedure TRegistryEx.SetContext(AValue: TRegistryContext);
+procedure TRegistryEx.SetCurrentContext(AValue: TRegistryContext);
 begin
   RootKey := AValue.RootKey;
   OpenKey(AValue.Key, True);

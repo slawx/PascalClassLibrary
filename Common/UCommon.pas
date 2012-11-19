@@ -47,7 +47,9 @@ function CompareByteArray(Data1, Data2: TArrayOfByte): Boolean;
 function GetUserName: string;
 function LoggedOnUserNameEx(Format: TUserNameFormat): string;
 function SplitString(var Text: string; Count: Word): string;
+function GetBitCount(Variable: QWord; MaxIndex: Integer): Integer;
 function GetBit(Variable: QWord; Index: Byte): Boolean;
+procedure SetBit(var Variable: Int64; Index: Byte; State: Boolean); overload;
 procedure SetBit(var Variable: QWord; Index: Byte; State: Boolean); overload;
 procedure SetBit(var Variable: Cardinal; Index: Byte; State: Boolean); overload;
 procedure SetBit(var Variable: Word; Index: Byte; State: Boolean); overload;
@@ -335,24 +337,38 @@ begin
   Delete(Text, 1, Count);
 end;
 
+function GetBitCount(Variable: QWord; MaxIndex: Integer): Integer;
+var
+  I: Integer;
+begin
+  Result := 0;
+  for I := 0 to MaxIndex - 1 do
+    if ((Variable shr I) and 1) = 1 then Inc(Result);
+end;
+
 function GetBit(Variable:QWord;Index:Byte):Boolean;
 begin
   Result := ((Variable shr Index) and 1) = 1;
 end;
 
+procedure SetBit(var Variable: Int64; Index: Byte; State: Boolean);
+begin
+  Variable := (Variable and ((1 shl Index) xor High(QWord))) or (Int64(State) shl Index);
+end;
+
 procedure SetBit(var Variable:QWord;Index:Byte;State:Boolean); overload;
 begin
-  Variable := (Variable and ((1 shl Index) xor QWord($ffffffffffffffff))) or (QWord(State) shl Index);
+  Variable := (Variable and ((1 shl Index) xor High(QWord))) or (QWord(State) shl Index);
 end;
 
 procedure SetBit(var Variable:Cardinal;Index:Byte;State:Boolean); overload;
 begin
-  Variable := (Variable and ((1 shl Index) xor Cardinal($ffffffff))) or (Cardinal(State) shl Index);
+  Variable := (Variable and ((1 shl Index) xor High(Cardinal))) or (Cardinal(State) shl Index);
 end;
 
 procedure SetBit(var Variable:Word;Index:Byte;State:Boolean); overload;
 begin
-  Variable := (Variable and ((1 shl Index) xor Word($ffff))) or (Word(State) shl Index);
+  Variable := (Variable and ((1 shl Index) xor High(Word))) or (Word(State) shl Index);
 end;
 
 function AddLeadingZeroes(const aNumber, Length : integer) : string;
@@ -432,4 +448,4 @@ finalization
 
 FreeLibraries;
 
-end.
+end.
