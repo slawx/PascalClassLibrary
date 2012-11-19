@@ -6,14 +6,14 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs,
-  ComCtrls, ExtCtrls, Menus, ActnList, StdCtrls, SpecializedList,
+  ComCtrls, ExtCtrls, Menus, ActnList, StdCtrls, SpecializedList, DateUtils,
   UListViewSort, UModularSystem;
 
 type
   TModuleListOption = (mloShowVersion, mloShowAuthor, mloShowFileName,
     mloShowIdentification, mloShowLicense, mloShowEnable, mloShowRunning,
     mloShowDependencies, mloShowInstalled, mloShowInfoBar, mloShowDescription,
-    mloAllowInstall, mloAllowEnable, mloAllowRegister, mloAllowStart);
+    mloShowStartUpTime, mloAllowInstall, mloAllowEnable, mloAllowRegister, mloAllowStart);
   TModuleListOptions = set of TModuleListOption;
 
   { TFormModuleList }
@@ -91,10 +91,10 @@ implementation
 resourcestring
   SYes = 'Yes';
   SNo = 'No';
-  SAdditionalModulesInstall = 'In addition to "%0:s" module also dependent modules will be installed: %1:s';
-  SAdditionalModulesUninstall = 'In addition to "%0:s" module alse dependent modules will be uninstalled: %1:s';
-  SAdditionalModulesStart = 'In addition to "%0:s" module also dependent modules will be started: %1:s';
-  SAdditionalModulesStop = 'In addition to "%0:s" module also dependent modules will be stopped: %1:s';
+  SAdditionalModulesInstall = 'In addition to "%0:s" module also dependent modules will be installed: "%1:s"';
+  SAdditionalModulesUninstall = 'In addition to "%0:s" module alse dependent modules will be uninstalled: "%1:s"';
+  SAdditionalModulesStart = 'In addition to "%0:s" module also dependent modules will be started: "%1:s"';
+  SAdditionalModulesStop = 'In addition to "%0:s" module also dependent modules will be stopped: "%1:s"';
   SIdentification = 'Identification';
   SName = 'Name';
   SVersion = 'Version';
@@ -132,6 +132,7 @@ begin
     Item.SubItems.Add(Dependencies.Implode(',', StrToStr));
     if FileName <> '' then Item.SubItems.Add(FileName)
       else Item.SubItems.Add(' ');
+    Item.SubItems.Add(FloatToStr(Trunc(StartUpTime / OneMillisecond)));
   end;
 end;
 
@@ -198,6 +199,7 @@ begin
   if not Running then
   try
     Modules := TListModule.Create;
+    Modules.OwnsObjects := False;
     EnumDependenciesCascade(Modules, [mcNotRunning]);
     if Modules.Count > 0 then begin
       if MessageDlg(Format(SAdditionalModulesStart, [
@@ -222,14 +224,15 @@ begin
   if Running then
   try
     Modules := TListModule.Create;
-    TModule(ListViewModules.Selected.Data).EnumSuperiorDependenciesCascade(Modules, [mcRunning]);
+    Modules.OwnsObjects := False;
+    EnumSuperiorDependenciesCascade(Modules, [mcRunning]);
     if Modules.Count > 0 then begin
       if MessageDlg(Format(SAdditionalModulesStop, [
-      TModule(ListViewModules.Selected.Data).Identification,
+      Identification,
       Modules.Implode(',', ModuleToStr)]),
       mtConfirmation, [mbYes, mbNo], 0) = mrYes then
-        TModule(ListViewModules.Selected.Data).Stop;
-    end else TModule(ListViewModules.Selected.Data).Stop;
+        Stop;
+    end else Stop;
   finally
     FreeAndNil(Modules);
   end;
@@ -247,14 +250,15 @@ begin
   if Installed then
   try
     Modules := TListModule.Create;
-    TModule(ListViewModules.Selected.Data).EnumSuperiorDependenciesCascade(Modules, [mcInstalled]);
+    Modules.OwnsObjects := False;
+    EnumSuperiorDependenciesCascade(Modules, [mcInstalled]);
     if Modules.Count > 0 then begin
       if MessageDlg(Format(SAdditionalModulesUninstall, [
-      TModule(ListViewModules.Selected.Data).Identification,
+      Identification,
       Modules.Implode(',', ModuleToStr)]),
       mtConfirmation, [mbYes, mbNo], 0) = mrYes then
-        TModule(ListViewModules.Selected.Data).Uninstall;
-    end else TModule(ListViewModules.Selected.Data).Uninstall;
+        Uninstall;
+    end else Uninstall;
   finally
     Modules.Free;
   end;
@@ -279,14 +283,15 @@ begin
   if not Installed then
   try
     Modules := TListModule.Create;
-    TModule(ListViewModules.Selected.Data).EnumDependenciesCascade(Modules, [mcNotInstalled]);
+    Modules.OwnsObjects := False;
+    EnumDependenciesCascade(Modules, [mcNotInstalled]);
     if Modules.Count > 0 then begin
       if MessageDlg(Format(SAdditionalModulesInstall, [
-      TModule(ListViewModules.Selected.Data).Identification,
+      Identification,
       Modules.Implode(',', ModuleToStr)]),
       mtConfirmation, [mbYes, mbNo], 0) = mrYes then
-        TModule(ListViewModules.Selected.Data).Install;
-    end else TModule(ListViewModules.Selected.Data).Install;
+        Install;
+    end else Install;
   finally
     Modules.Free;
   end;
@@ -304,16 +309,17 @@ begin
   if not Enabled then
   try
     Modules := TListModule.Create;
+    Modules.OwnsObjects := False;
     EnumDependenciesCascade(Modules, [mcNotRunning]);
     if Modules.Count > 0 then begin
       if MessageDlg(Format(SAdditionalModulesStart, [
       Identification, Modules.Implode(',', ModuleToStr)]),
       mtConfirmation, [mbYes, mbNo], 0) = mrYes then begin
-        Enabled := True;
+        Enable;
         Start;
       end;
     end else begin
-      Enabled := True;
+      Enable;
       Start;
     end;
   finally
@@ -333,18 +339,19 @@ begin
   if Enabled then
   try
     Modules := TListModule.Create;
-    TModule(ListViewModules.Selected.Data).EnumSuperiorDependenciesCascade(Modules, [mcInstalled]);
+    Modules.OwnsObjects := False;
+    EnumSuperiorDependenciesCascade(Modules, [mcInstalled]);
     if Modules.Count > 0 then begin
       if MessageDlg(Format(SAdditionalModulesUninstall, [
-      TModule(ListViewModules.Selected.Data).Identification,
+      Identification,
       Modules.Implode(',', ModuleToStr)]),
       mtConfirmation, [mbYes, mbNo], 0) = mrYes then begin
-        TModule(ListViewModules.Selected.Data).Stop;
-        TModule(ListViewModules.Selected.Data).Enabled := False;
+        Stop;
+        Disable;
       end;
     end else begin
       TModule(ListViewModules.Selected.Data).Stop;
-      TModule(ListViewModules.Selected.Data).Enabled := False;
+      TModule(ListViewModules.Selected.Data).Disable;
     end;
   finally
     Modules.Free;
@@ -392,8 +399,12 @@ begin
         Item2).License);
       7: Result := CompareString(TModule(Item1).Version, TModule(
         Item2).Version);
-      8: Result := CompareString(TModule(Item1).Dependencies.Implode(',', StrToStr), TModule(
-        Item2).Dependencies.Implode(',', StrToStr));
+      8: Result := CompareString(TModule(Item1).Dependencies.Implode(',', StrToStr),
+        TModule(Item2).Dependencies.Implode(',', StrToStr));
+      9: Result := CompareString(TModule(Item1).FileName,
+        TModule(Item2).FileName);
+      10: Result := CompareTime(TModule(Item1).StartUpTime,
+        TModule(Item2).StartUpTime);
     end;
     if ListViewSort.Order = soDown then Result := -Result;
   end else Result := 0;
@@ -482,6 +493,7 @@ begin
   ListViewModules.Column[7].Visible := (mloShowVersion in FOptions);
   ListViewModules.Column[8].Visible := (mloShowDependencies in FOptions);
   ListViewModules.Column[9].Visible := (mloShowFileName in FOptions);
+  ListViewModules.Column[10].Visible := (mloShowStartUpTime in FOptions);
   Memo1.Visible := (mloShowInfoBar in FOptions);
   Splitter1.Visible := (mloShowInfoBar in FOptions);
 end;

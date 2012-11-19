@@ -42,6 +42,7 @@ type
     FDescription: TListString;
     FFileName: string;
     FWebSite: string;
+    FStartUpTime: TDateTime;
     procedure SetEnabled(AValue: Boolean);
     procedure SetInstalled(AValue: Boolean);
     procedure SetManager(AValue: TModuleManager);
@@ -73,6 +74,7 @@ type
     property Running: Boolean read FRunning write SetRunning;
     property Installed: Boolean read FInstalled write SetInstalled;
     property Enabled: Boolean read FEnabled write SetEnabled;
+    property StartUpTime: TDateTime read FStartUpTime;
   published
     property Identification: string read FIdentification write FIdentification; // Unique system name
     property Manager: TModuleManager read FManager write SetManager;
@@ -109,7 +111,7 @@ type
     FUpdateCount: Integer;
     FOptions: TModuleManagerOptions;
     procedure SetAPI(AValue: TAPI);
-    procedure DoUpdate;
+    procedure DoUpdate(Sender: TObject);
   public
     Modules: TListModule; // TObjectList<TModule>
     function ModuleRunning(Name: string): Boolean;
@@ -121,9 +123,6 @@ type
     procedure UnregisterModule(Module: TModule);
     procedure LoadFromRegistry(Context: TRegistryContext);
     procedure SaveToRegistry(Context: TRegistryContext);
-    procedure BeginUpdate;
-    procedure EndUpdate;
-    procedure Update;
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     property API: TAPI read FAPI write SetAPI;
@@ -153,6 +152,8 @@ var
   I: Integer;
   A: Integer;
 begin
+  try
+    BeginUpdate;
   for I := 0 to Count - 1 do
   with TModule(Items[I]) do
     if (mcAll in Conditions) or
@@ -168,9 +169,12 @@ begin
       if Actions[A] = maInstall then Install;
       if Actions[A] = maUninstall then Uninstall;
       if Actions[A] = maUpgrade then Upgrade;
-      if Actions[A] = maEnable then Enabled := True;
-      if Actions[A] = maDisable then Enabled := False;
+      if Actions[A] = maEnable then Enable;
+      if Actions[A] = maDisable then Disable;
     end;
+  finally
+    EndUpdate;
+  end;
 end;
 
 function TListModule.FindByName(Name: string): TModule;
@@ -195,7 +199,7 @@ begin
     TModule(Modules[I]).API := FAPI;
 end;
 
-procedure TModuleManager.DoUpdate;
+procedure TModuleManager.DoUpdate(Sender: TObject);
 begin
   if Assigned(FOnUpdate) then FOnUpdate(Self);
 end;
@@ -262,13 +266,13 @@ begin
   Modules.Add(Module);
   Module.FManager := Self;
   Module.API := API;
-  Update;
+  Modules.Update;
 end;
 
 procedure TModuleManager.UnregisterModule(Module: TModule);
 begin
   Modules.Remove(Module);
-  Update;
+  Modules.Update;
 end;
 
 constructor TModuleManager.Create(AOwner: TComponent);
@@ -276,6 +280,7 @@ begin
   inherited;
   Modules := TListModule.Create;
   Modules.OwnsObjects := False;
+  Modules.OnUpdate := DoUpdate;
 end;
 
 destructor TModuleManager.Destroy;
@@ -295,7 +300,8 @@ begin
     for I := 0 to Modules.Count - 1 do
     with TModule(Modules[I]) do begin
       OpenKey(Context.Key + '\' + Identification, True);
-      Enabled := ReadBoolWithDefault('Enable', Enabled);
+      Installed := ReadBoolWithDefault('Installed', Installed);
+      Enabled := ReadBoolWithDefault('Enabled', Enabled);
     end;
   finally
     Free;
@@ -312,27 +318,12 @@ begin
     for I := 0 to Modules.Count - 1 do
     with TModule(Modules[I]) do begin
       OpenKey(Context.Key + '\' + Identification, True);
-      WriteBool('Enable', Enabled);
+      WriteBool('Enabled', Enabled);
+      WriteBool('Installed', Installed);
     end;
   finally
     Free;
   end;
-end;
-
-procedure TModuleManager.BeginUpdate;
-begin
-  Inc(FUpdateCount);
-end;
-
-procedure TModuleManager.EndUpdate;
-begin
-  if FUpdateCount > 0 then Dec(FUpdateCount);
-  if FUpdateCount = 0 then DoUpdate;
-end;
-
-procedure TModuleManager.Update;
-begin
-  if FUpdateCount = 0 then DoUpdate;
 end;
 
 { TModule }
@@ -377,7 +368,7 @@ begin
   try
     List := TListModule.Create;
     List.OwnsObjects := False;
-    EnumSuperiorDependenciesCascade(List);
+    EnumDependenciesCascade(List, [mcNotEnabled]);
     List.Perform([maEnable], [mcNotEnabled]);
   finally
     List.Free;
@@ -396,12 +387,12 @@ begin
   try
     List := TListModule.Create;
     List.OwnsObjects := False;
-    EnumSuperiorDependenciesCascade(List);
+    EnumSuperiorDependenciesCascade(List, [mcEnabled]);
     List.Perform([maDisable], [mcEnabled]);
   finally
     List.Free;
   end;
-  Manager.Update;
+  Manager.Modules.Update;
 end;
 
 procedure TModule.SetInstalled(AValue: Boolean);
@@ -421,26 +412,29 @@ end;
 procedure TModule.SetEnabled(AValue: Boolean);
 begin
   if FEnabled = AValue then Exit;
-  if FEnabled then Enable else Disable;
+  if AValue then Enable else Disable;
 end;
 
 procedure TModule.Start;
 var
   List: TListModule;
+  StartTime: TDateTime;
 begin
   if not Enabled or Running then Exit;
   if not Installed then Install;  // Auto install not installed modules
   try
     List := TListModule.Create;
     List.OwnsObjects := False;
-    EnumDependenciesCascade(List);
+    EnumDependenciesCascade(List, [mcNotRunning]);
     List.Perform([maStart], [mcNotRunning]);
   finally
     List.Free;
   end;
+  StartTime := Now;
   DoStart;
+  FStartUpTime := Now - StartTime;
   FRunning := True;
-  Manager.Update;
+  Manager.Modules.Update;
 end;
 
 procedure TModule.Stop;
@@ -452,13 +446,13 @@ begin
   try
     List := TListModule.Create;
     List.OwnsObjects := False;
-    EnumSuperiorDependenciesCascade(List);
+    EnumSuperiorDependenciesCascade(List, [mcRunning]);
     List.Perform([maStop], [mcRunning]);
   finally
     List.Free;
   end;
   DoStop;
-  Manager.Update;
+  Manager.Modules.Update;
 end;
 
 procedure TModule.Restart;
@@ -475,15 +469,15 @@ begin
   try
     List := TListModule.Create;
     List.OwnsObjects := False;
-    EnumDependenciesCascade(List);
+    EnumDependenciesCascade(List, [mcNotInstalled]);
     List.Perform([maInstall], [mcNotInstalled]);
   finally
     List.Free;
   end;
   FInstalled := True;
   DoInstall;
-  Enable; // Auto enable installed module
-  Manager.Update;
+  //Enable; // Auto enable installed module
+  Manager.Modules.Update;
 end;
 
 procedure TModule.Uninstall;
@@ -495,14 +489,14 @@ begin
   try
     List := TListModule.Create;
     List.OwnsObjects := False;
-    EnumSuperiorDependenciesCascade(List);
+    EnumSuperiorDependenciesCascade(List, [mcInstalled]);
     List.Perform([maUninstall], [mcInstalled]);
   finally
     List.Free;
   end;
   FInstalled := False;
   DoUninstall;
-  Manager.Update;
+  Manager.Modules.Update;
 end;
 
 procedure TModule.Reinstall;
@@ -520,7 +514,7 @@ begin
   finally
     Start;
   end else DoUpgrade;
-  Manager.Update;
+  Manager.Modules.Update;
 end;
 
 procedure TModule.EnumDependenciesCascade(ModuleList: TListModule;
@@ -540,7 +534,7 @@ end;
 procedure TModule.SetInstalledState(Value: Boolean);
 begin
   FInstalled := Value;
-  Manager.Update;
+  Manager.Modules.Update;
 end;
 
 constructor TModule.Create(Owner: TComponent);

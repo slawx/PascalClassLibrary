@@ -98,6 +98,10 @@ object FormModuleList: TFormModuleList
       item
         Caption = 'File name'
         Width = 100
+      end    
+      item
+        Caption = 'Start up time'
+        Width = 70
       end>
     MultiSelect = True
     OwnerData = True

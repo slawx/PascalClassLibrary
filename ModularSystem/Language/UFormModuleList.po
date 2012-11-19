@@ -2,19 +2,19 @@ msgid ""
 msgstr "Content-Type: text/plain; charset=UTF-8"
 
 #: uformmodulelist.sadditionalmodulesinstall
-msgid "In addition to \"%0:s\" module also dependent modules will be installed: %1:s"
+msgid "In addition to \"%0:s\" module also dependent modules will be installed: \"%1:s\""
 msgstr ""
 
 #: uformmodulelist.sadditionalmodulesstart
-msgid "In addition to \"%0:s\" module also dependent modules will be started: %1:s"
+msgid "In addition to \"%0:s\" module also dependent modules will be started: \"%1:s\""
 msgstr ""
 
 #: uformmodulelist.sadditionalmodulesstop
-msgid "In addition to \"%0:s\" module also dependent modules will be stopped: %1:s"
+msgid "In addition to \"%0:s\" module also dependent modules will be stopped: \"%1:s\""
 msgstr ""
 
 #: uformmodulelist.sadditionalmodulesuninstall
-msgid "In addition to \"%0:s\" module alse dependent modules will be uninstalled: %1:s"
+msgid "In addition to \"%0:s\" module alse dependent modules will be uninstalled: \"%1:s\""
 msgstr ""
 
 #: uformmodulelist.sauthor
