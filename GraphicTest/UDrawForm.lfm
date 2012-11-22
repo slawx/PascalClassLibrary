@@ -1,0 +1,10 @@
+object DrawForm: TDrawForm
+  Left = 758
+  Height = 244
+  Top = 208
+  Width = 327
+  Caption = 'Draw frame'
+  FormStyle = fsStayOnTop
+  OnCreate = FormCreate
+  LCLVersion = '1.1'
+end

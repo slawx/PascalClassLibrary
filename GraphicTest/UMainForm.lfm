@@ -1,58 +1,21 @@
 object MainForm: TMainForm
   Left = 187
-  Height = 421
-  Top = 68
-  Width = 735
+  Height = 440
+  Top = 107
+  Width = 549
   Caption = 'Graphic test'
-  ClientHeight = 421
-  ClientWidth = 735
+  ClientHeight = 440
+  ClientWidth = 549
   OnClose = FormClose
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
-  LCLVersion = '0.9.31'
-  object PageControl1: TPageControl
-    Left = 384
-    Height = 401
-    Top = 16
-    Width = 348
-    ActivePage = TabSheet1
-    Anchors = [akTop, akRight, akBottom]
-    TabIndex = 0
-    TabOrder = 0
-    object TabSheet1: TTabSheet
-      Caption = 'TImage'
-      ClientHeight = 368
-      ClientWidth = 342
-      object Image1: TImage
-        Left = 6
-        Height = 300
-        Top = 7
-        Width = 332
-        Anchors = [akTop, akLeft, akRight, akBottom]
-      end
-    end
-    object TabSheet2: TTabSheet
-      Caption = 'TPaintBox'
-      ClientHeight = 368
-      ClientWidth = 342
-      object PaintBox1: TPaintBox
-        Left = 6
-        Height = 279
-        Top = 7
-        Width = 350
-        Anchors = [akTop, akLeft, akRight, akBottom]
-      end
-    end
-    object TabSheet3: TTabSheet
-      Caption = 'OpenGL'
-    end
-  end
+  LCLVersion = '1.1'
   object ListViewMethods: TListView
     Left = 8
-    Height = 345
+    Height = 364
     Top = 8
-    Width = 368
+    Width = 537
     Anchors = [akTop, akLeft, akRight, akBottom]
     Columns = <    
       item
@@ -78,7 +41,7 @@ object MainForm: TMainForm
     OwnerData = True
     ReadOnly = True
     RowSelect = True
-    TabOrder = 1
+    TabOrder = 0
     ViewStyle = vsReport
     OnData = ListViewMethodsData
     OnSelectItem = ListViewMethodsSelectItem
@@ -86,59 +49,59 @@ object MainForm: TMainForm
   object ButtonSingleTest: TButton
     Left = 8
     Height = 25
-    Top = 360
+    Top = 379
     Width = 115
     Anchors = [akLeft, akBottom]
     Caption = 'Test one method'
     OnClick = ButtonSingleTestClick
-    TabOrder = 2
+    TabOrder = 1
   end
   object ButtonBenchmark: TButton
     Left = 136
     Height = 25
-    Top = 360
+    Top = 379
     Width = 112
     Anchors = [akLeft, akBottom]
     Caption = 'Test all methods'
     OnClick = ButtonBenchmarkClick
-    TabOrder = 3
+    TabOrder = 2
   end
   object FloatSpinEdit1: TFloatSpinEdit
     Left = 88
-    Height = 25
-    Top = 388
+    Height = 21
+    Top = 411
     Width = 58
     Anchors = [akLeft, akBottom]
     Increment = 1
     MaxValue = 100
     MinValue = 0
-    TabOrder = 4
+    TabOrder = 3
     Value = 1
   end
   object ButtonStop: TButton
     Left = 256
     Height = 25
-    Top = 360
+    Top = 379
     Width = 75
     Anchors = [akLeft, akBottom]
     Caption = 'Stop'
     OnClick = ButtonStopClick
-    TabOrder = 5
+    TabOrder = 4
   end
   object Label1: TLabel
     Left = 8
-    Height = 16
-    Top = 393
-    Width = 92
+    Height = 13
+    Top = 415
+    Width = 69
     Anchors = [akLeft, akBottom]
     Caption = 'Step duration:'
     ParentColor = False
   end
   object Label2: TLabel
     Left = 152
-    Height = 16
-    Top = 393
-    Width = 8
+    Height = 13
+    Top = 415
+    Width = 5
     Anchors = [akLeft, akBottom]
     Caption = 's'
     ParentColor = False

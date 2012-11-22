@@ -7,8 +7,7 @@ interface
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, ComCtrls,
   ExtCtrls, StdCtrls, DateUtils, UPlatform, LCLType, IntfGraphics, fpImage,
-  Math, GraphType, Contnrs, LclIntf, Spin, UFastBitmap, UDrawMethod
-  {$IFDEF opengl}, GL, OpenGLContext{$ENDIF};
+  Math, GraphType, Contnrs, LclIntf, Spin, UFastBitmap, UDrawMethod;
 
 const
   SceneFrameCount = 100;
@@ -23,45 +22,30 @@ type
     ButtonBenchmark: TButton;
     ButtonSingleTest: TButton;
     FloatSpinEdit1: TFloatSpinEdit;
-    Image1: TImage;
     Label1: TLabel;
     Label2: TLabel;
     ListViewMethods: TListView;
-    PageControl1: TPageControl;
-    PaintBox1: TPaintBox;
-    TabSheet1: TTabSheet;
-    TabSheet2: TTabSheet;
-    TabSheet3: TTabSheet;
     Timer1: TTimer;
     procedure ButtonBenchmarkClick(Sender: TObject);
     procedure ButtonSingleTestClick(Sender: TObject);
     procedure ButtonStopClick(Sender: TObject);
-    procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure ListViewMethodsData(Sender: TObject; Item: TListItem);
     procedure ListViewMethodsSelectItem(Sender: TObject; Item: TListItem;
       Selected: Boolean);
     procedure Timer1Timer(Sender: TObject);
   private
-    {$IFDEF opengl}
-    OpenGLControl1: TOpenGLControl;
-    TextureId: GLuint;
-    TextureData: Pointer;
-    {$ENDIF}
     MethodIndex: Integer;
     SingleTestActive: Boolean;
     AllTestActive: Boolean;
-    procedure OpenGLControl1Resize(Sender: TObject);
-    {$IFDEF opengl}
-    procedure InitGL;
-    {$ENDIF}
     procedure UpdateMethodList;
     procedure UpdateInterface;
   public
+    FrameSize: TPoint;
     DrawMethods: TObjectList; // TObjectList<TDrawMethod>
-    Bitmap: TBitmap;
     Scenes: TObjectList; // TObjectList<TFastBitmap>
     SceneIndex: Integer;
   end;
@@ -73,6 +57,10 @@ implementation
 
 {$R *.lfm}
 
+uses
+  UDrawForm;
+
+
 { TMainForm }
 
 procedure TMainForm.FormCreate(Sender: TObject);
@@ -81,44 +69,19 @@ var
   NewDrawMethod: TDrawMethod;
   I: Integer;
 begin
-  TabSheet1.DoubleBuffered := True;
+  FrameSize := Point(320, 240);
   Randomize;
   Scenes := TObjectList.Create;
   for I := 0 to SceneFrameCount - 1 do begin
     NewScene := TFastBitmap.Create;
-    NewScene.Size := Point(320, 240);
+    NewScene.Size := FrameSize;
     NewScene.RandomImage;
     Scenes.Add(NewScene);
   end;
-  Bitmap := TBitmap.Create;
-  Bitmap.PixelFormat := pf24bit;
-  Image1.Picture.Bitmap.SetSize(TFastBitmap(Scenes[0]).Size.X, TFastBitmap(Scenes[0]).Size.Y);
-  Image1.Picture.Bitmap.PixelFormat := pf24bit;
-  Bitmap.SetSize(TFastBitmap(Scenes[0]).Size.X, TFastBitmap(Scenes[0]).Size.Y);
-
-  {$IFDEF opengl}
-  OpenGLControl1 := TOpenGLControl.Create(Self);
-  with OpenGLControl1 do begin
-    Name := 'OpenGLControl1';
-    Parent := TabSheet3;
-    SetBounds(0, 0, 320, 240);
-    InitGL;
-    //OnPaint := OpenGLControl1Paint;
-    OnResize := OpenGLControl1Resize;
-  end;
-  GetMem(TextureData, OpenGLControl1.Width * OpenGLControl1.Height * SizeOf(Integer));
-  {$ENDIF}
 
   DrawMethods := TObjectList.Create;
   for I := 0 to High(DrawMethodClasses) do begin
     NewDrawMethod := DrawMethodClasses[I].Create;
-    NewDrawMethod.Bitmap := Image1.Picture.Bitmap;
-    NewDrawMethod.PaintBox := PaintBox1;
-    {$IFDEF opengl}
-    NewDrawMethod.OpenGLBitmap := TextureData;
-    NewDrawMethod.OpenGLControl := OpenGLControl1;
-    {$ENDIF}
-    NewDrawMethod.Init;
     DrawMethods.Add(NewDrawMethod);
   end;
 end;
@@ -135,7 +98,7 @@ begin
     Timer1.Enabled := True;
     if MethodIndex >= 0 then
     with TDrawMethod(DrawMethods[MethodIndex]) do begin
-      PageControl1.TabIndex := Integer(PaintObject);
+      Init(DrawForm, FrameSize);
       Application.ProcessMessages;
       repeat
         StepStartTime := NowPrecise;
@@ -144,6 +107,7 @@ begin
         Application.ProcessMessages;
         StepDuration := NowPrecise - StepStartTime;
       until not SingleTestActive;
+      Done;
     end;
   finally
     Timer1.Enabled := False;
@@ -155,7 +119,6 @@ end;
 procedure TMainForm.ButtonBenchmarkClick(Sender: TObject);
 var
   I: Integer;
-  C: Integer;
   StartTime: TDateTime;
   StepStartTime: TDateTime;
 begin
@@ -166,8 +129,8 @@ begin
     with ListViewMethods, Items do
     for I := 0 to DrawMethods.Count - 1 do
     with TDrawMethod(DrawMethods[I]) do begin
+      Init(DrawForm, FrameSize);
       MethodIndex := I;
-      PageControl1.TabIndex := Integer(PaintObject);
       StartTime := NowPrecise;
       repeat
         StepStartTime := NowPrecise;
@@ -176,6 +139,7 @@ begin
         Application.ProcessMessages;
         StepDuration := NowPrecise - StepStartTime;
       until ((NowPrecise - StartTime) > OneSecond * FloatSpinEdit1.Value) or not AllTestActive;
+      Done;
     end;
   finally
     Timer1.Enabled := False;
@@ -198,16 +162,15 @@ end;
 procedure TMainForm.FormDestroy(Sender: TObject);
 begin
   ListViewMethods.Clear;
-  {$IFDEF opengl}FreeMem(TextureData, OpenGLControl1.Width * OpenGLControl1.Height);{$ENDIF}
   FreeAndNil(DrawMethods);
   FreeAndNil(Scenes);
-  FreeAndNil(Bitmap);
 end;
 
 procedure TMainForm.FormShow(Sender: TObject);
 begin
   UpdateMethodList;
   UpdateInterface;
+  DrawForm.Show;
 end;
 
 procedure TMainForm.ListViewMethodsData(Sender: TObject; Item: TListItem);
@@ -236,35 +199,6 @@ procedure TMainForm.Timer1Timer(Sender: TObject);
 begin
   UpdateMethodList;
 end;
-
-procedure TMainForm.OpenGLControl1Resize(Sender: TObject);
-begin
-  {$IFDEF opengl}
-  glViewport(0, 0, OpenGLControl1.Width, OpenGLControl1.Height);
-  {$ENDIF}
-end;
-
-{$IFDEF opengl}
-procedure TMainForm.InitGL;
-begin
-  glMatrixMode(GL_PROJECTION);
-  glLoadIdentity;
-  glOrtho(0, OpenGLControl1.Width, OpenGLControl1.Height, 0, 0, 1);
-//  glOrtho(0, 1, 1, 0, 0, 1);
-  glMatrixMode(GL_MODELVIEW);
-  glLoadIdentity();
-  glDisable(GL_DEPTH_TEST);
-  glViewport(0, 0, OpenGLControl1.Width, OpenGLControl1.Height);
-  //gluPerspective( 45.0, (GLfloat)(OpenGLControl1.Width)/(GLfloat)(OpenGLControl1.Height), 0.1f, 500.0 );
-
-    //glFrustum (-1.0, 1.0, -1.0, 1.0, 1.5, 20.0);
-    //glTranslatef (0.0, 0.0,-3.0);
-  //  glClearColor(0.0, 0.0, 0.0, 1.0);
-
-  glGenTextures(1, @TextureId);
-  glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-end;
-{$ENDIF}
 
 procedure TMainForm.UpdateMethodList;
 begin

@@ -5,7 +5,7 @@ unit UDrawMethod;
 interface
 
 uses
-  Classes, SysUtils, ExtCtrls, UPlatform, UFastBitmap, Graphics,
+  Classes, SysUtils, ExtCtrls, UPlatform, UFastBitmap, Graphics, Controls,
   LCLType, IntfGraphics, fpImage, GraphType, BGRABitmap, BGRABitmapTypes,
   LclIntf{$IFDEF opengl}, GL, GLExt, OpenGLContext{$ENDIF};
 
@@ -17,32 +17,41 @@ type
 
   TDrawMethod = class
   private
-    FBitmap: TBitmap;
+    FControl: TControl;
     TempBitmap: TBitmap;
-    FPaintBox: TPaintBox;
-    procedure SetBitmap(const AValue: TBitmap); virtual;
-    procedure SetPaintBox(const AValue: TPaintBox);
   public
     Caption: string;
     Terminated: Boolean;
     FrameDuration: TDateTime;
     StepDuration: TDateTime;
     PaintObject: TPaintObject;
-    {$IFDEF opengl}
-    OpenGLBitmap: Pointer;
-    OpenGLControl: TOpenGLControl;
-    TextureId: GLuint;
-    {$ENDIF}
-    procedure Init; virtual;
+    procedure Init(Parent: TWinControl; Size: TPoint); virtual;
+    procedure Done; virtual;
     constructor Create; virtual;
     destructor Destroy; override;
     procedure DrawFrame(FastBitmap: TFastBitmap); virtual;
     procedure DrawFrameTiming(FastBitmap: TFastBitmap);
-    property Bitmap: TBitmap read FBitmap write SetBitmap;
-    property PaintBox: TPaintBox read FPaintBox write SetPaintBox;
+    property Control: TControl read FControl;
   end;
 
   TDrawMethodClass = class of TDrawMethod;
+
+  { TDrawMethodImage }
+
+  TDrawMethodImage = class(TDrawMethod)
+    Image: TImage;
+    procedure Init(Parent: TWinControl; Size: TPoint); override;
+    procedure Done; override;
+  end;
+
+  { TDrawMethodPaintBox }
+
+  TDrawMethodPaintBox = class(TDrawMethod)
+    PaintBox: TPaintBox;
+    procedure Paint(Sender: TObject); virtual;
+    procedure Init(Parent: TWinControl; Size: TPoint); override;
+    procedure Done; override;
+  end;
 
   { TDummyMethod }
 
@@ -53,21 +62,21 @@ type
 
   { TCanvasPixels }
 
-  TCanvasPixels = class(TDrawMethod)
+  TCanvasPixels = class(TDrawMethodImage)
     constructor Create; override;
     procedure DrawFrame(FastBitmap: TFastBitmap); override;
   end;
 
   { TCanvasPixelsUpdateLock }
 
-  TCanvasPixelsUpdateLock = class(TDrawMethod)
+  TCanvasPixelsUpdateLock = class(TDrawMethodImage)
     constructor Create; override;
     procedure DrawFrame(FastBitmap: TFastBitmap); override;
   end;
 
   { TLazIntfImageColorsCopy }
 
-  TLazIntfImageColorsCopy = class(TDrawMethod)
+  TLazIntfImageColorsCopy = class(TDrawMethodImage)
     TempIntfImage: TLazIntfImage;
     constructor Create; override;
     destructor Destroy; override;
@@ -76,9 +85,9 @@ type
 
   { TLazIntfImageColorsNoCopy }
 
-  TLazIntfImageColorsNoCopy = class(TDrawMethod)
+  TLazIntfImageColorsNoCopy = class(TDrawMethodImage)
     TempIntfImage: TLazIntfImage;
-    procedure SetBitmap(const AValue: TBitmap); override;
+    procedure Init(Parent: TWinControl; Size: TPoint); override;
     constructor Create; override;
     destructor Destroy; override;
     procedure DrawFrame(FastBitmap: TFastBitmap); override;
@@ -86,53 +95,64 @@ type
 
   { TBitmapRawImageData }
 
-  TBitmapRawImageData = class(TDrawMethod)
+  TBitmapRawImageData = class(TDrawMethodImage)
     constructor Create; override;
     procedure DrawFrame(FastBitmap: TFastBitmap); override;
   end;
 
   { TBitmapRawImageDataPaintBox }
 
-  TBitmapRawImageDataPaintBox = class(TDrawMethod)
+  TBitmapRawImageDataPaintBox = class(TDrawMethodPaintBox)
     constructor Create; override;
+    procedure Paint(Sender: TObject); override;
     procedure DrawFrame(FastBitmap: TFastBitmap); override;
   end;
 
   { TBitmapRawImageDataMove }
 
-  TBitmapRawImageDataMove = class(TDrawMethod)
+  TBitmapRawImageDataMove = class(TDrawMethodImage)
     constructor Create; override;
     procedure DrawFrame(FastBitmap: TFastBitmap); override;
   end;
 
   { TBGRABitmapPaintBox }
 
-  TBGRABitmapPaintBox = class(TDrawMethod)
+  TBGRABitmapPaintBox = class(TDrawMethodPaintBox)
     BGRABitmap: TBGRABitmap;
-    procedure SetBitmap(const AValue: TBitmap); override;
+    procedure Paint(Sender: TObject); override;
+    procedure Init(Parent: TWinControl; Size: TPoint); override;
     constructor Create; override;
     destructor Destroy; override;
     procedure DrawFrame(FastBitmap: TFastBitmap); override;
   end;
 
   {$IFDEF opengl}
+  { TDrawMethodOpenGL }
+
+  TDrawMethodOpenGL = class(TDrawMethod)
+    OpenGLControl: TOpenGLControl;
+    TextureId: GLuint;
+    OpenGLBitmap: Pointer;
+    procedure InitGL;
+    procedure OpenGLControlResize(Sender: TObject);
+    procedure Init(AParent: TWinControl; Size: TPoint); override;
+    procedure Done; override;
+  end;
+
   { TOpenGLMethod }
 
-  TOpenGLMethod = class(TDrawMethod)
-    procedure SetBitmap(const AValue: TBitmap); override;
+  TOpenGLMethod = class(TDrawMethodOpenGL)
     constructor Create; override;
-    procedure Init; override;
     destructor Destroy; override;
     procedure DrawFrame(FastBitmap: TFastBitmap); override;
   end;
 
   { TOpenGLPBOMethod }
 
-  TOpenGLPBOMethod = class(TDrawMethod)
+  TOpenGLPBOMethod = class(TDrawMethodOpenGL)
     pboIds: array[0..1] of GLuint;
     Index, NextIndex: Integer;
-    procedure SetBitmap(const AValue: TBitmap); override;
-    procedure Init; override;
+    procedure Init(AParent: TWinControl; Size: TPoint); override;
     constructor Create; override;
     destructor Destroy; override;
     procedure DrawFrame(FastBitmap: TFastBitmap); override;
@@ -148,6 +168,49 @@ const
 
 implementation
 
+
+{ TDrawMethodPaintBox }
+
+procedure TDrawMethodPaintBox.Paint(Sender: TObject);
+begin
+
+end;
+
+procedure TDrawMethodPaintBox.Init(Parent: TWinControl; Size: TPoint);
+begin
+  inherited Init(Parent, Size);
+  PaintBox := TPaintBox.Create(Parent);
+  PaintBox.Parent := Parent;
+  PaintBox.SetBounds(0, 0, Size.X, Size.Y);
+  PaintBox.OnPaint := Paint;
+  PaintBox.Show;
+end;
+
+procedure TDrawMethodPaintBox.Done;
+begin
+  FreeAndNil(PaintBox);
+  inherited Done;
+end;
+
+{ TDrawMethodImage }
+
+procedure TDrawMethodImage.Init(Parent: TWinControl; Size: TPoint);
+begin
+  inherited Init(Parent, Size);
+  Image := TImage.Create(Parent);
+  Image.Parent := Parent;
+  Image.SetBounds(0, 0, Size.X, Size.Y);
+  Image.Picture.Bitmap.SetSize(Size.X, Size.Y);
+  Image.Picture.Bitmap.PixelFormat := pf32bit;
+  Image.Show;
+end;
+
+procedure TDrawMethodImage.Done;
+begin
+  FreeAndNil(Image);
+  inherited Done;
+end;
+
 { TDummyMethod }
 
 constructor TDummyMethod.Create;
@@ -157,26 +220,7 @@ begin
 end;
 
 procedure TDummyMethod.DrawFrame(FastBitmap: TFastBitmap);
-var
-  Y, X: Integer;
-  PixelPtr: PInteger;
-  RowPtr: PInteger;
-  P: TPixelFormat;
-  RawImage: TRawImage;
-  BytePerPixel: Integer;
-  BytePerRow: Integer;
 begin
-  P := Bitmap.PixelFormat;
-    with FastBitmap do
-    try
-      //Bitmap.BeginUpdate(False);
-      RawImage := Bitmap.RawImage;
-      RowPtr := PInteger(RawImage.Data);
-      BytePerPixel := RawImage.Description.BitsPerPixel div 8;
-      BytePerRow := RawImage.Description.BytesPerLine;
-    finally
-      //Bitmap.EndUpdate(False);
-    end;
 end;
 
 { TBitmapRawImageDataMove }
@@ -197,35 +241,32 @@ var
   BytePerPixel: Integer;
   BytePerRow: Integer;
 begin
-  P := Bitmap.PixelFormat;
+  P := Image.Picture.Bitmap.PixelFormat;
     with FastBitmap do
     try
-      Bitmap.BeginUpdate(False);
-      RawImage := Bitmap.RawImage;
+      Image.Picture.Bitmap.BeginUpdate(False);
+      RawImage := Image.Picture.Bitmap.RawImage;
       RowPtr := PInteger(RawImage.Data);
       BytePerPixel := RawImage.Description.BitsPerPixel div 8;
       BytePerRow := RawImage.Description.BytesPerLine;
       Move(FastBitmap.PixelsData^, RowPtr^, Size.Y * BytePerRow);
     finally
-      Bitmap.EndUpdate(False);
+      Image.Picture.Bitmap.EndUpdate(False);
     end;
 end;
 
 {$IFDEF opengl}
 { TOpenGLPBOMethod }
 
-procedure TOpenGLPBOMethod.SetBitmap(const AValue: TBitmap);
-begin
-  inherited SetBitmap(AValue);
-end;
-
 //procedure glGenBuffersARB2 : procedure(n : GLsizei; buffers : PGLuint); extdecl;
 
-procedure TOpenGLPBOMethod.Init;
+procedure TOpenGLPBOMethod.Init(AParent: TWinControl; Size: TPoint);
 var
   DataSize: Integer;
   glExtensions: string;
 begin
+  inherited;
+
   OpenGLControl.MakeCurrent;
   DataSize := OpenGLControl.Width * OpenGLControl.Height * SizeOf(Integer);
 //  glGenBuffersARB(Length(pboIds), PGLuint(pboIds));
@@ -267,8 +308,8 @@ end;
 procedure TOpenGLPBOMethod.DrawFrame(FastBitmap: TFastBitmap);
 var
   X, Y: Integer;
-  P: PInteger;
-  R: PInteger;
+  P: PCardinal;
+  R: PCardinal;
   Ptr: ^GLubyte;
   TextureShift: TPoint;
   TextureShift2: TPoint;
@@ -316,7 +357,7 @@ begin
   ptr := glMapBufferARB(GL_PIXEL_UNPACK_BUFFER_ARB, GL_WRITE_ONLY_ARB);
   if Assigned(ptr) then begin
     // update data directly on the mapped buffer
-    P := PInteger(Ptr);
+    P := PCardinal(Ptr);
     with FastBitmap do
     for Y := 0 to Size.Y - 2 do begin
       R := P;
@@ -357,22 +398,11 @@ end;
 
 { TOpenGLMethod }
 
-procedure TOpenGLMethod.SetBitmap(const AValue: TBitmap);
-begin
-  inherited SetBitmap(AValue);
-end;
-
 constructor TOpenGLMethod.Create;
 begin
   inherited Create;
   Caption := 'OpenGL';
   PaintObject := poOpenGL;
-end;
-
-procedure TOpenGLMethod.Init;
-begin
-  inherited Init;
-  //OpenGLControl.MakeCurrent;
 end;
 
 destructor TOpenGLMethod.Destroy;
@@ -383,8 +413,8 @@ end;
 procedure TOpenGLMethod.DrawFrame(FastBitmap: TFastBitmap);
 var
   X, Y: Integer;
-  P: PInteger;
-  R: PInteger;
+  P: PCardinal;
+  R: PCardinal;
 const
   GL_CLAMP_TO_EDGE = $812F;
 begin
@@ -439,14 +469,69 @@ begin
   OpenGLControl.SwapBuffers;
 end;
 
+{ TDrawMethodOpenGL }
+
+procedure TDrawMethodOpenGL.Init(AParent: TWinControl; Size: TPoint);
+begin
+  inherited Init(aParent, Size);
+  OpenGLControl := TOpenGLControl.Create(AParent);
+  with OpenGLControl do begin
+    Name := 'OpenGLControl';
+    Parent := AParent;
+    SetBounds(0, 0, Size.X, Size.Y);
+    InitGL;
+    //OnPaint := OpenGLControl1Paint;
+    OnResize := OpenGLControlResize;
+  end;
+  GetMem(OpenGLBitmap, OpenGLControl.Width * OpenGLControl.Height * SizeOf(Integer));
+end;
+
+procedure TDrawMethodOpenGL.Done;
+begin
+  FreeMem(OpenGLBitmap, OpenGLControl.Width * OpenGLControl.Height);
+  FreeAndNil(OpenGLControl);
+  inherited;
+end;
+
+procedure TDrawMethodOpenGL.OpenGLControlResize(Sender: TObject);
+begin
+  glViewport(0, 0, OpenGLControl.Width, OpenGLControl.Height);
+end;
+
+procedure TDrawMethodOpenGL.InitGL;
+begin
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity;
+  glOrtho(0, OpenGLControl.Width, OpenGLControl.Height, 0, 0, 1);
+//  glOrtho(0, 1, 1, 0, 0, 1);
+  glMatrixMode(GL_MODELVIEW);
+  glLoadIdentity();
+  glDisable(GL_DEPTH_TEST);
+  glViewport(0, 0, OpenGLControl.Width, OpenGLControl.Height);
+  //gluPerspective( 45.0, (GLfloat)(OpenGLControl1.Width)/(GLfloat)(OpenGLControl1.Height), 0.1f, 500.0 );
+
+    //glFrustum (-1.0, 1.0, -1.0, 1.0, 1.5, 20.0);
+    //glTranslatef (0.0, 0.0,-3.0);
+  //  glClearColor(0.0, 0.0, 0.0, 1.0);
+
+  glGenTextures(1, @TextureId);
+  glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+end;
+
 {$ENDIF}
 
 { TBGRABitmapPaintBox }
 
-procedure TBGRABitmapPaintBox.SetBitmap(const AValue: TBitmap);
+procedure TBGRABitmapPaintBox.Paint(Sender: TObject);
 begin
-  inherited;
-  BGRABitmap.SetSize(Bitmap.Width, Bitmap.Height);
+  //BGRABitmap.Draw(Bitmap.Canvas, 0, 0, True);
+  BGRABitmap.Draw(PaintBox.Canvas, 0, 0, True);
+end;
+
+procedure TBGRABitmapPaintBox.Init(Parent: TWinControl; Size: TPoint);
+begin
+  inherited Init(Parent, Size);
+  BGRABitmap.SetSize(PaintBox.Width, PaintBox.Height);
 end;
 
 constructor TBGRABitmapPaintBox.Create;
@@ -482,8 +567,7 @@ begin
     end;
   end;
   BGRABitmap.InvalidateBitmap; // changed by direct access
-  //BGRABitmap.Draw(Bitmap.Canvas, 0, 0, True);
-  BGRABitmap.Draw(PaintBox.Canvas, 0, 0, True);
+  PaintBox.Repaint;
 end;
 
 { TBitmapRawImageDataPaintBox }
@@ -495,6 +579,18 @@ begin
   PaintObject := poPaintBox;
 end;
 
+procedure TBitmapRawImageDataPaintBox.Paint(Sender: TObject);
+var
+  hPaint, hBmp: HDC;
+begin
+  hBmp := TempBitmap.Canvas.Handle;
+  hPaint := PaintBox.Canvas.Handle;
+  PaintBox.Canvas.CopyRect(Rect(0, 0, PaintBox.Width, PaintBox.Height), TempBitmap.Canvas,
+    Rect(0, 0, TempBitmap.Width, TempBitmap.Height));
+ // PaintBox.Canvas.Draw(0, 0, TempBitmap);
+  //BitBlt(hPaint, 0, 0, TempBitmap.Width, TempBitmap.Height, hBmp, 0, 0, srcCopy);
+end;
+
 procedure TBitmapRawImageDataPaintBox.DrawFrame(FastBitmap: TFastBitmap);
 var
   Y, X: Integer;
@@ -504,7 +600,6 @@ var
   RawImage: TRawImage;
   BytePerPixel: Integer;
   BytePerRow: Integer;
-  hPaint, hBmp: HDC;
 begin
   P := TempBitmap.PixelFormat;
     with FastBitmap do
@@ -525,12 +620,7 @@ begin
     finally
       TempBitmap.EndUpdate(False);
     end;
-    hBmp := TempBitmap.Canvas.Handle;
-    hPaint := PaintBox.Canvas.Handle;
-    PaintBox.Canvas.CopyRect(Rect(0, 0, Bitmap.Width, Bitmap.Height), TempBitmap.Canvas,
-      Rect(0, 0, TempBitmap.Width, TempBitmap.Height));
-   // PaintBox.Canvas.Draw(0, 0, TempBitmap);
-    //BitBlt(hPaint, 0, 0, TempBitmap.Width, TempBitmap.Height, hBmp, 0, 0, srcCopy);
+  PaintBox.Repaint;
 end;
 
 { TBitmapRawImageData }
@@ -551,11 +641,11 @@ var
   BytePerPixel: Integer;
   BytePerRow: Integer;
 begin
-  P := Bitmap.PixelFormat;
+  P := Image.Picture.Bitmap.PixelFormat;
     with FastBitmap do
     try
-      Bitmap.BeginUpdate(False);
-      RawImage := Bitmap.RawImage;
+      Image.Picture.Bitmap.BeginUpdate(False);
+      RawImage := Image.Picture.Bitmap.RawImage;
       RowPtr := PCardinal(RawImage.Data);
       BytePerPixel := RawImage.Description.BitsPerPixel div 8;
       BytePerRow := RawImage.Description.BytesPerLine;
@@ -568,17 +658,17 @@ begin
         Inc(PByte(RowPtr), BytePerRow);
       end;
     finally
-      Bitmap.EndUpdate(False);
+      Image.Picture.Bitmap.EndUpdate(False);
     end;
 end;
 
 { TLazIntfImageColorsNoCopy }
 
-procedure TLazIntfImageColorsNoCopy.SetBitmap(const AValue: TBitmap);
+procedure TLazIntfImageColorsNoCopy.Init(Parent: TWinControl; Size: TPoint);
 begin
-  inherited SetBitmap(AValue);
+  inherited Init(Parent, Size);
   TempIntfImage.Free;
-  TempIntfImage := Bitmap.CreateIntfImage;
+  TempIntfImage := Image.Picture.Bitmap.CreateIntfImage;
 end;
 
 constructor TLazIntfImageColorsNoCopy.Create;
@@ -601,7 +691,7 @@ begin
     for X := 0 to Size.X - 1 do
       for Y := 0 to Size.Y - 1 do
         TempIntfImage.Colors[X, Y] := TColorToFPColor(SwapBRComponent(Pixels[X, Y]));
-    Bitmap.LoadFromIntfImage(TempIntfImage);
+    Image.Picture.Bitmap.LoadFromIntfImage(TempIntfImage);
   end;
 end;
 
@@ -625,12 +715,12 @@ var
   Y, X: Integer;
 begin
   with FastBitmap do begin
-    TempIntfImage.LoadFromBitmap(Bitmap.Handle,
-      Bitmap.MaskHandle);
+    TempIntfImage.LoadFromBitmap(Image.Picture.Bitmap.Handle,
+      Image.Picture.Bitmap.MaskHandle);
     for X := 0 to Size.X - 1 do
       for Y := 0 to Size.Y - 1 do
         TempIntfImage.Colors[X, Y] := TColorToFPColor(SwapBRComponent(Pixels[X, Y]));
-    Bitmap.LoadFromIntfImage(TempIntfImage);
+    Image.Picture.Bitmap.LoadFromIntfImage(TempIntfImage);
   end;
 end;
 
@@ -648,12 +738,12 @@ var
 begin
   with FastBitmap do
   try
-    Bitmap.BeginUpdate(True);
+    Image.Picture.Bitmap.BeginUpdate(True);
     for Y := 0 to Size.Y - 1 do
       for X := 0 to Size.X - 1 do
-        Bitmap.Canvas.Pixels[X, Y] := TColor(SwapBRComponent(Pixels[X, Y]));
+        Image.Picture.Bitmap.Canvas.Pixels[X, Y] := TColor(SwapBRComponent(Pixels[X, Y]));
   finally
-    Bitmap.EndUpdate(False);
+    Image.Picture.Bitmap.EndUpdate(False);
   end;
 end;
 
@@ -672,26 +762,19 @@ begin
   with FastBitmap do begin
     for Y := 0 to Size.Y - 1 do
       for X := 0 to Size.X - 1 do
-        Bitmap.Canvas.Pixels[X, Y] := TColor(SwapBRComponent(Pixels[X, Y]));
+        Image.Picture.Bitmap.Canvas.Pixels[X, Y] := TColor(SwapBRComponent(Pixels[X, Y]));
   end;
 end;
 
 { TDrawMethod }
 
-procedure TDrawMethod.SetBitmap(const AValue: TBitmap);
+procedure TDrawMethod.Init(Parent: TWinControl; Size: TPoint);
 begin
-  if FBitmap = AValue then exit;
-  FBitmap := AValue;
-  TempBitmap.SetSize(FBitmap.Width, FBitmap.Height);
+  if (TempBitmap.Width <> Size.X) or (TempBitmap.Height <> Size.Y) then
+    TempBitmap.SetSize(Size.X, Size.Y);
 end;
 
-procedure TDrawMethod.SetPaintBox(const AValue: TPaintBox);
-begin
-  if FPaintBox = AValue then Exit;
-  FPaintBox := AValue;
-end;
-
-procedure TDrawMethod.Init;
+procedure TDrawMethod.Done;
 begin
 
 end;
@@ -703,7 +786,7 @@ end;
 
 destructor TDrawMethod.Destroy;
 begin
-  TempBitmap.Free;
+  FreeAndNil(TempBitmap);
   inherited Destroy;
 end;
 

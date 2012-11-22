@@ -72,7 +72,7 @@
         <PackageName Value="LCL"/>
       </Item3>
     </RequiredPackages>
-    <Units Count="5">
+    <Units Count="6">
       <Unit0>
         <Filename Value="GraphicTest.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -101,6 +101,13 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="UFastBitmap"/>
       </Unit4>
+      <Unit5>
+        <Filename Value="UDrawForm.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="DrawForm"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="UDrawForm"/>
+      </Unit5>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -129,7 +136,6 @@
     </CodeGeneration>
     <Linking>
       <Debugging>
-        <UseHeaptrc Value="True"/>
         <UseExternalDbgSyms Value="True"/>
       </Debugging>
       <Options>
@@ -142,6 +148,7 @@
       <CompilerMessages>
         <UseMsgFile Value="True"/>
       </CompilerMessages>
+      <CustomOptions Value="-dopengl"/>
       <CompilerPath Value="$(CompPath)"/>
     </Other>
   </CompilerOptions>
