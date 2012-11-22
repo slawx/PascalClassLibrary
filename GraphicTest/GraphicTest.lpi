@@ -23,10 +23,13 @@
           <Parsing>
             <SyntaxOptions>
               <SyntaxMode Value="Delphi"/>
+              <CStyleOperator Value="False"/>
+              <AllowLabel Value="False"/>
               <UseAnsiStrings Value="False"/>
             </SyntaxOptions>
           </Parsing>
           <CodeGeneration>
+            <SmartLinkUnit Value="True"/>
             <Optimizations>
               <OptimizationLevel Value="3"/>
             </Optimizations>
@@ -35,6 +38,7 @@
             <Debugging>
               <GenerateDebugInfo Value="False"/>
             </Debugging>
+            <LinkSmart Value="True"/>
             <Options>
               <Win32>
                 <GraphicApplication Value="True"/>
@@ -122,6 +126,8 @@
     <Parsing>
       <SyntaxOptions>
         <SyntaxMode Value="Delphi"/>
+        <CStyleOperator Value="False"/>
+        <AllowLabel Value="False"/>
         <UseAnsiStrings Value="False"/>
       </SyntaxOptions>
     </Parsing>

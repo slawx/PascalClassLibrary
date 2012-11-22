@@ -31,7 +31,7 @@ type
     ListViewMethods: TListView;
     SpinEditWidth: TSpinEdit;
     SpinEditHeight: TSpinEdit;
-    Timer1: TTimer;
+    TimerUpdateList: TTimer;
     procedure ButtonBenchmarkClick(Sender: TObject);
     procedure ButtonSingleTestClick(Sender: TObject);
     procedure ButtonStopClick(Sender: TObject);
@@ -46,12 +46,15 @@ type
       Selected: Boolean);
     procedure SpinEditHeightChange(Sender: TObject);
     procedure SpinEditWidthChange(Sender: TObject);
-    procedure Timer1Timer(Sender: TObject);
+    procedure TimerUpdateListTimer(Sender: TObject);
   private
     MethodIndex: Integer;
     SingleTestActive: Boolean;
     AllTestActive: Boolean;
+    TestTerminated: Boolean;
+    TestTimeout: Real;
     procedure GenerateSceneFrames;
+    procedure TestMethod(Method: TDrawMethod);
     procedure UpdateMethodList;
     procedure UpdateInterface;
     procedure UpdateFrameSize;
@@ -92,31 +95,41 @@ begin
   end;
 end;
 
-procedure TMainForm.ButtonSingleTestClick(Sender: TObject);
+procedure TMainForm.TestMethod(Method: TDrawMethod);
 var
   StepStartTime: TDateTime;
+  StartTime: TDateTime;
 begin
+  with Method do begin
+    Init(DrawForm, FrameSize);
+    TestTerminated := False;
+    //Application.ProcessMessages;
+    StartTime := NowPrecise;
+    repeat
+      StepStartTime := NowPrecise;
+      DrawFrameTiming(TFastBitmap(Scenes[SceneIndex]));
+      SceneIndex := (SceneIndex + 1) mod Scenes.Count;
+      Application.ProcessMessages;
+      StepDuration := NowPrecise - StepStartTime;
+    until TestTerminated or
+      ((TestTimeout > 0) and ((NowPrecise - StartTime) > OneSecond * TestTimeout));
+    Done;
+  end;
+end;
+
+procedure TMainForm.ButtonSingleTestClick(Sender: TObject);
+begin
+  if Assigned(ListViewMethods.Selected) then
   try
     SingleTestActive := True;
     UpdateInterface;
-    Timer1.Enabled := True;
+    TimerUpdateList.Enabled := True;
     MethodIndex := ListViewMethods.Selected.Index;
-    Timer1.Enabled := True;
+    TestTimeout := -1;
     if MethodIndex >= 0 then
-    with TDrawMethod(DrawMethods[MethodIndex]) do begin
-      Init(DrawForm, FrameSize);
-      Application.ProcessMessages;
-      repeat
-        StepStartTime := NowPrecise;
-        DrawFrameTiming(TFastBitmap(Scenes[SceneIndex]));
-        SceneIndex := (SceneIndex + 1) mod Scenes.Count;
-        Application.ProcessMessages;
-        StepDuration := NowPrecise - StepStartTime;
-      until not SingleTestActive;
-      Done;
-    end;
+      TestMethod(TDrawMethod(DrawMethods[MethodIndex]));
   finally
-    Timer1.Enabled := False;
+    TimerUpdateList.Enabled := False;
     SingleTestActive := False;
     UpdateInterface;
   end;
@@ -125,30 +138,20 @@ end;
 procedure TMainForm.ButtonBenchmarkClick(Sender: TObject);
 var
   I: Integer;
-  StartTime: TDateTime;
-  StepStartTime: TDateTime;
 begin
   try
     AllTestActive := True;
     UpdateInterface;
-    Timer1.Enabled := True;
+    TimerUpdateList.Enabled := True;
+    TestTerminated := False;
+    TestTimeout := FloatSpinEdit1.Value;
     with ListViewMethods, Items do
     for I := 0 to DrawMethods.Count - 1 do
     with TDrawMethod(DrawMethods[I]) do begin
-      Init(DrawForm, FrameSize);
-      MethodIndex := I;
-      StartTime := NowPrecise;
-      repeat
-        StepStartTime := NowPrecise;
-        DrawFrameTiming(TFastBitmap(Scenes[SceneIndex]));
-        SceneIndex := (SceneIndex + 1) mod Scenes.Count;
-        Application.ProcessMessages;
-        StepDuration := NowPrecise - StepStartTime;
-      until ((NowPrecise - StartTime) > OneSecond * FloatSpinEdit1.Value) or not AllTestActive;
-      Done;
+      TestMethod(TDrawMethod(DrawMethods[I]));
     end;
   finally
-    Timer1.Enabled := False;
+    TimerUpdateList.Enabled := False;
     AllTestActive := False;
     UpdateInterface;
   end;
@@ -156,6 +159,7 @@ end;
 
 procedure TMainForm.ButtonStopClick(Sender: TObject);
 begin
+  TestTerminated := True;
   SingleTestActive := False;
   AllTestActive := False;
 end;
@@ -224,7 +228,7 @@ begin
   UpdateFrameSize;
 end;
 
-procedure TMainForm.Timer1Timer(Sender: TObject);
+procedure TMainForm.TimerUpdateListTimer(Sender: TObject);
 begin
   UpdateMethodList;
 end;
