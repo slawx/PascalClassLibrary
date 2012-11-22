@@ -5,32 +5,40 @@ unit UMainForm;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, ComCtrls,
-  ExtCtrls, StdCtrls, DateUtils, UPlatform, LCLType, IntfGraphics, fpImage,
-  Math, GraphType, Contnrs, LclIntf, Spin, UFastBitmap, UDrawMethod;
+  Classes, SysUtils, FileUtil, SynHighlighterPas, SynMemo, Forms, Controls,
+  Graphics, Dialogs, ComCtrls, ExtCtrls, StdCtrls, DateUtils, UPlatform,
+  LCLType, IntfGraphics, fpImage, Math, GraphType, Contnrs, LclIntf, Spin,
+  UFastBitmap, UDrawMethod;
 
 const
   SceneFrameCount = 100;
 
 type
 
-
   { TMainForm }
 
   TMainForm = class(TForm)
-    ButtonStop: TButton;
     ButtonBenchmark: TButton;
     ButtonSingleTest: TButton;
-    CheckBoxEraseBackground: TCheckBox;
+    ButtonStop: TButton;
     CheckBoxDoubleBuffered: TCheckBox;
+    CheckBoxEraseBackground: TCheckBox;
     FloatSpinEdit1: TFloatSpinEdit;
     Label1: TLabel;
     Label2: TLabel;
     Label3: TLabel;
     Label4: TLabel;
     ListViewMethods: TListView;
-    SpinEditWidth: TSpinEdit;
+    Memo1: TMemo;
+    PageControl1: TPageControl;
+    Panel1: TPanel;
     SpinEditHeight: TSpinEdit;
+    SpinEditWidth: TSpinEdit;
+    Splitter1: TSplitter;
+    SynMemo1: TSynMemo;
+    SynPasSyn1: TSynPasSyn;
+    TabSheet1: TTabSheet;
+    TabSheet2: TTabSheet;
     TimerUpdateList: TTimer;
     procedure ButtonBenchmarkClick(Sender: TObject);
     procedure ButtonSingleTestClick(Sender: TObject);
@@ -73,7 +81,18 @@ implementation
 {$R *.lfm}
 
 uses
-  UDrawForm;
+  UDrawForm, ULazIntfImageColorsCopy, ULazIntfImageColorsNoCopy, UCanvasPixels,
+  UCanvasPixelsUpdateLock, UBGRABitmapPaintBox, UBitmapRawImageDataPaintBox,
+  UBitmapRawImageData, UBitmapRawImageDataMove, UDummyMethod, UOpenGLMethod,
+  UOpenGLPBOMethod;
+
+const
+  DrawMethodClasses: array[0..{$IFDEF opengl}10{$ELSE}8{$ENDIF}] of TDrawMethodClass = (
+    TCanvasPixels, TCanvasPixelsUpdateLock, TLazIntfImageColorsCopy,
+    TLazIntfImageColorsNoCopy, TBitmapRawImageData, TBitmapRawImageDataPaintBox,
+    TBitmapRawImageDataMove, TBGRABitmapPaintBox{$IFDEF opengl}, TOpenGLMethod, TOpenGLPBOMethod{$ENDIF}
+    ,TDummyMethod);
+
 
 
 { TMainForm }
@@ -93,6 +112,8 @@ begin
     NewDrawMethod := DrawMethodClasses[I].Create;
     DrawMethods.Add(NewDrawMethod);
   end;
+
+  PageControl1.TabIndex := 0;
 end;
 
 procedure TMainForm.TestMethod(Method: TDrawMethod);
@@ -212,8 +233,19 @@ end;
 
 procedure TMainForm.ListViewMethodsSelectItem(Sender: TObject; Item: TListItem;
   Selected: Boolean);
+var
+  FileName: string;
 begin
   UpdateInterface;
+  if Assigned(ListViewMethods.Selected) then begin
+    FileName := 'Methods' + DirectorySeparator + 'U' +
+    Copy(TDrawMethod(DrawMethods[ListViewMethods.Selected.Index]).ClassName, 2, High(Integer)) + '.pas';
+
+    if FileExistsUTF8(FileName) then
+      SynMemo1.Lines.LoadFromFile(FileName)
+      else SynMemo1.Lines.Clear;
+    Memo1.Lines.Assign(TDrawMethod(DrawMethods[ListViewMethods.Selected.Index]).Description);
+  end;
 end;
 
 procedure TMainForm.SpinEditHeightChange(Sender: TObject);

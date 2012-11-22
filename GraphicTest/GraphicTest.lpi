@@ -65,18 +65,21 @@
         <LaunchingApplication PathPlusParams="/usr/bin/xterm -T 'Lazarus Run Output' -e $(LazarusDir)/tools/runwait.sh $(TargetCmdLine)"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="3">
+    <RequiredPackages Count="4">
       <Item1>
-        <PackageName Value="bgrabitmappack"/>
+        <PackageName Value="SynEdit"/>
       </Item1>
       <Item2>
-        <PackageName Value="lazopenglcontext"/>
+        <PackageName Value="bgrabitmappack"/>
       </Item2>
       <Item3>
-        <PackageName Value="LCL"/>
+        <PackageName Value="lazopenglcontext"/>
       </Item3>
+      <Item4>
+        <PackageName Value="LCL"/>
+      </Item4>
     </RequiredPackages>
-    <Units Count="6">
+    <Units Count="17">
       <Unit0>
         <Filename Value="GraphicTest.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -112,6 +115,61 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UDrawForm"/>
       </Unit5>
+      <Unit6>
+        <Filename Value="Methods/UCanvasPixels.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="UCanvasPixels"/>
+      </Unit6>
+      <Unit7>
+        <Filename Value="Methods/UCanvasPixelsUpdateLock.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="UCanvasPixelsUpdateLock"/>
+      </Unit7>
+      <Unit8>
+        <Filename Value="Methods/ULazIntfImageColorsCopy.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="ULazIntfImageColorsCopy"/>
+      </Unit8>
+      <Unit9>
+        <Filename Value="Methods/ULazIntfImageColorsNoCopy.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="ULazIntfImageColorsNoCopy"/>
+      </Unit9>
+      <Unit10>
+        <Filename Value="Methods/UBGRABitmapPaintBox.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="UBGRABitmapPaintBox"/>
+      </Unit10>
+      <Unit11>
+        <Filename Value="Methods/UBitmapRawImageDataPaintBox.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="UBitmapRawImageDataPaintBox"/>
+      </Unit11>
+      <Unit12>
+        <Filename Value="Methods/UBitmapRawImageData.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="UBitmapRawImageData"/>
+      </Unit12>
+      <Unit13>
+        <Filename Value="Methods/UDummyMethod.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="UDummyMethod"/>
+      </Unit13>
+      <Unit14>
+        <Filename Value="Methods/UBitmapRawImageDataMove.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="UBitmapRawImageDataMove"/>
+      </Unit14>
+      <Unit15>
+        <Filename Value="Methods/UOpenGLMethod.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="UOpenGLMethod"/>
+      </Unit15>
+      <Unit16>
+        <Filename Value="Methods/UOpenGLPBOMethod.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="UOpenGLPBOMethod"/>
+      </Unit16>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -121,6 +179,7 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
+      <OtherUnitFiles Value="Methods"/>
       <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <Parsing>
