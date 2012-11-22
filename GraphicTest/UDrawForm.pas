@@ -5,7 +5,8 @@ unit UDrawForm;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs;
+  Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs,
+  LCLType;
 
 type
 
@@ -16,7 +17,8 @@ type
   private
     { private declarations }
   public
-    { public declarations }
+    EraseBackgroundEnabled: Boolean;
+    procedure EraseBackground(DC: HDC); override;
   end;
 
 var
@@ -29,6 +31,12 @@ implementation
 procedure TDrawForm.FormCreate(Sender: TObject);
 begin
   DoubleBuffered := True;
+end;
+
+procedure TDrawForm.EraseBackground(DC: HDC);
+begin
+  if EraseBackgroundEnabled then
+    inherited EraseBackground(DC);
 end;
 
 initialization

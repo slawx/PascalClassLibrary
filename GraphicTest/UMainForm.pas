@@ -21,6 +21,8 @@ type
     ButtonStop: TButton;
     ButtonBenchmark: TButton;
     ButtonSingleTest: TButton;
+    CheckBoxEraseBackground: TCheckBox;
+    CheckBoxDoubleBuffered: TCheckBox;
     FloatSpinEdit1: TFloatSpinEdit;
     Label1: TLabel;
     Label2: TLabel;
@@ -33,6 +35,8 @@ type
     procedure ButtonBenchmarkClick(Sender: TObject);
     procedure ButtonSingleTestClick(Sender: TObject);
     procedure ButtonStopClick(Sender: TObject);
+    procedure CheckBoxDoubleBufferedChange(Sender: TObject);
+    procedure CheckBoxEraseBackgroundChange(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -156,6 +160,16 @@ begin
   AllTestActive := False;
 end;
 
+procedure TMainForm.CheckBoxDoubleBufferedChange(Sender: TObject);
+begin
+  DrawForm.DoubleBuffered := CheckBoxDoubleBuffered.Checked;
+end;
+
+procedure TMainForm.CheckBoxEraseBackgroundChange(Sender: TObject);
+begin
+  DrawForm.EraseBackgroundEnabled := CheckBoxEraseBackground.Checked;
+end;
+
 procedure TMainForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
   ButtonStopClick(Self);
@@ -242,11 +256,14 @@ begin
   ButtonStop.Enabled := SingleTestActive or AllTestActive;
   SpinEditWidth.MaxValue := Screen.DesktopWidth;
   SpinEditHeight.MaxValue := Screen.DesktopHeight;
+  CheckBoxDoubleBuffered.Checked := DrawForm.DoubleBuffered;
+  CheckBoxEraseBackground.Checked := DrawForm.EraseBackgroundEnabled;
 end;
 
 procedure TMainForm.UpdateFrameSize;
 begin
-  DrawForm.SetBounds(DrawForm.Left, DrawForm.Top, FrameSize.X, FrameSize.Y);
+  DrawForm.ClientWidth := FrameSize.X;
+  DrawForm.ClientHeight := FrameSize.Y;
   GenerateSceneFrames;
 end;
 

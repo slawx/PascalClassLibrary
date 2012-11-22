@@ -1,11 +1,11 @@
 object MainForm: TMainForm
-  Left = 187
-  Height = 440
-  Top = 107
-  Width = 549
+  Left = 302
+  Height = 308
+  Top = 181
+  Width = 554
   Caption = 'Graphic test'
-  ClientHeight = 440
-  ClientWidth = 549
+  ClientHeight = 308
+  ClientWidth = 554
   OnClose = FormClose
   OnCreate = FormCreate
   OnDestroy = FormDestroy
@@ -13,9 +13,9 @@ object MainForm: TMainForm
   LCLVersion = '1.1'
   object ListViewMethods: TListView
     Left = 8
-    Height = 364
+    Height = 232
     Top = 8
-    Width = 537
+    Width = 542
     Anchors = [akTop, akLeft, akRight, akBottom]
     Columns = <    
       item
@@ -49,7 +49,7 @@ object MainForm: TMainForm
   object ButtonSingleTest: TButton
     Left = 8
     Height = 25
-    Top = 379
+    Top = 247
     Width = 115
     Anchors = [akLeft, akBottom]
     Caption = 'Test one method'
@@ -59,7 +59,7 @@ object MainForm: TMainForm
   object ButtonBenchmark: TButton
     Left = 136
     Height = 25
-    Top = 379
+    Top = 247
     Width = 112
     Anchors = [akLeft, akBottom]
     Caption = 'Test all methods'
@@ -69,7 +69,7 @@ object MainForm: TMainForm
   object FloatSpinEdit1: TFloatSpinEdit
     Left = 88
     Height = 21
-    Top = 411
+    Top = 279
     Width = 58
     Anchors = [akLeft, akBottom]
     Increment = 1
@@ -81,7 +81,7 @@ object MainForm: TMainForm
   object ButtonStop: TButton
     Left = 256
     Height = 25
-    Top = 379
+    Top = 247
     Width = 75
     Anchors = [akLeft, akBottom]
     Caption = 'Stop'
@@ -91,7 +91,7 @@ object MainForm: TMainForm
   object Label1: TLabel
     Left = 8
     Height = 13
-    Top = 415
+    Top = 283
     Width = 69
     Anchors = [akLeft, akBottom]
     Caption = 'Step duration:'
@@ -100,16 +100,16 @@ object MainForm: TMainForm
   object Label2: TLabel
     Left = 152
     Height = 13
-    Top = 415
+    Top = 283
     Width = 5
     Anchors = [akLeft, akBottom]
     Caption = 's'
     ParentColor = False
   end
   object SpinEditWidth: TSpinEdit
-    Left = 363
+    Left = 219
     Height = 21
-    Top = 411
+    Top = 279
     Width = 58
     Anchors = [akLeft, akBottom]
     MaxValue = 1000
@@ -118,9 +118,9 @@ object MainForm: TMainForm
     Value = 320
   end
   object SpinEditHeight: TSpinEdit
-    Left = 432
+    Left = 288
     Height = 21
-    Top = 411
+    Top = 279
     Width = 58
     Anchors = [akLeft, akBottom]
     MaxValue = 1000
@@ -129,22 +129,42 @@ object MainForm: TMainForm
     Value = 240
   end
   object Label3: TLabel
-    Left = 328
+    Left = 184
     Height = 13
-    Top = 416
+    Top = 284
     Width = 23
     Anchors = [akLeft, akBottom]
     Caption = 'Size:'
     ParentColor = False
   end
   object Label4: TLabel
-    Left = 424
+    Left = 280
     Height = 13
-    Top = 415
+    Top = 283
     Width = 6
     Anchors = [akLeft, akBottom]
     Caption = 'x'
     ParentColor = False
+  end
+  object CheckBoxDoubleBuffered: TCheckBox
+    Left = 408
+    Height = 17
+    Top = 247
+    Width = 98
+    Anchors = [akLeft, akBottom]
+    Caption = 'Double buffered'
+    OnChange = CheckBoxDoubleBufferedChange
+    TabOrder = 7
+  end
+  object CheckBoxEraseBackground: TCheckBox
+    Left = 408
+    Height = 17
+    Top = 264
+    Width = 106
+    Anchors = [akLeft, akBottom]
+    Caption = 'Erase background'
+    OnChange = CheckBoxEraseBackgroundChange
+    TabOrder = 8
   end
   object Timer1: TTimer
     Interval = 500
