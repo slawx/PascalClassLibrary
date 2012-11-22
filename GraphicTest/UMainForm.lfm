@@ -23,7 +23,7 @@ object MainForm: TMainForm
         Width = 200
       end    
       item
-        Caption = 'Duration [ms]'
+        Caption = 'Step draw duration [ms]'
         Width = 80
       end    
       item
@@ -31,7 +31,7 @@ object MainForm: TMainForm
         Width = 75
       end    
       item
-        Caption = 'Step duration [ms]'
+        Caption = 'Total step duration [ms]'
         Width = 80
       end    
       item
@@ -104,6 +104,46 @@ object MainForm: TMainForm
     Width = 5
     Anchors = [akLeft, akBottom]
     Caption = 's'
+    ParentColor = False
+  end
+  object SpinEditWidth: TSpinEdit
+    Left = 363
+    Height = 21
+    Top = 411
+    Width = 58
+    Anchors = [akLeft, akBottom]
+    MaxValue = 1000
+    OnChange = SpinEditWidthChange
+    TabOrder = 5
+    Value = 320
+  end
+  object SpinEditHeight: TSpinEdit
+    Left = 432
+    Height = 21
+    Top = 411
+    Width = 58
+    Anchors = [akLeft, akBottom]
+    MaxValue = 1000
+    OnChange = SpinEditHeightChange
+    TabOrder = 6
+    Value = 240
+  end
+  object Label3: TLabel
+    Left = 328
+    Height = 13
+    Top = 416
+    Width = 23
+    Anchors = [akLeft, akBottom]
+    Caption = 'Size:'
+    ParentColor = False
+  end
+  object Label4: TLabel
+    Left = 424
+    Height = 13
+    Top = 415
+    Width = 6
+    Anchors = [akLeft, akBottom]
+    Caption = 'x'
     ParentColor = False
   end
   object Timer1: TTimer

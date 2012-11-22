@@ -24,7 +24,11 @@ type
     FloatSpinEdit1: TFloatSpinEdit;
     Label1: TLabel;
     Label2: TLabel;
+    Label3: TLabel;
+    Label4: TLabel;
     ListViewMethods: TListView;
+    SpinEditWidth: TSpinEdit;
+    SpinEditHeight: TSpinEdit;
     Timer1: TTimer;
     procedure ButtonBenchmarkClick(Sender: TObject);
     procedure ButtonSingleTestClick(Sender: TObject);
@@ -36,13 +40,17 @@ type
     procedure ListViewMethodsData(Sender: TObject; Item: TListItem);
     procedure ListViewMethodsSelectItem(Sender: TObject; Item: TListItem;
       Selected: Boolean);
+    procedure SpinEditHeightChange(Sender: TObject);
+    procedure SpinEditWidthChange(Sender: TObject);
     procedure Timer1Timer(Sender: TObject);
   private
     MethodIndex: Integer;
     SingleTestActive: Boolean;
     AllTestActive: Boolean;
+    procedure GenerateSceneFrames;
     procedure UpdateMethodList;
     procedure UpdateInterface;
+    procedure UpdateFrameSize;
   public
     FrameSize: TPoint;
     DrawMethods: TObjectList; // TObjectList<TDrawMethod>
@@ -65,19 +73,13 @@ uses
 
 procedure TMainForm.FormCreate(Sender: TObject);
 var
-  NewScene: TFastBitmap;
   NewDrawMethod: TDrawMethod;
   I: Integer;
 begin
+  Scenes := TObjectList.Create;
+
   FrameSize := Point(320, 240);
   Randomize;
-  Scenes := TObjectList.Create;
-  for I := 0 to SceneFrameCount - 1 do begin
-    NewScene := TFastBitmap.Create;
-    NewScene.Size := FrameSize;
-    NewScene.RandomImage;
-    Scenes.Add(NewScene);
-  end;
 
   DrawMethods := TObjectList.Create;
   for I := 0 to High(DrawMethodClasses) do begin
@@ -168,6 +170,7 @@ end;
 
 procedure TMainForm.FormShow(Sender: TObject);
 begin
+  UpdateFrameSize;
   UpdateMethodList;
   UpdateInterface;
   DrawForm.Show;
@@ -195,9 +198,35 @@ begin
   UpdateInterface;
 end;
 
+procedure TMainForm.SpinEditHeightChange(Sender: TObject);
+begin
+  FrameSize.Y := SpinEditHeight.Value;
+  UpdateFrameSize;
+end;
+
+procedure TMainForm.SpinEditWidthChange(Sender: TObject);
+begin
+  FrameSize.X := SpinEditWidth.Value;
+  UpdateFrameSize;
+end;
+
 procedure TMainForm.Timer1Timer(Sender: TObject);
 begin
   UpdateMethodList;
+end;
+
+procedure TMainForm.GenerateSceneFrames;
+var
+  I: Integer;
+  NewScene: TFastBitmap;
+begin
+  Scenes.Clear;
+  for I := 0 to SceneFrameCount - 1 do begin
+    NewScene := TFastBitmap.Create;
+    NewScene.Size := FrameSize;
+    NewScene.RandomImage;
+    Scenes.Add(NewScene);
+  end;
 end;
 
 procedure TMainForm.UpdateMethodList;
@@ -211,6 +240,14 @@ begin
   ButtonSingleTest.Enabled := not SingleTestActive and not AllTestActive and Assigned(ListViewMethods.Selected);
   ButtonBenchmark.Enabled := not AllTestActive and not SingleTestActive;
   ButtonStop.Enabled := SingleTestActive or AllTestActive;
+  SpinEditWidth.MaxValue := Screen.DesktopWidth;
+  SpinEditHeight.MaxValue := Screen.DesktopHeight;
+end;
+
+procedure TMainForm.UpdateFrameSize;
+begin
+  DrawForm.SetBounds(DrawForm.Left, DrawForm.Top, FrameSize.X, FrameSize.Y);
+  GenerateSceneFrames;
 end;
 
 end.
