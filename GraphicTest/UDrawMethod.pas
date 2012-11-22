@@ -18,7 +18,7 @@ type
   TDrawMethod = class
   private
     FControl: TControl;
-    function GetFPS: Real;
+    FFPS: Real;
   public
     Caption: string;
     Description: TStringList;
@@ -29,7 +29,8 @@ type
     TempBitmap: TBitmap;
     FrameCounter: Integer;
     FrameCounterStart: TDateTime;
-    property FPS: Real read GetFPS;
+    function GetFPS: Real;
+    property FPS: Real read FFPS write FFPS;
     procedure Init(Parent: TWinControl; Size: TPoint); virtual;
     procedure Done; virtual;
     constructor Create; virtual;
@@ -59,6 +60,7 @@ type
   end;
 
   {$IFDEF opengl}
+
   { TDrawMethodOpenGL }
 
   TDrawMethodOpenGL = class(TDrawMethod)

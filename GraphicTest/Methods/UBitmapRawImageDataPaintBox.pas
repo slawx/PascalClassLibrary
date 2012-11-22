@@ -35,9 +35,9 @@ var
 begin
   hBmp := TempBitmap.Canvas.Handle;
   hPaint := PaintBox.Canvas.Handle;
-  PaintBox.Canvas.CopyRect(Rect(0, 0, PaintBox.Width, PaintBox.Height), TempBitmap.Canvas,
-    Rect(0, 0, TempBitmap.Width, TempBitmap.Height));
- // PaintBox.Canvas.Draw(0, 0, TempBitmap);
+  //PaintBox.Canvas.CopyRect(Rect(0, 0, PaintBox.Width, PaintBox.Height), TempBitmap.Canvas,
+  //  Rect(0, 0, TempBitmap.Width, TempBitmap.Height));
+  PaintBox.Canvas.Draw(0, 0, TempBitmap);
   //BitBlt(hPaint, 0, 0, TempBitmap.Width, TempBitmap.Height, hBmp, 0, 0, srcCopy);
 end;
 

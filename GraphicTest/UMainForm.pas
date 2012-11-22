@@ -126,6 +126,8 @@ begin
     TestTerminated := False;
     //Application.ProcessMessages;
     StartTime := NowPrecise;
+    FrameCounterStart := NowPrecise;
+    FrameCounter := 0;
     repeat
       StepStartTime := NowPrecise;
       DrawFrameTiming(TFastBitmap(Scenes[SceneIndex]));
@@ -135,6 +137,7 @@ begin
       Inc(FrameCounter);
     until TestTerminated or
       ((TestTimeout > 0) and ((NowPrecise - StartTime) > OneSecond * TestTimeout));
+    FPS := GetFPS;
     Done;
   end;
 end;
