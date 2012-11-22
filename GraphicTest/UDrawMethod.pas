@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, ExtCtrls, UPlatform, UFastBitmap, Graphics, Controls,
-  LCLType, IntfGraphics, fpImage, GraphType,
+  LCLType, IntfGraphics, fpImage, GraphType, DateUtils,
   LclIntf{$IFDEF opengl}, GL, GLExt, OpenGLContext{$ENDIF};
 
 type
@@ -18,6 +18,7 @@ type
   TDrawMethod = class
   private
     FControl: TControl;
+    function GetFPS: Real;
   public
     Caption: string;
     Description: TStringList;
@@ -26,6 +27,9 @@ type
     StepDuration: TDateTime;
     PaintObject: TPaintObject;
     TempBitmap: TBitmap;
+    FrameCounter: Integer;
+    FrameCounterStart: TDateTime;
+    property FPS: Real read GetFPS;
     procedure Init(Parent: TWinControl; Size: TPoint); virtual;
     procedure Done; virtual;
     constructor Create; virtual;
@@ -171,6 +175,13 @@ end;
 
 
 { TDrawMethod }
+
+function TDrawMethod.GetFPS: Real;
+begin
+  Result := FrameCounter / ((NowPrecise - FrameCounterStart) / OneSecond);
+  FrameCounter := 0;
+  FrameCounterStart := NowPrecise;
+end;
 
 procedure TDrawMethod.Init(Parent: TWinControl; Size: TPoint);
 begin

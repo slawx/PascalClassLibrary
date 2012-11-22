@@ -543,15 +543,18 @@ object MainForm: TMainForm
           Width = 200
         end      
         item
-          Caption = 'Step draw duration [ms]'
+          Caption = 'FPS'
+        end      
+        item
+          Caption = 'Duration custom draw [ms]'
           Width = 80
         end      
         item
-          Caption = 'FPS'
+          Caption = 'Draw FPS'
           Width = 75
         end      
         item
-          Caption = 'Total step duration [ms]'
+          Caption = 'Duration step [ms]'
           Width = 80
         end      
         item

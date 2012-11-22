@@ -129,9 +129,10 @@ begin
     repeat
       StepStartTime := NowPrecise;
       DrawFrameTiming(TFastBitmap(Scenes[SceneIndex]));
-      SceneIndex := (SceneIndex + 1) mod Scenes.Count;
       Application.ProcessMessages;
       StepDuration := NowPrecise - StepStartTime;
+      SceneIndex := (SceneIndex + 1) mod Scenes.Count;
+      Inc(FrameCounter);
     until TestTerminated or
       ((TestTimeout > 0) and ((NowPrecise - StartTime) > OneSecond * TestTimeout));
     Done;
@@ -220,6 +221,7 @@ begin
   if (Item.Index >= 0) and (Item.Index < DrawMethods.Count) then
   with TDrawMethod(DrawMethods[Item.Index]) do begin
     Item.Caption := Caption;
+    Item.SubItems.Add(FloatToStr(RoundTo(FPS, -3)));
     Item.SubItems.Add(FloatToStr(RoundTo(FrameDuration / OneMillisecond, -3)));
     if FrameDuration > 0 then
       Item.SubItems.Add(FloatToStr(RoundTo(1 / (FrameDuration / OneSecond), -3)))
