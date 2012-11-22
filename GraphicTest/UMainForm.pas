@@ -1,14 +1,14 @@
 unit UMainForm;
 
-{$mode Delphi}{$H+}
+{$mode delphi}{$H+}
 
 interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, ComCtrls,
   ExtCtrls, StdCtrls, DateUtils, UPlatform, LCLType, IntfGraphics, fpImage,
-  Math, GraphType, Contnrs, LclIntf, Spin, UFastBitmap, UDrawMethod, GL,
-  OpenGLContext;
+  Math, GraphType, Contnrs, LclIntf, Spin, UFastBitmap, UDrawMethod
+  {$IFDEF opengl}, GL, OpenGLContext{$ENDIF};
 
 const
   SceneFrameCount = 100;
@@ -45,14 +45,18 @@ type
       Selected: Boolean);
     procedure Timer1Timer(Sender: TObject);
   private
+    {$IFDEF opengl}
     OpenGLControl1: TOpenGLControl;
     TextureId: GLuint;
     TextureData: Pointer;
+    {$ENDIF}
     MethodIndex: Integer;
     SingleTestActive: Boolean;
     AllTestActive: Boolean;
     procedure OpenGLControl1Resize(Sender: TObject);
+    {$IFDEF opengl}
     procedure InitGL;
+    {$ENDIF}
     procedure UpdateMethodList;
     procedure UpdateInterface;
   public
@@ -92,6 +96,7 @@ begin
   Image1.Picture.Bitmap.PixelFormat := pf24bit;
   Bitmap.SetSize(TFastBitmap(Scenes[0]).Size.X, TFastBitmap(Scenes[0]).Size.Y);
 
+  {$IFDEF opengl}
   OpenGLControl1 := TOpenGLControl.Create(Self);
   with OpenGLControl1 do begin
     Name := 'OpenGLControl1';
@@ -102,14 +107,17 @@ begin
     OnResize := OpenGLControl1Resize;
   end;
   GetMem(TextureData, OpenGLControl1.Width * OpenGLControl1.Height * SizeOf(Integer));
+  {$ENDIF}
 
   DrawMethods := TObjectList.Create;
   for I := 0 to High(DrawMethodClasses) do begin
     NewDrawMethod := DrawMethodClasses[I].Create;
     NewDrawMethod.Bitmap := Image1.Picture.Bitmap;
     NewDrawMethod.PaintBox := PaintBox1;
+    {$IFDEF opengl}
     NewDrawMethod.OpenGLBitmap := TextureData;
     NewDrawMethod.OpenGLControl := OpenGLControl1;
+    {$ENDIF}
     NewDrawMethod.Init;
     DrawMethods.Add(NewDrawMethod);
   end;
@@ -190,10 +198,10 @@ end;
 procedure TMainForm.FormDestroy(Sender: TObject);
 begin
   ListViewMethods.Clear;
-  FreeMem(TextureData, OpenGLControl1.Width * OpenGLControl1.Height);
-  DrawMethods.Free;
-  Scenes.Free;
-  Bitmap.Free;
+  {$IFDEF opengl}FreeMem(TextureData, OpenGLControl1.Width * OpenGLControl1.Height);{$ENDIF}
+  FreeAndNil(DrawMethods);
+  FreeAndNil(Scenes);
+  FreeAndNil(Bitmap);
 end;
 
 procedure TMainForm.FormShow(Sender: TObject);
@@ -231,9 +239,12 @@ end;
 
 procedure TMainForm.OpenGLControl1Resize(Sender: TObject);
 begin
+  {$IFDEF opengl}
   glViewport(0, 0, OpenGLControl1.Width, OpenGLControl1.Height);
+  {$ENDIF}
 end;
 
+{$IFDEF opengl}
 procedure TMainForm.InitGL;
 begin
   glMatrixMode(GL_PROJECTION);
@@ -253,6 +264,7 @@ begin
   glGenTextures(1, @TextureId);
   glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 end;
+{$ENDIF}
 
 procedure TMainForm.UpdateMethodList;
 begin

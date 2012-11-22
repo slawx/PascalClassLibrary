@@ -1,6 +1,6 @@
 unit UPlatform;
 
-{$mode Delphi}{$H+}
+{$mode delphi}{$H+}
 
 interface
 

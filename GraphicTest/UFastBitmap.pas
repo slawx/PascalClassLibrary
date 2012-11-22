@@ -9,7 +9,7 @@ uses
 
 type
 
-  TFastBitmapPixel = Integer;
+  TFastBitmapPixel = Cardinal;
   (*TFastBitmapPixel = record
     Blue: Byte;
     Green: Byte;
@@ -69,12 +69,12 @@ type
     property Size: TPoint read GetSize write SetSize;
   end;
 
-function SwapBRComponent(Value: Integer): Integer; inline;
-function NoSwapBRComponent(Value: Integer): Integer; inline;
+function SwapBRComponent(Value: Cardinal): Cardinal; inline;
+function NoSwapBRComponent(Value: Cardinal): Cardinal; inline;
 
 implementation
 
-function SwapBRComponent(Value: Integer): Integer;
+function SwapBRComponent(Value: Cardinal): Cardinal;
 begin
 //  Result := (Value and $00ff00) or ((Value shr 16) and $ff) or ((Value and $ff) shl 16);
   Result := Value;
@@ -82,7 +82,7 @@ begin
   TFastBitmapPixelComponents(Result).B := TFastBitmapPixelComponents(Value).R;
 end;
 
-function NoSwapBRComponent(Value: Integer): Integer;
+function NoSwapBRComponent(Value: Cardinal): Cardinal;
 begin
 //  Result := (Value and $00ff00) or ((Value shr 16) and $ff) or ((Value and $ff) shl 16);
   Result := Value;
@@ -210,11 +210,11 @@ begin
   for I := 0 to 2 do
     for Y := 0 to (Size.Y div 2) - 1 do
       for X := 0 to (Size.X div 3) - 1 do
-        Pixels[X + (I * (Size.X div 3)), Y] := 255 shl (I * 8);
+        Pixels[X + (I * (Size.X div 3)), Y] := (255 shl (I * 8)) and $ffffff;
 
   for Y := (Size.Y div 2) to Size.Y - 1 do
     for X := 0 to Size.X - 1 do
-      Pixels[X, Y] := Random(256) or (Random(256) shl 16) or (Random(256) shl 8);
+      Pixels[X, Y] := (Random(256) or (Random(256) shl 16) or (Random(256) shl 8)) and $ffffff;
 end;
 
 

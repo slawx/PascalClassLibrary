@@ -1,13 +1,13 @@
 unit UDrawMethod;
 
-{$mode objfpc}{$H+}
+{$mode delphi}{$H+}
 
 interface
 
 uses
-  Classes, SysUtils, StdCtrls, ExtCtrls, UPlatform, UFastBitmap, Graphics,
+  Classes, SysUtils, ExtCtrls, UPlatform, UFastBitmap, Graphics,
   LCLType, IntfGraphics, fpImage, GraphType, BGRABitmap, BGRABitmapTypes,
-  LclIntf, GL, GLExt, OpenGLContext;
+  LclIntf{$IFDEF opengl}, GL, GLExt, OpenGLContext{$ENDIF};
 
 type
   TPaintObject = (poImage, poPaintBox, poOpenGL);
@@ -28,9 +28,11 @@ type
     FrameDuration: TDateTime;
     StepDuration: TDateTime;
     PaintObject: TPaintObject;
+    {$IFDEF opengl}
     OpenGLBitmap: Pointer;
     OpenGLControl: TOpenGLControl;
     TextureId: GLuint;
+    {$ENDIF}
     procedure Init; virtual;
     constructor Create; virtual;
     destructor Destroy; override;
@@ -113,6 +115,7 @@ type
     procedure DrawFrame(FastBitmap: TFastBitmap); override;
   end;
 
+  {$IFDEF opengl}
   { TOpenGLMethod }
 
   TOpenGLMethod = class(TDrawMethod)
@@ -134,13 +137,14 @@ type
     destructor Destroy; override;
     procedure DrawFrame(FastBitmap: TFastBitmap); override;
   end;
+  {$ENDIF}
 
 const
-  DrawMethodClasses: array[0..10] of TDrawMethodClass = (
+  DrawMethodClasses: array[0..{$IFDEF opengl}10{$ELSE}8{$ENDIF}] of TDrawMethodClass = (
     TCanvasPixels, TCanvasPixelsUpdateLock, TLazIntfImageColorsCopy,
     TLazIntfImageColorsNoCopy, TBitmapRawImageData, TBitmapRawImageDataPaintBox,
-    TBitmapRawImageDataMove, TBGRABitmapPaintBox, TOpenGLMethod, TOpenGLPBOMethod,
-    TDummyMethod);
+    TBitmapRawImageDataMove, TBGRABitmapPaintBox{$IFDEF opengl}, TOpenGLMethod, TOpenGLPBOMethod{$ENDIF}
+    ,TDummyMethod);
 
 implementation
 
@@ -207,6 +211,7 @@ begin
     end;
 end;
 
+{$IFDEF opengl}
 { TOpenGLPBOMethod }
 
 procedure TOpenGLPBOMethod.SetBitmap(const AValue: TBitmap);
@@ -434,6 +439,8 @@ begin
   OpenGLControl.SwapBuffers;
 end;
 
+{$ENDIF}
+
 { TBGRABitmapPaintBox }
 
 procedure TBGRABitmapPaintBox.SetBitmap(const AValue: TBitmap);
@@ -459,11 +466,11 @@ end;
 procedure TBGRABitmapPaintBox.DrawFrame(FastBitmap: TFastBitmap);
 var
   X, Y: Integer;
-  P: PInteger;
+  P: PCardinal;
 begin
   with FastBitmap do
   for Y := 0 to Size.Y - 1 do begin
-    P := PInteger(BGRABitmap.ScanLine[Y]);
+    P := PCardinal(BGRABitmap.ScanLine[Y]);
     for X := 0 to Size.X - 1 do begin
       P^ := NoSwapBRComponent(Pixels[X, Y]) or $ff000000;
       //P^ := Pixels[X, Y] or $ff000000;
@@ -491,8 +498,8 @@ end;
 procedure TBitmapRawImageDataPaintBox.DrawFrame(FastBitmap: TFastBitmap);
 var
   Y, X: Integer;
-  PixelPtr: PInteger;
-  RowPtr: PInteger;
+  PixelPtr: PCardinal;
+  RowPtr: PCardinal;
   P: TPixelFormat;
   RawImage: TRawImage;
   BytePerPixel: Integer;
@@ -504,7 +511,7 @@ begin
     try
       TempBitmap.BeginUpdate(False);
       RawImage := TempBitmap.RawImage;
-      RowPtr := PInteger(RawImage.Data);
+      RowPtr := PCardinal(RawImage.Data);
       BytePerPixel := RawImage.Description.BitsPerPixel div 8;
       BytePerRow := RawImage.Description.BytesPerLine;
       for Y := 0 to Size.Y - 1 do begin
@@ -537,8 +544,8 @@ end;
 procedure TBitmapRawImageData.DrawFrame(FastBitmap: TFastBitmap);
 var
   Y, X: Integer;
-  PixelPtr: PInteger;
-  RowPtr: PInteger;
+  PixelPtr: PCardinal;
+  RowPtr: PCardinal;
   P: TPixelFormat;
   RawImage: TRawImage;
   BytePerPixel: Integer;
@@ -549,7 +556,7 @@ begin
     try
       Bitmap.BeginUpdate(False);
       RawImage := Bitmap.RawImage;
-      RowPtr := PInteger(RawImage.Data);
+      RowPtr := PCardinal(RawImage.Data);
       BytePerPixel := RawImage.Description.BitsPerPixel div 8;
       BytePerRow := RawImage.Description.BytesPerLine;
       for Y := 0 to Size.Y - 1 do begin
@@ -642,9 +649,9 @@ begin
   with FastBitmap do
   try
     Bitmap.BeginUpdate(True);
-    for X := 0 to Size.X - 1 do
-      for Y := 0 to Size.Y - 1 do
-        Bitmap.Canvas.Pixels[X, Y] := SwapBRComponent(Pixels[X, Y]);
+    for Y := 0 to Size.Y - 1 do
+      for X := 0 to Size.X - 1 do
+        Bitmap.Canvas.Pixels[X, Y] := TColor(SwapBRComponent(Pixels[X, Y]));
   finally
     Bitmap.EndUpdate(False);
   end;
@@ -663,9 +670,9 @@ var
   Y, X: Integer;
 begin
   with FastBitmap do begin
-    for X := 0 to Size.X - 1 do
-      for Y := 0 to Size.Y - 1 do
-        Bitmap.Canvas.Pixels[X, Y] := SwapBRComponent(Pixels[X, Y]);
+    for Y := 0 to Size.Y - 1 do
+      for X := 0 to Size.X - 1 do
+        Bitmap.Canvas.Pixels[X, Y] := TColor(SwapBRComponent(Pixels[X, Y]));
   end;
 end;
 
@@ -715,4 +722,4 @@ begin
 end;
 
 end.
-
+
