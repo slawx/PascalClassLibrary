@@ -29,6 +29,7 @@ type
     TempBitmap: TBitmap;
     FrameCounter: Integer;
     FrameCounterStart: TDateTime;
+    FrameCounterStop: TDateTime;
     function GetFPS: Real;
     property FPS: Real read FFPS write FFPS;
     procedure Init(Parent: TWinControl; Size: TPoint); virtual;
@@ -179,10 +180,16 @@ end;
 { TDrawMethod }
 
 function TDrawMethod.GetFPS: Real;
+var
+  StopTime: TDateTime;
 begin
-  Result := FrameCounter / ((NowPrecise - FrameCounterStart) / OneSecond);
-  FrameCounter := 0;
-  FrameCounterStart := NowPrecise;
+  if FrameCounterStop <> 0 then StopTime := FrameCounterStop
+    else StopTime := NowPrecise;
+  if FrameCounter > 0 then begin
+    Result := FrameCounter / ((StopTime - FrameCounterStart) / OneSecond);
+    //FrameCounter := 0;
+    //FrameCounterStart := NowPrecise;
+  end else Result := FFPS;
 end;
 
 procedure TDrawMethod.Init(Parent: TWinControl; Size: TPoint);

@@ -12,10 +12,10 @@ object MainForm: TMainForm
   OnShow = FormShow
   LCLVersion = '1.1'
   object PageControl1: TPageControl
-    Left = 555
+    Left = 459
     Height = 411
     Top = 0
-    Width = 302
+    Width = 398
     ActivePage = TabSheet1
     Align = alRight
     TabIndex = 0
@@ -23,12 +23,12 @@ object MainForm: TMainForm
     object TabSheet1: TTabSheet
       Caption = 'Description'
       ClientHeight = 385
-      ClientWidth = 294
+      ClientWidth = 390
       object Memo1: TMemo
         Left = 0
         Height = 385
         Top = 0
-        Width = 294
+        Width = 390
         Align = alClient
         ReadOnly = True
         ScrollBars = ssAutoBoth
@@ -525,17 +525,17 @@ object MainForm: TMainForm
     Left = 0
     Height = 411
     Top = 0
-    Width = 550
+    Width = 454
     Align = alClient
     BevelOuter = bvNone
     ClientHeight = 411
-    ClientWidth = 550
+    ClientWidth = 454
     TabOrder = 1
     object ListViewMethods: TListView
       Left = 8
       Height = 335
       Top = 8
-      Width = 539
+      Width = 443
       Anchors = [akTop, akLeft, akRight, akBottom]
       Columns = <      
         item
@@ -544,9 +544,10 @@ object MainForm: TMainForm
         end      
         item
           Caption = 'FPS'
+          Width = 75
         end      
         item
-          Caption = 'Duration custom draw [ms]'
+          Caption = 'Duration [ms]'
           Width = 80
         end      
         item
@@ -554,12 +555,16 @@ object MainForm: TMainForm
           Width = 75
         end      
         item
-          Caption = 'Duration step [ms]'
+          Caption = 'Draw duration [ms]'
           Width = 80
         end      
         item
           Caption = 'Step FPS'
           Width = 75
+        end      
+        item
+          Caption = 'Step duration [ms]'
+          Width = 80
         end>
       OwnerData = True
       ReadOnly = True
@@ -630,7 +635,7 @@ object MainForm: TMainForm
       ParentColor = False
     end
     object SpinEditWidth: TSpinEdit
-      Left = 219
+      Left = 204
       Height = 21
       Top = 382
       Width = 58
@@ -641,7 +646,7 @@ object MainForm: TMainForm
       Value = 320
     end
     object SpinEditHeight: TSpinEdit
-      Left = 288
+      Left = 273
       Height = 21
       Top = 382
       Width = 58
@@ -652,7 +657,7 @@ object MainForm: TMainForm
       Value = 240
     end
     object Label3: TLabel
-      Left = 184
+      Left = 169
       Height = 13
       Top = 387
       Width = 23
@@ -661,7 +666,7 @@ object MainForm: TMainForm
       ParentColor = False
     end
     object Label4: TLabel
-      Left = 280
+      Left = 265
       Height = 13
       Top = 386
       Width = 6
@@ -670,7 +675,7 @@ object MainForm: TMainForm
       ParentColor = False
     end
     object CheckBoxDoubleBuffered: TCheckBox
-      Left = 408
+      Left = 336
       Height = 17
       Top = 350
       Width = 98
@@ -680,7 +685,7 @@ object MainForm: TMainForm
       TabOrder = 7
     end
     object CheckBoxEraseBackground: TCheckBox
-      Left = 408
+      Left = 336
       Height = 17
       Top = 367
       Width = 106
@@ -690,7 +695,7 @@ object MainForm: TMainForm
       TabOrder = 8
     end
     object CheckBox1: TCheckBox
-      Left = 408
+      Left = 336
       Height = 17
       Top = 387
       Width = 58
@@ -701,7 +706,7 @@ object MainForm: TMainForm
     end
   end
   object Splitter1: TSplitter
-    Left = 550
+    Left = 454
     Height = 411
     Top = 0
     Width = 5

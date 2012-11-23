@@ -8,8 +8,8 @@ uses
   Classes, SysUtils, UDrawMethod, UFastBitmap
   {$IFDEF opengl}, GL, GLExt, OpenGLContext{$ENDIF};
 
+{$IFDEF opengl}
 type
-  {$IFDEF opengl}
   { TOpenGLMethod }
 
   TOpenGLMethod = class(TDrawMethodOpenGL)
@@ -22,6 +22,7 @@ type
 
 implementation
 
+{$IFDEF opengl}
 { TOpenGLMethod }
 
 constructor TOpenGLMethod.Create;
@@ -95,6 +96,7 @@ begin
   OpenGLControl.SwapBuffers;
 end;
 
+{$ENDIF}
 
 end.
 

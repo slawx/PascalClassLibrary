@@ -8,8 +8,8 @@ uses
   Classes, SysUtils, UDrawMethod, UFastBitmap, Controls
   {$IFDEF opengl}, GL, GLExt, OpenGLContext{$ENDIF};
 
+{$IFDEF opengl}
 type
-  {$IFDEF opengl}
   { TOpenGLPBOMethod }
 
   TOpenGLPBOMethod = class(TDrawMethodOpenGL)

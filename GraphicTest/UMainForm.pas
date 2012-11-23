@@ -129,6 +129,7 @@ begin
     //Application.ProcessMessages;
     StartTime := NowPrecise;
     FrameCounterStart := NowPrecise;
+    FrameCounterStop := 0;
     FrameCounter := 0;
     repeat
       StepStartTime := NowPrecise;
@@ -139,7 +140,8 @@ begin
       Inc(FrameCounter);
     until TestTerminated or
       ((TestTimeout > 0) and ((NowPrecise - StartTime) > OneSecond * TestTimeout));
-    FPS := GetFPS;
+    FrameCounterStop := NowPrecise;
+    //FPS := GetFPS;
     Done;
   end;
 end;
@@ -156,7 +158,7 @@ begin
     if MethodIndex >= 0 then
       TestMethod(TDrawMethod(DrawMethods[MethodIndex]));
   finally
-    TimerUpdateList.Enabled := False;
+    //TimerUpdateList.Enabled := False;
     SingleTestActive := False;
     UpdateInterface;
   end;
@@ -233,15 +235,19 @@ begin
   if (Item.Index >= 0) and (Item.Index < DrawMethods.Count) then
   with TDrawMethod(DrawMethods[Item.Index]) do begin
     Item.Caption := Caption;
+    FPS := GetFPS;
     Item.SubItems.Add(FloatToStr(RoundTo(FPS, -3)));
-    Item.SubItems.Add(FloatToStr(RoundTo(FrameDuration / OneMillisecond, -3)));
+    if FPS > 0 then
+      Item.SubItems.Add(FloatToStr(RoundTo(1 / FPS * 1000, -3)))
+      else Item.SubItems.Add('0');
     if FrameDuration > 0 then
       Item.SubItems.Add(FloatToStr(RoundTo(1 / (FrameDuration / OneSecond), -3)))
       else Item.SubItems.Add('0');
-    Item.SubItems.Add(FloatToStr(RoundTo(StepDuration / OneMillisecond, -3)));
+    Item.SubItems.Add(FloatToStr(RoundTo(FrameDuration / OneMillisecond, -3)));
     if FrameDuration > 0 then
       Item.SubItems.Add(FloatToStr(RoundTo(1 / (StepDuration / OneSecond), -3)))
       else Item.SubItems.Add('0');
+    Item.SubItems.Add(FloatToStr(RoundTo(StepDuration / OneMillisecond, -3)));
   end;
 end;
 
