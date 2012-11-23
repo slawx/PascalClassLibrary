@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, UDrawMethod, UFastBitmap, Graphics, LCLType,
-  FPimage, IntfGraphics, GraphType;
+  FPimage, IntfGraphics, GraphType{$IFDEF windows}, Windows{$ENDIF};
 
 type
   { TBitmapRawImageDataPaintBox }
@@ -37,8 +37,8 @@ begin
   hPaint := PaintBox.Canvas.Handle;
   //PaintBox.Canvas.CopyRect(Rect(0, 0, PaintBox.Width, PaintBox.Height), TempBitmap.Canvas,
   //  Rect(0, 0, TempBitmap.Width, TempBitmap.Height));
-  PaintBox.Canvas.Draw(0, 0, TempBitmap);
-  //BitBlt(hPaint, 0, 0, TempBitmap.Width, TempBitmap.Height, hBmp, 0, 0, srcCopy);
+  //PaintBox.Canvas.Draw(0, 0, TempBitmap);
+  BitBlt(hPaint, 0, 0, TempBitmap.Width, TempBitmap.Height, hBmp, 0, 0, srcCopy);
 end;
 
 procedure TBitmapRawImageDataPaintBox.DrawFrame(FastBitmap: TFastBitmap);

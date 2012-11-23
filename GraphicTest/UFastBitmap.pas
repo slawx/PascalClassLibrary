@@ -37,7 +37,7 @@ type
   public
     constructor Create;
     destructor Destroy; override;
-    procedure RandomImage;
+    procedure RandomImage(Index, Count: Integer);
     property Size: TPoint read FSize write SetSize;
     property Pixels[X, Y: Integer]: TFastBitmapPixel read GetPixel write SetPixel;
     property PixelsData: PByte read FPixelsData;
@@ -203,18 +203,27 @@ begin
   inherited Destroy;
 end;
 
-procedure TFastBitmap.RandomImage;
+procedure TFastBitmap.RandomImage(Index, Count: Integer);
 var
   I, X, Y: Integer;
 begin
+  // Main three color blocks
   for I := 0 to 2 do
-    for Y := 0 to (Size.Y div 2) - 1 do
+    for Y := 0 to (Size.Y div 3) - 1 do
       for X := 0 to (Size.X div 3) - 1 do
         Pixels[X + (I * (Size.X div 3)), Y] := (255 shl (I * 8)) and $ffffff;
 
-  for Y := (Size.Y div 2) to Size.Y - 1 do
+  // Random noise
+  for Y := (Size.Y div 3) to (Size.Y * 2 div 3) - 1 do
     for X := 0 to Size.X - 1 do
       Pixels[X, Y] := (Random(256) or (Random(256) shl 16) or (Random(256) shl 8)) and $ffffff;
+
+  // Color gradient
+  for Y := (Size.Y * 2 div 3) to (Size.Y - 1) do begin
+    for X := 0 to Size.X - 1 do
+      Pixels[X, Y] := (Trunc(Sin((X + Trunc(Index / Count * Size.X)) mod Size.X
+        / Size.X * pi) * 255) * $010101) and $ffffff;
+  end;
 end;
 
 

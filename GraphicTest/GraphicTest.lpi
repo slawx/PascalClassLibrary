@@ -65,21 +65,26 @@
         <LaunchingApplication PathPlusParams="/usr/bin/xterm -T 'Lazarus Run Output' -e $(LazarusDir)/tools/runwait.sh $(TargetCmdLine)"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="4">
+    <RequiredPackages Count="5">
       <Item1>
-        <PackageName Value="SynEdit"/>
+        <PackageName Value="GR32_L"/>
+        <DefaultFilename Value="Packages/Graphics32/Packages/GR32_L.lpk" Prefer="True"/>
       </Item1>
       <Item2>
-        <PackageName Value="bgrabitmappack"/>
+        <PackageName Value="SynEdit"/>
       </Item2>
       <Item3>
-        <PackageName Value="lazopenglcontext"/>
+        <PackageName Value="bgrabitmappack"/>
+        <DefaultFilename Value="Packages/BGRABitmap/bgrabitmappack.lpk" Prefer="True"/>
       </Item3>
       <Item4>
-        <PackageName Value="LCL"/>
+        <PackageName Value="lazopenglcontext"/>
       </Item4>
+      <Item5>
+        <PackageName Value="LCL"/>
+      </Item5>
     </RequiredPackages>
-    <Units Count="17">
+    <Units Count="18">
       <Unit0>
         <Filename Value="GraphicTest.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -170,6 +175,11 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="UOpenGLPBOMethod"/>
       </Unit16>
+      <Unit17>
+        <Filename Value="Methods/UGraphics32Method.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="UGraphics32Method"/>
+      </Unit17>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

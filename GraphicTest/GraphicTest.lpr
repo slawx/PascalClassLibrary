@@ -8,10 +8,10 @@ uses
   {$ENDIF}{$ENDIF}
   Interfaces, // this includes the LCL widgetset
   Forms, lazopenglcontext, UMainForm, UPlatform, UDrawMethod, UFastBitmap,
-  bgrabitmappack, UDrawForm, UCanvasPixels, UCanvasPixelsUpdateLock,
+  bgrabitmappack, UDrawForm, GR32_L, UCanvasPixels, UCanvasPixelsUpdateLock,
   ULazIntfImageColorsCopy, ULazIntfImageColorsNoCopy, UBGRABitmapPaintBox, 
-UBitmapRawImageDataPaintBox, UBitmapRawImageData, UDummyMethod, 
-UBitmapRawImageDataMove, UOpenGLMethod, UOpenGLPBOMethod;
+  UBitmapRawImageDataPaintBox, UBitmapRawImageData, UDummyMethod,
+  UBitmapRawImageDataMove, UOpenGLMethod, UOpenGLPBOMethod, UGraphics32Method;
 
 {$R *.res}
 

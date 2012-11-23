@@ -21,6 +21,7 @@ type
     ButtonBenchmark: TButton;
     ButtonSingleTest: TButton;
     ButtonStop: TButton;
+    CheckBox1: TCheckBox;
     CheckBoxDoubleBuffered: TCheckBox;
     CheckBoxEraseBackground: TCheckBox;
     FloatSpinEdit1: TFloatSpinEdit;
@@ -43,6 +44,7 @@ type
     procedure ButtonBenchmarkClick(Sender: TObject);
     procedure ButtonSingleTestClick(Sender: TObject);
     procedure ButtonStopClick(Sender: TObject);
+    procedure CheckBox1Change(Sender: TObject);
     procedure CheckBoxDoubleBufferedChange(Sender: TObject);
     procedure CheckBoxEraseBackgroundChange(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -84,13 +86,13 @@ uses
   UDrawForm, ULazIntfImageColorsCopy, ULazIntfImageColorsNoCopy, UCanvasPixels,
   UCanvasPixelsUpdateLock, UBGRABitmapPaintBox, UBitmapRawImageDataPaintBox,
   UBitmapRawImageData, UBitmapRawImageDataMove, UDummyMethod, UOpenGLMethod,
-  UOpenGLPBOMethod;
+  UOpenGLPBOMethod, UGraphics32Method;
 
 const
-  DrawMethodClasses: array[0..{$IFDEF opengl}10{$ELSE}8{$ENDIF}] of TDrawMethodClass = (
+  DrawMethodClasses: array[0..9{$IFDEF opengl}+2{$ENDIF}] of TDrawMethodClass = (
     TCanvasPixels, TCanvasPixelsUpdateLock, TLazIntfImageColorsCopy,
     TLazIntfImageColorsNoCopy, TBitmapRawImageData, TBitmapRawImageDataPaintBox,
-    TBitmapRawImageDataMove, TBGRABitmapPaintBox{$IFDEF opengl}, TOpenGLMethod, TOpenGLPBOMethod{$ENDIF}
+    TBitmapRawImageDataMove, TBGRABitmapPaintBox, TGraphics32Method{$IFDEF opengl}, TOpenGLMethod, TOpenGLPBOMethod{$ENDIF}
     ,TDummyMethod);
 
 
@@ -189,6 +191,13 @@ begin
   AllTestActive := False;
 end;
 
+procedure TMainForm.CheckBox1Change(Sender: TObject);
+begin
+  if CheckBox1.Checked then
+    DrawForm.ControlStyle := DrawForm.ControlStyle + [csOpaque]
+    else DrawForm.ControlStyle := DrawForm.ControlStyle - [csOpaque];
+end;
+
 procedure TMainForm.CheckBoxDoubleBufferedChange(Sender: TObject);
 begin
   DrawForm.DoubleBuffered := CheckBoxDoubleBuffered.Checked;
@@ -279,7 +288,7 @@ begin
   for I := 0 to SceneFrameCount - 1 do begin
     NewScene := TFastBitmap.Create;
     NewScene.Size := FrameSize;
-    NewScene.RandomImage;
+    NewScene.RandomImage(I, SceneFrameCount);
     Scenes.Add(NewScene);
   end;
 end;
@@ -299,6 +308,7 @@ begin
   SpinEditHeight.MaxValue := Screen.DesktopHeight;
   CheckBoxDoubleBuffered.Checked := DrawForm.DoubleBuffered;
   CheckBoxEraseBackground.Checked := DrawForm.EraseBackgroundEnabled;
+  CheckBox1.Checked := csOpaque in DrawForm.ControlStyle;
 end;
 
 procedure TMainForm.UpdateFrameSize;
