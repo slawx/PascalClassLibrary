@@ -1,0 +1,159 @@
+object Form1: TForm1
+  Left = 532
+  Height = 224
+  Top = 147
+  Width = 332
+  Caption = 'Form1'
+  ClientHeight = 224
+  ClientWidth = 332
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  Position = poScreenCenter
+  LCLVersion = '1.1'
+  object BGRAVirtualScreen1: TBGRAVirtualScreen
+    Left = 84
+    Height = 112
+    Top = 56
+    Width = 160
+    OnRedraw = BGRAVirtualScreen1Redraw
+    Alignment = taLeftJustify
+    Anchors = [akTop, akLeft, akRight, akBottom]
+    Color = clWhite
+    ParentColor = False
+    TabOrder = 0
+  end
+  object SpinEdit1: TSpinEdit
+    Left = 120
+    Height = 28
+    Top = 8
+    Width = 64
+    MaxValue = 1000
+    MinValue = -10
+    OnChange = SpinEditChange
+    TabOrder = 1
+    Value = 4
+  end
+  object SpinEdit2: TSpinEdit
+    Left = 268
+    Height = 28
+    Top = 153
+    Width = 64
+    Anchors = [akTop, akRight]
+    MaxValue = 1000
+    MinValue = -10
+    OnChange = SpinEditChange
+    TabOrder = 2
+    Value = 4
+  end
+  object SpinEdit3: TSpinEdit
+    Left = 120
+    Height = 28
+    Top = 171
+    Width = 64
+    Anchors = [akLeft, akBottom]
+    MaxValue = 1000
+    MinValue = -10
+    OnChange = SpinEditChange
+    TabOrder = 3
+    Value = 4
+  end
+  object SpinEdit4: TSpinEdit
+    Left = 8
+    Height = 28
+    Top = 153
+    Width = 64
+    MaxValue = 1000
+    MinValue = -10
+    OnChange = SpinEditChange
+    TabOrder = 4
+    Value = 4
+  end
+  object Image2: TImage
+    Left = 8
+    Height = 144
+    Top = 8
+    Width = 64
+    OnClick = SpinEditChange
+    Picture.Data = {
+      1754506F727461626C654E6574776F726B477261706869634301000089504E47
+      0D0A1A0A0000000D494844520000000D0000001708020000005FC452D6000000
+      017352474200AECE1CE90000000467414D410000B18F0BFC6105000000097048
+      5973000012740000127401DE661F78000000D849444154384F8D93CD0A824014
+      467DE4362238828F203E59141151B4111762453FFE2C34A8130AD30CDFC2B391
+      7BEE3773079C093ECB08A6589AA65114AD5C30F829F0CB9924C9F3BCAAAAB70B
+      064F77CE856158D7F5300C2F170C9EEE9C631A1B79A1A9C4D3B5B9711C9F0ABC
+      9F7B2844EEAEF0731CF9A6C03B73A9AF0A91BB28FC5CDFF76705DE994B7D5288
+      DC51E1E7BAAE3B28F0CE5CEABDC2CFB56DBB53E09DFDA8B70A3FD734CD4681B7
+      FB71C38AA2E077AC5D30787BFF8C3159969565C9EA7F3078BAF3FDE313C731EB
+      BCF781C1DBF7B1E4C57D01A41FEE7AA59AC4DD0000000049454E44AE426082
+    }
+    Stretch = True
+  end
+  object CheckBox1: TCheckBox
+    Left = 192
+    Height = 24
+    Top = 12
+    Width = 52
+    Caption = 'Grid'
+    OnChange = SpinEditChange
+    TabOrder = 5
+  end
+  object CheckBox_RepeatBottom: TCheckBox
+    Left = 120
+    Height = 24
+    Top = 195
+    Width = 46
+    Anchors = [akLeft, akBottom]
+    Caption = 'rep'
+    OnChange = CheckBox_RepeatChange
+    TabOrder = 6
+  end
+  object CheckBox_RepeatLeft: TCheckBox
+    Left = 11
+    Height = 24
+    Top = 180
+    Width = 46
+    Caption = 'rep'
+    OnChange = CheckBox_RepeatChange
+    TabOrder = 7
+  end
+  object CheckBox_RepeatRight: TCheckBox
+    Left = 259
+    Height = 24
+    Top = 180
+    Width = 46
+    Anchors = [akTop, akRight]
+    Caption = 'rep'
+    OnChange = CheckBox_RepeatChange
+    TabOrder = 8
+  end
+  object CheckBox_RepeatTop: TCheckBox
+    Left = 122
+    Height = 24
+    Top = 34
+    Width = 46
+    Caption = 'rep'
+    OnChange = CheckBox_RepeatChange
+    TabOrder = 9
+  end
+  object CheckBox_RepeatMiddleHoriz: TCheckBox
+    Left = 246
+    Height = 24
+    Top = 88
+    Width = 83
+    Anchors = [akTop, akRight]
+    Caption = 'rep horiz'
+    OnChange = CheckBox_RepeatChange
+    TabOrder = 10
+  end
+  object CheckBox_RepeatMiddleVert: TCheckBox
+    Left = 246
+    Height = 24
+    Top = 112
+    Width = 75
+    Anchors = [akTop, akRight]
+    Caption = 'rep vert'
+    OnChange = CheckBox_RepeatChange
+    TabOrder = 11
+  end
+end

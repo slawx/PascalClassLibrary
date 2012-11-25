@@ -1,0 +1,169 @@
+<?xml version="1.0"?>
+<CONFIG>
+  <ProjectSession>
+    <PathDelim Value="\"/>
+    <Version Value="9"/>
+    <BuildModes Active="Default"/>
+    <Units Count="5">
+      <Unit0>
+        <Filename Value="bctest.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="bctest"/>
+        <UsageCount Value="25"/>
+      </Unit0>
+      <Unit1>
+        <Filename Value="ubctest.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="Form1"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="ubctest"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="2"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="157"/>
+        <CursorPos X="15" Y="177"/>
+        <UsageCount Value="25"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="bcsamples.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="bcsamples"/>
+        <EditorIndex Value="1"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="565"/>
+        <CursorPos X="28" Y="576"/>
+        <UsageCount Value="25"/>
+        <Loaded Value="True"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="..\bgrasamples.pas"/>
+        <UnitName Value="bgrasamples"/>
+        <EditorIndex Value="3"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="28"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="12"/>
+        <Loaded Value="True"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="ubctest.lfm"/>
+        <EditorIndex Value="0"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1030"/>
+        <CursorPos X="31" Y="1050"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="LFM"/>
+      </Unit4>
+    </Units>
+    <General>
+      <ActiveWindowIndexAtStart Value="0"/>
+    </General>
+    <JumpHistory Count="25" HistoryIndex="24">
+      <Position1>
+        <Filename Value="bcsamples.pas"/>
+        <Caret Line="299" Column="28" TopLine="292"/>
+      </Position1>
+      <Position2>
+        <Filename Value="bcsamples.pas"/>
+        <Caret Line="354" Column="31" TopLine="347"/>
+      </Position2>
+      <Position3>
+        <Filename Value="bcsamples.pas"/>
+        <Caret Line="133" Column="24" TopLine="123"/>
+      </Position3>
+      <Position4>
+        <Filename Value="bcsamples.pas"/>
+        <Caret Line="206" Column="83" TopLine="194"/>
+      </Position4>
+      <Position5>
+        <Filename Value="bcsamples.pas"/>
+        <Caret Line="143" Column="28" TopLine="130"/>
+      </Position5>
+      <Position6>
+        <Filename Value="bcsamples.pas"/>
+        <Caret Line="790" Column="21" TopLine="770"/>
+      </Position6>
+      <Position7>
+        <Filename Value="bcsamples.pas"/>
+        <Caret Line="699" Column="49" TopLine="687"/>
+      </Position7>
+      <Position8>
+        <Filename Value="bcsamples.pas"/>
+        <Caret Line="253" Column="50" TopLine="243"/>
+      </Position8>
+      <Position9>
+        <Filename Value="bcsamples.pas"/>
+        <Caret Line="139" Column="19" TopLine="127"/>
+      </Position9>
+      <Position10>
+        <Filename Value="bcsamples.pas"/>
+        <Caret Line="272" Column="10" TopLine="256"/>
+      </Position10>
+      <Position11>
+        <Filename Value="bcsamples.pas"/>
+        <Caret Line="281" Column="40" TopLine="270"/>
+      </Position11>
+      <Position12>
+        <Filename Value="bcsamples.pas"/>
+        <Caret Line="280" Column="36" TopLine="264"/>
+      </Position12>
+      <Position13>
+        <Filename Value="bcsamples.pas"/>
+        <Caret Line="275" Column="19" TopLine="263"/>
+      </Position13>
+      <Position14>
+        <Filename Value="bcsamples.pas"/>
+        <Caret Line="276" Column="40" TopLine="266"/>
+      </Position14>
+      <Position15>
+        <Filename Value="bcsamples.pas"/>
+        <Caret Line="275" Column="19" TopLine="263"/>
+      </Position15>
+      <Position16>
+        <Filename Value="bcsamples.pas"/>
+        <Caret Line="268" Column="32" TopLine="251"/>
+      </Position16>
+      <Position17>
+        <Filename Value="ubctest.lfm"/>
+        <Caret Line="776" Column="45" TopLine="763"/>
+      </Position17>
+      <Position18>
+        <Filename Value="ubctest.pas"/>
+        <Caret Line="85" Column="13" TopLine="16"/>
+      </Position18>
+      <Position19>
+        <Filename Value="ubctest.pas"/>
+        <Caret Line="178" Column="33" TopLine="157"/>
+      </Position19>
+      <Position20>
+        <Filename Value="ubctest.pas"/>
+        <Caret Line="85" Column="10" TopLine="73"/>
+      </Position20>
+      <Position21>
+        <Filename Value="ubctest.pas"/>
+        <Caret Line="89" Column="10" TopLine="77"/>
+      </Position21>
+      <Position22>
+        <Filename Value="ubctest.pas"/>
+        <Caret Line="88" Column="10" TopLine="76"/>
+      </Position22>
+      <Position23>
+        <Filename Value="ubctest.pas"/>
+        <Caret Line="85" Column="10" TopLine="73"/>
+      </Position23>
+      <Position24>
+        <Filename Value="ubctest.pas"/>
+        <Caret Line="4" Column="36" TopLine="1"/>
+      </Position24>
+      <Position25>
+        <Filename Value="ubctest.pas"/>
+        <Caret Line="50" Column="23" TopLine="30"/>
+      </Position25>
+    </JumpHistory>
+  </ProjectSession>
+  <EditorMacros Count="0"/>
+</CONFIG>
