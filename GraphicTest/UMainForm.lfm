@@ -1,11 +1,12 @@
 object MainForm: TMainForm
   Left = 165
-  Height = 411
+  Height = 444
   Top = 117
   Width = 857
   Caption = 'Graphic test'
-  ClientHeight = 411
+  ClientHeight = 425
   ClientWidth = 857
+  Menu = MainMenu1
   OnClose = FormClose
   OnCreate = FormCreate
   OnDestroy = FormDestroy
@@ -13,7 +14,7 @@ object MainForm: TMainForm
   LCLVersion = '1.1'
   object PageControl1: TPageControl
     Left = 459
-    Height = 411
+    Height = 425
     Top = 0
     Width = 398
     ActivePage = TabSheet1
@@ -22,13 +23,13 @@ object MainForm: TMainForm
     TabOrder = 0
     object TabSheet1: TTabSheet
       Caption = 'Description'
-      ClientHeight = 386
-      ClientWidth = 394
+      ClientHeight = 388
+      ClientWidth = 390
       object Memo1: TMemo
         Left = 0
-        Height = 386
+        Height = 388
         Top = 0
-        Width = 394
+        Width = 390
         Align = alClient
         ReadOnly = True
         ScrollBars = ssAutoBoth
@@ -37,8 +38,8 @@ object MainForm: TMainForm
     end
     object TabSheet2: TTabSheet
       Caption = 'Code'
-      ClientHeight = 386
-      ClientWidth = 394
+      ClientHeight = 388
+      ClientWidth = 390
       inline SynMemo1: TSynMemo
         Cursor = crIBeam
         Left = 0
@@ -523,17 +524,17 @@ object MainForm: TMainForm
   end
   object Panel1: TPanel
     Left = 0
-    Height = 411
+    Height = 425
     Top = 0
     Width = 454
     Align = alClient
     BevelOuter = bvNone
-    ClientHeight = 411
+    ClientHeight = 425
     ClientWidth = 454
     TabOrder = 1
     object ListViewMethods: TListView
       Left = 9
-      Height = 335
+      Height = 349
       Top = 8
       Width = 443
       Anchors = [akTop, akLeft, akRight, akBottom]
@@ -577,7 +578,7 @@ object MainForm: TMainForm
     object ButtonSingleTest: TButton
       Left = 8
       Height = 25
-      Top = 350
+      Top = 364
       Width = 115
       Anchors = [akLeft, akBottom]
       Caption = 'Test one method'
@@ -587,7 +588,7 @@ object MainForm: TMainForm
     object ButtonBenchmark: TButton
       Left = 136
       Height = 25
-      Top = 350
+      Top = 364
       Width = 112
       Anchors = [akLeft, akBottom]
       Caption = 'Test all methods'
@@ -596,8 +597,8 @@ object MainForm: TMainForm
     end
     object FloatSpinEdit1: TFloatSpinEdit
       Left = 88
-      Height = 25
-      Top = 378
+      Height = 23
+      Top = 394
       Width = 58
       Anchors = [akLeft, akBottom]
       Increment = 1
@@ -609,7 +610,7 @@ object MainForm: TMainForm
     object ButtonStop: TButton
       Left = 256
       Height = 25
-      Top = 350
+      Top = 364
       Width = 75
       Anchors = [akLeft, akBottom]
       Caption = 'Stop'
@@ -619,8 +620,8 @@ object MainForm: TMainForm
     object Label1: TLabel
       Left = 8
       Height = 15
-      Top = 384
-      Width = 80
+      Top = 398
+      Width = 78
       Anchors = [akLeft, akBottom]
       Caption = 'Step duration:'
       ParentColor = False
@@ -628,16 +629,16 @@ object MainForm: TMainForm
     object Label2: TLabel
       Left = 152
       Height = 15
-      Top = 384
-      Width = 6
+      Top = 398
+      Width = 5
       Anchors = [akLeft, akBottom]
       Caption = 's'
       ParentColor = False
     end
     object SpinEditWidth: TSpinEdit
       Left = 204
-      Height = 25
-      Top = 378
+      Height = 23
+      Top = 394
       Width = 58
       Anchors = [akLeft, akBottom]
       MaxValue = 1000
@@ -647,8 +648,8 @@ object MainForm: TMainForm
     end
     object SpinEditHeight: TSpinEdit
       Left = 273
-      Height = 25
-      Top = 378
+      Height = 23
+      Top = 394
       Width = 58
       Anchors = [akLeft, akBottom]
       MaxValue = 1000
@@ -659,7 +660,7 @@ object MainForm: TMainForm
     object Label3: TLabel
       Left = 169
       Height = 15
-      Top = 385
+      Top = 399
       Width = 25
       Anchors = [akLeft, akBottom]
       Caption = 'Size:'
@@ -668,7 +669,7 @@ object MainForm: TMainForm
     object Label4: TLabel
       Left = 265
       Height = 15
-      Top = 384
+      Top = 398
       Width = 6
       Anchors = [akLeft, akBottom]
       Caption = 'x'
@@ -676,9 +677,9 @@ object MainForm: TMainForm
     end
     object CheckBoxDoubleBuffered: TCheckBox
       Left = 336
-      Height = 21
-      Top = 346
-      Width = 116
+      Height = 24
+      Top = 357
+      Width = 118
       Anchors = [akLeft, akBottom]
       Caption = 'Double buffered'
       OnChange = CheckBoxDoubleBufferedChange
@@ -686,8 +687,8 @@ object MainForm: TMainForm
     end
     object CheckBoxEraseBackground: TCheckBox
       Left = 336
-      Height = 21
-      Top = 363
+      Height = 24
+      Top = 374
       Width = 124
       Anchors = [akLeft, akBottom]
       Caption = 'Erase background'
@@ -696,9 +697,9 @@ object MainForm: TMainForm
     end
     object CheckBox1: TCheckBox
       Left = 336
-      Height = 21
-      Top = 383
-      Width = 67
+      Height = 24
+      Top = 394
+      Width = 69
       Anchors = [akLeft, akBottom]
       Caption = 'Opaque'
       OnChange = CheckBox1Change
@@ -707,7 +708,7 @@ object MainForm: TMainForm
   end
   object Splitter1: TSplitter
     Left = 454
-    Height = 411
+    Height = 425
     Top = 0
     Width = 5
     Align = alRight
@@ -736,5 +737,41 @@ object MainForm: TMainForm
     OnTimer = TimerUpdateListTimer
     left = 266
     top = 164
+  end
+  object ActionList1: TActionList
+    left = 104
+    top = 168
+    object AExportAsWikiText: TAction
+      Caption = 'Export as Wiki text'
+      Hint = 'Export as Wiki text'
+      OnExecute = AExportAsWikiTextExecute
+    end
+    object Action1: TAction
+      Caption = 'Action1'
+    end
+    object FileExit1: TFileExit
+      Category = 'File'
+      Caption = '&Exit'
+      Hint = 'Exit'
+      ShortCut = 32883
+    end
+  end
+  object MainMenu1: TMainMenu
+    left = 160
+    top = 80
+    object MenuItem1: TMenuItem
+      Caption = 'General'
+      object MenuItem2: TMenuItem
+        Action = AExportAsWikiText
+      end
+      object MenuItem3: TMenuItem
+        Action = FileExit1
+      end
+    end
+  end
+  object SaveDialog1: TSaveDialog
+    DefaultExt = '.txt'
+    left = 308
+    top = 76
   end
 end

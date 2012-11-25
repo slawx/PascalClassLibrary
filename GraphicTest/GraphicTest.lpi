@@ -65,21 +65,24 @@
         <LaunchingApplication PathPlusParams="/usr/bin/xterm -T 'Lazarus Run Output' -e $(LazarusDir)/tools/runwait.sh $(TargetCmdLine)"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="4">
+    <RequiredPackages Count="5">
       <Item1>
-        <PackageName Value="BGRABitmapPack"/>
-        <DefaultFilename Value="Packages/bgrabitmap/bgrabitmappack.lpk" Prefer="True"/>
+        <PackageName Value="lazopenglcontext"/>
       </Item1>
       <Item2>
-        <PackageName Value="GR32_L"/>
-        <DefaultFilename Value="Packages/Graphics32/Packages/GR32_L.lpk" Prefer="True"/>
+        <PackageName Value="BGRABitmapPack"/>
+        <DefaultFilename Value="Packages/bgrabitmap/bgrabitmappack.lpk" Prefer="True"/>
       </Item2>
       <Item3>
-        <PackageName Value="SynEdit"/>
+        <PackageName Value="GR32_L"/>
+        <DefaultFilename Value="Packages/Graphics32/Packages/GR32_L.lpk" Prefer="True"/>
       </Item3>
       <Item4>
-        <PackageName Value="LCL"/>
+        <PackageName Value="SynEdit"/>
       </Item4>
+      <Item5>
+        <PackageName Value="LCL"/>
+      </Item5>
     </RequiredPackages>
     <Units Count="18">
       <Unit0>
@@ -204,7 +207,6 @@
         <OverflowChecks Value="True"/>
         <StackChecks Value="True"/>
       </Checks>
-      <VerifyObjMethodCallValidity Value="True"/>
     </CodeGeneration>
     <Linking>
       <Debugging>
@@ -220,6 +222,7 @@
       <CompilerMessages>
         <UseMsgFile Value="True"/>
       </CompilerMessages>
+      <CustomOptions Value="-dopengl"/>
       <CompilerPath Value="$(CompPath)"/>
     </Other>
   </CompilerOptions>

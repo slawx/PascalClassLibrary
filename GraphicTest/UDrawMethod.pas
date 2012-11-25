@@ -112,7 +112,7 @@ begin
   Image.Parent := Parent;
   Image.SetBounds(0, 0, Size.X, Size.Y);
   Image.Picture.Bitmap.SetSize(Size.X, Size.Y);
-  Image.Picture.Bitmap.PixelFormat := pf32bit;
+  Image.Picture.Bitmap.PixelFormat := pf24bit;
   Image.Show;
 end;
 
@@ -231,4 +231,4 @@ begin
 end;
 
 end.
-
+

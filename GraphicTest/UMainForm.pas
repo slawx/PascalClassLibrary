@@ -8,7 +8,7 @@ uses
   Classes, SysUtils, FileUtil, SynHighlighterPas, SynMemo, Forms, Controls,
   Graphics, Dialogs, ComCtrls, ExtCtrls, StdCtrls, DateUtils, UPlatform,
   LCLType, IntfGraphics, fpImage, Math, GraphType, Contnrs, LclIntf, Spin,
-  UFastBitmap, UDrawMethod;
+  ActnList, Menus, StdActns, UFastBitmap, UDrawMethod;
 
 const
   SceneFrameCount = 100;
@@ -18,21 +18,30 @@ type
   { TMainForm }
 
   TMainForm = class(TForm)
+    Action1: TAction;
+    AExportAsWikiText: TAction;
+    ActionList1: TActionList;
     ButtonBenchmark: TButton;
     ButtonSingleTest: TButton;
     ButtonStop: TButton;
     CheckBox1: TCheckBox;
     CheckBoxDoubleBuffered: TCheckBox;
     CheckBoxEraseBackground: TCheckBox;
+    FileExit1: TFileExit;
     FloatSpinEdit1: TFloatSpinEdit;
     Label1: TLabel;
     Label2: TLabel;
     Label3: TLabel;
     Label4: TLabel;
     ListViewMethods: TListView;
+    MainMenu1: TMainMenu;
     Memo1: TMemo;
+    MenuItem1: TMenuItem;
+    MenuItem2: TMenuItem;
+    MenuItem3: TMenuItem;
     PageControl1: TPageControl;
     Panel1: TPanel;
+    SaveDialog1: TSaveDialog;
     SpinEditHeight: TSpinEdit;
     SpinEditWidth: TSpinEdit;
     Splitter1: TSplitter;
@@ -41,6 +50,7 @@ type
     TabSheet1: TTabSheet;
     TabSheet2: TTabSheet;
     TimerUpdateList: TTimer;
+    procedure AExportAsWikiTextExecute(Sender: TObject);
     procedure ButtonBenchmarkClick(Sender: TObject);
     procedure ButtonSingleTestClick(Sender: TObject);
     procedure ButtonStopClick(Sender: TObject);
@@ -183,6 +193,34 @@ begin
     TimerUpdateList.Enabled := False;
     AllTestActive := False;
     UpdateInterface;
+  end;
+end;
+
+procedure TMainForm.AExportAsWikiTextExecute(Sender: TObject);
+var
+  Output: TStringList;
+  I: Integer;
+  Duration: Real;
+begin
+  SaveDialog1.FileName := 'GraphicsTest results.txt';
+  if SaveDialog1.Execute then
+  try
+    Output := TStringList.Create;
+    Output.Add('{| class="wikitable sortable"');
+    Output.Add('|-');
+    Output.Add('! Method !! FPS !! Frame duration [ms]');
+    for I := 0 to DrawMethods.Count - 1 do
+    with TDrawMethod(DrawMethods[I]) do begin
+      Output.Add('|-');
+      if FPS <> 0 then Duration := 1 / FPS * 1000
+        else Duration := 0;
+      Output.Add('|' + Caption + ' || ' + FloatToStr(RoundTo(FPS, -1)) +
+        ' || ' + FloatToStr(RoundTo(Duration, -1)));
+    end;
+    Output.Add('|}');
+    Output.SaveToFile(SaveDialog1.FileName);
+  finally
+    Output.Free;
   end;
 end;
 
