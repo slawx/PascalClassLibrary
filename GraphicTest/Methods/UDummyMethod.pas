@@ -24,6 +24,8 @@ constructor TDummyMethod.Create;
 begin
   inherited Create;
   Caption := 'Dummy';
+  Description.Add('This method doesn''t draw anything. It''s purpose is to measure ' +
+    'and compare speed of system and event handling.');
 end;
 
 procedure TDummyMethod.DrawFrame(FastBitmap: TFastBitmap);

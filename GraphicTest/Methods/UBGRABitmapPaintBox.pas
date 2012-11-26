@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, UDrawMethod, UFastBitmap, BGRABitmap, BGRABitmapTypes,
-  Controls;
+  Controls, Graphics;
 
 type
   { TBGRABitmapPaintBox }
@@ -14,7 +14,7 @@ type
   TBGRABitmapPaintBox = class(TDrawMethodPaintBox)
     BGRABitmap: TBGRABitmap;
     procedure Paint(Sender: TObject); override;
-    procedure Init(Parent: TWinControl; Size: TPoint); override;
+    procedure Init(Parent: TWinControl; Size: TPoint; PixelFormat: TPixelFormat); override;
     constructor Create; override;
     destructor Destroy; override;
     procedure DrawFrame(FastBitmap: TFastBitmap); override;
@@ -31,9 +31,9 @@ begin
   BGRABitmap.Draw(PaintBox.Canvas, 0, 0, True);
 end;
 
-procedure TBGRABitmapPaintBox.Init(Parent: TWinControl; Size: TPoint);
+procedure TBGRABitmapPaintBox.Init(Parent: TWinControl; Size: TPoint; PixelFormat: TPixelFormat);
 begin
-  inherited Init(Parent, Size);
+  inherited;
   BGRABitmap.SetSize(PaintBox.Width, PaintBox.Height);
 end;
 

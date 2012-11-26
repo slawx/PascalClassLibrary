@@ -24,6 +24,9 @@ constructor TCanvasPixels.Create;
 begin
   inherited;
   Caption := 'TBitmap.Canvas.Pixels';
+  Description.Add('This is simple naive approach to copy image by accessing Pixels property. ' +
+  'Method is slow because of much of overhead in access methods like multiple nested method calls, ' +
+  'pixel format conversion, update notification, etc.');
 end;
 
 procedure TCanvasPixels.DrawFrame(FastBitmap: TFastBitmap);

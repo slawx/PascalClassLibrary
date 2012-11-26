@@ -5,7 +5,7 @@ unit UOpenGLPBOMethod;
 interface
 
 uses
-  Classes, SysUtils, UDrawMethod, UFastBitmap, Controls
+  Classes, SysUtils, UDrawMethod, UFastBitmap, Controls, Graphics
   {$IFDEF opengl}, GL, GLExt, OpenGLContext{$ENDIF};
 
 {$IFDEF opengl}
@@ -15,7 +15,7 @@ type
   TOpenGLPBOMethod = class(TDrawMethodOpenGL)
     pboIds: array[0..1] of GLuint;
     Index, NextIndex: Integer;
-    procedure Init(AParent: TWinControl; Size: TPoint); override;
+    procedure Init(AParent: TWinControl; Size: TPoint; PixelFormat: TPixelFormat); override;
     constructor Create; override;
     destructor Destroy; override;
     procedure DrawFrame(FastBitmap: TFastBitmap); override;
@@ -30,7 +30,7 @@ implementation
 
 //procedure glGenBuffersARB2 : procedure(n : GLsizei; buffers : PGLuint); extdecl;
 
-procedure TOpenGLPBOMethod.Init(AParent: TWinControl; Size: TPoint);
+procedure TOpenGLPBOMethod.Init(AParent: TWinControl; Size: TPoint; PixelFormat: TPixelFormat);
 var
   DataSize: Integer;
   glExtensions: string;
@@ -169,4 +169,4 @@ end;
 {$ENDIF}
 
 end.
-
+

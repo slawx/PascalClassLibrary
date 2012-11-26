@@ -12,7 +12,7 @@ type
 
   TLazIntfImageColorsNoCopy = class(TDrawMethodImage)
     TempIntfImage: TLazIntfImage;
-    procedure Init(Parent: TWinControl; Size: TPoint); override;
+    procedure Init(Parent: TWinControl; Size: TPoint; PixelFormat: TPixelFormat); override;
     constructor Create; override;
     destructor Destroy; override;
     procedure DrawFrame(FastBitmap: TFastBitmap); override;
@@ -23,9 +23,9 @@ implementation
 
 { TLazIntfImageColorsNoCopy }
 
-procedure TLazIntfImageColorsNoCopy.Init(Parent: TWinControl; Size: TPoint);
+procedure TLazIntfImageColorsNoCopy.Init(Parent: TWinControl; Size: TPoint; PixelFormat: TPixelFormat);
 begin
-  inherited Init(Parent, Size);
+  inherited;
   TempIntfImage.Free;
   TempIntfImage := Image.Picture.Bitmap.CreateIntfImage;
 end;

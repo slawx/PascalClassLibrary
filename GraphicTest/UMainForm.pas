@@ -8,7 +8,7 @@ uses
   Classes, SysUtils, FileUtil, SynHighlighterPas, SynMemo, Forms, Controls,
   Graphics, Dialogs, ComCtrls, ExtCtrls, StdCtrls, DateUtils, UPlatform,
   LCLType, IntfGraphics, fpImage, Math, GraphType, Contnrs, LclIntf, Spin,
-  ActnList, Menus, StdActns, UFastBitmap, UDrawMethod;
+  ActnList, Menus, StdActns, UFastBitmap, UDrawMethod, typinfo;
 
 const
   SceneFrameCount = 100;
@@ -18,7 +18,10 @@ type
   { TMainForm }
 
   TMainForm = class(TForm)
-    Action1: TAction;
+    AShowDrawForm: TAction;
+    ATestAllMethods: TAction;
+    ATestOneMethod: TAction;
+    ATestStop: TAction;
     AExportAsWikiText: TAction;
     ActionList1: TActionList;
     ButtonBenchmark: TButton;
@@ -27,18 +30,26 @@ type
     CheckBox1: TCheckBox;
     CheckBoxDoubleBuffered: TCheckBox;
     CheckBoxEraseBackground: TCheckBox;
+    ComboBox1: TComboBox;
     FileExit1: TFileExit;
     FloatSpinEdit1: TFloatSpinEdit;
     Label1: TLabel;
     Label2: TLabel;
     Label3: TLabel;
     Label4: TLabel;
+    Label5: TLabel;
     ListViewMethods: TListView;
     MainMenu1: TMainMenu;
     Memo1: TMemo;
     MenuItem1: TMenuItem;
     MenuItem2: TMenuItem;
     MenuItem3: TMenuItem;
+    MenuItem4: TMenuItem;
+    MenuItem8: TMenuItem;
+    MenuItemTest: TMenuItem;
+    MenuItem5: TMenuItem;
+    MenuItem6: TMenuItem;
+    MenuItem7: TMenuItem;
     PageControl1: TPageControl;
     Panel1: TPanel;
     SaveDialog1: TSaveDialog;
@@ -51,12 +62,14 @@ type
     TabSheet2: TTabSheet;
     TimerUpdateList: TTimer;
     procedure AExportAsWikiTextExecute(Sender: TObject);
-    procedure ButtonBenchmarkClick(Sender: TObject);
-    procedure ButtonSingleTestClick(Sender: TObject);
-    procedure ButtonStopClick(Sender: TObject);
+    procedure AShowDrawFormExecute(Sender: TObject);
+    procedure ATestAllMethodsExecute(Sender: TObject);
+    procedure ATestOneMethodExecute(Sender: TObject);
+    procedure ATestStopExecute(Sender: TObject);
     procedure CheckBox1Change(Sender: TObject);
     procedure CheckBoxDoubleBufferedChange(Sender: TObject);
     procedure CheckBoxEraseBackgroundChange(Sender: TObject);
+    procedure ComboBox1Change(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -80,6 +93,7 @@ type
     procedure UpdateFrameSize;
   public
     FrameSize: TPoint;
+    PixelFormat: TPixelFormat;
     DrawMethods: TObjectList; // TObjectList<TDrawMethod>
     Scenes: TObjectList; // TObjectList<TFastBitmap>
     SceneIndex: Integer;
@@ -113,6 +127,7 @@ procedure TMainForm.FormCreate(Sender: TObject);
 var
   NewDrawMethod: TDrawMethod;
   I: Integer;
+  PF: TPixelFormat;
 begin
   Scenes := TObjectList.Create;
 
@@ -125,6 +140,9 @@ begin
     DrawMethods.Add(NewDrawMethod);
   end;
 
+  for PF := Low(TPixelFormat) to High(TPixelFormat) do
+    ComboBox1.Items.Add(GetEnumName(TypeInfo(TPixelFormat), Integer(PF)));
+
   PageControl1.TabIndex := 0;
 end;
 
@@ -134,8 +152,7 @@ var
   StartTime: TDateTime;
 begin
   with Method do begin
-    Init(DrawForm, FrameSize);
-    TestTerminated := False;
+    Init(DrawForm, FrameSize, PixelFormat);
     //Application.ProcessMessages;
     StartTime := NowPrecise;
     FrameCounterStart := NowPrecise;
@@ -153,46 +170,6 @@ begin
     FrameCounterStop := NowPrecise;
     //FPS := GetFPS;
     Done;
-  end;
-end;
-
-procedure TMainForm.ButtonSingleTestClick(Sender: TObject);
-begin
-  if Assigned(ListViewMethods.Selected) then
-  try
-    SingleTestActive := True;
-    UpdateInterface;
-    TimerUpdateList.Enabled := True;
-    MethodIndex := ListViewMethods.Selected.Index;
-    TestTimeout := -1;
-    if MethodIndex >= 0 then
-      TestMethod(TDrawMethod(DrawMethods[MethodIndex]));
-  finally
-    //TimerUpdateList.Enabled := False;
-    SingleTestActive := False;
-    UpdateInterface;
-  end;
-end;
-
-procedure TMainForm.ButtonBenchmarkClick(Sender: TObject);
-var
-  I: Integer;
-begin
-  try
-    AllTestActive := True;
-    UpdateInterface;
-    TimerUpdateList.Enabled := True;
-    TestTerminated := False;
-    TestTimeout := FloatSpinEdit1.Value;
-    with ListViewMethods, Items do
-    for I := 0 to DrawMethods.Count - 1 do
-    with TDrawMethod(DrawMethods[I]) do begin
-      TestMethod(TDrawMethod(DrawMethods[I]));
-    end;
-  finally
-    TimerUpdateList.Enabled := False;
-    AllTestActive := False;
-    UpdateInterface;
   end;
 end;
 
@@ -224,7 +201,54 @@ begin
   end;
 end;
 
-procedure TMainForm.ButtonStopClick(Sender: TObject);
+procedure TMainForm.AShowDrawFormExecute(Sender: TObject);
+begin
+  DrawForm.Show;
+end;
+
+procedure TMainForm.ATestAllMethodsExecute(Sender: TObject);
+var
+  I: Integer;
+begin
+  try
+    AllTestActive := True;
+    UpdateInterface;
+    TimerUpdateList.Enabled := True;
+    TestTerminated := False;
+    TestTimeout := FloatSpinEdit1.Value;
+    with ListViewMethods, Items do
+    for I := 0 to DrawMethods.Count - 1 do
+    with TDrawMethod(DrawMethods[I]) do begin
+      TestMethod(TDrawMethod(DrawMethods[I]));
+      if TestTerminated then Break;
+    end;
+  finally
+    TimerUpdateList.Enabled := False;
+    AllTestActive := False;
+    UpdateInterface;
+  end;
+end;
+
+procedure TMainForm.ATestOneMethodExecute(Sender: TObject);
+begin
+  if Assigned(ListViewMethods.Selected) then
+  try
+    SingleTestActive := True;
+    UpdateInterface;
+    TimerUpdateList.Enabled := True;
+    TestTerminated := False;
+    MethodIndex := ListViewMethods.Selected.Index;
+    TestTimeout := -1;
+    if MethodIndex >= 0 then
+      TestMethod(TDrawMethod(DrawMethods[MethodIndex]));
+  finally
+    //TimerUpdateList.Enabled := False;
+    SingleTestActive := False;
+    UpdateInterface;
+  end;
+end;
+
+procedure TMainForm.ATestStopExecute(Sender: TObject);
 begin
   TestTerminated := True;
   SingleTestActive := False;
@@ -248,9 +272,15 @@ begin
   DrawForm.EraseBackgroundEnabled := CheckBoxEraseBackground.Checked;
 end;
 
+procedure TMainForm.ComboBox1Change(Sender: TObject);
+begin
+  PixelFormat := TPixelFormat(ComboBox1.ItemIndex);
+  UpdateInterface;
+end;
+
 procedure TMainForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
-  ButtonStopClick(Self);
+  ATestStop.Execute;
 end;
 
 procedure TMainForm.FormDestroy(Sender: TObject);
@@ -353,6 +383,7 @@ begin
   CheckBoxDoubleBuffered.Checked := DrawForm.DoubleBuffered;
   CheckBoxEraseBackground.Checked := DrawForm.EraseBackgroundEnabled;
   CheckBox1.Checked := csOpaque in DrawForm.ControlStyle;
+  ComboBox1.ItemIndex := Integer(PixelFormat);
 end;
 
 procedure TMainForm.UpdateFrameSize;

@@ -24,6 +24,9 @@ constructor TCanvasPixelsUpdateLock.Create;
 begin
   inherited;
   Caption := 'TBitmap.Canvas.Pixels Update locking';
+  Description.Add('This method improves basic canvas pixel access by eliminating ' +
+    'updating of visible area during complete operation. Image data is ' +
+    'painted only one at the end of complete operation');
 end;
 
 procedure TCanvasPixelsUpdateLock.DrawFrame(FastBitmap: TFastBitmap);

@@ -222,7 +222,8 @@
       <CompilerMessages>
         <UseMsgFile Value="True"/>
       </CompilerMessages>
-      <CustomOptions Value="-dopengl"/>
+      <CustomOptions Value="-dopengl
+-dGR32"/>
       <CompilerPath Value="$(CompPath)"/>
     </Other>
   </CompilerOptions>

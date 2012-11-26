@@ -32,7 +32,7 @@ type
     FrameCounterStop: TDateTime;
     function GetFPS: Real;
     property FPS: Real read FFPS write FFPS;
-    procedure Init(Parent: TWinControl; Size: TPoint); virtual;
+    procedure Init(Parent: TWinControl; Size: TPoint; PixelFormat: TPixelFormat); virtual;
     procedure Done; virtual;
     constructor Create; virtual;
     destructor Destroy; override;
@@ -47,7 +47,7 @@ type
 
   TDrawMethodImage = class(TDrawMethod)
     Image: TImage;
-    procedure Init(Parent: TWinControl; Size: TPoint); override;
+    procedure Init(Parent: TWinControl; Size: TPoint; PixelFormat: TPixelFormat); override;
     procedure Done; override;
   end;
 
@@ -56,7 +56,7 @@ type
   TDrawMethodPaintBox = class(TDrawMethod)
     PaintBox: TPaintBox;
     procedure Paint(Sender: TObject); virtual;
-    procedure Init(Parent: TWinControl; Size: TPoint); override;
+    procedure Init(Parent: TWinControl; Size: TPoint; PixelFormat: TPixelFormat); override;
     procedure Done; override;
   end;
 
@@ -70,7 +70,7 @@ type
     OpenGLBitmap: Pointer;
     procedure InitGL;
     procedure OpenGLControlResize(Sender: TObject);
-    procedure Init(AParent: TWinControl; Size: TPoint); override;
+    procedure Init(AParent: TWinControl; Size: TPoint; PixelFormat: TPixelFormat); override;
     procedure Done; override;
   end;
 
@@ -87,9 +87,9 @@ begin
 
 end;
 
-procedure TDrawMethodPaintBox.Init(Parent: TWinControl; Size: TPoint);
+procedure TDrawMethodPaintBox.Init(Parent: TWinControl; Size: TPoint; PixelFormat: TPixelFormat);
 begin
-  inherited Init(Parent, Size);
+  inherited;
   PaintBox := TPaintBox.Create(Parent);
   PaintBox.Parent := Parent;
   PaintBox.SetBounds(0, 0, Size.X, Size.Y);
@@ -105,14 +105,14 @@ end;
 
 { TDrawMethodImage }
 
-procedure TDrawMethodImage.Init(Parent: TWinControl; Size: TPoint);
+procedure TDrawMethodImage.Init(Parent: TWinControl; Size: TPoint; PixelFormat: TPixelFormat);
 begin
-  inherited Init(Parent, Size);
+  inherited;
   Image := TImage.Create(Parent);
   Image.Parent := Parent;
   Image.SetBounds(0, 0, Size.X, Size.Y);
   Image.Picture.Bitmap.SetSize(Size.X, Size.Y);
-  Image.Picture.Bitmap.PixelFormat := pf24bit;
+  Image.Picture.Bitmap.PixelFormat := PixelFormat;
   Image.Show;
 end;
 
@@ -127,9 +127,9 @@ end;
 
 { TDrawMethodOpenGL }
 
-procedure TDrawMethodOpenGL.Init(AParent: TWinControl; Size: TPoint);
+procedure TDrawMethodOpenGL.Init(AParent: TWinControl; Size: TPoint; PixelFormat: TPixelFormat);
 begin
-  inherited Init(aParent, Size);
+  inherited;
   OpenGLControl := TOpenGLControl.Create(AParent);
   with OpenGLControl do begin
     Name := 'OpenGLControl';
@@ -192,7 +192,7 @@ begin
   end else Result := FFPS;
 end;
 
-procedure TDrawMethod.Init(Parent: TWinControl; Size: TPoint);
+procedure TDrawMethod.Init(Parent: TWinControl; Size: TPoint; PixelFormat: TPixelFormat);
 begin
   if (TempBitmap.Width <> Size.X) or (TempBitmap.Height <> Size.Y) then
     TempBitmap.SetSize(Size.X, Size.Y);
@@ -231,4 +231,4 @@ begin
 end;
 
 end.
-
+
