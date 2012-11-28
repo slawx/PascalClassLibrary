@@ -5,7 +5,7 @@ unit UCoolTranslator;
 interface
 
 uses
-  Classes, SysUtils, Forms, StdCtrls, ExtCtrls, StrUtils, Controls, Contnrs,
+  Classes, SysUtils, Forms, ExtCtrls, Controls, Contnrs,
   Translations, TypInfo, Dialogs, FileUtil, LCLProc, ULanguages, LCLType;
 
 type
@@ -222,7 +222,6 @@ procedure TCoolTranslator.TranslateProperty(Component: TPersistent;
   PropInfo: PPropInfo);
 var
   PropType: PTypeInfo;
-  Parent: TObject;
   Obj: TObject;
   I: Integer;
 begin
@@ -414,7 +413,6 @@ end;
 function TCoolTranslator.FindLocaleFileName(LCExt: string): string;
 var
   T: string;
-  I: Integer;
   Lang: string;
 begin
   Result := '';

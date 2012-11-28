@@ -5,7 +5,7 @@ unit UStreamHelper;
 interface
 
 uses
-  Classes, DateUtils, syncobjs, SysUtils;
+  Classes, DateUtils, SysUtils;
 
 type
   TEndianness = (enBig, enLittle);
@@ -21,6 +21,7 @@ type
     function GetItem(Index: Integer): Byte;
     procedure SetEndianness(const AValue: TEndianness);
     procedure SetItem(Index: Integer; const AValue: Byte);
+    procedure SetStream(AValue: TStream);
   public
     procedure Assign(Source: TStreamHelper);
     procedure WriteByte(Data: Byte);
@@ -61,8 +62,9 @@ type
     function Read(var Buffer; Count: Longint): Longint; override;
     function Write(const Buffer; Count: Longint): Longint; override;
     property Endianness: TEndianness read FEndianness write SetEndianness;
-    property Stream: TStream read FStream write FStream;
+    property Stream: TStream read FStream write SetStream;
     property Items[Index: Integer]: Byte read GetItem write SetItem; default;
+    property OwnStream: Boolean read FOwnStream write FOwnStream;
   end;
 
 implementation
@@ -73,6 +75,7 @@ function TStreamHelper.ReadAnsiString: string;
 var
   StringLength: Longint;
 begin
+  StringLength := 0;
   FStream.ReadBuffer(StringLength, SizeOf(StringLength));
   Result := ReadString(StringLength);
 end;
@@ -102,17 +105,20 @@ end;
 
 function TStreamHelper.ReadByte: Byte;
 begin
+  Result := 0;
   FStream.ReadBuffer(Result, SizeOf(Byte));
 end;
 
 function TStreamHelper.ReadCardinal: Cardinal;
 begin
+  Result := 0;
   FStream.ReadBuffer(Result, SizeOf(Cardinal));
   if SwapData then Result := Swap(Result);
 end;
 
 function TStreamHelper.ReadInt64: Int64;
 begin
+  Result := 0;
   FStream.ReadBuffer(Result, SizeOf(Int64));
   if SwapData then Result := Swap(Result);
 end;
@@ -129,21 +135,24 @@ function TStreamHelper.ReadShortString: string;
 var
   Count: Byte;
 begin
+  Count := 0;
   FStream.ReadBuffer(Count, 1);
   Result := ReadString(Count);
 end;
 
 procedure TStreamHelper.ReadStream(AStream: TStream; Count: Integer);
-var
-  Buffer: array of Byte;
+//var
+//  Buffer: array of Byte;
 begin
-  if Count > 0 then begin
+  AStream.Position := 0;
+  AStream.CopyFrom(Self, Count);
+  (*if Count > 0 then begin
     SetLength(Buffer, Count);
     FStream.ReadBuffer(Buffer[0], Count);
     AStream.Size := Count;
     AStream.Position := 0;
     AStream.Write(Buffer[0], Count);
-  end;
+  end;*)
 end;
 
 procedure TStreamHelper.ReadStreamPart(AStream: TStream; Count: Integer);
@@ -258,11 +267,13 @@ end;
 
 function TStreamHelper.ReadDouble: Double;
 begin
+  Result := 0;
   FStream.ReadBuffer(Result, SizeOf(Double));
 end;
 
 function TStreamHelper.ReadSingle: Single;
 begin
+  Result := 0;
   FStream.ReadBuffer(Result, SizeOf(Single));
 end;
 
@@ -284,6 +295,7 @@ end;
 
 function TStreamHelper.ReadWord: Word;
 begin
+  Result := 0;
   FStream.ReadBuffer(Result, SizeOf(Word));
   if SwapData then Result := Swap(Result);
 end;
@@ -308,6 +320,14 @@ procedure TStreamHelper.SetItem(Index: Integer; const AValue: Byte);
 begin
  Position := Index;
  WriteByte(AValue);
+end;
+
+procedure TStreamHelper.SetStream(AValue: TStream);
+begin
+  if FStream = AValue then Exit;
+  if FOwnStream and Assigned(FStream) then FStream.Free;
+  FStream := AValue;
+  FOwnStream := False;
 end;
 
 procedure TStreamHelper.Assign(Source: TStreamHelper);
@@ -360,16 +380,18 @@ begin
 end;
 
 procedure TStreamHelper.WriteStream(AStream: TStream; Count: Integer);
-var
-  Buffer: array of Byte;
+//var
+//  Buffer: array of Byte;
 begin
-  if Count > AStream.Size then Count := AStream.Size; // Limit max. stream size
+  AStream.Position := 0;
+  CopyFrom(AStream, Count);
+  (*if Count > AStream.Size then Count := AStream.Size; // Limit max. stream size
   AStream.Position := 0;
   if Count > 0 then begin
     SetLength(Buffer, Count);
     AStream.Read(Buffer[0], Count);
     FStream.Write(Buffer[0], Count);
-  end;
+  end;*)
 end;
 
 procedure TStreamHelper.WriteDouble(Value: Double);

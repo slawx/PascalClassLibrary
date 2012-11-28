@@ -50,8 +50,10 @@
         <Filename Value="UMainForm.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="MainForm"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UMainForm"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
@@ -78,11 +80,10 @@
       <Unit4>
         <Filename Value="..\UCoolTranslator.pas"/>
         <UnitName Value="UCoolTranslator"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
         <TopLine Value="274"/>
-        <CursorPos X="1" Y="286"/>
+        <CursorPos X="33" Y="288"/>
         <UsageCount Value="11"/>
         <Loaded Value="True"/>
       </Unit4>
@@ -264,7 +265,7 @@
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
-    <Version Value="10"/>
+    <Version Value="11"/>
     <PathDelim Value="\"/>
     <Target>
       <Filename Value="TranslatorDemo"/>
@@ -274,10 +275,6 @@
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <Linking>
-      <Debugging>
-        <GenerateDebugInfo Value="True"/>
-        <DebugInfoType Value="dsAuto"/>
-      </Debugging>
       <Options>
         <Win32>
           <GraphicApplication Value="True"/>
@@ -304,4 +301,5 @@
       </Item3>
     </Exceptions>
   </Debugging>
+  <EditorMacros Count="0"/>
 </CONFIG>

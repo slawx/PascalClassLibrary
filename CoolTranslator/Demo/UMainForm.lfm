@@ -7,7 +7,7 @@ object MainForm: TMainForm
   ClientHeight = 240
   ClientWidth = 466
   OnCreate = FormCreate
-  LCLVersion = '0.9.31'
+  LCLVersion = '1.1'
   object ListBox1: TListBox
     Left = 171
     Height = 168
@@ -28,25 +28,25 @@ object MainForm: TMainForm
   end
   object Label1: TLabel
     Left = 10
-    Height = 14
+    Height = 13
     Top = 24
-    Width = 47
+    Width = 46
     Caption = 'MainForm'
     ParentColor = False
   end
   object Label2: TLabel
     Left = 10
-    Height = 14
+    Height = 13
     Top = 6
-    Width = 135
+    Width = 134
     Caption = 'Form name as label caption:'
     ParentColor = False
   end
   object Label3: TLabel
     Left = 171
-    Height = 14
+    Height = 13
     Top = 8
-    Width = 68
+    Width = 67
     Caption = 'Language list:'
     ParentColor = False
   end
@@ -60,15 +60,15 @@ object MainForm: TMainForm
   end
   object Label4: TLabel
     Left = 321
-    Height = 14
+    Height = 13
     Top = 10
-    Width = 47
+    Width = 46
     Caption = 'Excludes:'
     ParentColor = False
   end
   object CoolTranslator1: TCoolTranslator
     POFilesFolder = 'Languages'
-    left = 64
-    top = 40
+    left = 72
+    top = 72
   end
 end

@@ -11,7 +11,7 @@ interface
 
 uses
   Classes, DateUtils, UStreamHelper, Math, SysUtils, USubStream,
-  Contnrs, SpecializedList, LCLProc;
+  SpecializedList, LCLProc;
 
 const
   BitAlignment = 8;
@@ -39,6 +39,8 @@ type
     procedure ReadVarStream(AStream: TStream);
     procedure WriteVarList(List: TListByte);
     procedure ReadVarList(List: TListByte);
+    procedure WriteVarBuffer(var Buffer; Count: Integer);
+    procedure ReadVarBuffer(var Buffer; Count: Integer);
     function GetVarSize: Integer;
     function GetVarCount: Integer;
     function TryVarBlock: Boolean;
@@ -50,6 +52,8 @@ type
     function ReadVarFloat(Base: Integer = 2): Double;
     procedure WriteVarString(Value: string);
     function ReadVarString: string;
+    procedure WriteVarDouble(Value: Double);
+    function ReadVarDouble: Double;
 
     // Misc methods
     function TestMask(Mask: QWord; BitIndex: Byte): Boolean;
@@ -69,7 +73,7 @@ type
   TVarBlockIndexed = class
   private
   public
-    Items: TObjectList; // TObjectList<TVarBlockSerializer>
+    Items: TListObject; // TListObject<TVarBlockSerializer>
     Enclose: Boolean;
     procedure CheckItem(Index: Integer);
     procedure Assign(Source: TVarBlockIndexed);
@@ -85,12 +89,16 @@ type
     procedure ReadVarList(Index: Integer; List: TListByte);
     procedure WriteVarIndexedBlock(Index: Integer; Block: TVarBlockIndexed);
     procedure ReadVarIndexedBlock(Index: Integer; Block: TVarBlockIndexed);
+    procedure WriteVarBuffer(Index: Integer; var Buffer; Count: Integer);
+    procedure ReadVarBuffer(Index: Integer; var Buffer; Count: Integer);
 
     // Advanced data types
     procedure WriteVarSInt(Index: Integer; Value: Int64);
     function ReadVarSInt(Index: Integer): Int64;
     procedure WriteVarFloat(Index: Integer; Value: Double; Base: Integer = 2);
     function ReadVarFloat(Index: Integer; Base: Integer = 2): Double;
+    procedure WriteVarDouble(Index: Integer; Value: Double);
+    function ReadVarDouble(Index: Integer): Double;
     procedure WriteVarString(Index: Integer; Value: string);
     function ReadVarString(Index: Integer): string;
     procedure WriteVarUIntArray(Index: Integer; List: TListInteger);
@@ -325,6 +333,17 @@ begin
   end;
 end;
 
+procedure TVarBlockSerializer.WriteVarDouble(Value: Double);
+begin
+  WriteVarBuffer(Value, 8);
+end;
+
+function TVarBlockSerializer.ReadVarDouble: Double;
+begin
+  Result := 0;
+  ReadVarBuffer(Result, 8);
+end;
+
 procedure TVarBlockSerializer.WriteVarStream(AStream: TStream);
 var
   Length: Integer; // Count of data bytes
@@ -427,7 +446,7 @@ begin
     List.WriteToStream(Mem);
     WriteVarStream(Mem);
   finally
-    Mem.Free
+    Mem.Free;
   end;
 end;
 
@@ -438,10 +457,38 @@ begin
   try
     Mem := TMemoryStream.Create;
     ReadVarStream(Mem);
+    Mem.Position := 0;
     List.Count := Mem.Size;
     List.ReplaceStream(Mem);
   finally
-    Mem.Free
+    Mem.Free;
+  end;
+end;
+
+procedure TVarBlockSerializer.WriteVarBuffer(var Buffer; Count: Integer);
+var
+  Mem: TMemoryStream;
+begin
+  try
+    Mem := TMemoryStream.Create;
+    Mem.WriteBuffer(Buffer, Count);
+    WriteVarStream(Mem);
+  finally
+    Mem.Free;
+  end;
+end;
+
+procedure TVarBlockSerializer.ReadVarBuffer(var Buffer; Count: Integer);
+var
+  Mem: TMemoryStream;
+begin
+  try
+    Mem := TMemoryStream.Create;
+    ReadVarStream(Mem);
+    Mem.Position := 0;
+    Mem.ReadBuffer(Buffer, Count);
+  finally
+    Mem.Free;
   end;
 end;
 
@@ -541,7 +588,6 @@ var
   Mask: Integer;
   I: Integer;
   StreamHelper: TStreamHelper;
-  RequestedSize: Integer;
 begin
   try
     StreamHelper := TStreamHelper.Create(Stream);
@@ -551,7 +597,8 @@ begin
       Mask := ReadVarUInt;
       I := 0;
       while (Stream.Position < Stream.Size) and (I < Index) do begin
-        if TestMask(Mask, I) then Stream.Position := Stream.Position + GetVarSize;
+        if TestMask(Mask, I) then
+          Stream.Position := Stream.Position + GetVarSize;
         Inc(I);
       end;
       if TestMask(Mask, Index) then
@@ -737,6 +784,7 @@ end;
 
 procedure TVarBlockIndexed.ReadVarList(Index: Integer; List: TListByte);
 begin
+  TVarBlockSerializer(Items[Index]).Stream.Position := 0;
   TVarBlockSerializer(Items[Index]).ReadVarList(List);
 end;
 
@@ -770,6 +818,20 @@ begin
   end;
 end;
 
+procedure TVarBlockIndexed.WriteVarBuffer(Index: Integer; var Buffer;
+  Count: Integer);
+begin
+  CheckItem(Index);
+  TVarBlockSerializer(Items[Index]).WriteVarBuffer(Buffer, Count);
+end;
+
+procedure TVarBlockIndexed.ReadVarBuffer(Index: Integer; var Buffer;
+  Count: Integer);
+begin
+  CheckItem(Index);
+  TVarBlockSerializer(Items[Index]).ReadVarBuffer(Buffer, Count);
+end;
+
 procedure TVarBlockIndexed.WriteVarSInt(Index: Integer; Value:Int64);
 begin
   CheckItem(Index);
@@ -792,6 +854,18 @@ function TVarBlockIndexed.ReadVarFloat(Index: Integer; Base: Integer = 2):Double
 begin
   TVarBlockSerializer(Items[Index]).Stream.Position := 0;
   Result := TVarBlockSerializer(Items[Index]).ReadVarFloat(Base);
+end;
+
+procedure TVarBlockIndexed.WriteVarDouble(Index: Integer; Value: Double);
+begin
+  CheckItem(Index);
+  TVarBlockSerializer(Items[Index]).WriteVarDouble(Value);
+end;
+
+function TVarBlockIndexed.ReadVarDouble(Index: Integer): Double;
+begin
+  TVarBlockSerializer(Items[Index]).Stream.Position := 0;
+  Result := TVarBlockSerializer(Items[Index]).ReadVarDouble;
 end;
 
 procedure TVarBlockIndexed.WriteVarString(Index: Integer; Value:string);
@@ -891,19 +965,32 @@ var
   Mask: Integer;
   I: Integer;
   StreamHelper: TStreamHelper;
+  Temp: TVarBlockSerializer;
+  Output: TVarBlockSerializer;
 begin
   try
-    StreamHelper := TStreamHelper.Create(VarBlock.Stream);
-    VarBlock.Stream.Size := 0;
+    if Enclose then begin
+      Temp := TVarBlockSerializer.Create;
+      Output := Temp;
+    end else begin
+      Temp := nil;
+      Output := VarBlock;
+    end;
+    StreamHelper := TStreamHelper.Create(Output.Stream);
+
+    Output.Stream.Size := 0;
     Mask := 0;
     for I := 0 to Items.Count - 1 do
       if Assigned(Items[I]) then Mask := Mask or (1 shl I);
-    VarBlock.WriteVarUInt(Mask);
+    Output.WriteVarUInt(Mask);
     for I := 0 to Items.Count - 1 do
-      if Assigned(Items[I]) then StreamHelper.WriteStream(TVarBlockSerializer(Items[I]).Stream,
+      if Assigned(Items[I]) then
+        StreamHelper.WriteStream(TVarBlockSerializer(Items[I]).Stream,
         TVarBlockSerializer(Items[I]).Stream.Size);
-    if Enclose then VarBlock.BlockEnclose;
+
+    if Enclose then VarBlock.WriteVarBlock(Temp);
   finally
+    if Assigned(Temp) then Temp.Free;
     StreamHelper.Free;
   end;
 end;
@@ -912,20 +999,39 @@ procedure TVarBlockIndexed.ReadFromVarBlock(VarBlock: TVarBlockSerializer);
 var
   Mask: Integer;
   I: Integer;
+  Temp: TVarBlockSerializer;
+  Input: TVarBlockSerializer;
+  StreamHelper: TStreamHelper;
 begin
-  if Enclose then VarBlock.BlockUnclose;
-  VarBlock.Stream.Position := 0;
-  Mask := VarBlock.ReadVarUInt;
+  try
+    StreamHelper := TStreamHelper.Create;
+  if Enclose then begin
+    Temp := TVarBlockSerializer.Create;
+    Temp.ReadVarBlock(VarBlock);
+    Input := Temp;
+  end else begin
+    Temp := nil;
+    Input := VarBlock;
+  end;
+  StreamHelper.Stream := Input.Stream;
+
+  Input.Stream.Position := 0;
+  Mask := Input.ReadVarUInt;
   Items.Clear;
   I := 0;
-  while Mask <> 0 do begin
-    if VarBlock.TestMask(Mask, I) then begin
-      if Items.Count <= I then Items.Count := I + 1;
-      Items[I] := TVarBlockSerializer.Create;
-      VarBlock.ReadItemByMaskIndex(I, TVarBlockSerializer(Items[I]));
+  while (Mask <> 0) and (Input.Stream.Position < Input.Stream.Size) do begin
+    if Input.TestMask(Mask, I) then begin
+      CheckItem(I);
+      TVarBlockSerializer(Items[I]).Stream.Size := 0;
+      StreamHelper.ReadStream(TVarBlockSerializer(Items[I]).Stream, Input.GetVarSize);
+      //Input.ReadItemByMaskIndex(I, TVarBlockSerializer(Items[I]));
       Mask := Mask xor (1 shl I); // Clear bit on current index
     end;
     Inc(I);
+  end;
+  finally
+    if Assigned(Temp) then Temp.Free;
+    StreamHelper.Free;
   end;
 end;
 
@@ -987,14 +1093,14 @@ end;
 
 constructor TVarBlockIndexed.Create;
 begin
-  Items := TObjectList.Create;
+  Items := TListObject.Create;
   Enclose := True;
 end;
 
 destructor TVarBlockIndexed.Destroy;
 begin
-  Items.Free;
-  inherited Destroy;
+  FreeAndNil(Items);
+  inherited;
 end;
 
 end.
