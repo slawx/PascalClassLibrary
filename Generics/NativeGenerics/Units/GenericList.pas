@@ -94,11 +94,11 @@ type
   protected
     function Get(Index: TIndex): TItem; override;
     function GetInternal(Index: TIndex): TItem; override;
-    function GetCapacity: TIndex;
     function GetCount: TIndex; override;
+    function GetCapacity: TIndex;
+    procedure SetCount(const AValue: TIndex); override;
     procedure SetCapacity(const AValue: TIndex);
     procedure SetCapacityOptimized(const NewCapacity: TIndex);
-    procedure SetCount(const AValue: TIndex); override;
     procedure Put(Index: TIndex; const AValue: TItem); override;
     procedure PutInternal(Index: TIndex; const AValue: TItem); override;
   public
@@ -140,7 +140,12 @@ type
 
   TGFileList<TItem> = class(TGList<TItem>)
   private
+    FFileName: string;
     FHandle: THandle;
+    FMode: Word;
+    function GetOpenned: Boolean;
+    procedure SetFileName(AValue: string);
+    procedure SetMode(AValue: Word);
   protected
     function GetCount: TIndex; override;
     procedure SetCount(const AValue: TIndex); override;
@@ -149,10 +154,13 @@ type
     function Get(Index: TIndex): TItem; override;
     procedure Put(Index: TIndex; const AValue: TItem); override;
   public
-    procedure Open(FileName: string; Mode: Integer);
+    procedure Open;
     procedure Close;
     constructor Create;
     destructor Destroy; override;
+    property FileName: string read FFileName write SetFileName;
+    property Mode: Word read FMode write SetMode;
+    property Openned: Boolean read GetOpenned;
   end;
 
   { TListByte }
@@ -864,6 +872,31 @@ end;
 
 { TGFileList<TItem> }
 
+procedure TGFileList<TItem>.SetFileName(AValue: string);
+begin
+  if FFileName = AValue then Exit;
+  FFileName := AValue;
+  if Openned then begin
+    Close;
+    Open;
+  end;
+end;
+
+function TGFileList<TItem>.GetOpenned: Boolean;
+begin
+  Result := FHandle <> feInvalidHandle;
+end;
+
+procedure TGFileList<TItem>.SetMode(AValue: Word);
+begin
+  if FMode = AValue then Exit;
+  FMode := AValue;
+  if Openned then begin
+    Close;
+    Open;
+  end;
+end;
+
 function TGFileList<TItem>.GetCount: TIndex;
 var
   OldPos: TIndex;
@@ -900,7 +933,7 @@ begin
   FileWrite(FHandle, AValue, SizeOf(AValue));
 end;
 
-procedure TGFileList<TItem>.Open(FileName: string; Mode: Integer);
+procedure TGFileList<TItem>.Open;
 begin
   Close;
   if Mode = fmCreate then FHandle := FileCreate(FileName, Mode)

@@ -26,7 +26,7 @@
     </CompilerOptions>
     <Description Value="Native generics library. 
 Require FPC 2.7.1"/>
-    <License Value="GNU/GPL"/>
+    <License Value="GNU/GPLv3"/>
     <Version Minor="2"/>
     <Files Count="15">
       <Item1>
