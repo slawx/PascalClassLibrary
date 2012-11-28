@@ -22,7 +22,6 @@ type
     procedure AssignTo(Dest: TPersistent); override;
   public
     SerialPort: TSerialPort;
-    Lock: TCriticalSection;
     Pin: TCommPin;
     destructor Destroy; override;
     constructor Create(AOwner: TComponent); override;
@@ -43,6 +42,7 @@ procedure TCommSerialPort.SetActive(const AValue: Boolean);
 begin
   inherited;
   SerialPort.Active := AValue;
+  FActive := SerialPort.Active;
 end;
 
 procedure TCommSerialPort.AssignTo(Dest: TPersistent);
@@ -55,11 +55,11 @@ end;
 procedure TCommSerialPort.SetStatus(Sender: TCommPin; AValue: Integer);
 begin
   try
-    Lock.Acquire;
+    SerialPort.Lock.Acquire;
     if (AValue and 1) = 1 then SerialPort.Parity := paMark
       else SerialPort.Parity := paSpace;
   finally
-    Lock.Release;
+    SerialPort.Lock.Release;
   end;
 end;
 
@@ -68,7 +68,6 @@ begin
   inherited;
   SerialPort := TSerialPort.Create;
   SerialPort.OnReceiveData := ReceiveData;
-  Lock := TCriticalSection.Create;
   Pin := TCommPin.Create;
   Pin.OnReceive := Receive;
   Pin.OnSetSatus := SetStatus;
@@ -78,9 +77,8 @@ end;
 destructor TCommSerialPort.Destroy;
 begin
   SerialPort.OnReceiveData := nil;
-  Pin.Free;
-  Lock.Free;
-  SerialPort.Free;
+  FreeAndNil(Pin);
+  FreeAndNil(SerialPort);
   inherited;
 end;
 
@@ -95,11 +93,11 @@ begin
       S.Position := 0;
       repeat
         try
-          Lock.Acquire;
+          SerialPort.Lock.Acquire;
           if SerialPort.CanWrite(0) then
             SerialPort.SendStreamRaw(S);
         finally
-          Lock.Release;
+          SerialPort.Lock.Release;
         end;
         if S.Position <> S.Size then
           Sleep(1);
