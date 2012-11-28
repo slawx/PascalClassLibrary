@@ -1,11 +1,12 @@
 <?xml version="1.0"?>
 <CONFIG>
-  <Package Version="3">
+  <Package Version="4">
     <PathDelim Value="\"/>
     <Name Value="PrintPreview"/>
+    <AddToProjectUsesSection Value="True"/>
     <Author Value="Chronos (robie@centrum.cz)"/>
     <CompilerOptions>
-      <Version Value="9"/>
+      <Version Value="11"/>
       <PathDelim Value="\"/>
       <SearchPaths>
         <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
@@ -17,29 +18,36 @@
     <Description Value="Print preview component"/>
     <License Value="GNU/GPL"/>
     <Version Minor="1"/>
-    <Files Count="1">
+    <Files Count="2">
       <Item1>
         <Filename Value="UPrintPreview.pas"/>
         <HasRegisterProc Value="True"/>
         <UnitName Value="UPrintPreview"/>
       </Item1>
+      <Item2>
+        <Filename Value="UVectorCanvas.pas"/>
+        <UnitName Value="UVectorCanvas"/>
+      </Item2>
     </Files>
     <i18n>
       <EnableI18N Value="True"/>
       <OutDir Value="languages"/>
     </i18n>
     <Type Value="RunAndDesignTime"/>
-    <RequiredPkgs Count="3">
+    <RequiredPkgs Count="4">
       <Item1>
-        <PackageName Value="Printer4Lazarus"/>
+        <PackageName Value="fpvectorialpkg"/>
       </Item1>
       <Item2>
-        <PackageName Value="LCL"/>
+        <PackageName Value="Printer4Lazarus"/>
       </Item2>
       <Item3>
+        <PackageName Value="LCL"/>
+      </Item3>
+      <Item4>
         <PackageName Value="FCL"/>
         <MinVersion Major="1" Valid="True"/>
-      </Item3>
+      </Item4>
     </RequiredPkgs>
     <UsageOptions>
       <UnitPath Value="$(PkgOutDir)"/>

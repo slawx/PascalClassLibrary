@@ -1,0 +1,25 @@
+object FormMain: TFormMain
+  Left = 355
+  Height = 354
+  Top = 127
+  Width = 471
+  Caption = 'Print preview demo'
+  ClientHeight = 354
+  ClientWidth = 471
+  LCLVersion = '1.1'
+  object ButtonPreview: TButton
+    Left = 9
+    Height = 25
+    Top = 9
+    Width = 123
+    Caption = 'Print preview'
+    OnClick = ButtonPreviewClick
+    TabOrder = 0
+  end
+  object PrintPreview1: TPrintPreview
+    Zoom = 1
+    OnPrint = PrintPreview1Print
+    left = 136
+    top = 80
+  end
+end

@@ -6,7 +6,8 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs,
-  ComCtrls, ExtCtrls, ActnList, PrintersDlgs, Contnrs, Printers, StdCtrls;
+  ComCtrls, ExtCtrls, ActnList, PrintersDlgs, Contnrs, Printers, StdCtrls,
+  Menus, LCLType, types;
 
 const
   ScreenDPI = 72;
@@ -29,7 +30,7 @@ type
   private
     FOnNewPage: TNotifyEvent;
     FOnPrint: TNotifyEvent;
-    FOnPrintFooter: TNotifyEvent;
+    //FOnPrintFooter: TNotifyEvent;
     FZoom: Double;
     FPageNumber: Integer;
     FPageCount: Integer;
@@ -72,6 +73,9 @@ type
 
   TPrintPreviewForm = class(TForm)
     AClose: TAction;
+    AToolbarShowCaption: TAction;
+    AZoomFitToWidth: TAction;
+    AZoomFitToHeight: TAction;
     ALastPage: TAction;
     AFirstPage: TAction;
     ANextPage: TAction;
@@ -82,20 +86,26 @@ type
     APrinterSetup: TAction;
     APrint: TAction;
     ActionList1: TActionList;
-    Button1: TButton;
-    Button2: TButton;
-    Button3: TButton;
-    Button4: TButton;
+    ComboBoxZoom: TComboBox;
     EditPageNumber: TEdit;
     Image1: TImage;
     ImageList1: TImageList;
+    MenuItem1: TMenuItem;
     PageSetupDialog1: TPageSetupDialog;
+    Panel1: TPanel;
+    PopupMenuToolbar: TPopupMenu;
     PrintDialog1: TPrintDialog;
     PrinterSetupDialog1: TPrinterSetupDialog;
     ScrollBarHoriz: TScrollBar;
     ScrollBarVert: TScrollBar;
     ToolBar1: TToolBar;
     ToolButton1: TToolButton;
+    ToolButton10: TToolButton;
+    ToolButton11: TToolButton;
+    ToolButton12: TToolButton;
+    ToolButton13: TToolButton;
+    ToolButton14: TToolButton;
+    ToolButton15: TToolButton;
     ToolButton2: TToolButton;
     ToolButton3: TToolButton;
     ToolButton4: TToolButton;
@@ -112,20 +122,38 @@ type
     procedure APreviousPageExecute(Sender: TObject);
     procedure APrinterSetupExecute(Sender: TObject);
     procedure APrintExecute(Sender: TObject);
+    procedure AToolbarShowCaptionExecute(Sender: TObject);
+    procedure AZoomFitToHeightExecute(Sender: TObject);
+    procedure AZoomFitToWidthExecute(Sender: TObject);
     procedure AZoomInExecute(Sender: TObject);
     procedure AZoomOutExecute(Sender: TObject);
+    procedure ComboBoxZoomChange(Sender: TObject);
     procedure EditPageNumberChange(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormResize(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure Image1MouseDown(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
+    procedure Image1MouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer
+      );
+    procedure Image1MouseUp(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
+    procedure Image1MouseWheel(Sender: TObject; Shift: TShiftState;
+      WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
     procedure ScrollBarHorizChange(Sender: TObject);
     procedure ScrollBarVertChange(Sender: TObject);
   private
+    DragStart: Boolean;
+    DragStartPos: TPoint;
+    DragScrollBarPos: TPoint;
     FPrintPreview: TPrintPreview;
-    procedure ReloadPageNumber;
+    procedure UpdateInterface;
   public
     PageNumber: Integer;
+    MinZoom: Double;
+    MaxZoom: Double;
+    procedure EraseBackground(DC: HDC); override;
     procedure Redraw;
     property PrintPreview: TPrintPreview read FPrintPreview
       write FPrintPreview;
@@ -284,8 +312,6 @@ begin
 end;
 
 procedure TPrintPreview.Preview;
-const
-  DefaultMargin = 10;
 begin
   if Assigned(FOnPrint) then begin
     Pages.Clear;
@@ -348,21 +374,80 @@ begin
   PrintDialog1.MaxPage := PrintPreview.PageCount;
   PrintDialog1.FromPage := 1;
   PrintDialog1.ToPage := PrintPreview.PageCount;
-  if PrintDialog1.Execute then
+  if PrintDialog1.Execute then begin
     if Assigned(FPrintPreview) then PrintPreview.Print;
+  end;
+end;
+
+procedure TPrintPreviewForm.AToolbarShowCaptionExecute(Sender: TObject);
+begin
+  AToolbarShowCaption.Checked := not AToolbarShowCaption.Checked;
+  if AToolbarShowCaption.Checked then begin
+    ToolBar1.ButtonHeight := 42;
+    ToolBar1.ButtonWidth := 42;
+    ToolBar1.ShowCaptions := True;
+  end else begin
+    ToolBar1.ButtonHeight := 22;
+    ToolBar1.ButtonWidth := 23;
+    ToolBar1.ShowCaptions := False;
+  end;
+end;
+
+procedure TPrintPreviewForm.AZoomFitToHeightExecute(Sender: TObject);
+begin
+  PrintPreview.Zoom := 1 / (Printer.PageHeight / SizeDivider / Image1.Height) * 0.95;
+  ScrollBarVert.Position := 0;
+  Redraw;
+  UpdateInterface;
+end;
+
+procedure TPrintPreviewForm.AZoomFitToWidthExecute(Sender: TObject);
+begin
+  PrintPreview.Zoom := 1 / (Printer.PageWidth / SizeDivider / Image1.Width) * 0.95;
+  ScrollBarHoriz.Position := 0;
+  Redraw;
+  UpdateInterface;
 end;
 
 procedure TPrintPreviewForm.AZoomInExecute(Sender: TObject);
+var
+  NewZoom: Double;
 begin
-  PrintPreview.Zoom := PrintPreview.Zoom * 1.25;
+  NewZoom := PrintPreview.Zoom * 1.25;
+  if NewZoom > MaxZoom then NewZoom := MaxZoom;
+  PrintPreview.Zoom := NewZoom;
   Redraw;
+  UpdateInterface;
 end;
 
 procedure TPrintPreviewForm.AZoomOutExecute(Sender: TObject);
+var
+  NewZoom: Double;
 begin
-  PrintPreview.Zoom := PrintPreview.Zoom / 1.25;
-  EditPageNumberChange(Self);
+  NewZoom := PrintPreview.Zoom / 1.25;
+  if NewZoom < MinZoom then NewZoom := MinZoom;
+  PrintPreview.Zoom := NewZoom;
   Redraw;
+  UpdateInterface;
+end;
+
+procedure TPrintPreviewForm.ComboBoxZoomChange(Sender: TObject);
+var
+  ZoomText: string;
+  NewZoomInt: Integer;
+  NewZoom: Double;
+begin
+  ZoomText := Trim(ComboBoxZoom.Text);
+  if Pos('%', ZoomText) > 0 then
+    ZoomText := Copy(ZoomText, 1, Pos('%', ZoomText) - 1);
+  if TryStrToInt(ZoomText, NewZoomInt) then begin
+    NewZoom := NewZoomInt / 100;
+    if NewZoom < MinZoom then NewZoom := MinZoom;
+    if NewZoom > MaxZoom then NewZoom := MaxZoom;
+    PrintPreview.Zoom := NewZoom;
+    EditPageNumberChange(Self);
+    Redraw;
+  end;
 end;
 
 procedure TPrintPreviewForm.EditPageNumberChange(Sender: TObject);
@@ -375,12 +460,16 @@ begin
     if PageNumber >= PrintPreview.PageCount then
       PageNumber := PrintPreview.PageCount - 1;
   end;
-  ReloadPageNumber;
+  UpdateInterface;
 end;
 
 procedure TPrintPreviewForm.FormCreate(Sender: TObject);
 begin
-  DoubleBuffered := True;
+  //DoubleBuffered := True;
+  Panel1.DoubleBuffered := True;
+  AToolbarShowCaption.Checked := True;
+  MinZoom := 0.1;
+  MaxZoom := 3;
 end;
 
 procedure TPrintPreviewForm.FormDestroy(Sender: TObject);
@@ -417,8 +506,41 @@ begin
   AZoomOut.Hint := SZoomOut;
 
   PrintDialog1.MaxPage := PrintPreview.Pages.Count;
-  ReloadPageNumber;
+  UpdateInterface;
   Redraw;
+end;
+
+procedure TPrintPreviewForm.Image1MouseDown(Sender: TObject;
+  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+begin
+  DragStartPos := Point(X, Y);
+  DragStart := True;
+  DragScrollBarPos := Point(ScrollBarHoriz.Position, ScrollBarVert.Position);
+end;
+
+procedure TPrintPreviewForm.Image1MouseMove(Sender: TObject;
+  Shift: TShiftState; X, Y: Integer);
+begin
+  if DragStart then begin
+    ScrollBarHoriz.Position := DragScrollBarPos.X - Trunc((X - DragStartPos.x) *
+      (ScrollBarHoriz.Max - ScrollBarHoriz.Min) / Width / PrintPreview.Zoom);
+    ScrollBarVert.Position := DragScrollBarPos.Y - Trunc((Y - DragStartPos.Y) *
+      (ScrollBarVert.Max - ScrollBarVert.Min) / Height / PrintPreview.Zoom);
+  end;
+end;
+
+procedure TPrintPreviewForm.Image1MouseUp(Sender: TObject;
+  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+begin
+  DragStart := False;
+end;
+
+procedure TPrintPreviewForm.Image1MouseWheel(Sender: TObject;
+  Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint;
+  var Handled: Boolean);
+begin
+  if WheelDelta > 0 then AZoomIn.Execute
+  else if WheelDelta < 0 then AZoomOut.Execute;
 end;
 
 procedure TPrintPreviewForm.ScrollBarHorizChange(Sender: TObject);
@@ -431,35 +553,48 @@ begin
   Redraw;
 end;
 
-procedure TPrintPreviewForm.ReloadPageNumber;
+procedure TPrintPreviewForm.UpdateInterface;
 begin
   EditPageNumber.Text := IntToStr(PageNumber);
   Redraw;
   ANextPage.Enabled := PageNumber < (PrintPreview.PageCount - 1);
+  ALastPage.Enabled := PageNumber < (PrintPreview.PageCount - 1);
   APreviousPage.Enabled := PageNumber > 0;
+  AFirstPage.Enabled := PageNumber > 0;
+  ComboBoxZoom.Text := IntToStr(Trunc(PrintPreview.Zoom * 100)) + '%';
+end;
+
+procedure TPrintPreviewForm.EraseBackground(DC: HDC);
+begin
+  //inherited EraseBackground(DC);
 end;
 
 procedure TPrintPreviewForm.Redraw;
 var
-  SourceRect: TRect;
+  //SourceRect: TRect;
   DestRect: TRect;
   Page: TPrintPage;
+  PageSize: TPoint;
 begin
   Page := TPrintPage(PrintPreview.Pages[PageNumber]);
-  SourceRect := Rect(0, 0,
-    Page.Bitmap.Canvas.Width,
-    Page.Bitmap.Canvas.Height);
-  DestRect.Left := -Round(ScrollBarHoriz.Position / ScrollBarHoriz.Max * Width * PrintPreview.Zoom);
-  DestRect.Top := -Round(ScrollBarVert.Position / ScrollBarVert.Max * Height * PrintPreview.Zoom);
-  DestRect.Right := DestRect.Left + Round(Page.Bitmap.Canvas.Width * PrintPreview.Zoom);
-  DestRect.Bottom := DestRect.Top + Round(Page.Bitmap.Canvas.Height * PrintPreview.Zoom);
+  //SourceRect := Rect(0, 0,
+  //  Page.Bitmap.Canvas.Width,
+  //  Page.Bitmap.Canvas.Height);
+  PageSize := Point(Round(Page.Bitmap.Canvas.Width),
+    Round(Page.Bitmap.Canvas.Height));
+  DestRect.Left := (Image1.Width - PageSize.X) div 2 - Round(ScrollBarHoriz.Position /
+    (ScrollBarHoriz.Max - ScrollBarHoriz.Min) * Image1.Width * PrintPreview.Zoom);
+  DestRect.Top := (Image1.Height - PageSize.Y) div 2 - Round(ScrollBarVert.Position /
+    (ScrollBarVert.Max - ScrollBarVert.Min) * Image1.Height * PrintPreview.Zoom);
+  DestRect.Right := DestRect.Left + PageSize.X;
+  DestRect.Bottom := DestRect.Top + PageSize.Y;
   try
     Image1.Picture.Bitmap.SetSize(Image1.Width, Image1.Height);
     Image1.Picture.Bitmap.BeginUpdate(True);
     with Image1.Picture.Bitmap, Canvas do begin
-      Brush.Color := clBlack;
+      Brush.Color := clGray;
       Brush.Style := bsSolid;
-      FillRect(Rect(0, 0, Width, Height));
+      FillRect(Rect(0, 0, Image1.Picture.Bitmap.Width, Image1.Picture.Bitmap.Height));
       Draw(DestRect.Left, DestRect.Top, Page.Bitmap);
       //CopyRect(DestRect, Page.Bitmap.Canvas, SourceRect);
       Pen.Style := psSolid;
@@ -484,6 +619,7 @@ begin
         Round(PageSetupDialog1.Margins.Right / 100),
         Round(PageSetupDialog1.Margins.Bottom / 100));
       UpdateMargins;
+      PrintPreview.Preview;
       Redraw;
     end;
   end;
@@ -493,7 +629,7 @@ procedure TPrintPreviewForm.APreviousPageExecute(Sender: TObject);
 begin
   Dec(PageNumber);
   if PageNumber < 0 then PageNumber := 0;
-  ReloadPageNumber;
+  UpdateInterface;
 end;
 
 procedure TPrintPreviewForm.ANextPageExecute(Sender: TObject);
@@ -501,19 +637,19 @@ begin
   Inc(PageNumber);
   if PageNumber >= PrintPreview.PageCount then
     PageNumber := PrintPreview.PageCount;
-  ReloadPageNumber;
+  UpdateInterface;
 end;
 
 procedure TPrintPreviewForm.ALastPageExecute(Sender: TObject);
 begin
   PageNumber := PrintPreview.PageCount - 1;
-  ReloadPageNumber;
+  UpdateInterface;
 end;
 
 procedure TPrintPreviewForm.AFirstPageExecute(Sender: TObject);
 begin
   PageNumber := 0;
-  ReloadPageNumber;
+  UpdateInterface;
 end;
 
 procedure TPrintPreviewForm.ACloseExecute(Sender: TObject);

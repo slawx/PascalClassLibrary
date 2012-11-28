@@ -2,20 +2,20 @@
   This source is only used to compile and install the package.
  }
 
-unit PrintPreview; 
+unit PrintPreview;
 
 interface
 
 uses
-  UPrintPreview, LazarusPackageIntf;
+  UPrintPreview, UVectorCanvas, LazarusPackageIntf;
 
 implementation
 
-procedure Register; 
+procedure Register;
 begin
-  RegisterUnit('UPrintPreview', @UPrintPreview.Register); 
-end; 
+  RegisterUnit('UPrintPreview', @UPrintPreview.Register);
+end;
 
 initialization
-  RegisterPackage('PrintPreview', @Register); 
+  RegisterPackage('PrintPreview', @Register);
 end.
