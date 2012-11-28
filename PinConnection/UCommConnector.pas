@@ -26,6 +26,7 @@ type
     procedure SetTelnetComControl(AValue: Boolean);
     procedure UpdateConnectionType(const ConnectionType: TConnectionType;
       const ATelnetComControl: Boolean);
+    procedure CommTCPServerConnect(Sender: TCommTCPServer; Pin: TCommPin);
   protected
     procedure SetActive(const AValue: Boolean);
   public
@@ -129,7 +130,7 @@ begin
       end;
     end;
     ctNetworkServer: begin
-      //TCommPin(CommHub.Pins.First).Connect(CommTCPServer.Pin);
+      CommTCPServer.OnConnect := CommTCPServerConnect;
       CommTCPServer.Active := FActive;
     end;
     ctDemo: begin
@@ -140,6 +141,11 @@ begin
       TCommPin(CommHub.Pins.First).Disconnect;
     end;
   end;
+end;
+
+procedure TDeviceConnector.CommTCPServerConnect(Sender: TCommTCPServer; Pin: TCommPin);
+begin
+  TCommPin(CommHub.Pins.First).Connect(Pin);
 end;
 
 
