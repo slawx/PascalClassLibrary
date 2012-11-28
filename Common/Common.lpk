@@ -21,7 +21,7 @@
     <Description Value="Various libraries"/>
     <License Value="GNU/GPL"/>
     <Version Minor="7"/>
-    <Files Count="17">
+    <Files Count="18">
       <Item1>
         <Filename Value="StopWatch.pas"/>
         <UnitName Value="StopWatch"/>
@@ -94,6 +94,11 @@
         <Filename Value="UListViewSort.pas"/>
         <UnitName Value="UListViewSort"/>
       </Item17>
+      <Item18>
+        <Filename Value="UPersistentForm.pas"/>
+        <HasRegisterProc Value="True"/>
+        <UnitName Value="UPersistentForm"/>
+      </Item18>
     </Files>
     <i18n>
       <EnableI18N Value="True"/>

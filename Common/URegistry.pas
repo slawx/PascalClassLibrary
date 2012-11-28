@@ -16,9 +16,12 @@ type
     rrKeyCurrentConfig = HKEY($80000005),
     rrKeyDynData = HKEY($80000006));
 
+  { TRegistryContext }
+
   TRegistryContext = record
     RootKey: HKEY;
     Key: string;
+    class operator Equal(A, B: TRegistryContext): Boolean;
   end;
 
   { TRegistryEx }
@@ -48,6 +51,13 @@ function RegContext(RootKey: HKEY; Key: string): TRegistryContext;
 begin
   Result.RootKey := RootKey;
   Result.Key := Key;
+end;
+
+{ TRegistryContext }
+
+class operator TRegistryContext.Equal(A, B: TRegistryContext): Boolean;
+begin
+  Result := (A.Key = B.Key) and (A.RootKey = B.RootKey);
 end;
 
 { TRegistryEx }

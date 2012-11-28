@@ -30,7 +30,7 @@ type
   public
     Items: TListObject;
     Lock: TCriticalSection;
-    procedure Add(Group: string; Text: string);
+    procedure Add(Text: string; Group: string = '');
     procedure WriteToFile(Text: string);
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -68,7 +68,7 @@ begin
   end;
 end;
 
-procedure TDebugLog.Add(Group: string; Text: string);
+procedure TDebugLog.Add(Text: string; Group: string = '');
 var
   NewItem: TDebugLogItem;
 begin
