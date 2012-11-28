@@ -43,6 +43,8 @@ begin
   Caption := 'TBGRABitmap PaintBox';
   BGRABitmap := TBGRABitmap.Create(0, 0);
   PaintObject := poPaintBox;
+  Description.Add('This method use graphic library BGRABitmap. ' +
+    'PaintBox is used to display image data.');
 end;
 
 destructor TBGRABitmapPaintBox.Destroy;

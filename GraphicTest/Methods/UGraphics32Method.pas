@@ -5,9 +5,10 @@ unit UGraphics32Method;
 interface
 
 uses
-  Classes, SysUtils, UFastBitmap, UDrawMethod, GR32, GR32_Image, Controls,
+  Classes, SysUtils, UFastBitmap, UDrawMethod{$IFDEF gr32}, GR32, GR32_Image{$ENDIF}, Controls,
   Graphics;
 
+{$IFDEF gr32}
 type
   { TGraphics32Method }
 
@@ -19,10 +20,11 @@ type
     procedure Init(Parent: TWinControl; Size: TPoint; PixelFormat: TPixelFormat); override;
     procedure Done; override;
   end;
-
+{$ENDIF}
 
 implementation
 
+{$IFDEF gr32}
 { TGraphics32Method }
 
 constructor TGraphics32Method.Create;
@@ -90,6 +92,8 @@ begin
   FreeAndNil(Image);
   inherited Done;
 end;
+
+{$ENDIF}
 
 end.
 

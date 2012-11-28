@@ -18,6 +18,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
+            <OtherUnitFiles Value="Methods"/>
             <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <Parsing>
@@ -117,6 +118,7 @@
         <Filename Value="UDrawForm.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="DrawForm"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UDrawForm"/>
       </Unit5>

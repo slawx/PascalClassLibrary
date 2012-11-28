@@ -5,14 +5,17 @@ unit UBitmapRawImageDataPaintBox;
 interface
 
 uses
-  Classes, SysUtils, UDrawMethod, UFastBitmap, Graphics, LCLType,
-  FPimage, IntfGraphics, GraphType{$IFDEF windows}, Windows{$ENDIF};
+  {$IFDEF windows}Windows,{$ENDIF}Classes, SysUtils, Controls, UDrawMethod, UFastBitmap, Graphics, LCLType,
+  FPimage, IntfGraphics, GraphType;
 
 type
   { TBitmapRawImageDataPaintBox }
 
   TBitmapRawImageDataPaintBox = class(TDrawMethodPaintBox)
+    TempBitmap: TBitmap;
     constructor Create; override;
+    procedure Init(Parent: TWinControl; Size: TPoint; PixelFormat: TPixelFormat); override;
+    procedure Done; override;
     procedure Paint(Sender: TObject); override;
     procedure DrawFrame(FastBitmap: TFastBitmap); override;
   end;
@@ -27,6 +30,23 @@ begin
   inherited;
   Caption := 'TBitmap.RawImage.Data PaintBox';
   PaintObject := poPaintBox;
+  Description.Add('Custom TFastBitmap data are converted to bitmap data compatible with screen. ' +
+    'Then data is sent to PaintBox by Draw method.');
+end;
+
+procedure TBitmapRawImageDataPaintBox.Init(Parent: TWinControl; Size: TPoint;
+  PixelFormat: TPixelFormat);
+begin
+  inherited;
+  TempBitmap := TBitmap.Create;
+  TempBitmap.PixelFormat := PixelFormat;
+  TempBitmap.SetSize(Size.X, Size.Y);
+end;
+
+procedure TBitmapRawImageDataPaintBox.Done;
+begin
+  FreeAndNil(TempBitmap);
+  inherited Done;
 end;
 
 procedure TBitmapRawImageDataPaintBox.Paint(Sender: TObject);
@@ -75,4 +95,4 @@ end;
 
 
 end.
-
+

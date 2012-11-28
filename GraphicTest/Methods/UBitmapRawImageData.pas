@@ -24,6 +24,8 @@ constructor TBitmapRawImageData.Create;
 begin
   inherited;
   Caption := 'TBitmap.RawImage.Data';
+  Description.Add('Custom TFastBitmap data are converted to visible image bitmap raw data. ' +
+    'Then TImage is responsible for show loaded data.');
 end;
 
 procedure TBitmapRawImageData.DrawFrame(FastBitmap: TFastBitmap);

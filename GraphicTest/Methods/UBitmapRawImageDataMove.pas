@@ -24,6 +24,9 @@ constructor TBitmapRawImageDataMove.Create;
 begin
   inherited;
   Caption := 'TBitmap.RawImage.Data Move';
+  Description.Add('This is same as BitmapRawImageData but data is not converted from different format. ' +
+   'But only moved to TImage raw data. ' +
+    'Then TImage is responsible for show loaded data.');
 end;
 
 procedure TBitmapRawImageDataMove.DrawFrame(FastBitmap: TFastBitmap);

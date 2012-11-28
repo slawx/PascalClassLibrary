@@ -113,10 +113,12 @@ uses
   UOpenGLPBOMethod, UGraphics32Method;
 
 const
-  DrawMethodClasses: array[0..9{$IFDEF opengl}+2{$ENDIF}] of TDrawMethodClass = (
+  DrawMethodClasses: array[0..8{$IFDEF opengl}+2{$ENDIF}{$IFDEF gr32}+1{$ENDIF}] of TDrawMethodClass = (
     TCanvasPixels, TCanvasPixelsUpdateLock, TLazIntfImageColorsCopy,
     TLazIntfImageColorsNoCopy, TBitmapRawImageData, TBitmapRawImageDataPaintBox,
-    TBitmapRawImageDataMove, TBGRABitmapPaintBox, TGraphics32Method{$IFDEF opengl}, TOpenGLMethod, TOpenGLPBOMethod{$ENDIF}
+    TBitmapRawImageDataMove, TBGRABitmapPaintBox
+    {$IFDEF gr32}, TGraphics32Method{$ENDIF}
+    {$IFDEF opengl}, TOpenGLMethod, TOpenGLPBOMethod{$ENDIF}
     ,TDummyMethod);
 
 

@@ -26,7 +26,6 @@ type
     FrameDuration: TDateTime;
     StepDuration: TDateTime;
     PaintObject: TPaintObject;
-    TempBitmap: TBitmap;
     FrameCounter: Integer;
     FrameCounterStart: TDateTime;
     FrameCounterStop: TDateTime;
@@ -111,8 +110,8 @@ begin
   Image := TImage.Create(Parent);
   Image.Parent := Parent;
   Image.SetBounds(0, 0, Size.X, Size.Y);
-  Image.Picture.Bitmap.SetSize(Size.X, Size.Y);
   Image.Picture.Bitmap.PixelFormat := PixelFormat;
+  Image.Picture.Bitmap.SetSize(Size.X, Size.Y);
   Image.Show;
 end;
 
@@ -194,8 +193,6 @@ end;
 
 procedure TDrawMethod.Init(Parent: TWinControl; Size: TPoint; PixelFormat: TPixelFormat);
 begin
-  if (TempBitmap.Width <> Size.X) or (TempBitmap.Height <> Size.Y) then
-    TempBitmap.SetSize(Size.X, Size.Y);
 end;
 
 procedure TDrawMethod.Done;
@@ -205,15 +202,13 @@ end;
 
 constructor TDrawMethod.Create;
 begin
-  TempBitmap := TBitmap.Create;
   Description := TStringList.Create;
 end;
 
 destructor TDrawMethod.Destroy;
 begin
   FreeAndNil(Description);
-  FreeAndNil(TempBitmap);
-  inherited Destroy;
+  inherited;
 end;
 
 procedure TDrawMethod.DrawFrame(FastBitmap: TFastBitmap);

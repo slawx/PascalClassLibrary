@@ -30,6 +30,8 @@ begin
   inherited Create;
   Caption := 'OpenGL';
   PaintObject := poOpenGL;
+  Description.Add('This method use OpenGL 3D acceleration with simple one 2D orthogonal plane covering all visible area.' +
+    'Texture data is loaded from bitmap.');
 end;
 
 destructor TOpenGLMethod.Destroy;

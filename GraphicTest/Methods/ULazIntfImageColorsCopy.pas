@@ -28,6 +28,8 @@ begin
   inherited;
   Caption := 'TLazIntfImage.Colors copy';
   TempIntfImage := TLazIntfImage.Create(0, 0);
+  Description.Add('Method use TLazIntfImage class for faster access to bitmap pixels compared to simple access using TBitmap.Pixels.');
+  Description.Add('TLazIntfImage is created from visible image.');
 end;
 
 destructor TLazIntfImageColorsCopy.Destroy;

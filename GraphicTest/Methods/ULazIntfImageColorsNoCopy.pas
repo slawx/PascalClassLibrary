@@ -34,6 +34,8 @@ constructor TLazIntfImageColorsNoCopy.Create;
 begin
   inherited;
   Caption := 'TLazIntfImage.Colors no copy';
+  Description.Add('Method use TLazIntfImage class for faster access to bitmap pixels compared to simple access using TBitmap.Pixels.');
+  Description.Add('Bitmap is not copied from original bitmap.');
 end;
 
 destructor TLazIntfImageColorsNoCopy.Destroy;

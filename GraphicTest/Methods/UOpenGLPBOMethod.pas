@@ -68,6 +68,8 @@ begin
 //  SetLength(pboIds, 2);
   Index := 0;
   NextIndex := 1;
+  Description.Add('This method use OpenGL acceleration same like other OpenGL method but ' +
+    'use DMA(Direct Memory Access) for faster texture data transfer without use of CPU.');
 end;
 
 destructor TOpenGLPBOMethod.Destroy;
