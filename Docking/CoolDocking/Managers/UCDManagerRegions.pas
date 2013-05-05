@@ -5,7 +5,7 @@ unit UCDManagerRegions;
 interface
 
 uses
-  Classes, SysUtils, Controls, ExtCtrls, StdCtrls, Forms,
+  Classes, SysUtils, Controls, ExtCtrls, StdCtrls, Forms, Dialogs, Types,
   Graphics, Contnrs, Buttons, UCDCommon, UCDManager,
   LCLType, LMessages;
 
@@ -284,6 +284,8 @@ begin
     PanelHeader.Header.PopupMenu := Self.PopupMenu;
   end;
   if (Control is TForm) and Assigned((Control as TForm).Icon) then begin
+    (Control as TForm).Icon.Current := (Control as TForm).Icon.GetBestIndexForSize(
+      Size(NewItem.PanelHeader.Header.Height, NewItem.PanelHeader.Header.Height));
     NewItem.PanelHeader.Header.Icon.Picture.Assign((Control as TForm).Icon);
     NewItem.PanelHeader.Header.Icon.Width := NewItem.PanelHeader.Header.Icon.Picture.Bitmap.Width;
     NewItem.PanelHeader.Header.Icon.Height := NewItem.PanelHeader.Header.Icon.Picture.Bitmap.Height;
@@ -489,4 +491,4 @@ begin
 end;
 
 end.
-
+
