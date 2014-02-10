@@ -10,7 +10,7 @@ uses
   StopWatch, UCommon, UDebugLog, UDelay, UPrefixMultiplier, UURI, UThreading, 
   UMemory, UResetableThread, UPool, ULastOpenedList, URegistry, 
   UJobProgressView, UXMLUtils, UApplicationInfo, USyncCounter, UListViewSort, 
-  UPersistentForm, LazarusPackageIntf;
+  UPersistentForm, UFindFile, LazarusPackageIntf;
 
 implementation
 
@@ -20,7 +20,9 @@ begin
   RegisterUnit('ULastOpenedList', @ULastOpenedList.Register);
   RegisterUnit('UJobProgressView', @UJobProgressView.Register);
   RegisterUnit('UApplicationInfo', @UApplicationInfo.Register);
+  RegisterUnit('UListViewSort', @UListViewSort.Register);
   RegisterUnit('UPersistentForm', @UPersistentForm.Register);
+  RegisterUnit('UFindFile', @UFindFile.Register);
 end;
 
 initialization

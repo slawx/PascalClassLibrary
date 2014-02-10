@@ -63,7 +63,7 @@ resourcestring
 
 procedure Register;
 begin
-  RegisterComponents('Samples', [TFindFile]);
+  RegisterComponents('Common', [TFindFile]);
 end;
 
 constructor TFindFile.Create(AOwner: TComponent);
@@ -139,4 +139,4 @@ begin
 end; 
 
 end.
-
+

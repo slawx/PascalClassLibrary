@@ -38,7 +38,7 @@ implementation
 
 procedure Register;
 begin
-  RegisterComponents('Samples', [TPersistentForm]);
+  RegisterComponents('Common', [TPersistentForm]);
 end;
 
 { TPersistentForm }
@@ -172,4 +172,4 @@ begin
 end;
 
 end.
-
+

@@ -39,7 +39,7 @@ implementation
 
 procedure Register;
 begin
-  RegisterComponents('Samples', [TLastOpenedList]);
+  RegisterComponents('Common', [TLastOpenedList]);
 end;
 
 
@@ -151,4 +151,4 @@ begin
 end;
 
 end.
-
+

@@ -168,7 +168,7 @@ resourcestring
 
 procedure Register;
 begin
-  RegisterComponents('Samples', [TJobProgressView]);
+  RegisterComponents('Common', [TJobProgressView]);
 end;
 
 procedure TJobThread.Execute;
@@ -627,4 +627,4 @@ begin
   inherited;
 end;
 
-end.
+end.

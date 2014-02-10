@@ -51,7 +51,7 @@ resourcestring
 
 procedure Register;
 begin
-  RegisterComponents('Samples', [TDebugLog]);
+  RegisterComponents('Common', [TDebugLog]);
 end;
 
 { TDebugLog }
@@ -131,4 +131,4 @@ begin
 end;
 
 end.
-
+

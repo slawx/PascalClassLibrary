@@ -54,7 +54,7 @@ implementation
                         
 procedure Register;
 begin
-  RegisterComponents('Samples', [TApplicationInfo]);
+  RegisterComponents('Common', [TApplicationInfo]);
 end;
 
 { TApplicationInfo }
@@ -76,4 +76,4 @@ begin
   FRegistryRoot := rrKeyCurrentUser;
 end;
 
-end.
+end.

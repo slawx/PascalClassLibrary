@@ -8,7 +8,7 @@ interface
 
 uses
   {$IFDEF Windows}Windows, CommCtrl, {$ENDIF}Classes, Graphics, ComCtrls, SysUtils,
-  Controls, DateUtils, Dialogs, SpecializedList;
+  Controls, DateUtils, Dialogs, SpecializedList, Forms, Grids, StdCtrls, ExtCtrls;
 
 type
   TSortOrder = (soNone, soUp, soDown);
@@ -18,7 +18,7 @@ type
   TCompareEvent = function (Item1, Item2: TObject): Integer of object;
   TListFilterEvent = procedure (ListViewSort: TListViewSort) of object;
 
-  TListViewSort = class
+  TListViewSort = class(TComponent)
   private
     FListView: TListView;
     FOnCompareItem: TCompareEvent;
@@ -42,13 +42,14 @@ type
   public
     List: TListObject;
     Source: TListObject;
-    constructor Create;
+    constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     function CompareTime(Time1, Time2: TDateTime): Integer;
     function CompareInteger(Value1, Value2: Integer): Integer;
     function CompareString(Value1, Value2: string): Integer;
     function CompareBoolean(Value1, Value2: Boolean): Integer;
     procedure Refresh;
+  published
     property ListView: TListView read FListView write SetListView;
     property OnCompareItem: TCompareEvent read FOnCompareItem
       write FOnCompareItem;
@@ -60,7 +61,94 @@ type
     property Order: TSortOrder read FOrder write SetOrder;
   end;
 
+  { TListViewFilter }
+
+  TListViewFilter = class(TWinControl)
+  private
+    FOnChange: TNotifyEvent;
+    FStringGrid1: TStringGrid;
+    procedure DoOnKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
+  public
+    constructor Create(AOwner: TComponent); override;
+    procedure UpdateFromListView(ListView: TListView);
+    function TextEntered: Boolean;
+    function GetColValue(Index: Integer): string;
+    property StringGrid: TStringGrid read FStringGrid1 write FStringGrid1;
+  published
+    property OnChange: TNotifyEvent read FOnChange write FOnChange;
+    property Align;
+    property Anchors;
+  end;
+
+procedure Register;
+
+
 implementation
+
+procedure Register;
+begin
+  RegisterComponents('Common', [TListViewSort, TListViewFilter]);
+end;
+
+{ TListViewFilter }
+
+procedure TListViewFilter.DoOnKeyUp(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  if Assigned(FOnChange) then
+    FOnChange(Self);
+end;
+
+constructor TListViewFilter.Create(AOwner: TComponent);
+begin
+  inherited Create(AOwner);
+  FStringGrid1 := TStringGrid.Create(Self);
+  FStringGrid1.Align := alClient;
+  FStringGrid1.Parent := Self;
+  FStringGrid1.Visible := True;
+  FStringGrid1.ScrollBars := ssNone;
+  FStringGrid1.FixedCols := 0;
+  FStringGrid1.FixedRows := 0;
+  FStringGrid1.RowCount := 1;
+  FStringGrid1.Options := [goFixedHorzLine, goFixedVertLine, goVertLine,
+    goHorzLine, goRangeSelect, goEditing, goAlwaysShowEditor, goSmoothScroll];
+  FStringGrid1.OnKeyUp := DoOnKeyUp;
+end;
+
+procedure TListViewFilter.UpdateFromListView(ListView: TListView);
+var
+  I: Integer;
+  NewColumn: TGridColumn;
+begin
+  with FStringGrid1 do begin
+    Columns.Clear;
+    while Columns.Count > ListView.Columns.Count do Columns.Delete(Columns.Count - 1);
+    while Columns.Count < ListView.Columns.Count do NewColumn := Columns.Add;
+    for I := 0 to ListView.Columns.Count - 1 do begin
+      Columns[I].Width := ListView.Columns[I].Width;
+    end;
+  end;
+end;
+
+function TListViewFilter.TextEntered: Boolean;
+var
+  I: Integer;
+begin
+  Result := False;
+  for I := 0 to FStringGrid1.ColCount - 1 do begin
+    if FStringGrid1.Cells[I, 0] <> '' then begin
+      Result := True;
+      Break;
+    end;
+  end;
+end;
+
+function TListViewFilter.GetColValue(Index: Integer): string;
+begin
+  if (Index >= 0) and (Index < StringGrid.Columns.Count) then
+    Result := StringGrid.Cells[Index, 0]
+    else Result := '';
+end;
 
 { TListViewSort }
 
@@ -159,8 +247,9 @@ begin
   Result := DateUtils.CompareDateTime(Time1, Time2);
 end;
 
-constructor TListViewSort.Create;
+constructor TListViewSort.Create(AOwner: TComponent);
 begin
+  inherited;
   List := TListObject.Create;
   List.OwnsObjects := False;
 end;
@@ -314,4 +403,4 @@ begin
 end;
 {$ENDIF}
 
-end.
+end.

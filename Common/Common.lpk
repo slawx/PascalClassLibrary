@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <CONFIG>
   <Package Version="4">
     <PathDelim Value="\"/>
@@ -21,7 +21,7 @@
     <Description Value="Various libraries"/>
     <License Value="GNU/GPL"/>
     <Version Minor="7"/>
-    <Files Count="18">
+    <Files Count="19">
       <Item1>
         <Filename Value="StopWatch.pas"/>
         <UnitName Value="StopWatch"/>
@@ -92,6 +92,7 @@
       </Item16>
       <Item17>
         <Filename Value="UListViewSort.pas"/>
+        <HasRegisterProc Value="True"/>
         <UnitName Value="UListViewSort"/>
       </Item17>
       <Item18>
@@ -99,6 +100,11 @@
         <HasRegisterProc Value="True"/>
         <UnitName Value="UPersistentForm"/>
       </Item18>
+      <Item19>
+        <Filename Value="UFindFile.pas"/>
+        <HasRegisterProc Value="True"/>
+        <UnitName Value="UFindFile"/>
+      </Item19>
     </Files>
     <i18n>
       <EnableI18N Value="True"/>
@@ -124,4 +130,4 @@
       <_ExternHelp Items="Count"/>
     </CustomOptions>
   </Package>
-</CONFIG>
+</CONFIG>
