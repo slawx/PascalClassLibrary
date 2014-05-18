@@ -66,7 +66,56 @@ type
       write FOnClientConnect;
   end;
 
+  { TTCPServer }
+
+  TTCPClient = class
+  private
+    FActive: Boolean;
+    FSocket: TTCPBlockSocket;
+    procedure SetActive(AValue: Boolean);
+  public
+    Address: string;
+    Port: Word;
+    constructor Create;
+    destructor Destroy; override;
+    property Socket: TTCPBlockSocket read FSocket;
+    property Active: Boolean read FActive write SetActive;
+  end;
+
 implementation
+
+{ TTCPClient }
+
+procedure TTCPClient.SetActive(AValue: Boolean);
+begin
+  if AValue and not FActive then begin
+    with FSocket do begin
+      CreateSocket;
+      Connect(Address, IntToStr(Port));
+      if LastError <> 0 then raise Exception.Create('Socket connect error');
+    end;
+  end else
+  if not AValue and FActive then begin
+    with FSocket do begin
+      CloseSocket;
+    end;
+  end;
+  FActive := AValue;
+end;
+
+constructor TTCPClient.Create;
+begin
+  FSocket := TTCPBlockSocket.Create;
+  Address := '0.0.0.0';
+  Port := 80;
+end;
+
+destructor TTCPClient.Destroy;
+begin
+  Active := False;
+  FSocket.Free;
+  inherited Destroy;
+end;
 
 { TTCPServer }
 
