@@ -5,7 +5,7 @@ unit ULastOpenedList;
 interface
 
 uses
-  Classes, SysUtils, Registry, URegistry, Menus;
+  Classes, SysUtils, Registry, URegistry, Menus, XMLConf;
 
 type
 
@@ -26,6 +26,8 @@ type
     procedure LoadToMenuItem(MenuItem: TMenuItem; ClickAction: TNotifyEvent);
     procedure LoadFromRegistry(Context: TRegistryContext);
     procedure SaveToRegistry(Context: TRegistryContext);
+    procedure LoadFromXMLConfig(XMLConfig: TXMLConfig; Path: string);
+    procedure SaveToXMLConfig(XMLConfig: TXMLConfig; Path: string);
     procedure AddItem(FileName: string);
   published
     property MaxCount: Integer read FMaxCount write SetMaxCount;
@@ -139,6 +141,38 @@ begin
       WriteString('File' + IntToStr(I), UTF8Decode(Items[I]));
   finally
     Free;
+  end;
+end;
+
+procedure TLastOpenedList.LoadFromXMLConfig(XMLConfig: TXMLConfig; Path: string
+  );
+var
+  I: Integer;
+  Value: string;
+  Count: Integer;
+begin
+  with XMLConfig do begin
+    Count := GetValue(Path + '/Count', 0);
+    if Count > MaxCount then Count := MaxCount;
+    Items.Clear;
+    for I := 0 to Count - 1 do begin
+      Value := GetValue(Path + '/File' + IntToStr(I), '');
+      if Trim(Value) <> '' then Items.Add(Value);
+    end;
+    if Assigned(FOnChange) then
+      FOnChange(Self);
+  end;
+end;
+
+procedure TLastOpenedList.SaveToXMLConfig(XMLConfig: TXMLConfig; Path: string);
+var
+  I: Integer;
+begin
+  with XMLConfig do begin
+    SetValue(Path + '/Count', Items.Count);
+    for I := 0 to Items.Count - 1 do
+      SetValue(Path + '/File' + IntToStr(I), Items[I]);
+    Flush;
   end;
 end;
 
