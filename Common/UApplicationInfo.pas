@@ -14,6 +14,7 @@ type
   TApplicationInfo = class(TComponent)
   private
     FIdentification: Byte;
+    FLicense: string;
     FVersionMajor: Byte;
     FVersionMinor: Byte;
     FVersionBugFix: Byte;
@@ -46,6 +47,7 @@ type
     property ReleaseDate: TDateTime read FReleaseDate write FReleaseDate;
     property RegistryKey: string read FRegistryKey write FRegistryKey;
     property RegistryRoot: TRegistryRoot read FRegistryRoot write FRegistryRoot;
+    property License: string read FLicense write FLicense;
   end;
 
 procedure Register;

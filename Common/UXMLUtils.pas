@@ -6,10 +6,16 @@ interface
 
 uses
   {$IFDEF WINDOWS}Windows,{$ENDIF}
-  Classes, SysUtils, DateUtils;
+  Classes, SysUtils, DateUtils, XMLRead, XMLWrite, DOM;
 
 function XMLTimeToDateTime(XMLDateTime: string): TDateTime;
 function DateTimeToXMLTime(Value: TDateTime; ApplyLocalBias: Boolean = True): WideString;
+procedure WriteInteger(Node: TDOMNode; Name: string; Value: Integer);
+procedure WriteBoolean(Node: TDOMNode; Name: string; Value: Boolean);
+procedure WriteString(Node: TDOMNode; Name: string; Value: string);
+function ReadInteger(Node: TDOMNode; Name: string; DefaultValue: Integer): Integer;
+function ReadBoolean(Node: TDOMNode; Name: string; DefaultValue: Boolean): Boolean;
+function ReadString(Node: TDOMNode; Name: string; DefaultValue: string): string;
 
 
 implementation
@@ -122,5 +128,62 @@ begin
     Result := Result + 'Z'; { Do not localize }
 end;
 
-end.
+procedure WriteInteger(Node: TDOMNode; Name: string; Value: Integer);
+var
+  NewNode: TDOMNode;
+begin
+  NewNode := Node.OwnerDocument.CreateElement(Name);
+  NewNode.TextContent := IntToStr(Value);
+  Node.AppendChild(NewNode);
+end;
 
+procedure WriteBoolean(Node: TDOMNode; Name: string; Value: Boolean);
+var
+  NewNode: TDOMNode;
+begin
+  NewNode := Node.OwnerDocument.CreateElement(Name);
+  NewNode.TextContent := BoolToStr(Value);
+  Node.AppendChild(NewNode);
+end;
+
+procedure WriteString(Node: TDOMNode; Name: string; Value: string);
+var
+  NewNode: TDOMNode;
+begin
+  NewNode := Node.OwnerDocument.CreateElement(Name);
+  NewNode.TextContent := Value;
+  Node.AppendChild(NewNode);
+end;
+
+function ReadInteger(Node: TDOMNode; Name: string; DefaultValue: Integer): Integer;
+var
+  NewNode: TDOMNode;
+begin
+  Result := DefaultValue;
+  NewNode := Node.FindNode(Name);
+  if Assigned(NewNode) then
+    Result := StrToInt(NewNode.TextContent);
+end;
+
+function ReadBoolean(Node: TDOMNode; Name: string; DefaultValue: Boolean): Boolean;
+var
+  NewNode: TDOMNode;
+begin
+  Result := DefaultValue;
+  NewNode := Node.FindNode(Name);
+  if Assigned(NewNode) then
+    Result := StrToBool(NewNode.TextContent);
+end;
+
+function ReadString(Node: TDOMNode; Name: string; DefaultValue: string): string;
+var
+  NewNode: TDOMNode;
+begin
+  Result := DefaultValue;
+  NewNode := Node.FindNode(Name);
+  if Assigned(NewNode) then
+    Result := NewNode.TextContent;
+end;
+
+end.
+
