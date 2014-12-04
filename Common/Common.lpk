@@ -11,17 +11,11 @@
       <SearchPaths>
         <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
       </SearchPaths>
-      <Other>
-        <CompilerMessages>
-          <UseMsgFile Value="True"/>
-        </CompilerMessages>
-        <CompilerPath Value="$(CompPath)"/>
-      </Other>
     </CompilerOptions>
     <Description Value="Various libraries"/>
     <License Value="GNU/GPL"/>
     <Version Minor="7"/>
-    <Files Count="19">
+    <Files Count="20">
       <Item1>
         <Filename Value="StopWatch.pas"/>
         <UnitName Value="StopWatch"/>
@@ -105,6 +99,11 @@
         <HasRegisterProc Value="True"/>
         <UnitName Value="UFindFile"/>
       </Item19>
+      <Item20>
+        <Filename Value="UScaleDPI.pas"/>
+        <HasRegisterProc Value="True"/>
+        <UnitName Value="UScaleDPI"/>
+      </Item20>
     </Files>
     <i18n>
       <EnableI18N Value="True"/>

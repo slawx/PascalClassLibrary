@@ -10,7 +10,7 @@ uses
   StopWatch, UCommon, UDebugLog, UDelay, UPrefixMultiplier, UURI, UThreading, 
   UMemory, UResetableThread, UPool, ULastOpenedList, URegistry, 
   UJobProgressView, UXMLUtils, UApplicationInfo, USyncCounter, UListViewSort, 
-  UPersistentForm, UFindFile, LazarusPackageIntf;
+  UPersistentForm, UFindFile, UScaleDPI, LazarusPackageIntf;
 
 implementation
 

@@ -13,7 +13,7 @@ type
 
   { TScaleDPI }
 
-  TScaleDPI = class
+  TScaleDPI = class(TComponent)
   private
     FAutoDetect: Boolean;
     procedure SetAutoDetect(AValue: Boolean);
@@ -26,12 +26,19 @@ type
     function ScaleXY(Size: TPoint; FromDPI: Integer): TPoint;
     function ScaleX(Size: Integer; FromDPI: Integer): Integer;
     function ScaleY(Size: Integer; FromDPI: Integer): Integer;
-    constructor Create;
+    constructor Create(AOwner: TComponent);
+  published
     property AutoDetect: Boolean read FAutoDetect write SetAutoDetect;
   end;
 
+procedure Register;
 
 implementation
+
+procedure Register;
+begin
+  RegisterComponents('Common', [TScaleDPI]);
+end;
 
 procedure TScaleDPI.SetAutoDetect(AValue: Boolean);
 begin
@@ -58,8 +65,6 @@ var
   NewWidth, NewHeight: integer;
   I: Integer;
 begin
-  if (DPI.X <= FromDPI.X * 1.1) or (DPI.Y <= FromDPI.Y * 1.1) then Exit;
-
   NewWidth := ScaleX(ImgList.Width, FromDPI.X);
   NewHeight := ScaleY(ImgList.Height, FromDPI.Y);
 
@@ -96,18 +101,12 @@ end;
 
 function TScaleDPI.ScaleX(Size: Integer; FromDPI: Integer): Integer;
 begin
-  if DPI.X <= FromDPI then
-    Result := Size
-  else
-    Result := MulDiv(Size, DPI.X, FromDPI);
+  Result := MulDiv(Size, DPI.X, FromDPI);
 end;
 
 function TScaleDPI.ScaleY(Size: Integer; FromDPI: Integer): Integer;
 begin
-  if Screen.PixelsPerInch <= FromDPI then
-    Result := Size
-  else
-    Result := MulDiv(Size, DPI.Y, FromDPI);
+  Result := MulDiv(Size, DPI.Y, FromDPI);
 end;
 
 function TScaleDPI.ScaleXY(Size: TPoint; FromDPI: Integer): TPoint;
@@ -116,8 +115,9 @@ begin
   Result.Y := ScaleY(Size.Y, FromDPI);
 end;
 
-constructor TScaleDPI.Create;
+constructor TScaleDPI.Create(AOwner: TComponent);
 begin
+  inherited;
   DPI := Point(96, 96);
   DesignDPI := Point(96, 96);
 end;
@@ -128,8 +128,6 @@ var
   WinControl: TWinControl;
   ToolBarControl: TToolBar;
 begin
-  if (DPI.X <= FromDPI.X) or (DPI.Y <= FromDPI.Y) then Exit;
-
   with Control do begin
     Left := ScaleX(Left, FromDPI.X);
     Top := ScaleY(Top, FromDPI.Y);
