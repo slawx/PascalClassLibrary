@@ -42,16 +42,20 @@ type
     MainMenu1: TMainMenu;
     Memo1: TMemo;
     MenuItem1: TMenuItem;
+    MenuItem10: TMenuItem;
+    MenuItem11: TMenuItem;
     MenuItem2: TMenuItem;
     MenuItem3: TMenuItem;
     MenuItem4: TMenuItem;
     MenuItem8: TMenuItem;
+    MenuItem9: TMenuItem;
     MenuItemTest: TMenuItem;
     MenuItem5: TMenuItem;
     MenuItem6: TMenuItem;
     MenuItem7: TMenuItem;
     PageControl1: TPageControl;
     Panel1: TPanel;
+    PopupMenu1: TPopupMenu;
     SaveDialog1: TSaveDialog;
     SpinEditHeight: TSpinEdit;
     SpinEditWidth: TSpinEdit;
@@ -377,9 +381,9 @@ end;
 
 procedure TMainForm.UpdateInterface;
 begin
-  ButtonSingleTest.Enabled := not SingleTestActive and not AllTestActive and Assigned(ListViewMethods.Selected);
-  ButtonBenchmark.Enabled := not AllTestActive and not SingleTestActive;
-  ButtonStop.Enabled := SingleTestActive or AllTestActive;
+  ATestOneMethod.Enabled := not SingleTestActive and not AllTestActive and Assigned(ListViewMethods.Selected);
+  ATestAllMethods.Enabled := not AllTestActive and not SingleTestActive;
+  ATestStop.Enabled := SingleTestActive or AllTestActive;
   SpinEditWidth.MaxValue := Screen.DesktopWidth;
   SpinEditHeight.MaxValue := Screen.DesktopHeight;
   CheckBoxDoubleBuffered.Checked := DrawForm.DoubleBuffered;

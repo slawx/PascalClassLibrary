@@ -1,20 +1,20 @@
 object MainForm: TMainForm
-  Left = 258
-  Height = 444
-  Top = 176
-  Width = 857
+  Left = 561
+  Height = 577
+  Top = 310
+  Width = 998
   Caption = 'Graphic test'
-  ClientHeight = 425
-  ClientWidth = 857
+  ClientHeight = 548
+  ClientWidth = 998
   Menu = MainMenu1
   OnClose = FormClose
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
-  LCLVersion = '1.1'
+  LCLVersion = '1.5'
   object PageControl1: TPageControl
-    Left = 459
-    Height = 425
+    Left = 600
+    Height = 548
     Top = 0
     Width = 398
     ActivePage = TabSheet1
@@ -23,13 +23,13 @@ object MainForm: TMainForm
     TabOrder = 0
     object TabSheet1: TTabSheet
       Caption = 'Description'
-      ClientHeight = 399
-      ClientWidth = 390
+      ClientHeight = 505
+      ClientWidth = 392
       object Memo1: TMemo
         Left = 0
-        Height = 399
+        Height = 505
         Top = 0
-        Width = 390
+        Width = 392
         Align = alClient
         ReadOnly = True
         ScrollBars = ssAutoBoth
@@ -38,8 +38,8 @@ object MainForm: TMainForm
     end
     object TabSheet2: TTabSheet
       Caption = 'Code'
-      ClientHeight = 388
-      ClientWidth = 390
+      ClientHeight = 505
+      ClientWidth = 392
       inline SynMemo1: TSynMemo
         Cursor = crIBeam
         Left = 0
@@ -479,13 +479,16 @@ object MainForm: TMainForm
             ShortCut = 57379
           end>
         MouseActions = <>
+        MouseTextActions = <>
         MouseSelActions = <>
+        VisibleSpecialChars = [vscSpace, vscTabAtLast]
         SelectedColor.BackPriority = 50
         SelectedColor.ForePriority = 50
         SelectedColor.FramePriority = 50
         SelectedColor.BoldPriority = 50
         SelectedColor.ItalicPriority = 50
         SelectedColor.UnderlinePriority = 50
+        SelectedColor.StrikeOutPriority = 50
         inline SynLeftGutterPartList1: TSynGutterPartList
           object SynGutterMarks1: TSynGutterMarks
             Width = 24
@@ -510,6 +513,8 @@ object MainForm: TMainForm
           object SynGutterSeparator1: TSynGutterSeparator
             Width = 2
             MouseActions = <>
+            MarkupInfo.Background = clWhite
+            MarkupInfo.Foreground = clGray
           end
           object SynGutterCodeFolding1: TSynGutterCodeFolding
             MouseActions = <>
@@ -524,19 +529,19 @@ object MainForm: TMainForm
   end
   object Panel1: TPanel
     Left = 0
-    Height = 425
+    Height = 548
     Top = 0
-    Width = 454
+    Width = 595
     Align = alClient
     BevelOuter = bvNone
-    ClientHeight = 425
-    ClientWidth = 454
+    ClientHeight = 548
+    ClientWidth = 595
     TabOrder = 1
     object ListViewMethods: TListView
       Left = 4
-      Height = 324
+      Height = 423
       Top = 4
-      Width = 448
+      Width = 589
       Anchors = [akTop, akLeft, akRight, akBottom]
       Columns = <      
         item
@@ -568,6 +573,7 @@ object MainForm: TMainForm
           Width = 80
         end>
       OwnerData = True
+      PopupMenu = PopupMenu1
       ReadOnly = True
       RowSelect = True
       TabOrder = 0
@@ -576,27 +582,27 @@ object MainForm: TMainForm
       OnSelectItem = ListViewMethodsSelectItem
     end
     object ButtonSingleTest: TButton
-      Left = 8
-      Height = 25
-      Top = 336
-      Width = 115
+      Left = 232
+      Height = 32
+      Top = 468
+      Width = 160
       Action = ATestOneMethod
       Anchors = [akLeft, akBottom]
       TabOrder = 1
     end
     object ButtonBenchmark: TButton
-      Left = 136
-      Height = 25
-      Top = 336
-      Width = 112
+      Left = 232
+      Height = 33
+      Top = 432
+      Width = 160
       Action = ATestAllMethods
       Anchors = [akLeft, akBottom]
       TabOrder = 2
     end
     object FloatSpinEdit1: TFloatSpinEdit
-      Left = 88
-      Height = 21
-      Top = 368
+      Left = 152
+      Height = 35
+      Top = 472
       Width = 58
       Anchors = [akLeft, akBottom]
       Increment = 1
@@ -606,9 +612,9 @@ object MainForm: TMainForm
       Value = 1
     end
     object ButtonStop: TButton
-      Left = 256
-      Height = 25
-      Top = 336
+      Left = 312
+      Height = 33
+      Top = 502
       Width = 75
       Action = ATestStop
       Anchors = [akLeft, akBottom]
@@ -616,26 +622,26 @@ object MainForm: TMainForm
     end
     object Label1: TLabel
       Left = 8
-      Height = 13
-      Top = 372
-      Width = 69
+      Height = 25
+      Top = 473
+      Width = 131
       Anchors = [akLeft, akBottom]
       Caption = 'Step duration:'
       ParentColor = False
     end
     object Label2: TLabel
-      Left = 152
-      Height = 13
-      Top = 372
-      Width = 5
+      Left = 216
+      Height = 25
+      Top = 473
+      Width = 9
       Anchors = [akLeft, akBottom]
       Caption = 's'
       ParentColor = False
     end
     object SpinEditWidth: TSpinEdit
-      Left = 204
-      Height = 21
-      Top = 368
+      Left = 72
+      Height = 35
+      Top = 432
       Width = 58
       Anchors = [akLeft, akBottom]
       MaxValue = 1000
@@ -644,9 +650,9 @@ object MainForm: TMainForm
       Value = 320
     end
     object SpinEditHeight: TSpinEdit
-      Left = 273
-      Height = 21
-      Top = 368
+      Left = 152
+      Height = 35
+      Top = 432
       Width = 58
       Anchors = [akLeft, akBottom]
       MaxValue = 1000
@@ -655,48 +661,48 @@ object MainForm: TMainForm
       Value = 240
     end
     object Label3: TLabel
-      Left = 169
-      Height = 13
-      Top = 373
-      Width = 23
+      Left = 8
+      Height = 25
+      Top = 436
+      Width = 42
       Anchors = [akLeft, akBottom]
       Caption = 'Size:'
       ParentColor = False
     end
     object Label4: TLabel
-      Left = 265
-      Height = 13
-      Top = 372
-      Width = 6
+      Left = 136
+      Height = 25
+      Top = 442
+      Width = 10
       Anchors = [akLeft, akBottom]
       Caption = 'x'
       ParentColor = False
     end
     object CheckBoxDoubleBuffered: TCheckBox
-      Left = 336
-      Height = 17
-      Top = 336
-      Width = 98
+      Left = 400
+      Height = 27
+      Top = 436
+      Width = 174
       Anchors = [akLeft, akBottom]
       Caption = 'Double buffered'
       OnChange = CheckBoxDoubleBufferedChange
       TabOrder = 7
     end
     object CheckBoxEraseBackground: TCheckBox
-      Left = 336
-      Height = 17
-      Top = 353
-      Width = 106
+      Left = 400
+      Height = 27
+      Top = 468
+      Width = 188
       Anchors = [akLeft, akBottom]
       Caption = 'Erase background'
       OnChange = CheckBoxEraseBackgroundChange
       TabOrder = 8
     end
     object CheckBox1: TCheckBox
-      Left = 336
-      Height = 17
-      Top = 369
-      Width = 58
+      Left = 400
+      Height = 27
+      Top = 503
+      Width = 96
       Anchors = [akLeft, akBottom]
       Caption = 'Opaque'
       OnChange = CheckBox1Change
@@ -704,28 +710,28 @@ object MainForm: TMainForm
     end
     object Label5: TLabel
       Left = 8
-      Height = 13
-      Top = 399
-      Width = 61
+      Height = 25
+      Top = 510
+      Width = 118
       Anchors = [akLeft, akBottom]
       Caption = 'Pixel format:'
       ParentColor = False
     end
     object ComboBox1: TComboBox
-      Left = 89
-      Height = 21
-      Top = 394
-      Width = 100
+      Left = 136
+      Height = 37
+      Top = 508
+      Width = 144
       Anchors = [akLeft, akBottom]
-      ItemHeight = 13
+      ItemHeight = 0
       OnChange = ComboBox1Change
       Style = csDropDownList
       TabOrder = 10
     end
   end
   object Splitter1: TSplitter
-    Left = 454
-    Height = 425
+    Left = 595
+    Height = 548
     Top = 0
     Width = 5
     Align = alRight
@@ -733,17 +739,6 @@ object MainForm: TMainForm
   end
   object SynPasSyn1: TSynPasSyn
     Enabled = False
-    AsmAttri.FrameEdges = sfeAround
-    CommentAttri.FrameEdges = sfeAround
-    IDEDirectiveAttri.FrameEdges = sfeAround
-    IdentifierAttri.FrameEdges = sfeAround
-    KeyAttri.FrameEdges = sfeAround
-    NumberAttri.FrameEdges = sfeAround
-    SpaceAttri.FrameEdges = sfeAround
-    StringAttri.FrameEdges = sfeAround
-    SymbolAttri.FrameEdges = sfeAround
-    CaseLabelAttri.FrameEdges = sfeAround
-    DirectiveAttri.FrameEdges = sfeAround
     CompilerMode = pcmDelphi
     NestedComments = False
     left = 649
@@ -826,5 +821,18 @@ object MainForm: TMainForm
     DefaultExt = '.txt'
     left = 308
     top = 76
+  end
+  object PopupMenu1: TPopupMenu
+    left = 401
+    top = 176
+    object MenuItem9: TMenuItem
+      Action = ATestOneMethod
+    end
+    object MenuItem10: TMenuItem
+      Action = ATestAllMethods
+    end
+    object MenuItem11: TMenuItem
+      Action = ATestStop
+    end
   end
 end

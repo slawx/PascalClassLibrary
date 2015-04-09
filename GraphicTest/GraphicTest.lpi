@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <CONFIG>
   <ProjectOptions>
     <Version Value="9"/>
@@ -26,6 +26,7 @@
               <SyntaxMode Value="Delphi"/>
               <CStyleOperator Value="False"/>
               <AllowLabel Value="False"/>
+              <CPPInline Value="False"/>
               <UseAnsiStrings Value="False"/>
             </SyntaxOptions>
           </Parsing>
@@ -46,12 +47,6 @@
               </Win32>
             </Options>
           </Linking>
-          <Other>
-            <CompilerMessages>
-              <UseMsgFile Value="True"/>
-            </CompilerMessages>
-            <CompilerPath Value="$(CompPath)"/>
-          </Other>
         </CompilerOptions>
       </Item2>
     </BuildModes>
@@ -63,7 +58,6 @@
     <RunParams>
       <local>
         <FormatVersion Value="1"/>
-        <LaunchingApplication PathPlusParams="/usr/bin/xterm -T 'Lazarus Run Output' -e $(LazarusDir)/tools/runwait.sh $(TargetCmdLine)"/>
       </local>
     </RunParams>
     <RequiredPackages Count="5">
@@ -89,7 +83,6 @@
       <Unit0>
         <Filename Value="GraphicTest.lpr"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="GraphicTest"/>
       </Unit0>
       <Unit1>
         <Filename Value="UMainForm.pas"/>
@@ -130,17 +123,14 @@
       <Unit7>
         <Filename Value="Methods/UCanvasPixelsUpdateLock.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="UCanvasPixelsUpdateLock"/>
       </Unit7>
       <Unit8>
         <Filename Value="Methods/ULazIntfImageColorsCopy.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="ULazIntfImageColorsCopy"/>
       </Unit8>
       <Unit9>
         <Filename Value="Methods/ULazIntfImageColorsNoCopy.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="ULazIntfImageColorsNoCopy"/>
       </Unit9>
       <Unit10>
         <Filename Value="Methods/UBGRABitmapPaintBox.pas"/>
@@ -155,17 +145,14 @@
       <Unit12>
         <Filename Value="Methods/UBitmapRawImageData.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="UBitmapRawImageData"/>
       </Unit12>
       <Unit13>
         <Filename Value="Methods/UDummyMethod.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="UDummyMethod"/>
       </Unit13>
       <Unit14>
         <Filename Value="Methods/UBitmapRawImageDataMove.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="UBitmapRawImageDataMove"/>
       </Unit14>
       <Unit15>
         <Filename Value="Methods/UOpenGLMethod.pas"/>
@@ -175,7 +162,6 @@
       <Unit16>
         <Filename Value="Methods/UOpenGLPBOMethod.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="UOpenGLPBOMethod"/>
       </Unit16>
       <Unit17>
         <Filename Value="Methods/UGraphics32Method.pas"/>
@@ -198,7 +184,9 @@
       <SyntaxOptions>
         <SyntaxMode Value="Delphi"/>
         <CStyleOperator Value="False"/>
+        <IncludeAssertionCode Value="True"/>
         <AllowLabel Value="False"/>
+        <CPPInline Value="False"/>
         <UseAnsiStrings Value="False"/>
       </SyntaxOptions>
     </Parsing>
@@ -209,6 +197,7 @@
         <OverflowChecks Value="True"/>
         <StackChecks Value="True"/>
       </Checks>
+      <VerifyObjMethodCallValidity Value="True"/>
     </CodeGeneration>
     <Linking>
       <Debugging>
@@ -221,12 +210,7 @@
       </Options>
     </Linking>
     <Other>
-      <CompilerMessages>
-        <UseMsgFile Value="True"/>
-      </CompilerMessages>
-      <CustomOptions Value="-dopengl
--dGR32"/>
-      <CompilerPath Value="$(CompPath)"/>
+      <CustomOptions Value="-dopengl"/>
     </Other>
   </CompilerOptions>
   <Debugging>

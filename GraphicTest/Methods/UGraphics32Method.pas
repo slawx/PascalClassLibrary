@@ -5,10 +5,11 @@ unit UGraphics32Method;
 interface
 
 uses
-  Classes, SysUtils, UFastBitmap, UDrawMethod{$IFDEF gr32}, GR32, GR32_Image{$ENDIF}, Controls,
-  Graphics;
+  Classes, SysUtils, UFastBitmap, UDrawMethod,
+  {$IFDEF WINDOWS}GR32, GR32_Image,{$ENDIF}
+  Controls, Graphics;
 
-{$IFDEF gr32}
+{$IFDEF WINDOWS}
 type
   { TGraphics32Method }
 
@@ -24,7 +25,7 @@ type
 
 implementation
 
-{$IFDEF gr32}
+{$IFDEF WINDOWS}
 { TGraphics32Method }
 
 constructor TGraphics32Method.Create;
