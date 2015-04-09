@@ -9,7 +9,7 @@ uses
   Interfaces, // this includes the LCL widgetset
   Forms, lazopenglcontext, UMainForm, UPlatform, UDrawMethod, UFastBitmap,
   UDrawForm, bgrabitmappack,
-  {$IFDEF WINDOWS}GR32_L,{$ENDIF}
+  {$IFDEF GRAPHICS32}GR32_L,{$ENDIF}
   UCanvasPixels, UCanvasPixelsUpdateLock,
   ULazIntfImageColorsCopy, ULazIntfImageColorsNoCopy, UBGRABitmapPaintBox,
   UBitmapRawImageDataPaintBox, UBitmapRawImageData, UDummyMethod,

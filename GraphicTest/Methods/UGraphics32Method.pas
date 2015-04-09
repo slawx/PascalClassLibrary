@@ -6,10 +6,10 @@ interface
 
 uses
   Classes, SysUtils, UFastBitmap, UDrawMethod,
-  {$IFDEF WINDOWS}GR32, GR32_Image,{$ENDIF}
+  {$IFDEF GRAPHICS32}GR32, GR32_Image,{$ENDIF}
   Controls, Graphics;
 
-{$IFDEF WINDOWS}
+{$IFDEF GRAPHICS32}
 type
   { TGraphics32Method }
 
@@ -25,7 +25,7 @@ type
 
 implementation
 
-{$IFDEF WINDOWS}
+{$IFDEF GRAPHICS32}
 { TGraphics32Method }
 
 constructor TGraphics32Method.Create;

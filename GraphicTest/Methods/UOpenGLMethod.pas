@@ -6,9 +6,9 @@ interface
 
 uses
   Classes, SysUtils, UDrawMethod, UFastBitmap
-  {$IFDEF opengl}, GL, GLExt, OpenGLContext{$ENDIF};
+  {$IFDEF OPENGL}, GL, GLExt, OpenGLContext{$ENDIF};
 
-{$IFDEF opengl}
+{$IFDEF OPENGL}
 type
   { TOpenGLMethod }
 
@@ -22,7 +22,7 @@ type
 
 implementation
 
-{$IFDEF opengl}
+{$IFDEF OPENGL}
 { TOpenGLMethod }
 
 constructor TOpenGLMethod.Create;

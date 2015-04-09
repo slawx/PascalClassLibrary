@@ -7,7 +7,8 @@ interface
 uses
   Classes, SysUtils, ExtCtrls, UPlatform, UFastBitmap, Graphics, Controls,
   LCLType, IntfGraphics, fpImage, GraphType, DateUtils,
-  LclIntf{$IFDEF opengl}, GL, GLExt, OpenGLContext{$ENDIF};
+  {$IFDEF OPENGL}GL, GLExt, OpenGLContext,{$ENDIF}
+  LclIntf;
 
 type
   TPaintObject = (poImage, poPaintBox, poOpenGL);
@@ -59,7 +60,7 @@ type
     procedure Done; override;
   end;
 
-  {$IFDEF opengl}
+  {$IFDEF OPENGL}
 
   { TDrawMethodOpenGL }
 
@@ -122,7 +123,7 @@ begin
 end;
 
 
-{$IFDEF opengl}
+{$IFDEF OPENGL}
 
 { TDrawMethodOpenGL }
 

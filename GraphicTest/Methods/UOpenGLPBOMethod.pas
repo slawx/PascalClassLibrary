@@ -6,9 +6,9 @@ interface
 
 uses
   Classes, SysUtils, UDrawMethod, UFastBitmap, Controls, Graphics
-  {$IFDEF opengl}, GL, GLExt, OpenGLContext{$ENDIF};
+  {$IFDEF OPENGL}, GL, GLExt, OpenGLContext{$ENDIF};
 
-{$IFDEF opengl}
+{$IFDEF OPENGL}
 type
   { TOpenGLPBOMethod }
 
@@ -25,7 +25,7 @@ type
 
 implementation
 
-{$IFDEF opengl}
+{$IFDEF OPENGL}
 { TOpenGLPBOMethod }
 
 //procedure glGenBuffersARB2 : procedure(n : GLsizei; buffers : PGLuint); extdecl;

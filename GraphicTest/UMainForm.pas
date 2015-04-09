@@ -90,11 +90,14 @@ type
     AllTestActive: Boolean;
     TestTerminated: Boolean;
     TestTimeout: Real;
+    DrawMethodClasses: array of TDrawMethodClass;
     procedure GenerateSceneFrames;
     procedure TestMethod(Method: TDrawMethod);
     procedure UpdateMethodList;
     procedure UpdateInterface;
     procedure UpdateFrameSize;
+    procedure RegisterDrawMethods;
+    procedure RegisterDrawMethod(MethodClass: TDrawMethodClass);
   public
     FrameSize: TPoint;
     PixelFormat: TPixelFormat;
@@ -116,17 +119,6 @@ uses
   UBitmapRawImageData, UBitmapRawImageDataMove, UDummyMethod, UOpenGLMethod,
   UOpenGLPBOMethod, UGraphics32Method;
 
-const
-  DrawMethodClasses: array[0..8{$IFDEF opengl}+2{$ENDIF}{$IFDEF gr32}+1{$ENDIF}] of TDrawMethodClass = (
-    TCanvasPixels, TCanvasPixelsUpdateLock, TLazIntfImageColorsCopy,
-    TLazIntfImageColorsNoCopy, TBitmapRawImageData, TBitmapRawImageDataPaintBox,
-    TBitmapRawImageDataMove, TBGRABitmapPaintBox
-    {$IFDEF gr32}, TGraphics32Method{$ENDIF}
-    {$IFDEF opengl}, TOpenGLMethod, TOpenGLPBOMethod{$ENDIF}
-    ,TDummyMethod);
-
-
-
 { TMainForm }
 
 procedure TMainForm.FormCreate(Sender: TObject);
@@ -140,6 +132,7 @@ begin
   FrameSize := Point(320, 240);
   Randomize;
 
+  RegisterDrawMethods;
   DrawMethods := TObjectList.Create;
   for I := 0 to High(DrawMethodClasses) do begin
     NewDrawMethod := DrawMethodClasses[I].Create;
@@ -397,6 +390,32 @@ begin
   DrawForm.ClientWidth := FrameSize.X;
   DrawForm.ClientHeight := FrameSize.Y;
   GenerateSceneFrames;
+end;
+
+procedure TMainForm.RegisterDrawMethods;
+begin
+  RegisterDrawMethod(TCanvasPixels);
+  RegisterDrawMethod(TCanvasPixelsUpdateLock);
+  RegisterDrawMethod(TLazIntfImageColorsCopy);
+  RegisterDrawMethod(TLazIntfImageColorsNoCopy);
+  RegisterDrawMethod(TBitmapRawImageData);
+  RegisterDrawMethod(TBitmapRawImageDataPaintBox);
+  RegisterDrawMethod(TBitmapRawImageDataMove);
+  RegisterDrawMethod(TBGRABitmapPaintBox);
+  {$IFDEF GRAPHICS32}
+  RegisterDrawMethod(TGraphics32Method);
+  {$ENDIF}
+  {$IFDEF OPENGL}
+  RegisterDrawMethod(TOpenGLMethod);
+  RegisterDrawMethod(TOpenGLPBOMethod);
+  {$ENDIF}
+  RegisterDrawMethod(TDummyMethod);
+end;
+
+procedure TMainForm.RegisterDrawMethod(MethodClass: TDrawMethodClass);
+begin
+  SetLength(DrawMethodClasses, Length(DrawMethodClasses) + 1);
+  DrawMethodClasses[High(DrawMethodClasses)] := MethodClass;
 end;
 
 end.
