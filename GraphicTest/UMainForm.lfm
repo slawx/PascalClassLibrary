@@ -698,14 +698,14 @@ object MainForm: TMainForm
       OnChange = CheckBoxEraseBackgroundChange
       TabOrder = 8
     end
-    object CheckBox1: TCheckBox
+    object CheckBoxOpaque: TCheckBox
       Left = 400
       Height = 27
       Top = 503
       Width = 96
       Anchors = [akLeft, akBottom]
       Caption = 'Opaque'
-      OnChange = CheckBox1Change
+      OnChange = CheckBoxOpaqueChange
       TabOrder = 9
     end
     object Label5: TLabel
@@ -717,14 +717,14 @@ object MainForm: TMainForm
       Caption = 'Pixel format:'
       ParentColor = False
     end
-    object ComboBox1: TComboBox
+    object ComboBoxPixelFormat: TComboBox
       Left = 136
       Height = 37
       Top = 508
       Width = 144
       Anchors = [akLeft, akBottom]
       ItemHeight = 0
-      OnChange = ComboBox1Change
+      OnChange = ComboBoxPixelFormatChange
       Style = csDropDownList
       TabOrder = 10
     end
@@ -834,5 +834,10 @@ object MainForm: TMainForm
     object MenuItem11: TMenuItem
       Action = ATestStop
     end
+  end
+  object TimerUpdateSettings: TTimer
+    OnTimer = TimerUpdateSettingsTimer
+    left = 272
+    top = 264
   end
 end

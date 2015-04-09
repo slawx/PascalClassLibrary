@@ -3,9 +3,8 @@ object DrawForm: TDrawForm
   Height = 244
   Top = 208
   Width = 327
-  BorderStyle = bsDialog
   Caption = 'Draw frame'
   FormStyle = fsStayOnTop
   OnCreate = FormCreate
-  LCLVersion = '1.1'
+  LCLVersion = '1.5'
 end

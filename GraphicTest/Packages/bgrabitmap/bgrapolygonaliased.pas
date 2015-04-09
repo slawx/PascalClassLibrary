@@ -2,6 +2,8 @@ unit BGRAPolygonAliased;
 
 {$mode objfpc}{$H+}
 
+{$i bgrasse.inc}
+
 interface
 
 { This unit provides fast aliased polygon routines.
@@ -11,7 +13,7 @@ interface
   linear interpolation. Inverse values are used for projective transform. }
 
 uses
-  Classes, SysUtils, BGRABitmapTypes, BGRAFillInfo, BGRAPolygon, BGRASSE;
+  Classes, SysUtils, BGRABitmapTypes, BGRAFillInfo, BGRASSE;
 
 type
   //segment information for linear color
@@ -28,15 +30,15 @@ type
 
   { TPolygonLinearColorGradientInfo }
 
-  TPolygonLinearColorGradientInfo = class(TFillPolyInfo)
+  TPolygonLinearColorGradientInfo = class(TOnePassFillPolyInfo)
   protected
     FColors: array of TColorF;
+    procedure SetIntersectionValues(AInter: TIntersectionInfo; AInterX: Single; AWinding,
+      ANumSegment: integer; dy: single; AData: pointer); override;
   public
     constructor Create(const points: array of TPointF; const Colors: array of TBGRAPixel);
     function CreateSegmentData(numPt,nextPt: integer; x,y: single): pointer; override;
     function CreateIntersectionInfo: TIntersectionInfo; override;
-    procedure ComputeIntersection(cury: single;
-      var inter: ArrayOfTIntersectionInfo; var nbInter: integer); override;
   end;
 
 procedure PolygonLinearColorGradientAliased(bmp: TBGRACustomBitmap; polyInfo: TPolygonLinearColorGradientInfo;
@@ -60,16 +62,16 @@ type
 
   { TPolygonPerspectiveColorGradientInfo }
 
-  TPolygonPerspectiveColorGradientInfo = class(TFillPolyInfo)
+  TPolygonPerspectiveColorGradientInfo = class(TOnePassFillPolyInfo)
   protected
     FColors: array of TColorF;
     FPointsZ: array of single;
+    procedure SetIntersectionValues(AInter: TIntersectionInfo; AInterX: Single; AWinding,
+      ANumSegment: integer; dy: single; AData: pointer); override;
   public
     constructor Create(const points: array of TPointF; const pointsZ: array of single; const Colors: array of TBGRAPixel);
     function CreateSegmentData(numPt,nextPt: integer; x,y: single): pointer; override;
     function CreateIntersectionInfo: TIntersectionInfo; override;
-    procedure ComputeIntersection(cury: single;
-      var inter: ArrayOfTIntersectionInfo; var nbInter: integer); override;
   end;
 
 procedure PolygonPerspectiveColorGradientAliased(bmp: TBGRACustomBitmap; polyInfo: TPolygonPerspectiveColorGradientInfo;
@@ -95,17 +97,17 @@ type
 
   { TPolygonLinearTextureMappingInfo }
 
-  TPolygonLinearTextureMappingInfo = class(TFillPolyInfo)
+  TPolygonLinearTextureMappingInfo = class(TOnePassFillPolyInfo)
   protected
     FTexCoords: array of TPointF;
     FLightnesses: array of Word;
+    procedure SetIntersectionValues(AInter: TIntersectionInfo; AInterX: Single; AWinding,
+      ANumSegment: integer; dy: single; AData: pointer); override;
   public
     constructor Create(const points: array of TPointF; const texCoords: array of TPointF);
     constructor Create(const points: array of TPointF; const texCoords: array of TPointF; const lightnesses: array of word);
     function CreateSegmentData(numPt,nextPt: integer; x,y: single): pointer; override;
     function CreateIntersectionInfo: TIntersectionInfo; override;
-    procedure ComputeIntersection(cury: single;
-      var inter: ArrayOfTIntersectionInfo; var nbInter: integer); override;
   end;
 
 procedure PolygonLinearTextureMappingAliased(bmp: TBGRACustomBitmap; polyInfo: TPolygonLinearTextureMappingInfo;
@@ -139,33 +141,33 @@ type
 
   { TPolygonPerspectiveTextureMappingInfo }
 
-  TPolygonPerspectiveTextureMappingInfo = class(TFillPolyInfo)
+  TPolygonPerspectiveTextureMappingInfo = class(TOnePassFillPolyInfo)
   protected
     FTexCoords: array of TPointF;
     FPointsZ: array of single;
     FLightnesses: array of Word;
+    procedure SetIntersectionValues(AInter: TIntersectionInfo; AInterX: Single; AWinding,
+      ANumSegment: integer; dy: single; AData: pointer); override;
   public
     constructor Create(const points: array of TPointF; const pointsZ: array of single; const texCoords: array of TPointF);
     constructor Create(const points: array of TPointF; const pointsZ: array of single; const texCoords: array of TPointF; const lightnesses: array of word);
     function CreateSegmentData(numPt,nextPt: integer; x,y: single): pointer; override;
     function CreateIntersectionInfo: TIntersectionInfo; override;
-    procedure ComputeIntersection(cury: single;
-      var inter: ArrayOfTIntersectionInfo; var nbInter: integer); override;
   end;
 
   { TPolygonPerspectiveMappingShaderInfo }
 
-  TPolygonPerspectiveMappingShaderInfo = class(TFillPolyInfo)
+  TPolygonPerspectiveMappingShaderInfo = class(TOnePassFillPolyInfo)
   protected
     FTexCoords: array of TPointF;
     FPositions3D, FNormals3D: array of TPoint3D_128;
+    procedure SetIntersectionValues(AInter: TIntersectionInfo; AInterX: Single; AWinding,
+      ANumSegment: integer; dy: single; AData: pointer); override;
   public
     constructor Create(const points: array of TPointF; const points3D: array of TPoint3D; const normals: array of TPoint3D; const texCoords: array of TPointF);
     constructor Create(const points: array of TPointF; const points3D: array of TPoint3D_128; const normals: array of TPoint3D_128; const texCoords: array of TPointF);
     function CreateSegmentData(numPt,nextPt: integer; x,y: single): pointer; override;
     function CreateIntersectionInfo: TIntersectionInfo; override;
-    procedure ComputeIntersection(cury: single;
-      var inter: ArrayOfTIntersectionInfo; var nbInter: integer); override;
   end;
 
   TShaderFunction3D = function (Context: PBasicLightingContext; Color: TBGRAPixel): TBGRAPixel of object;
@@ -191,13 +193,26 @@ procedure PolygonPerspectiveMappingShaderAliased(bmp: TBGRACustomBitmap; const p
 
 { Aliased round rectangle }
 procedure BGRARoundRectAliased(dest: TBGRACustomBitmap; X1, Y1, X2, Y2: integer;
-  DX, DY: integer; BorderColor, FillColor: TBGRAPixel; FillTexture: IBGRAScanner = nil);
+  DX, DY: integer; BorderColor, FillColor: TBGRAPixel; FillTexture: IBGRAScanner = nil; ADrawMode: TDrawMode = dmDrawWithTransparency;
+  skipFill: boolean = false);
 
 implementation
 
 uses Math, BGRABlend;
 
 { TPolygonPerspectiveColorGradientInfo }
+
+procedure TPolygonPerspectiveColorGradientInfo.SetIntersectionValues(
+  AInter: TIntersectionInfo; AInterX: Single; AWinding, ANumSegment: integer;
+  dy: single; AData: pointer);
+var
+  info: PPerspectiveColorInfo;
+begin
+  AInter.SetValues(AInterX,AWinding,ANumSegment);
+  info := PPerspectiveColorInfo(AData);
+  TPerspectiveColorGradientIntersectionInfo(AInter).coordInvZ := dy*info^.InvZSlope + info^.InvZ;
+  TPerspectiveColorGradientIntersectionInfo(AInter).ColorDivZ := info^.ColorDivZ + info^.ColorSlopesDivZ*dy;
+end;
 
 constructor TPolygonPerspectiveColorGradientInfo.Create(
   const points: array of TPointF; const pointsZ: array of single;
@@ -265,34 +280,18 @@ begin
   Result:= TPerspectiveColorGradientIntersectionInfo.Create;
 end;
 
-procedure TPolygonPerspectiveColorGradientInfo.ComputeIntersection(
-  cury: single; var inter: ArrayOfTIntersectionInfo; var nbInter: integer);
-var
-  j: integer;
-  dy: single;
-  info: PPerspectiveColorInfo;
-begin
-  if length(FSlices)=0 then exit;
-
-  while (cury < FSlices[FCurSlice].y1) and (FCurSlice > 0) do dec(FCurSlice);
-  while (cury > FSlices[FCurSlice].y2) and (FCurSlice < high(FSlices)) do inc(FCurSlice);
-  with FSlices[FCurSlice] do
-  if (cury >= y1) and (cury <= y2) then
-  begin
-    for j := 0 to nbSegments-1 do
-    begin
-      dy := cury - segments[j].y1;
-      inter[nbinter].interX := dy * segments[j].slope + segments[j].x1;
-      inter[nbinter].winding := segments[j].winding;
-      info := PPerspectiveColorInfo(segments[j].data);
-      TPerspectiveColorGradientIntersectionInfo(inter[nbinter]).coordInvZ := dy*info^.InvZSlope + info^.InvZ;
-      TPerspectiveColorGradientIntersectionInfo(inter[nbinter]).ColorDivZ := info^.ColorDivZ + info^.ColorSlopesDivZ*dy;
-      Inc(nbinter);
-    end;
-  end;
-end;
-
 { TPolygonLinearColorGradientInfo }
+
+procedure TPolygonLinearColorGradientInfo.SetIntersectionValues(
+  AInter: TIntersectionInfo; AInterX: Single; AWinding, ANumSegment: integer;
+  dy: single; AData: pointer);
+var
+  info: PLinearColorInfo;
+begin
+  AInter.SetValues(AInterX,AWinding,ANumSegment);
+  info := PLinearColorInfo(AData);
+  TLinearColorGradientIntersectionInfo(AInter).color := info^.Color + info^.ColorSlopes*dy;
+end;
 
 constructor TPolygonLinearColorGradientInfo.Create(
   const points: array of TPointF; const Colors: array of TBGRAPixel);
@@ -344,32 +343,6 @@ begin
   Result:= TLinearColorGradientIntersectionInfo.Create;
 end;
 
-procedure TPolygonLinearColorGradientInfo.ComputeIntersection(cury: single;
-      var inter: ArrayOfTIntersectionInfo; var nbInter: integer);
-var
-  j: integer;
-  dy: single;
-  info: PLinearColorInfo;
-begin
-  if length(FSlices)=0 then exit;
-
-  while (cury < FSlices[FCurSlice].y1) and (FCurSlice > 0) do dec(FCurSlice);
-  while (cury > FSlices[FCurSlice].y2) and (FCurSlice < high(FSlices)) do inc(FCurSlice);
-  with FSlices[FCurSlice] do
-  if (cury >= y1) and (cury <= y2) then
-  begin
-    for j := 0 to nbSegments-1 do
-    begin
-      dy := cury - segments[j].y1;
-      inter[nbinter].interX := dy * segments[j].slope + segments[j].x1;
-      inter[nbinter].winding := segments[j].winding;
-      info := PLinearColorInfo(segments[j].data);
-      TLinearColorGradientIntersectionInfo(inter[nbinter]).color := info^.Color + info^.ColorSlopes*dy;
-      Inc(nbinter);
-    end;
-  end;
-end;
-
 procedure PolygonLinearColorGradientAliased(bmp: TBGRACustomBitmap;
   polyInfo: TPolygonLinearColorGradientInfo; NonZeroWinding: boolean);
 var
@@ -388,14 +361,14 @@ var
     {%H-}cInt: packed record
         r,g,b,a: integer;
        end;
-    {$IFDEF CPUI386} c: TBGRAPixel; {$ENDIF}
+    {$IFDEF BGRASSE_AVAILABLE} c: TBGRAPixel; {$ENDIF}
   begin
     t := ((ix1+0.5)-x1)/(x2-x1);
     colorPos := c1 + (c2-c1)*t;
     colorStep := (c2-c1)*(1/(x2-x1));
     pdest := bmp.ScanLine[yb]+ix1;
 
-    {$IFDEF CPUI386} {$asmmode intel}
+    {$IFDEF BGRASSE_AVAILABLE} {$asmmode intel}
     If UseSSE then
     begin
       asm
@@ -498,6 +471,21 @@ end;
 
 { TPolygonLinearTextureMappingInfo }
 
+procedure TPolygonLinearTextureMappingInfo.SetIntersectionValues(
+  AInter: TIntersectionInfo; AInterX: Single; AWinding, ANumSegment: integer;
+  dy: single; AData: pointer);
+var
+  info: PLinearTextureInfo;
+begin
+  AInter.SetValues(AInterX,AWinding,ANumSegment);
+  info := PLinearTextureInfo(AData);
+  TLinearTextureMappingIntersectionInfo(AInter).texCoord := info^.TexCoord + info^.TexCoordSlopes*dy;
+  if FLightnesses<>nil then
+    TLinearTextureMappingIntersectionInfo(AInter).lightness := round(info^.lightness + info^.lightnessSlope*dy)
+  else
+    TLinearTextureMappingIntersectionInfo(AInter).lightness := 32768;
+end;
+
 constructor TPolygonLinearTextureMappingInfo.Create(const points: array of TPointF;
   const texCoords: array of TPointF);
 var
@@ -586,36 +574,6 @@ begin
   result := TLinearTextureMappingIntersectionInfo.Create;
 end;
 
-procedure TPolygonLinearTextureMappingInfo.ComputeIntersection(cury: single;
-      var inter: ArrayOfTIntersectionInfo; var nbInter: integer);
-var
-  j: integer;
-  dy: single;
-  info: PLinearTextureInfo;
-begin
-  if length(FSlices)=0 then exit;
-
-  while (cury < FSlices[FCurSlice].y1) and (FCurSlice > 0) do dec(FCurSlice);
-  while (cury > FSlices[FCurSlice].y2) and (FCurSlice < high(FSlices)) do inc(FCurSlice);
-  with FSlices[FCurSlice] do
-  if (cury >= y1) and (cury <= y2) then
-  begin
-    for j := 0 to nbSegments-1 do
-    begin
-      dy := cury - segments[j].y1;
-      inter[nbinter].interX := dy * segments[j].slope + segments[j].x1;
-      inter[nbinter].winding := segments[j].winding;
-      info := PLinearTextureInfo(segments[j].data);
-      TLinearTextureMappingIntersectionInfo(inter[nbinter]).texCoord := info^.TexCoord + info^.TexCoordSlopes*dy;
-      if FLightnesses<>nil then
-        TLinearTextureMappingIntersectionInfo(inter[nbinter]).lightness := round(info^.lightness + info^.lightnessSlope*dy)
-      else
-        TLinearTextureMappingIntersectionInfo(inter[nbinter]).lightness := 32768;
-      Inc(nbinter);
-    end;
-  end;
-end;
-
 {$hints off}
 
 procedure PolygonPerspectiveColorGradientAliased(bmp: TBGRACustomBitmap;
@@ -636,7 +594,7 @@ var
     invDx: single;
     z,invZ,InvZStep: single;
     r,g,b,a: integer;
-    {$IFDEF CPUI386}minVal,maxVal: single;
+    {$IFDEF BGRASSE_AVAILABLE}minVal,maxVal: single;
     cInt: packed record
       r,g,b,a: integer;
     end;
@@ -656,7 +614,7 @@ var
     begin
     {$DEFINE PARAM_USEZBUFFER}
       zbufferpos := zbuffer + yb*bmp.Width + ix1;
-      {$IFDEF CPUI386}
+      {$IFDEF BGRASSE_AVAILABLE}
       If UseSSE then
       begin
         {$DEFINE PARAM_USESSE}
@@ -678,7 +636,7 @@ var
     {$UNDEF PARAM_USEZBUFFER}
     end else
     begin
-      {$IFDEF CPUI386}
+      {$IFDEF BGRASSE_AVAILABLE}
       If UseSSE then
       begin
         {$DEFINE PARAM_USESSE}
@@ -845,7 +803,8 @@ end;
 
 {From LazRGBGraphics}
 procedure BGRARoundRectAliased(dest: TBGRACustomBitmap; X1, Y1, X2, Y2: integer;
-  DX, DY: integer; BorderColor, FillColor: TBGRAPixel; FillTexture: IBGRAScanner = nil);
+  DX, DY: integer; BorderColor, FillColor: TBGRAPixel; FillTexture: IBGRAScanner = nil; ADrawMode: TDrawMode = dmDrawWithTransparency;
+  skipFill: boolean = false);
 var
   CX, CY, CX1, CY1, A, B, NX, NY: single;
   X, Y, EX, EY: integer;
@@ -857,7 +816,8 @@ var
   temp:   integer;
   LX, LY: integer;
   RowStart,RowEnd: integer;
-  eBorderColor,eFillColor: TExpandedPixel;
+  PixelProc: procedure (x, y: int32or64; c: TBGRAPixel) of object;
+  skipBorder: boolean;
 
   procedure AddEdge(X, Y: integer);
   begin
@@ -890,27 +850,25 @@ begin
   Dec(x2);
   Dec(y2);
 
-  eBorderColor := GammaExpansion(BorderColor);
-  eFillColor := GammaExpansion(FillColor);
-
   if (X1 = X2) and (Y1 = Y2) then
   begin
-    dest.DrawPixel(X1, Y1, eBorderColor);
+    dest.DrawPixel(X1, Y1, BorderColor, ADrawMode);
     Exit;
   end;
 
   if (X2 - X1 = 1) or (Y2 - Y1 = 1) then
   begin
-    dest.FillRect(X1, Y1, X2 + 1, Y2 + 1, BorderColor, dmDrawWithTransparency);
+    dest.FillRect(X1, Y1, X2 + 1, Y2 + 1, BorderColor, ADrawMode);
     Exit;
   end;
 
   if (LX > X2 - X1) or (LY > Y2 - Y1) then
   begin
-    dest.Rectangle(X1, Y1, X2 + 1, Y2 + 1, BorderColor, dmDrawWithTransparency);
-    if FillTexture <> nil then
-      dest.FillRect(X1 + 1, Y1 + 1, X2, Y2, FillTexture, dmDrawWithTransparency) else
-      dest.FillRect(X1 + 1, Y1 + 1, X2, Y2, FillColor, dmDrawWithTransparency);
+    dest.Rectangle(X1, Y1, X2 + 1, Y2 + 1, BorderColor, ADrawMode);
+    if not skipFill then
+      if FillTexture <> nil then
+        dest.FillRect(X1 + 1, Y1 + 1, X2, Y2, FillTexture, ADrawMode) else
+        dest.FillRect(X1 + 1, Y1 + 1, X2, Y2, FillColor, ADrawMode);
     Exit;
   end;
 
@@ -976,22 +934,32 @@ begin
       Break;
   end;
 
+  case ADrawMode of
+  dmSetExceptTransparent: begin PixelProc := @dest.SetPixel; skipBorder:= BorderColor.alpha <> 255; end;  dmDrawWithTransparency: begin PixelProc := @dest.DrawPixel; skipBorder:= BorderColor.alpha = 0; end;
+  dmXor: begin PixelProc := @dest.XorPixel; skipBorder:= DWord(BorderColor) = 0; end;
+  dmLinearBlend: begin PixelProc := @dest.FastBlendPixel; skipBorder:= BorderColor.alpha = 0; end;
+  else
+  begin PixelProc := @dest.SetPixel; skipBorder := false; end;
+  end;
+
   J := 0;
   while J < Length(EdgeList) do
   begin
     if (J = 0) and (Frac(CY) > 0) then
     begin
+      if not skipBorder then
       for I := EdgeList[J].X to EdgeList[J].Y do
       begin
-        dest.DrawPixel(Floor(CX) + I, Floor(CY) + J, eBorderColor);
-        dest.DrawPixel(Ceil(CX) - Succ(I), Floor(CY) + J, eBorderColor);
+        PixelProc(Floor(CX) + I, Floor(CY) + J, BorderColor);
+        PixelProc(Ceil(CX) - Succ(I), Floor(CY) + J, BorderColor);
       end;
 
-      if FillTexture <> nil then
-        dest.DrawHorizLine(Ceil(CX) - EdgeList[J].X, Floor(CY) + J, Floor(CX) +
-          Pred(EdgeList[J].X), FillTexture) else
-        dest.DrawHorizLine(Ceil(CX) - EdgeList[J].X, Floor(CY) + J, Floor(CX) +
-          Pred(EdgeList[J].X), eFillColor);
+      if not SkipFill then
+        if FillTexture <> nil then
+          dest.HorizLine(Ceil(CX) - EdgeList[J].X, Floor(CY) + J, Floor(CX) +
+            Pred(EdgeList[J].X), FillTexture, ADrawMode) else
+          dest.HorizLine(Ceil(CX) - EdgeList[J].X, Floor(CY) + J, Floor(CX) +
+            Pred(EdgeList[J].X), FillColor, ADrawMode);
     end
     else
     if (J = High(EdgeList)) then
@@ -1001,43 +969,49 @@ begin
       else
         S := -Succ(EdgeList[J].Y);
 
+      if not skipBorder then
       for I := S to EdgeList[J].Y do
       begin
-        dest.DrawPixel(Floor(CX) + I, Floor(CY) + J, eBorderColor);
-        dest.DrawPixel(Floor(CX) + I, Ceil(CY) - Succ(J), eBorderColor);
+        PixelProc(Floor(CX) + I, Floor(CY) + J, BorderColor);
+        PixelProc(Floor(CX) + I, Ceil(CY) - Succ(J), BorderColor);
       end;
     end
     else
     begin
+      if not skipBorder then
       for I := EdgeList[J].X to EdgeList[J].Y do
       begin
-        dest.DrawPixel(Floor(CX) + I, Floor(CY) + J, eBorderColor);
-        dest.DrawPixel(Floor(CX) + I, Ceil(CY) - Succ(J), eBorderColor);
+        PixelProc(Floor(CX) + I, Floor(CY) + J, BorderColor);
+        PixelProc(Floor(CX) + I, Ceil(CY) - Succ(J), BorderColor);
         if Floor(CX) + I <> Ceil(CX) - Succ(I) then
         begin
-          dest.DrawPixel(Ceil(CX) - Succ(I), Floor(CY) + J, eBorderColor);
-          dest.DrawPixel(Ceil(CX) - Succ(I), Ceil(CY) - Succ(J), eBorderColor);
+          PixelProc(Ceil(CX) - Succ(I), Floor(CY) + J, BorderColor);
+          PixelProc(Ceil(CX) - Succ(I), Ceil(CY) - Succ(J), BorderColor);
         end;
       end;
 
-      RowStart := Ceil(CX) - EdgeList[J].X;
-      RowEnd := Floor(CX) + Pred(EdgeList[J].X);
-      if RowEnd >= RowStart then
+      if not SkipFill then
       begin
-        if FillTexture <> nil then
+        RowStart := Ceil(CX) - EdgeList[J].X;
+        RowEnd := Floor(CX) + Pred(EdgeList[J].X);
+        if RowEnd >= RowStart then
         begin
-          dest.DrawHorizLine(RowStart, Floor(CY) + J,
-            RowEnd, FillTexture);
-          dest.DrawHorizLine(RowStart, Ceil(CY) - Succ(J),
-            RowEnd, FillTexture);
-        end else
-        begin
-          dest.DrawHorizLine(RowStart, Floor(CY) + J,
-            RowEnd, eFillColor);
-          dest.DrawHorizLine(RowStart, Ceil(CY) - Succ(J),
-            RowEnd, eFillColor);
+          if FillTexture <> nil then
+          begin
+            dest.HorizLine(RowStart, Floor(CY) + J,
+              RowEnd, FillTexture, ADrawMode);
+            dest.HorizLine(RowStart, Ceil(CY) - Succ(J),
+              RowEnd, FillTexture, ADrawMode);
+          end else
+          begin
+            dest.HorizLine(RowStart, Floor(CY) + J,
+              RowEnd, FillColor, ADrawMode);
+            dest.HorizLine(RowStart, Ceil(CY) - Succ(J),
+              RowEnd, FillColor, ADrawMode);
+          end;
         end;
       end;
+
     end;
     Inc(J);
   end;

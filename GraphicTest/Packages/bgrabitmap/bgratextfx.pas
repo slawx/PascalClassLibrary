@@ -2,95 +2,187 @@ unit BGRATextFX;
 
 {$mode objfpc}{$H+}
 
+{
+  Font rendering units : BGRAText, BGRATextFX, BGRAVectorize, BGRAFreeType
+
+  This unit provide text effects. The simplest way to render effects is to use TBGRATextEffectFontRenderer class.
+  To do this, create an instance of this class and assign it to a TBGRABitmap.FontRenderer property. Now functions
+  to draw text like TBGRABitmap.TextOut will use the chosen renderer. To set the effects, keep a variable containing
+  the TBGRATextEffectFontRenderer class and modify ShadowVisible and other effects parameters.
+
+  The TBGRATextEffectFontRenderer class makes use of other classes depending on the situation. For example,
+  TBGRATextEffect, which is also in this unit, provides effects on a text mask. But the renderer also uses
+  BGRAVectorize unit in order to have big texts or to rotate them at will.
+
+  Note that you may need TBGRATextEffect if you want to have more control over text effects, especially
+  if you always draw the same text. Keeping the same TBGRATextEffect object will avoid creating the text
+  mask over and over again.
+
+  TextShadow function is a simple function to compute an image containing a text with shadow.
+
+}
+
 interface
 
 uses
-  Classes, SysUtils, Graphics, Types, BGRABitmapTypes, BGRAPhongTypes;
+  Classes, SysUtils, Graphics, Types, BGRABitmapTypes, BGRAPhongTypes, BGRAText, BGRAVectorize;
 
 type
+  TBGRATextEffect = class;
+
+  { TBGRATextEffectFontRenderer }
+
+  TBGRATextEffectFontRenderer = class(TCustomLCLFontRenderer)
+  private
+    function GetShaderLightPosition: TPoint;
+    function GetVectorizedRenderer: TBGRAVectorizedFontRenderer;
+    procedure SetShaderLightPosition(AValue: TPoint);
+  protected
+    FShaderOwner: boolean;
+    FShader: TCustomPhongShading;
+    FVectorizedRenderer: TBGRAVectorizedFontRenderer;
+    function ShadowActuallyVisible :boolean;
+    function ShaderActuallyActive: boolean;
+    function OutlineActuallyVisible: boolean;
+    procedure Init;
+    function VectorizedFontNeeded: boolean;
+    procedure InternalTextOut(ADest: TBGRACustomBitmap; x, y: single; s: string; c: TBGRAPixel; texture: IBGRAScanner; align: TAlignment);
+  public
+    ShaderActive: boolean;
+
+    ShadowVisible: boolean;
+    ShadowColor: TBGRAPixel;
+    ShadowRadius: integer;
+    ShadowOffset: TPoint;
+    ShadowQuality: TRadialBlurType;
+
+    OutlineColor: TBGRAPixel;
+    OutlineWidth: single;
+    OutlineVisible,OuterOutlineOnly: boolean;
+    OutlineTexture: IBGRAScanner;
+    constructor Create;
+    constructor Create(AShader: TCustomPhongShading; AShaderOwner: boolean);
+    destructor Destroy; override;
+    procedure TextOutAngle(ADest: TBGRACustomBitmap; x, y: single; orientation: integer;
+      s: string; texture: IBGRAScanner; align: TAlignment); override;
+    procedure TextOutAngle(ADest: TBGRACustomBitmap; x, y: single; orientation: integer;
+      s: string; c: TBGRAPixel; align: TAlignment); override;
+    procedure TextOut(ADest: TBGRACustomBitmap; x, y: single; s: string;
+      texture: IBGRAScanner; align: TAlignment); override;
+    procedure TextOut(ADest: TBGRACustomBitmap; x, y: single; s: string; c: TBGRAPixel;
+      align: TAlignment); override;
+    function TextSize(sUTF8: string): TSize; override;
+    property Shader: TCustomPhongShading read FShader;
+    property ShaderLightPosition: TPoint read GetShaderLightPosition write SetShaderLightPosition;
+    property VectorizedFontRenderer: TBGRAVectorizedFontRenderer read GetVectorizedRenderer;
+  end;
 
   { TBGRATextEffect }
 
   TBGRATextEffect = class
   private
+    FShadowQuality: TRadialBlurType;
     function GetBounds: TRect;
-    function GetHeight: integer;
+    function GetMaskHeight: integer;
+    class function GetOutlineWidth: integer; static;
     function GetShadowBounds(ARadius: integer): TRect;
-    function GetWidth: integer;
+    function GetMaskWidth: integer;
+    function GetTextHeight: integer;
+    function GetTextWidth: integer;
+    procedure SetShadowQuality(AValue: TRadialBlurType);
   protected
     FTextMask: TBGRACustomBitmap;
     FShadowRadius: integer;
     FOutlineMask, FShadowMask, FShadingMask : TBGRACustomBitmap;
     FShadingAltitude: integer;
     FShadingRounded: boolean;
-    FWidth,FHeight: integer;
+    FTextSize: TSize;
     FOffset: TPoint;
-    procedure DrawMaskMulticolored(ADest: TBGRACustomBitmap; AMask: TBGRACustomBitmap; X,Y: Integer; const AColors: array of TBGRAPixel);
-    procedure DrawMask(ADest: TBGRACustomBitmap; AMask: TBGRACustomBitmap; X,Y: Integer; AColor: TBGRAPixel);
-    procedure DrawMask(ADest: TBGRACustomBitmap; AMask: TBGRACustomBitmap; X,Y: Integer; ATexture: IBGRAScanner);
+    function DrawMaskMulticolored(ADest: TBGRACustomBitmap; AMask: TBGRACustomBitmap; X,Y: Integer; const AColors: array of TBGRAPixel): TRect;
+    function DrawMask(ADest: TBGRACustomBitmap; AMask: TBGRACustomBitmap; X,Y: Integer; AColor: TBGRAPixel): TRect;
+    function DrawMask(ADest: TBGRACustomBitmap; AMask: TBGRACustomBitmap; X,Y: Integer; ATexture: IBGRAScanner): TRect;
     function InternalDrawShaded(ADest: TBGRACustomBitmap; X,Y: integer; Shader: TCustomPhongShading; Altitude: integer; AColor: TBGRAPixel; ATexture: IBGRAScanner; ARounded: Boolean): TRect;
+    procedure InitImproveReadability(AText: string; Font: TFont; SubOffsetX,SubOffsetY: single);
     procedure Init(AText: string; Font: TFont; Antialiasing: boolean; SubOffsetX,SubOffsetY: single; GrainX, GrainY: Integer);
+    procedure InitWithFontName(AText: string; AFontName: string; AFullHeight: integer; AStyle: TFontStyles; Antialiasing: boolean; SubOffsetX,SubOffsetY: single);
   public
     constructor Create(AText: string; Font: TFont; Antialiasing: boolean);
     constructor Create(AText: string; Font: TFont; Antialiasing: boolean; SubOffsetX,SubOffsetY: single);
     constructor Create(AText: string; Font: TFont; Antialiasing: boolean; SubOffsetX,SubOffsetY: single; GrainX, GrainY: Integer);
+    constructor Create(AText: string; AFontName: string; AFullHeight: integer; Antialiasing: boolean);
+    constructor Create(AText: string; AFontName: string; AFullHeight: integer; Antialiasing: boolean; SubOffsetX,SubOffsetY: single);
+    constructor Create(AText: string; AFontName: string; AFullHeight: integer; AStyle: TFontStyles; Antialiasing: boolean);
+    constructor Create(AText: string; AFontName: string; AFullHeight: integer; AStyle: TFontStyles; Antialiasing: boolean; SubOffsetX,SubOffsetY: single);
+    constructor Create(AMask: TBGRACustomBitmap; AMaskOwner: boolean; AWidth,AHeight: integer; AOffset: TPoint);
     procedure ApplySphere;
     procedure ApplyVerticalCylinder;
     procedure ApplyHorizontalCylinder;
-    procedure Draw(ADest: TBGRACustomBitmap; X,Y: integer; AColor: TBGRAPixel);
-    procedure Draw(ADest: TBGRACustomBitmap; X,Y: integer; ATexture: IBGRAScanner);
-    procedure Draw(ADest: TBGRACustomBitmap; X, Y: integer; AColor: TBGRAPixel; AAlign: TAlignment);
-    procedure Draw(ADest: TBGRACustomBitmap; X, Y: integer; ATexture: IBGRAScanner; AAlign: TAlignment);
+    function Draw(ADest: TBGRACustomBitmap; X,Y: integer; AColor: TBGRAPixel): TRect;
+    function Draw(ADest: TBGRACustomBitmap; X,Y: integer; ATexture: IBGRAScanner): TRect;
+    function Draw(ADest: TBGRACustomBitmap; X, Y: integer; AColor: TBGRAPixel; AAlign: TAlignment): TRect;
+    function Draw(ADest: TBGRACustomBitmap; X, Y: integer; ATexture: IBGRAScanner; AAlign: TAlignment): TRect;
 
     function DrawShaded(ADest: TBGRACustomBitmap; X,Y: integer; Shader: TCustomPhongShading; Altitude: integer; AColor: TBGRAPixel; ARounded: Boolean = true): TRect;
     function DrawShaded(ADest: TBGRACustomBitmap; X,Y: integer; Shader: TCustomPhongShading; Altitude: integer; ATexture: IBGRAScanner; ARounded: Boolean = true): TRect;
     function DrawShaded(ADest: TBGRACustomBitmap; X, Y: integer; Shader: TCustomPhongShading; Altitude: integer; AColor: TBGRAPixel; AAlign: TAlignment; ARounded: Boolean = true): TRect;
     function DrawShaded(ADest: TBGRACustomBitmap; X, Y: integer; Shader: TCustomPhongShading; Altitude: integer; ATexture: IBGRAScanner; AAlign: TAlignment; ARounded: Boolean = true): TRect;
 
-    procedure DrawMulticolored(ADest: TBGRACustomBitmap; X,Y: integer; const AColors: array of TBGRAPixel);
-    procedure DrawMulticolored(ADest: TBGRACustomBitmap; X,Y: integer; const AColors: array of TBGRAPixel; AAlign: TAlignment);
-    procedure DrawOutline(ADest: TBGRACustomBitmap; X,Y: integer; AColor: TBGRAPixel);
-    procedure DrawOutline(ADest: TBGRACustomBitmap; X,Y: integer; ATexture: IBGRAScanner);
-    procedure DrawOutline(ADest: TBGRACustomBitmap; X,Y: integer; AColor: TBGRAPixel; AAlign: TAlignment);
-    procedure DrawOutline(ADest: TBGRACustomBitmap; X,Y: integer; ATexture: IBGRAScanner; AAlign: TAlignment);
-    procedure DrawShadow(ADest: TBGRACustomBitmap; X,Y,Radius: integer; AColor: TBGRAPixel);
-    procedure DrawShadow(ADest: TBGRACustomBitmap; X,Y,Radius: integer; AColor: TBGRAPixel; AAlign: TAlignment);
+    function DrawMulticolored(ADest: TBGRACustomBitmap; X,Y: integer; const AColors: array of TBGRAPixel): TRect;
+    function DrawMulticolored(ADest: TBGRACustomBitmap; X,Y: integer; const AColors: array of TBGRAPixel; AAlign: TAlignment): TRect;
+    function DrawOutline(ADest: TBGRACustomBitmap; X,Y: integer; AColor: TBGRAPixel): TRect;
+    function DrawOutline(ADest: TBGRACustomBitmap; X,Y: integer; ATexture: IBGRAScanner): TRect;
+    function DrawOutline(ADest: TBGRACustomBitmap; X,Y: integer; AColor: TBGRAPixel; AAlign: TAlignment): TRect;
+    function DrawOutline(ADest: TBGRACustomBitmap; X,Y: integer; ATexture: IBGRAScanner; AAlign: TAlignment): TRect;
+    function DrawShadow(ADest: TBGRACustomBitmap; X,Y,Radius: integer; AColor: TBGRAPixel): TRect;
+    function DrawShadow(ADest: TBGRACustomBitmap; X,Y,Radius: integer; AColor: TBGRAPixel; AAlign: TAlignment): TRect;
     destructor Destroy; override;
     property TextMask: TBGRACustomBitmap read FTextMask;
     property TextMaskOffset: TPoint read FOffset;
-    property Width: integer read GetWidth;
-    property Height: integer read GetHeight;
+    property Width: integer read GetTextWidth; deprecated;
+    property Height: integer read GetTextHeight; deprecated;
+    property MaskWidth: integer read GetMaskWidth;
+    property MaskHeight: integer read GetMaskHeight;
+    property TextSize: TSize read FTextSize;
+    property TextWidth: integer read GetTextWidth;
+    property TextHeight: integer read GetTextHeight;
     property Bounds: TRect read GetBounds;
     property ShadowBounds[ARadius: integer]: TRect read GetShadowBounds;
+    property ShadowQuality: TRadialBlurType read FShadowQuality write SetShadowQuality;
+    class property OutlineWidth: integer read GetOutlineWidth;
   end;
 
 function TextShadow(AWidth,AHeight: Integer; AText: String; AFontHeight: Integer; ATextColor,AShadowColor: TBGRAPixel;
     AOffSetX,AOffSetY: Integer; ARadius: Integer = 0; AFontStyle: TFontStyles = []; AFontName: String = 'Default'; AShowText: Boolean = True; AFontQuality: TBGRAFontQuality = fqFineAntialiasing): TBGRACustomBitmap;
 
-procedure BGRATextOutImproveReadability(bmp: TBGRACustomBitmap; AFont: TFont; xf,yf: single; text: string; color: TBGRAPixel; tex: IBGRAScanner; align: TAlignment; useClearType: boolean; ClearTypeRGBOrder: boolean);
+procedure BGRATextOutImproveReadability(bmp: TBGRACustomBitmap; AFont: TFont; xf,yf: single; text: string; color: TBGRAPixel; tex: IBGRAScanner; align: TAlignment; mode : TBGRATextOutImproveReadabilityMode);
 
 implementation
 
-uses BGRAGradientScanner, BGRAText, GraphType, Math;
+uses BGRAGradientScanner, GraphType, Math, BGRAGrayscaleMask;
 
-procedure BGRATextOutImproveReadability(bmp: TBGRACustomBitmap; AFont: TFont; xf,yf: single; text: string; color: TBGRAPixel; tex: IBGRAScanner; align: TAlignment; useClearType: boolean; ClearTypeRGBOrder: boolean);
+const DefaultOutlineWidth = 3;
+
+procedure BGRATextOutImproveReadability(bmp: TBGRACustomBitmap; AFont: TFont; xf,yf: single; text: string; color: TBGRAPixel; tex: IBGRAScanner; align: TAlignment; mode : TBGRATextOutImproveReadabilityMode);
 var
+  useClearType,clearTypeRGBOrder: boolean;
   metric: TFontPixelMetric;
   deltaX: single;
   x,y,yb,cury,fromy: integer;
   toAdd: integer;
   lines: array[0..3] of integer;
-  parts: array[0..3] of TBGRACustomBitmap;
-  n,nbLines,v: integer;
-  alphaMax: byte;
+  parts: array[0..3] of TGrayscaleMask;
+  n,nbLines: integer;
+  alphaMax: NativeUint;
   ptrPart: TBGRACustomBitmap;
-  pmask: PBGRAPixel;
+  pmask: PByte;
   fx: TBGRATextEffect;
   FxFont: TFont;
   prevCenter, newCenter, diffCenter: single;
   xThird: integer;
 
 begin
+  useClearType:= mode in[irClearTypeRGB,irClearTypeBGR];
+  clearTypeRGBOrder := mode <> irClearTypeBGR;
   deltaX := xf-floor(xf);
   x := round(floor(xf));
 
@@ -104,7 +196,8 @@ begin
     if useClearType then
     begin
       if ClearTypeRGBOrder then
-        BGRATextOut(bmp, AFont, fqFineClearTypeRGB, xf,yf, text, color, tex, align) else
+        BGRATextOut(bmp, AFont, fqFineClearTypeRGB, xf,yf, text, color, tex, align)
+      else
         BGRATextOut(bmp, AFont, fqFineClearTypeBGR, xf,yf, text, color, tex, align)
     end else
       BGRATextOut(bmp, AFont, fqFineAntialiasing, xf,yf, text, color, tex, align);
@@ -143,6 +236,13 @@ begin
   if not useClearType then
     fx := TBGRATextEffect.Create(text,FxFont,False,deltaX*FontAntialiasingLevel,0,FontAntialiasingLevel,FontAntialiasingLevel) else
     fx := TBGRATextEffect.Create(text,FxFont,False,0,0,3,0);
+
+  if fx.TextMask = nil then
+  begin
+    fx.Free;
+    FxFont.Free;
+    exit;
+  end;
   alphaMax := 0;
   prevCenter := 0;
   newCenter := 0;
@@ -155,18 +255,17 @@ begin
     begin
       ptrPart := fx.TextMask.GetPtrBitmap(fromy,lines[yb]);
       if useClearType then
-        parts[yb] := ptrPart.Resample(round(ptrPart.Width/FontAntialiasingLevel*3),round(ptrPart.Height/FontAntialiasingLevel),rmSimpleStretch)
+        parts[yb] := TGrayscaleMask.CreateDownSample(ptrPart,round(ptrPart.Width/FontAntialiasingLevel*3),round(ptrPart.Height/FontAntialiasingLevel))
       else
-        parts[yb] := ptrPart.Resample(round(ptrPart.Width/FontAntialiasingLevel),round(ptrPart.Height/FontAntialiasingLevel),rmSimpleStretch);
+        parts[yb] := TGrayscaleMask.CreateDownSample(ptrPart,round(ptrPart.Width/FontAntialiasingLevel),round(ptrPart.Height/FontAntialiasingLevel));
       ptrPart.Free;
 
       if alphaMax < 255 then
       begin
-        pmask := parts[yb].data;
+        pmask := parts[yb].Data;
         for n := parts[yb].NbPixels-1 downto 0 do
         begin
-          v := pmask^.green;
-          if v > alphaMax then alphaMax := v;
+          if pmask^ > alphaMax then alphaMax := pmask^;
           inc(pmask);
         end;
       end;
@@ -193,15 +292,15 @@ begin
   if useClearType then
   begin
     case align of
-    taCenter: xThird:= xThird+round(((fx.TextMaskOffset.x-fx.Width/2)/FontAntialiasingLevel+deltaX)*3);
-    taRightJustify: xThird:= xThird+round(((fx.TextMaskOffset.x-fx.Width)/FontAntialiasingLevel+deltaX)*3);
+    taCenter: xThird:= xThird+round(((fx.TextMaskOffset.x-fx.TextWidth/2)/FontAntialiasingLevel+deltaX)*3);
+    taRightJustify: xThird:= xThird+round(((fx.TextMaskOffset.x-fx.TextWidth)/FontAntialiasingLevel+deltaX)*3);
     else xThird:= xThird+round((fx.TextMaskOffset.x/FontAntialiasingLevel+deltaX)*3);
     end;
   end else
   begin
     case align of
-    taCenter: x:= x+round((fx.TextMaskOffset.x-fx.Width/2)/FontAntialiasingLevel);
-    taRightJustify: x:= x+round((fx.TextMaskOffset.x-fx.Width)/FontAntialiasingLevel);
+    taCenter: x:= x+round((fx.TextMaskOffset.x-fx.TextWidth/2)/FontAntialiasingLevel);
+    taRightJustify: x:= x+round((fx.TextMaskOffset.x-fx.TextWidth)/FontAntialiasingLevel);
     else x:= x+round(fx.TextMaskOffset.x/FontAntialiasingLevel);
     end;
   end;
@@ -214,24 +313,19 @@ begin
       pmask := parts[yb].data;
       for n := parts[yb].NbPixels-1 downto 0 do
       begin
-        v := integer(pmask^.green)*255 div alphaMax;
-        if v > 255 then v := 255;
-        pmask^.green := v;
-        pmask^.red := v;
-        pmask^.blue := v;
+        pmask^ := pmask^*255 div alphaMax;
         inc(pmask);
       end;
     end;
     if useClearType then
+      BGRAFillClearTypeGrayscaleMask(bmp,x,cury,xThird,parts[yb],color,tex,ClearTypeRGBOrder)
+    else if mode = irMask then
+      parts[yb].Draw(bmp,x,cury)
+    else
     begin
       if tex <> nil then
-        bmp.FillClearTypeMask(x,cury,xThird,parts[yb],tex,ClearTypeRGBOrder) else
-        bmp.FillClearTypeMask(x,cury,xThird,parts[yb],color,ClearTypeRGBOrder);
-    end else
-    begin
-      if tex <> nil then
-        bmp.FillMask(x,cury,parts[yb],tex) else
-        bmp.FillMask(x,cury,parts[yb],color);
+        parts[yb].DrawAsAlpha(bmp,x,cury,tex) else
+        parts[yb].DrawAsAlpha(bmp,x,cury,color);
     end;
     inc(cury,parts[yb].Height);
     parts[yb].Free;
@@ -248,7 +342,8 @@ begin
 end;
 
 function TextShadow(AWidth,AHeight: Integer; AText: String; AFontHeight: Integer; ATextColor,AShadowColor: TBGRAPixel;
-  AOffSetX,AOffSetY: Integer; ARadius: Integer = 0; AFontStyle: TFontStyles = []; AFontName: String = 'Default'; AShowText: Boolean = True; AFontQuality: TBGRAFontQuality = fqFineAntialiasing): TBGRACustomBitmap;
+  AOffSetX,AOffSetY: Integer; ARadius: Integer = 0; AFontStyle: TFontStyles = []; AFontName: String = 'Default'; AShowText: Boolean = True;
+  AFontQuality: TBGRAFontQuality = fqFineAntialiasing): TBGRACustomBitmap;
 var
   bmpOut,bmpSdw: TBGRACustomBitmap; OutTxtSize: TSize; OutX,OutY: Integer;
 begin
@@ -280,6 +375,207 @@ begin
   Result:= bmpOut;
 end;
 
+{ TBGRATextEffectFontRenderer }
+
+function TBGRATextEffectFontRenderer.GetShaderLightPosition: TPoint;
+begin
+  if FShader = nil then
+    result := point(0,0)
+  else
+    result := FShader.LightPosition;
+end;
+
+function TBGRATextEffectFontRenderer.GetVectorizedRenderer: TBGRAVectorizedFontRenderer;
+begin
+  FVectorizedRenderer.FontEmHeight := FontEmHeight;
+  FVectorizedRenderer.FontName := FontName;
+  FVectorizedRenderer.FontOrientation:= FontOrientation;
+  FVectorizedRenderer.FontQuality := FontQuality;
+  FVectorizedRenderer.FontStyle:= FontStyle;
+
+  FVectorizedRenderer.ShadowColor := ShadowColor;
+  FVectorizedRenderer.ShadowVisible := ShadowVisible;
+  FVectorizedRenderer.ShadowOffset := ShadowOffset;
+  FVectorizedRenderer.ShadowRadius := ShadowRadius;
+
+  FVectorizedRenderer.OutlineColor := OutlineColor;
+  FVectorizedRenderer.OutlineVisible := OutlineVisible;
+  FVectorizedRenderer.OutlineWidth := OutlineWidth;
+  FVectorizedRenderer.OutlineTexture := OutlineTexture;
+  FVectorizedRenderer.OuterOutlineOnly := OuterOutlineOnly;
+  result := FVectorizedRenderer;
+end;
+
+procedure TBGRATextEffectFontRenderer.SetShaderLightPosition(AValue: TPoint);
+begin
+  if FShader <> nil then
+    FShader.LightPosition := AValue;
+end;
+
+function TBGRATextEffectFontRenderer.ShadowActuallyVisible: boolean;
+begin
+  result := ShadowVisible and (ShadowColor.alpha <> 0);
+end;
+
+function TBGRATextEffectFontRenderer.ShaderActuallyActive: boolean;
+begin
+  result := (FShader <> nil) and ShaderActive;
+end;
+
+function TBGRATextEffectFontRenderer.OutlineActuallyVisible: boolean;
+begin
+  result := (OutlineWidth <> 0) and ((OutlineTexture <> nil) or (OutlineColor.alpha <> 0)) and OutlineVisible;
+end;
+
+procedure TBGRATextEffectFontRenderer.Init;
+begin
+  ShaderActive := true;
+
+  ShadowColor := BGRABlack;
+  ShadowVisible := false;
+  ShadowOffset := Point(5,5);
+  ShadowRadius := 5;
+  ShadowQuality:= rbFast;
+
+  OutlineColor := BGRAPixelTransparent;
+  OutlineVisible := True;
+  OutlineWidth:= DefaultOutlineWidth;
+  OuterOutlineOnly:= false;
+  FVectorizedRenderer := TBGRAVectorizedFontRenderer.Create;
+end;
+
+function TBGRATextEffectFontRenderer.VectorizedFontNeeded: boolean;
+var bAntialiasing, bBigFont, bSpecialOutline, bOriented, bEffectVectorizedSupported: boolean;
+  textsz: TSize;
+begin
+  bAntialiasing := FontQuality in [fqFineAntialiasing,fqFineClearTypeRGB,fqFineClearTypeBGR];
+  textsz := inherited TextSize('Hg');
+  bBigFont := (not OutlineActuallyVisible and (textsz.cy >= 24)) or
+     (OutlineActuallyVisible and (textsz.cy > 42));
+  bSpecialOutline:= OutlineActuallyVisible and (abs(OutlineWidth) <> DefaultOutlineWidth);
+  bOriented := FontOrientation <> 0;
+  bEffectVectorizedSupported := OutlineActuallyVisible or ShadowActuallyVisible;
+  if ShaderActuallyActive and (FontOrientation = 0) then
+    result := false //shader not supported by vectorized font
+  else
+    result := bSpecialOutline or
+              (bAntialiasing and bBigFont) or
+              (bOriented and bEffectVectorizedSupported);
+end;
+
+procedure TBGRATextEffectFontRenderer.InternalTextOut(ADest: TBGRACustomBitmap;
+  x, y: single; s: string; c: TBGRAPixel; texture: IBGRAScanner;
+  align: TAlignment);
+var fx: TBGRATextEffect;
+  procedure DoOutline;
+  begin
+    if OutlineActuallyVisible then
+    begin
+      if OutlineTexture <> nil then
+        fx.DrawOutline(ADest,round(x),round(y), OutlineTexture, align)
+      else
+        fx.DrawOutline(ADest,round(x),round(y), OutlineColor, align);
+    end;
+  end;
+begin
+  UpdateFont;
+  if (FFont.Orientation <> 0) or (not ShaderActuallyActive and not ShadowActuallyVisible and not OutlineActuallyVisible) then
+  begin
+    if texture <> nil then
+      inherited TextOut(ADest,x,y,s,texture,align)
+    else
+      inherited TextOut(ADest,x,y,s,c,align);
+    exit;
+  end;
+  fx := TBGRATextEffect.Create(s, FFont, FontQuality in[fqFineAntialiasing,fqFineClearTypeBGR,fqFineClearTypeRGB], x-floor(x),y-floor(y));
+  if ShadowActuallyVisible then
+  begin
+    fx.ShadowQuality := ShadowQuality;
+    fx.DrawShadow(ADest,round(x)+ShadowOffset.X,round(y)+ShadowOffset.Y,ShadowRadius,ShadowColor, align);
+  end;
+  if OuterOutlineOnly then DoOutline;
+  if texture <> nil then
+  begin
+    if ShaderActuallyActive then
+      fx.DrawShaded(ADest,floor(x),floor(y), Shader, round(fx.TextSize.cy*0.05), texture, align)
+    else
+      fx.Draw(ADest,round(x),round(y), texture, align);
+  end else
+  begin
+    if ShaderActuallyActive then
+      fx.DrawShaded(ADest,floor(x),floor(y), Shader, round(fx.TextSize.cy*0.05), c, align)
+    else
+      fx.Draw(ADest,round(x),round(y), c, align);
+  end;
+  if not OuterOutlineOnly then DoOutline;
+  fx.Free;
+end;
+
+constructor TBGRATextEffectFontRenderer.Create;
+begin
+  inherited Create;
+  FShader := nil;
+  FShaderOwner:= false;
+  Init;
+end;
+
+constructor TBGRATextEffectFontRenderer.Create(AShader: TCustomPhongShading;
+  AShaderOwner: boolean);
+begin
+  inherited Create;
+  Init;
+  FShader := AShader;
+  FShaderOwner := AShaderOwner;
+end;
+
+destructor TBGRATextEffectFontRenderer.Destroy;
+begin
+  if FShaderOwner then FShader.Free;
+  FVectorizedRenderer.Free;
+  inherited Destroy;
+end;
+
+procedure TBGRATextEffectFontRenderer.TextOutAngle(ADest: TBGRACustomBitmap; x,
+  y: single; orientation: integer; s: string; texture: IBGRAScanner;
+  align: TAlignment);
+begin
+  VectorizedFontRenderer.TextOutAngle(ADest, x, y, orientation, s, texture, align);
+end;
+
+procedure TBGRATextEffectFontRenderer.TextOutAngle(ADest: TBGRACustomBitmap; x,
+  y: single; orientation: integer; s: string; c: TBGRAPixel; align: TAlignment);
+begin
+  VectorizedFontRenderer.TextOutAngle(ADest, x, y, orientation, s, c, align);
+end;
+
+procedure TBGRATextEffectFontRenderer.TextOut(ADest: TBGRACustomBitmap; x,
+  y: single; s: string; texture: IBGRAScanner; align: TAlignment);
+begin
+  if VectorizedFontNeeded then
+    VectorizedFontRenderer.TextOut(ADest,x,y,s,texture,align)
+  else
+    InternalTextOut(ADest,x,y,s,BGRAPixelTransparent,texture,align);
+end;
+
+procedure TBGRATextEffectFontRenderer.TextOut(ADest: TBGRACustomBitmap; x,
+  y: single; s: string; c: TBGRAPixel; align: TAlignment);
+begin
+  if VectorizedFontNeeded then
+    VectorizedFontRenderer.TextOut(ADest,x,y,s,c,align)
+  else
+    InternalTextOut(ADest,x,y,s,c,nil,align);
+end;
+
+function TBGRATextEffectFontRenderer.TextSize(sUTF8: string): TSize;
+begin
+  if VectorizedFontNeeded then
+    result := VectorizedFontRenderer.TextSize(sUTF8)
+  else
+  begin
+    result := inherited TextSize(sUTF8);
+  end;
+end;
+
 { TBGRATextEffect }
 
 function TBGRATextEffect.GetBounds: TRect;
@@ -290,9 +586,17 @@ begin
     result := rect(X,Y,X+TextMask.Width,Y+TextMask.Height);
 end;
 
-function TBGRATextEffect.GetHeight: integer;
+function TBGRATextEffect.GetMaskHeight: integer;
 begin
-  result := FHeight;
+  if FTextMask = nil then
+    result := 0
+  else
+    result := FTextMask.Height;
+end;
+
+class function TBGRATextEffect.GetOutlineWidth: integer; static;
+begin
+  result := DefaultOutlineWidth;
 end;
 
 function TBGRATextEffect.GetShadowBounds(ARadius: integer): TRect;
@@ -307,23 +611,48 @@ begin
   end;
 end;
 
-function TBGRATextEffect.GetWidth: integer;
+function TBGRATextEffect.GetMaskWidth: integer;
 begin
-  result := FWidth;
+  if FTextMask = nil then
+    result := 0
+  else
+    result := FTextMask.Width;
 end;
 
-procedure TBGRATextEffect.DrawMaskMulticolored(ADest: TBGRACustomBitmap;
-  AMask: TBGRACustomBitmap; X, Y: Integer; const AColors: array of TBGRAPixel);
+function TBGRATextEffect.GetTextHeight: integer;
+begin
+  result := FTextSize.cy;
+end;
+
+function TBGRATextEffect.GetTextWidth: integer;
+begin
+  result := FTextSize.cx;
+end;
+
+procedure TBGRATextEffect.SetShadowQuality(AValue: TRadialBlurType);
+begin
+  if FShadowQuality=AValue then Exit;
+  FShadowQuality:=AValue;
+  FreeAndNil(FShadowMask);
+end;
+
+function TBGRATextEffect.DrawMaskMulticolored(ADest: TBGRACustomBitmap;
+  AMask: TBGRACustomBitmap; X, Y: Integer; const AColors: array of TBGRAPixel
+  ): TRect;
 var
   scan: TBGRASolidColorMaskScanner;
   xb,yb,startX,numColor: integer;
   p0,p: PBGRAPixel;
   emptyCol, nextCol: boolean;
 begin
-  if (AMask = nil) or (length(AColors)=0) then exit;
+  if (AMask = nil) or (length(AColors)=0) then
+  begin
+    result := EmptyRect;
+    exit;
+  end;
   if (length(AColors)=0) then
   begin
-    DrawMask(ADest,AMask,X,Y,AColors[0]);
+    result := DrawMask(ADest,AMask,X,Y,AColors[0]);
     exit;
   end;
   scan := TBGRASolidColorMaskScanner.Create(AMask,Point(-X,-Y),AColors[0]);
@@ -398,28 +727,39 @@ begin
   if startX<>-1 then
     ADest.FillRect(X+startX,Y,X+AMask.Width,Y+AMask.Height,scan,dmDrawWithTransparency);
   scan.Free;
+  result := rect(X,Y,X+AMask.Width,Y+AMask.Height);
 end;
 
-procedure TBGRATextEffect.DrawMask(ADest: TBGRACustomBitmap; AMask: TBGRACustomBitmap; X,
-  Y: Integer; AColor: TBGRAPixel);
+function TBGRATextEffect.DrawMask(ADest: TBGRACustomBitmap;
+  AMask: TBGRACustomBitmap; X, Y: Integer; AColor: TBGRAPixel): TRect;
 var
   scan: TBGRACustomScanner;
 begin
-  if AMask = nil then exit;
+  if AMask = nil then
+  begin
+    result := EmptyRect;
+    exit;
+  end;
   scan := TBGRASolidColorMaskScanner.Create(AMask,Point(-X,-Y),AColor);
   ADest.FillRect(X,Y,X+AMask.Width,Y+AMask.Height,scan,dmDrawWithTransparency);
   scan.Free;
+  result := rect(X,Y,X+AMask.Width,Y+AMask.Height);
 end;
 
-procedure TBGRATextEffect.DrawMask(ADest: TBGRACustomBitmap; AMask: TBGRACustomBitmap; X,
-  Y: Integer; ATexture: IBGRAScanner);
+function TBGRATextEffect.DrawMask(ADest: TBGRACustomBitmap;
+  AMask: TBGRACustomBitmap; X, Y: Integer; ATexture: IBGRAScanner): TRect;
 var
   scan: TBGRACustomScanner;
 begin
-  if AMask = nil then exit;
+  if AMask = nil then
+  begin
+    result := EmptyRect;
+    exit;
+  end;
   scan := TBGRATextureMaskScanner.Create(AMask,Point(-X,-Y),ATexture);
   ADest.FillRect(X,Y,X+AMask.Width,Y+AMask.Height,scan,dmDrawWithTransparency);
   scan.Free;
+  result := rect(X,Y,X+AMask.Width,Y+AMask.Height);
 end;
 
 function TBGRATextEffect.InternalDrawShaded(ADest: TBGRACustomBitmap; X,
@@ -432,7 +772,7 @@ var
   v,blurRadius: single;
   iBlurRadius: integer;
 begin
-  if FTextMask = nil then
+  if (FTextMask = nil) or (FTextMask.Width = 0) or (FTextMask.Height = 0) then
   begin
     result := EmptyRect;
     exit;
@@ -490,30 +830,51 @@ begin
     FShadingMask := Map;
   end;
 
+  inc(X, FOffset.X);
+  Inc(Y, FOffset.Y);
   if ATexture <> nil then
-    Shader.DrawScan(ADest,FShadingMask,Altitude,X+FOffset.X,Y+FOffset.Y, ATexture)
+    Shader.DrawScan(ADest,FShadingMask,Altitude,X,Y, ATexture)
   else
-    Shader.Draw(ADest,FShadingMask,Altitude,X+FOffset.X,Y+FOffset.Y, AColor);
-  result := rect(X+FOffset.X,Y+FOffset.Y, X+FOffset.X+FShadingMask.Width,Y+FOffset.Y+FShadingMask.Height);
+    Shader.Draw(ADest,FShadingMask,Altitude,X,Y, AColor);
+  result := rect(X,Y, X+FShadingMask.Width,Y+FShadingMask.Height);
 end;
 
-procedure TBGRATextEffect.Draw(ADest: TBGRACustomBitmap; X, Y: integer;
-  AColor: TBGRAPixel; AAlign: TAlignment);
+procedure TBGRATextEffect.InitImproveReadability(AText: string; Font: TFont;
+  SubOffsetX, SubOffsetY: single);
+var size: TSize;
+  overhang: integer;
+begin
+  if SubOffsetX < 0 then SubOffsetX := 0;
+  if SubOffsetY < 0 then SubOffsetY := 0;
+  size := BGRATextSize(Font, fqFineAntialiasing, AText, FontAntialiasingLevel);
+  FTextSize := size;
+  if size.cy = 0 then FTextSize.cy := BGRATextSize(Font, fqFineAntialiasing, 'Hg', FontAntialiasingLevel).cy;
+  overhang := size.cy div 2;
+  size.cx += 2*overhang + ceil(SubOffsetX);
+  size.cy += 2 + ceil(SubOffsetY);
+
+  FOffset := Point(-overhang,-1); //include overhang
+  FTextMask := BGRABitmapFactory.Create(size.cx,size.cy,BGRABlack);
+  BGRATextOutImproveReadability(FTextMask, Font, overhang+SubOffsetX,1+SubOffsetY, AText, BGRAWhite, nil, taLeftJustify, irMask);
+end;
+
+function TBGRATextEffect.Draw(ADest: TBGRACustomBitmap; X, Y: integer;
+  AColor: TBGRAPixel; AAlign: TAlignment): TRect;
 begin
   Case AAlign of
-  taLeftJustify: Draw(ADest,X,Y,AColor);
-  taRightJustify: Draw(ADest,X-Width,Y,AColor);
-  taCenter: Draw(ADest,X-Width div 2,Y,AColor);
+  taRightJustify: result := Draw(ADest,X-TextSize.cx,Y,AColor);
+  taCenter: result := Draw(ADest,X-TextSize.cx div 2,Y,AColor);
+  else result := Draw(ADest,X,Y,AColor);
   end;
 end;
 
-procedure TBGRATextEffect.Draw(ADest: TBGRACustomBitmap; X, Y: integer;
-  ATexture: IBGRAScanner; AAlign: TAlignment);
+function TBGRATextEffect.Draw(ADest: TBGRACustomBitmap; X, Y: integer;
+  ATexture: IBGRAScanner; AAlign: TAlignment): TRect;
 begin
   Case AAlign of
-  taLeftJustify: Draw(ADest,X,Y,ATexture);
-  taRightJustify: Draw(ADest,X-Width,Y,ATexture);
-  taCenter: Draw(ADest,X-Width div 2,Y,ATexture);
+  taRightJustify: result := Draw(ADest,X-TextSize.cx,Y,ATexture);
+  taCenter: result := Draw(ADest,X-TextSize.cx div 2,Y,ATexture);
+  else result := Draw(ADest,X,Y,ATexture);
   end;
 end;
 
@@ -537,8 +898,8 @@ function TBGRATextEffect.DrawShaded(ADest: TBGRACustomBitmap; X, Y: integer;
 begin
   Case AAlign of
   taLeftJustify: result := DrawShaded(ADest,X,Y,Shader,Altitude,AColor,ARounded);
-  taRightJustify: result := DrawShaded(ADest,X-Width,Y,Shader,Altitude,AColor,ARounded);
-  taCenter: result := DrawShaded(ADest,X-Width div 2,Y,Shader,Altitude,AColor,ARounded);
+  taRightJustify: result := DrawShaded(ADest,X-TextSize.cx,Y,Shader,Altitude,AColor,ARounded);
+  taCenter: result := DrawShaded(ADest,X-TextSize.cx div 2,Y,Shader,Altitude,AColor,ARounded);
   else
     result := EmptyRect;
   end;
@@ -550,8 +911,8 @@ function TBGRATextEffect.DrawShaded(ADest: TBGRACustomBitmap; X, Y: integer;
 begin
   Case AAlign of
   taLeftJustify: result := DrawShaded(ADest,X,Y,Shader,Altitude,ATexture,ARounded);
-  taRightJustify: result := DrawShaded(ADest,X-Width,Y,Shader,Altitude,ATexture,ARounded);
-  taCenter: result := DrawShaded(ADest,X-Width div 2,Y,Shader,Altitude,ATexture,ARounded);
+  taRightJustify: result := DrawShaded(ADest,X-TextSize.cx,Y,Shader,Altitude,ATexture,ARounded);
+  taCenter: result := DrawShaded(ADest,X-TextSize.cx div 2,Y,Shader,Altitude,ATexture,ARounded);
   else
     result := EmptyRect;
   end;
@@ -570,8 +931,44 @@ begin
   Init(AText, Font, Antialiasing, SubOffsetX, SubOffsetY, GrainX, GrainY);
 end;
 
-procedure TBGRATextEffect.Init(AText: string; Font: TFont;
-  Antialiasing: boolean; SubOffsetX,SubOffsetY: single; GrainX, GrainY: Integer);
+constructor TBGRATextEffect.Create(AText: string; AFontName: string;
+  AFullHeight: integer; Antialiasing: boolean);
+begin
+  InitWithFontName(AText, AFontName, AFullHeight, [], Antialiasing, 0, 0);
+end;
+
+constructor TBGRATextEffect.Create(AText: string; AFontName: string;
+  AFullHeight: integer; Antialiasing: boolean; SubOffsetX, SubOffsetY: single);
+begin
+  InitWithFontName(AText, AFontName, AFullHeight, [], Antialiasing, SubOffsetX, SubOffsetY);
+end;
+
+constructor TBGRATextEffect.Create(AText: string; AFontName: string;
+  AFullHeight: integer; AStyle: TFontStyles; Antialiasing: boolean);
+begin
+  InitWithFontName(AText, AFontName, AFullHeight, AStyle, Antialiasing, 0, 0);
+end;
+
+constructor TBGRATextEffect.Create(AText: string; AFontName: string;
+  AFullHeight: integer; AStyle: TFontStyles; Antialiasing: boolean; SubOffsetX,
+  SubOffsetY: single);
+begin
+  InitWithFontName(AText, AFontName, AFullHeight, AStyle, Antialiasing, SubOffsetX, SubOffsetY);
+end;
+
+constructor TBGRATextEffect.Create(AMask: TBGRACustomBitmap; AMaskOwner: boolean; AWidth,
+  AHeight: integer; AOffset: TPoint);
+begin
+  FTextSize := Size(AWidth,AHeight);
+  FOffset := AOffset;
+  if not AMaskOwner then
+    FTextMask := AMask.Duplicate()
+  else
+    FTextMask := AMask;
+end;
+
+procedure TBGRATextEffect.Init(AText: string; Font: TFont; Antialiasing: boolean; SubOffsetX,SubOffsetY: single; GrainX, GrainY: Integer);
+const FXAntialiasingLevel = FontAntialiasingLevel;
 var temp: TBGRACustomBitmap;
     size: TSize;
     p: PBGRAPixel;
@@ -582,19 +979,26 @@ var temp: TBGRACustomBitmap;
     quality: TBGRAFontQuality;
     iSubX,iSubY: integer;
 begin
+  FShadowQuality := rbFast;
+  if Antialiasing and Assigned(BGRATextOutImproveReadabilityProc) then
+  begin
+    InitImproveReadability(AText, Font, SubOffsetX,SubOffsetY);
+    exit;
+  end;
   if Antialiasing then
     quality := fqFineAntialiasing
   else
     quality := fqSystem;
-  size := BGRAOriginalTextSize(Font,quality,AText,FontAntialiasingLevel);
+  size := BGRAOriginalTextSize(Font,quality,AText,FXAntialiasingLevel);
   if (size.cx = 0) or (size.cy = 0) then
   begin
-    size := BGRATextSize(Font,quality,'Hg',FontAntialiasingLevel);
-    FWidth := 0;
-    FHeight := size.cy;
+    size := BGRATextSize(Font,quality,'Hg',FXAntialiasingLevel);
+    FTextSize.cx := 0;
+    FTextSize.cy := size.cy;
     FOffset := Point(0,0);
     exit;
   end;
+  FTextSize := size;
 
   sizeX := size.cx+size.cy;
   sizeY := size.cy;
@@ -606,24 +1010,24 @@ begin
 
   if Antialiasing then
   begin
-    sizeX := (sizeX + FontAntialiasingLevel-1);
-    sizeX -= sizeX mod FontAntialiasingLevel;
+    sizeX := (sizeX + FXAntialiasingLevel-1);
+    sizeX -= sizeX mod FXAntialiasingLevel;
 
-    sizeY := (sizeY + FontAntialiasingLevel-1);
-    sizeY -= sizeY mod FontAntialiasingLevel;
+    sizeY := (sizeY + FXAntialiasingLevel-1);
+    sizeY -= sizeY mod FXAntialiasingLevel;
 
     if SubOffsetX <> 0 then
     begin
-      sizeX += ceil(SubOffsetX*FontAntialiasingLevel);
-      iSubX := round(SubOffsetX*FontAntialiasingLevel);
+      sizeX += ceil(SubOffsetX*FXAntialiasingLevel);
+      iSubX := round(SubOffsetX*FXAntialiasingLevel);
     end;
     if SubOffsetY <> 0 then
     begin
-      sizeY += ceil(SubOffsetY*FontAntialiasingLevel);
-      iSubY := round(SubOffsetY*FontAntialiasingLevel);
+      sizeY += ceil(SubOffsetY*FXAntialiasingLevel);
+      iSubY := round(SubOffsetY*FXAntialiasingLevel);
     end;
 
-    OnePixel := FontAntialiasingLevel;
+    OnePixel := FXAntialiasingLevel;
   end else
   begin
     OnePixel := 1;
@@ -661,11 +1065,11 @@ begin
 
   if Antialiasing then
   begin
-    FWidth := round(size.cx/FontAntialiasingLevel);
-    FHeight := round(size.cy/FontAntialiasingLevel);
-    FOffset := Point(round(FOffset.X/FontAntialiasingLevel),round(FOffset.Y/FontAntialiasingLevel));
+    FTextSize.cx := round(FTextSize.cx/FXAntialiasingLevel);
+    FTextSize.cy := round(FTextSize.cy/FXAntialiasingLevel);
+    FOffset := Point(round(FOffset.X/FXAntialiasingLevel),round(FOffset.Y/FXAntialiasingLevel));
 
-    FTextMask := temp.Resample(round(temp.width/FontAntialiasingLevel),round(temp.Height/FontAntialiasingLevel),rmSimpleStretch);
+    FTextMask := temp.Resample(round(temp.width/FXAntialiasingLevel),round(temp.Height/FXAntialiasingLevel),rmSimpleStretch);
 
     maxAlpha := 0;
     p := FTextMask.Data;
@@ -691,9 +1095,6 @@ begin
   end
   else
   begin
-    FWidth := size.cx;
-    FHeight := size.cy;
-
     FTextMask := temp;
     p := FTextMask.data;
     for n := FTextMask.NbPixels-1 downto 0 do
@@ -704,6 +1105,18 @@ begin
       p^.blue := alpha;
     end;
   end;
+end;
+
+procedure TBGRATextEffect.InitWithFontName(AText: string; AFontName: string;
+  AFullHeight: integer; AStyle: TFontStyles; Antialiasing: boolean; SubOffsetX, SubOffsetY: single);
+var lFont: TFont;
+begin
+  lFont := TFont.Create;
+  lFont.Name := AFontName;
+  lFont.Height := AFullHeight * FontFullHeightSign;
+  lFont.Style := AStyle;
+  Init(AText, lFont, Antialiasing, SubOffsetX, SubOffsetY, 0,0);
+  lFont.Free;
 end;
 
 constructor TBGRATextEffect.Create(AText: string; Font: TFont;
@@ -745,108 +1158,115 @@ begin
   BGRAReplace(FTextMask,FTextMask.RotateCCW);
 end;
 
-procedure TBGRATextEffect.Draw(ADest: TBGRACustomBitmap; X, Y: integer;
-  AColor: TBGRAPixel);
+function TBGRATextEffect.Draw(ADest: TBGRACustomBitmap; X, Y: integer;
+  AColor: TBGRAPixel): TRect;
 begin
-  if FTextMask = nil then exit;
-  DrawMask(ADest,FTextMask,X+FOffset.X,Y+FOffset.Y,AColor);
+  result := DrawMask(ADest,FTextMask,X+FOffset.X,Y+FOffset.Y,AColor);
 end;
 
-procedure TBGRATextEffect.Draw(ADest: TBGRACustomBitmap; X, Y: integer;
-  ATexture: IBGRAScanner);
+function TBGRATextEffect.Draw(ADest: TBGRACustomBitmap; X, Y: integer;
+  ATexture: IBGRAScanner): TRect;
 begin
-  if FTextMask = nil then exit;
-  DrawMask(ADest,FTextMask,X+FOffset.X,Y+FOffset.Y,ATexture);
+  result := DrawMask(ADest,FTextMask,X+FOffset.X,Y+FOffset.Y,ATexture);
 end;
 
-procedure TBGRATextEffect.DrawMulticolored(ADest: TBGRACustomBitmap; X, Y: integer;
-  const AColors: array of TBGRAPixel);
+function TBGRATextEffect.DrawMulticolored(ADest: TBGRACustomBitmap; X,
+  Y: integer; const AColors: array of TBGRAPixel): TRect;
 begin
-  if FTextMask = nil then exit;
-  DrawMaskMulticolored(ADest,FTextMask,X+FOffset.X,Y+FOffset.Y,AColors);
+  result := DrawMaskMulticolored(ADest,FTextMask,X+FOffset.X,Y+FOffset.Y,AColors);
 end;
 
-procedure TBGRATextEffect.DrawMulticolored(ADest: TBGRACustomBitmap; X,
-  Y: integer; const AColors: array of TBGRAPixel; AAlign: TAlignment);
+function TBGRATextEffect.DrawMulticolored(ADest: TBGRACustomBitmap; X,
+  Y: integer; const AColors: array of TBGRAPixel; AAlign: TAlignment): TRect;
 begin
   Case AAlign of
-  taLeftJustify: DrawMulticolored(ADest,X,Y,AColors);
-  taRightJustify: DrawMulticolored(ADest,X-Width,Y,AColors);
-  taCenter: DrawMulticolored(ADest,X-Width div 2,Y,AColors);
+  taRightJustify: result := DrawMulticolored(ADest,X-TextSize.cx,Y,AColors);
+  taCenter: result := DrawMulticolored(ADest,X-TextSize.cx div 2,Y,AColors);
+  else result := DrawMulticolored(ADest,X,Y,AColors);
   end;
 end;
 
-procedure TBGRATextEffect.DrawOutline(ADest: TBGRACustomBitmap; X, Y: integer;
-  AColor: TBGRAPixel);
+function TBGRATextEffect.DrawOutline(ADest: TBGRACustomBitmap; X, Y: integer;
+  AColor: TBGRAPixel): TRect;
 begin
-  if FTextMask = nil then exit;
-  if FOutlineMask = nil then
+  if (FTextMask = nil) or (FTextMask.Width = 0) or (FTextMask.Height = 0) then
   begin
-    FOutlineMask := FTextMask.FilterContour;
-    FOutlineMask.LinearNegative;
-  end;
-  DrawMask(ADest,FOutlineMask,X+FOffset.X,Y+FOffset.Y,AColor);
-end;
-
-procedure TBGRATextEffect.DrawOutline(ADest: TBGRACustomBitmap; X, Y: integer;
-  ATexture: IBGRAScanner);
-begin
-  if FTextMask = nil then exit;
-  if FOutlineMask = nil then
-  begin
-    FOutlineMask := FTextMask.FilterContour;
-    FOutlineMask.LinearNegative;
-  end;
-  DrawMask(ADest,FOutlineMask,X+FOffset.X,Y+FOffset.Y,ATexture);
-end;
-
-procedure TBGRATextEffect.DrawOutline(ADest: TBGRACustomBitmap; X, Y: integer;
-  AColor: TBGRAPixel; AAlign: TAlignment);
-begin
-  Case AAlign of
-  taLeftJustify: DrawOutline(ADest,X,Y,AColor);
-  taRightJustify: DrawOutline(ADest,X-Width,Y,AColor);
-  taCenter: DrawOutline(ADest,X-Width div 2,Y,AColor);
-  end;
-end;
-
-procedure TBGRATextEffect.DrawOutline(ADest: TBGRACustomBitmap; X, Y: integer;
-  ATexture: IBGRAScanner; AAlign: TAlignment);
-begin
-  Case AAlign of
-  taLeftJustify: DrawOutline(ADest,X,Y,ATexture);
-  taRightJustify: DrawOutline(ADest,X-Width,Y,ATexture);
-  taCenter: DrawOutline(ADest,X-Width div 2,Y,ATexture);
-  end;
-end;
-
-procedure TBGRATextEffect.DrawShadow(ADest: TBGRACustomBitmap; X, Y,Radius: integer;
-  AColor: TBGRAPixel);
-begin
-  if Radius <= 0 then
-  begin
-    Draw(ADest,X,Y,AColor);
+    result := EmptyRect;
     exit;
   end;
-  if FTextMask = nil then exit;
-  if FShadowRadius <> Radius then
+  if FOutlineMask = nil then
+  begin
+    FOutlineMask := FTextMask.FilterContour;
+    FOutlineMask.LinearNegative;
+  end;
+  result := DrawMask(ADest,FOutlineMask,X+FOffset.X,Y+FOffset.Y,AColor);
+end;
+
+function TBGRATextEffect.DrawOutline(ADest: TBGRACustomBitmap; X, Y: integer;
+  ATexture: IBGRAScanner): TRect;
+begin
+  if (FTextMask = nil) or (FTextMask.Width = 0) or (FTextMask.Height = 0) then
+  begin
+    result := EmptyRect;
+    exit;
+  end;
+  if FOutlineMask = nil then
+  begin
+    FOutlineMask := FTextMask.FilterContour;
+    FOutlineMask.LinearNegative;
+  end;
+  result := DrawMask(ADest,FOutlineMask,X+FOffset.X,Y+FOffset.Y,ATexture);
+end;
+
+function TBGRATextEffect.DrawOutline(ADest: TBGRACustomBitmap; X, Y: integer;
+  AColor: TBGRAPixel; AAlign: TAlignment): TRect;
+begin
+  Case AAlign of
+  taRightJustify: result := DrawOutline(ADest,X-TextSize.cx,Y,AColor);
+  taCenter: result := DrawOutline(ADest,X-TextSize.cx div 2,Y,AColor);
+  else result := DrawOutline(ADest,X,Y,AColor);
+  end;
+end;
+
+function TBGRATextEffect.DrawOutline(ADest: TBGRACustomBitmap; X, Y: integer;
+  ATexture: IBGRAScanner; AAlign: TAlignment): TRect;
+begin
+  Case AAlign of
+  taRightJustify: result := DrawOutline(ADest,X-TextSize.cx,Y,ATexture);
+  taCenter: result := DrawOutline(ADest,X-TextSize.cx div 2,Y,ATexture);
+  else result := DrawOutline(ADest,X,Y,ATexture);
+  end;
+end;
+
+function TBGRATextEffect.DrawShadow(ADest: TBGRACustomBitmap; X, Y,
+  Radius: integer; AColor: TBGRAPixel): TRect;
+begin
+  if (Radius <= 0) or (FTextMask = nil) or (FTextMask.Width = 0) or (FTextMask.Height = 0) then
+  begin
+    result := Draw(ADest,X,Y,AColor);
+    exit;
+  end;
+  if (FShadowRadius <> Radius) or (FShadowMask = nil) then
   begin
     FShadowRadius := Radius;
     FreeAndNil(FShadowMask);
     FShadowMask := BGRABitmapFactory.Create(FTextMask.Width+Radius*2,FTextMask.Height+Radius*2,BGRABlack);
     FShadowMask.PutImage(Radius,Radius,FTextMask,dmSet);
-    BGRAReplace(FShadowMask, FShadowMask.FilterBlurRadial(Radius,rbFast));
+    BGRAReplace(FShadowMask, FShadowMask.FilterBlurRadial(Radius,ShadowQuality));
   end;
-  DrawMask(ADest,FShadowMask,X-Radius+FOffset.X,Y-Radius+FOffset.Y,AColor)
+  Inc(X,FOffset.X-Radius);
+  Inc(Y,FOffset.Y-Radius);
+  DrawMask(ADest,FShadowMask,X,Y,AColor);
+  result := rect(X,Y,X+FShadowMask.Width,Y+FShadowMask.Height);
 end;
 
-procedure TBGRATextEffect.DrawShadow(ADest: TBGRACustomBitmap; X, Y,
-  Radius: integer; AColor: TBGRAPixel; AAlign: TAlignment);
+function TBGRATextEffect.DrawShadow(ADest: TBGRACustomBitmap; X, Y,
+  Radius: integer; AColor: TBGRAPixel; AAlign: TAlignment): TRect;
 begin
   Case AAlign of
-  taLeftJustify: DrawShadow(ADest,X,Y,Radius,AColor);
-  taRightJustify: DrawShadow(ADest,X-Width,Y,Radius,AColor);
-  taCenter: DrawShadow(ADest,X-Width div 2,Y,Radius,AColor);
+  taRightJustify: result := DrawShadow(ADest,X-TextSize.cx,Y,Radius,AColor);
+  taCenter: result := DrawShadow(ADest,X-TextSize.cx div 2,Y,Radius,AColor);
+  else result := DrawShadow(ADest,X,Y,Radius,AColor);
   end;
 end;
 
@@ -858,6 +1278,10 @@ begin
   FShadingMask.Free;
   inherited Destroy;
 end;
+
+initialization
+
+  BGRATextOutImproveReadabilityProc := @BGRATextOutImproveReadability;
 
 end.
 

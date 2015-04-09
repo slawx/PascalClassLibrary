@@ -27,10 +27,10 @@ type
     ButtonBenchmark: TButton;
     ButtonSingleTest: TButton;
     ButtonStop: TButton;
-    CheckBox1: TCheckBox;
+    CheckBoxOpaque: TCheckBox;
     CheckBoxDoubleBuffered: TCheckBox;
     CheckBoxEraseBackground: TCheckBox;
-    ComboBox1: TComboBox;
+    ComboBoxPixelFormat: TComboBox;
     FileExit1: TFileExit;
     FloatSpinEdit1: TFloatSpinEdit;
     Label1: TLabel;
@@ -64,16 +64,17 @@ type
     SynPasSyn1: TSynPasSyn;
     TabSheet1: TTabSheet;
     TabSheet2: TTabSheet;
+    TimerUpdateSettings: TTimer;
     TimerUpdateList: TTimer;
     procedure AExportAsWikiTextExecute(Sender: TObject);
     procedure AShowDrawFormExecute(Sender: TObject);
     procedure ATestAllMethodsExecute(Sender: TObject);
     procedure ATestOneMethodExecute(Sender: TObject);
     procedure ATestStopExecute(Sender: TObject);
-    procedure CheckBox1Change(Sender: TObject);
+    procedure CheckBoxOpaqueChange(Sender: TObject);
     procedure CheckBoxDoubleBufferedChange(Sender: TObject);
     procedure CheckBoxEraseBackgroundChange(Sender: TObject);
-    procedure ComboBox1Change(Sender: TObject);
+    procedure ComboBoxPixelFormatChange(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -84,7 +85,9 @@ type
     procedure SpinEditHeightChange(Sender: TObject);
     procedure SpinEditWidthChange(Sender: TObject);
     procedure TimerUpdateListTimer(Sender: TObject);
+    procedure TimerUpdateSettingsTimer(Sender: TObject);
   private
+    FCurrentMethod: TDrawMethod;
     MethodIndex: Integer;
     SingleTestActive: Boolean;
     AllTestActive: Boolean;
@@ -95,7 +98,6 @@ type
     procedure TestMethod(Method: TDrawMethod);
     procedure UpdateMethodList;
     procedure UpdateInterface;
-    procedure UpdateFrameSize;
     procedure RegisterDrawMethods;
     procedure RegisterDrawMethod(MethodClass: TDrawMethodClass);
   public
@@ -104,6 +106,7 @@ type
     DrawMethods: TObjectList; // TObjectList<TDrawMethod>
     Scenes: TObjectList; // TObjectList<TFastBitmap>
     SceneIndex: Integer;
+    property CurrentMethod: TDrawMethod read FCurrentMethod;
   end;
 
 var
@@ -140,7 +143,7 @@ begin
   end;
 
   for PF := Low(TPixelFormat) to High(TPixelFormat) do
-    ComboBox1.Items.Add(GetEnumName(TypeInfo(TPixelFormat), Integer(PF)));
+    ComboBoxPixelFormat.Items.Add(GetEnumName(TypeInfo(TPixelFormat), Integer(PF)));
 
   PageControl1.TabIndex := 0;
 end;
@@ -150,6 +153,7 @@ var
   StepStartTime: TDateTime;
   StartTime: TDateTime;
 begin
+  FCurrentMethod := Method;
   with Method do begin
     Init(DrawForm, FrameSize, PixelFormat);
     //Application.ProcessMessages;
@@ -170,6 +174,7 @@ begin
     //FPS := GetFPS;
     Done;
   end;
+  FCurrentMethod := nil;
 end;
 
 procedure TMainForm.AExportAsWikiTextExecute(Sender: TObject);
@@ -254,11 +259,13 @@ begin
   AllTestActive := False;
 end;
 
-procedure TMainForm.CheckBox1Change(Sender: TObject);
+procedure TMainForm.CheckBoxOpaqueChange(Sender: TObject);
 begin
-  if CheckBox1.Checked then
+  if CheckBoxOpaque.Checked then
     DrawForm.ControlStyle := DrawForm.ControlStyle + [csOpaque]
     else DrawForm.ControlStyle := DrawForm.ControlStyle - [csOpaque];
+  if Assigned(FCurrentMethod) then
+    FCurrentMethod.UpdateSettings;
 end;
 
 procedure TMainForm.CheckBoxDoubleBufferedChange(Sender: TObject);
@@ -271,9 +278,9 @@ begin
   DrawForm.EraseBackgroundEnabled := CheckBoxEraseBackground.Checked;
 end;
 
-procedure TMainForm.ComboBox1Change(Sender: TObject);
+procedure TMainForm.ComboBoxPixelFormatChange(Sender: TObject);
 begin
-  PixelFormat := TPixelFormat(ComboBox1.ItemIndex);
+  PixelFormat := TPixelFormat(ComboBoxPixelFormat.ItemIndex);
   UpdateInterface;
 end;
 
@@ -291,10 +298,11 @@ end;
 
 procedure TMainForm.FormShow(Sender: TObject);
 begin
-  UpdateFrameSize;
   UpdateMethodList;
   UpdateInterface;
   DrawForm.Show;
+  DrawForm.Left := Left + Width;
+  DrawForm.Top := Top;
 end;
 
 procedure TMainForm.ListViewMethodsData(Sender: TObject; Item: TListItem);
@@ -338,18 +346,27 @@ end;
 procedure TMainForm.SpinEditHeightChange(Sender: TObject);
 begin
   FrameSize.Y := SpinEditHeight.Value;
-  UpdateFrameSize;
 end;
 
 procedure TMainForm.SpinEditWidthChange(Sender: TObject);
 begin
   FrameSize.X := SpinEditWidth.Value;
-  UpdateFrameSize;
 end;
 
 procedure TMainForm.TimerUpdateListTimer(Sender: TObject);
 begin
   UpdateMethodList;
+end;
+
+procedure TMainForm.TimerUpdateSettingsTimer(Sender: TObject);
+begin
+  if (FrameSize.X <> DrawForm.FrameSize.X) or
+    (FrameSize.Y <> DrawForm.FrameSize.Y) then begin
+      DrawForm.FrameSize := FrameSize;
+      DrawForm.ClientWidth := FrameSize.X;
+      DrawForm.ClientHeight := FrameSize.Y;
+      GenerateSceneFrames;
+    end;
 end;
 
 procedure TMainForm.GenerateSceneFrames;
@@ -381,15 +398,8 @@ begin
   SpinEditHeight.MaxValue := Screen.DesktopHeight;
   CheckBoxDoubleBuffered.Checked := DrawForm.DoubleBuffered;
   CheckBoxEraseBackground.Checked := DrawForm.EraseBackgroundEnabled;
-  CheckBox1.Checked := csOpaque in DrawForm.ControlStyle;
-  ComboBox1.ItemIndex := Integer(PixelFormat);
-end;
-
-procedure TMainForm.UpdateFrameSize;
-begin
-  DrawForm.ClientWidth := FrameSize.X;
-  DrawForm.ClientHeight := FrameSize.Y;
-  GenerateSceneFrames;
+  CheckBoxOpaque.Checked := csOpaque in DrawForm.ControlStyle;
+  ComboBoxPixelFormat.ItemIndex := Integer(PixelFormat);
 end;
 
 procedure TMainForm.RegisterDrawMethods;

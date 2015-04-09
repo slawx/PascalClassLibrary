@@ -7,21 +7,20 @@ unit BGRABitmapPack;
 interface
 
 uses
-  BGRAAnimatedGif, BGRABitmap, BGRABitmapTypes, BGRABlend, 
-  BGRACompressableBitmap, BGRADefaultBitmap, BGRADNetDeserial, BGRAFilters, 
-  BGRAPaintNet, BGRAPolygon, BGRAResample, BGRAPen, BGRATransform, 
-  BGRAGradientScanner, BGRAText, BGRAPolygonAliased, BGRACanvas, BGRAFillInfo, 
-  BGRAPath, BGRACanvas2D, BGRAScene3D, BGRATextFX, BGRAPhongTypes, BGRALayers, 
-  BGRASSE, BGRAMatrix3D, BGRACoordPool3D, BGRAOpenRaster, BGRAFreeType, 
-  BGRAGradients, BGRASliceScaling, BGRAVectorize, BGRATypewriter, 
-  LazarusPackageIntf;
+  BGRAAnimatedGif, BGRABitmap, BGRABitmapTypes, BGRABlend, BGRACanvas, 
+  BGRACanvas2D, BGRAColorInt, BGRACompressableBitmap, BGRACoordPool3D, 
+  BGRADefaultBitmap, BGRADNetDeserial, BGRAFillInfo, BGRAFilters, 
+  BGRAFreeType, BGRAGradients, BGRAGradientScanner, BGRALayers, BGRAMatrix3D, 
+  BGRAOpenRaster, BGRAPaintNet, BGRAPath, BGRAPen, BGRAPhongTypes, 
+  BGRAPolygon, BGRAPolygonAliased, BGRAResample, BGRAScene3D, 
+  BGRASliceScaling, BGRASSE, BGRAStreamLayers, BGRAText, BGRATextFX, 
+  BGRATransform, BGRATypewriter, BGRAVectorize, BGRAGrayscaleMask, 
+  BGRAReadBMP, BGRAReadGif, BGRAReadPCX, BGRAReadPng, BGRAReadPSD, 
+  BGRAThumbnail, BGRAReadTGA, BGRAReadIco, bgrareadjpeg, BGRAReadLzp, 
+  UnzipperExt, BGRALzpCommon, BGRAWriteLzp, BGRAReadXPM, BGRASVG, BGRAUnits, 
+  BGRASVGShapes, BGRASVGType, BGRAReadBmpMioMap, BGRAArrow, BGRAPalette, 
+  BGRAColorQuantization, BGRADithering;
 
 implementation
 
-procedure Register;
-begin
-end;
-
-initialization
-  RegisterPackage('BGRABitmapPack', @Register);
 end.

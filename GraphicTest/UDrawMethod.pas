@@ -20,6 +20,7 @@ type
   private
     FControl: TControl;
     FFPS: Real;
+    FParent: TWinControl;
   public
     Caption: string;
     Description: TStringList;
@@ -38,6 +39,7 @@ type
     destructor Destroy; override;
     procedure DrawFrame(FastBitmap: TFastBitmap); virtual;
     procedure DrawFrameTiming(FastBitmap: TFastBitmap);
+    procedure UpdateSettings; virtual;
     property Control: TControl read FControl;
   end;
 
@@ -47,6 +49,7 @@ type
 
   TDrawMethodImage = class(TDrawMethod)
     Image: TImage;
+    procedure UpdateSettings; override;
     procedure Init(Parent: TWinControl; Size: TPoint; PixelFormat: TPixelFormat); override;
     procedure Done; override;
   end;
@@ -56,6 +59,7 @@ type
   TDrawMethodPaintBox = class(TDrawMethod)
     PaintBox: TPaintBox;
     procedure Paint(Sender: TObject); virtual;
+    procedure UpdateSettings; override;
     procedure Init(Parent: TWinControl; Size: TPoint; PixelFormat: TPixelFormat); override;
     procedure Done; override;
   end;
@@ -68,6 +72,7 @@ type
     OpenGLControl: TOpenGLControl;
     TextureId: GLuint;
     OpenGLBitmap: Pointer;
+    procedure UpdateSettings; override;
     procedure InitGL;
     procedure OpenGLControlResize(Sender: TObject);
     procedure Init(AParent: TWinControl; Size: TPoint; PixelFormat: TPixelFormat); override;
@@ -87,6 +92,12 @@ begin
 
 end;
 
+procedure TDrawMethodPaintBox.UpdateSettings;
+begin
+  inherited UpdateSettings;
+  PaintBox.ControlStyle := FParent.ControlStyle;
+end;
+
 procedure TDrawMethodPaintBox.Init(Parent: TWinControl; Size: TPoint; PixelFormat: TPixelFormat);
 begin
   inherited;
@@ -95,6 +106,7 @@ begin
   PaintBox.SetBounds(0, 0, Size.X, Size.Y);
   PaintBox.OnPaint := Paint;
   PaintBox.Show;
+  UpdateSettings;
 end;
 
 procedure TDrawMethodPaintBox.Done;
@@ -105,6 +117,12 @@ end;
 
 { TDrawMethodImage }
 
+procedure TDrawMethodImage.UpdateSettings;
+begin
+  inherited;
+  Image.ControlStyle := FParent.ControlStyle;
+end;
+
 procedure TDrawMethodImage.Init(Parent: TWinControl; Size: TPoint; PixelFormat: TPixelFormat);
 begin
   inherited;
@@ -114,6 +132,7 @@ begin
   Image.Picture.Bitmap.PixelFormat := PixelFormat;
   Image.Picture.Bitmap.SetSize(Size.X, Size.Y);
   Image.Show;
+  UpdateSettings;
 end;
 
 procedure TDrawMethodImage.Done;
@@ -140,6 +159,7 @@ begin
     OnResize := OpenGLControlResize;
   end;
   GetMem(OpenGLBitmap, OpenGLControl.Width * OpenGLControl.Height * SizeOf(Integer));
+  UpdateSettings;
 end;
 
 procedure TDrawMethodOpenGL.Done;
@@ -152,6 +172,12 @@ end;
 procedure TDrawMethodOpenGL.OpenGLControlResize(Sender: TObject);
 begin
   glViewport(0, 0, OpenGLControl.Width, OpenGLControl.Height);
+end;
+
+procedure TDrawMethodOpenGL.UpdateSettings;
+begin
+  inherited UpdateSettings;
+  OpenGLControl.ControlStyle := FParent.ControlStyle;
 end;
 
 procedure TDrawMethodOpenGL.InitGL;
@@ -194,6 +220,7 @@ end;
 
 procedure TDrawMethod.Init(Parent: TWinControl; Size: TPoint; PixelFormat: TPixelFormat);
 begin
+  FParent := Parent;
 end;
 
 procedure TDrawMethod.Done;
@@ -224,6 +251,10 @@ begin
   StartTime := NowPrecise;
   DrawFrame(FastBitmap);
   FrameDuration := NowPrecise - StartTime;
+end;
+
+procedure TDrawMethod.UpdateSettings;
+begin
 end;
 
 end.

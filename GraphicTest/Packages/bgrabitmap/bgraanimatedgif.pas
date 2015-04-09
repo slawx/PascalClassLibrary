@@ -33,6 +33,7 @@ type
     FPaused:   boolean;
     FTimeAccumulator: double;
     FCurrentImage, FWantedImage: integer;
+    FFullAnimationTime: double;
     FPreviousDisposeMode: TDisposeMode;
 
     FBackgroundImage, FPreviousVirtualScreen, FStretchedVirtualScreen,
@@ -40,6 +41,7 @@ type
     FImageChanged: boolean;
 
     function GetCount: integer;
+    function GetTimeUntilNextImage: integer;
     procedure Render(StretchWidth, StretchHeight: integer);
     procedure UpdateSimple(Canvas: TCanvas; ARect: TRect;
       DrawOnlyIfChanged: boolean = True);
@@ -69,7 +71,7 @@ type
     EraseColor:     TColor;
     BackgroundMode: TGifBackgroundMode;
 
-    constructor Create(filename: string);
+    constructor Create(filenameUTF8: string);
     constructor Create(stream: TStream);
     constructor Create; override;
     function Duplicate: TBGRAAnimatedGif;
@@ -77,6 +79,8 @@ type
     {TGraphic}
     procedure LoadFromStream(Stream: TStream); override;
     procedure SaveToStream(Stream: TStream); override;
+    procedure LoadFromFile(const AFilenameUTF8: string); override;
+    procedure SaveToFile(const AFilenameUTF8: string); override;
     class function GetFileExtensions: string; override;
 
     procedure Clear; override;
@@ -96,6 +100,7 @@ type
     property Bitmap: TBitmap Read GetBitmap;
     property MemBitmap: TBGRABitmap Read GetMemBitmap;
     property CurrentImage: integer Read FCurrentImage Write SetCurrentImage;
+    property TimeUntilNextImageMs: integer read GetTimeUntilNextImage;
   end;
 
   { TFPReaderGIF }
@@ -113,10 +118,14 @@ const
 
 implementation
 
-uses BGRABlend;
+uses BGRABlend, lazutf8classes;
 
 const
+  {$IFDEF ENDIAN_LITTLE}
   AlphaMask = $FF000000;
+  {$ELSE}
+  AlphaMask = $000000FF;
+  {$ENDIF}
 
 type
   TGIFSignature = packed array[1..6] of char;
@@ -187,6 +196,7 @@ begin
   begin
     if not FPaused then
       FTimeAccumulator += (curDate - FPrevDate) * 24 * 60 * 60 * 1000;
+    if FFullAnimationTime > 0 then FTimeAccumulator:= frac(FTimeAccumulator/FFullAnimationTime)*FFullAnimationTime;
     nextImage := FCurrentImage;
     while FTimeAccumulator > FImages[nextImage].Delay do
     begin
@@ -278,13 +288,31 @@ begin
   Result := length(FImages);
 end;
 
-constructor TBGRAAnimatedGif.Create(filename: string);
+function TBGRAAnimatedGif.GetTimeUntilNextImage: integer;
 var
-  Stream: TFileStream;
+  acc: double;
+begin
+  if Count <= 1 then result := 60*1000 else
+  if (FWantedImage <> -1) or (FCurrentImage = -1) then
+    result := 0
+  else
+  begin
+    acc := FTimeAccumulator;
+    if not FPaused then acc += (Now- FPrevDate) * 24 * 60 * 60 * 1000;
+    if acc >= FImages[FCurrentImage].Delay then
+      result := 0
+    else
+      result := round(FImages[FCurrentImage].Delay-FTimeAccumulator);
+  end;
+end;
+
+constructor TBGRAAnimatedGif.Create(filenameUTF8: string);
+var
+  Stream: TFileStreamUTF8;
 begin
   inherited Create;
   Init;
-  Stream := TFileStream.Create(filename, fmOpenRead);
+  Stream := TFileStreamUTF8.Create(filenameUTF8, fmOpenRead or fmShareDenyWrite);
   LoadFromStream(Stream);
   Stream.Free;
 end;
@@ -352,6 +380,29 @@ end;
 procedure TBGRAAnimatedGif.SaveToStream(Stream: TStream);
 begin
   //not implemented
+end;
+
+procedure TBGRAAnimatedGif.LoadFromFile(const AFilenameUTF8: string);
+var stream: TFileStreamUTF8;
+begin
+  stream := TFileStreamUTF8.Create(AFilenameUTF8,fmOpenRead or fmShareDenyWrite);
+  try
+    LoadFromStream(Stream);
+  finally
+    Stream.Free;
+  end;
+end;
+
+procedure TBGRAAnimatedGif.SaveToFile(const AFilenameUTF8: string);
+var
+  Stream: TFileStreamUTF8;
+begin
+  Stream := TFileStreamUTF8.Create(AFilenameUTF8, fmCreate);
+  try
+    SaveToStream(Stream);
+  finally
+    Stream.Free;
+  end;
 end;
 
 {$HINTS OFF}
@@ -457,7 +508,7 @@ var
     codesize, codelen, codemask: longint;
     stridx:   longint;
     bitbuf, bitsinbuf: longint;
-    bytbuf:   array[0..255] of byte;
+    bytbuf:   packed array[0..255] of byte;
     bytinbuf, bytbufidx: byte;
     endofsrc: boolean;
     xcnt, ycnt, ystep, pass: longint;
@@ -683,6 +734,10 @@ DBG(bytinbuf);}
     palette: TPalette;
   begin
     stream.Read(GIFImageDescriptor, sizeof(GIFImageDescriptor));
+    GIFImageDescriptor.Width := LEtoN(GIFImageDescriptor.Width);
+    GIFImageDescriptor.Height := LEtoN(GIFImageDescriptor.Height);
+    GIFImageDescriptor.x := LEtoN(GIFImageDescriptor.x);
+    GIFImageDescriptor.y := LEtoN(GIFImageDescriptor.y);
     if (GIFImageDescriptor.flags and GIFImageDescriptor_LocalColorTableFlag =
       GIFImageDescriptor_LocalColorTableFlag) then
       LoadLocalPalette
@@ -723,8 +778,12 @@ DBG(bytinbuf);}
   begin
     Clear;
     SetLength(FImages, NbImages);
+    FFullAnimationTime:= 0;
     for i := 0 to Count - 1 do
+    begin
       FImages[i] := NewImages[i];
+      FFullAnimationTime += NewImages[i].Delay;
+    end;
   end;
 
   procedure ReadExtension;
@@ -745,6 +804,7 @@ DBG(bytinbuf);}
         begin
           mincount := sizeof(GIFGraphicControlExtension);
           stream.Read(GIFGraphicControlExtension, mincount);
+          GIFGraphicControlExtension.delaytime := LEtoN(GIFGraphicControlExtension.delaytime);
 
           if GIFGraphicControlExtension.flags and
             GIFGraphicControlExtension_TransparentFlag =
@@ -780,6 +840,8 @@ begin
   if (GIFSignature[1] = 'G') and (GIFSignature[2] = 'I') and (GIFSignature[3] = 'F') then
   begin
     stream.Read(GIFScreenDescriptor, sizeof(GIFScreenDescriptor));
+    GIFScreenDescriptor.Width := LEtoN(GIFScreenDescriptor.Width);
+    GIFScreenDescriptor.Height := LEtoN(GIFScreenDescriptor.Height);
     FWidth  := GIFScreenDescriptor.Width;
     FHeight := GIFScreenDescriptor.Height;
     if (GIFScreenDescriptor.flags and GIFScreenDescriptor_GlobalColorTableFlag =

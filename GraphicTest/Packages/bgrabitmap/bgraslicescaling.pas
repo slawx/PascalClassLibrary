@@ -65,16 +65,19 @@ type
     // Create an instance and stores the bitmap, either as a reference to a TBGRABitmap from the caller,
     // or as a local owned copy in other cases
     constructor Create(ABitmap: TBGRABitmap;
-      AMarginTop, AMarginRight, AMarginBottom, AMarginLeft: integer);
+      AMarginTop, AMarginRight, AMarginBottom, AMarginLeft: integer; ABitmapOwner: boolean = false);
     constructor Create(ABitmap: TBitmap;
       AMarginTop, AMarginRight, AMarginBottom, AMarginLeft: integer);
     constructor Create(AFilename: string;
       AMarginTop, AMarginRight, AMarginBottom, AMarginLeft: integer);
+    constructor Create(AFilename: string; AIsUtf8: boolean;
+      AMarginTop, AMarginRight, AMarginBottom, AMarginLeft: integer);
     constructor Create(AStream: TStream;
       AMarginTop, AMarginRight, AMarginBottom, AMarginLeft: integer);
-    constructor Create(ABitmap: TBGRABitmap);
+    constructor Create(ABitmap: TBGRABitmap; ABitmapOwner: boolean = false);
     constructor Create(ABitmap: TBitmap);
     constructor Create(AFilename: string);
+    constructor Create(AFilename: string; AIsUtf8: boolean);
     constructor Create(AStream: TStream);
     constructor Create;
     procedure SetMargins(AMarginTop, AMarginRight, AMarginBottom, AMarginLeft: integer);
@@ -120,18 +123,21 @@ type
   public
     constructor Create(ABitmap: TBGRABitmap;
       AMarginTop, AMarginRight, AMarginBottom, AMarginLeft, NumberOfItems: integer;
-      Direction: TSliceScalingDirection);
+      Direction: TSliceScalingDirection; ABitmapOwner: boolean = false);
     constructor Create(ABitmap: TBitmap;
       AMarginTop, AMarginRight, AMarginBottom, AMarginLeft, NumberOfItems: integer;
       Direction: TSliceScalingDirection);
-    constructor Create(AFilename: string;
+    constructor Create(ABitmapFilename: string;
+      AMarginTop, AMarginRight, AMarginBottom, AMarginLeft, NumberOfItems: integer;
+      Direction: TSliceScalingDirection);
+    constructor Create(ABitmapFilename: string; AIsUtf8: boolean;
       AMarginTop, AMarginRight, AMarginBottom, AMarginLeft, NumberOfItems: integer;
       Direction: TSliceScalingDirection);
     constructor Create(AStream: TStream;
       AMarginTop, AMarginRight, AMarginBottom, AMarginLeft, NumberOfItems: integer;
       Direction: TSliceScalingDirection);
     destructor Destroy; override;
-    constructor Create(Filename, Section: string);
+    constructor Create(AIniFilename, ASection: string; AIsUtf8Filename: boolean= false);
   public
     procedure Draw(ItemNumber: integer; ABitmap: TBGRABitmap;
       ARect: TRect; DrawGrid: boolean = False);
@@ -165,13 +171,13 @@ end;
 
 constructor TBGRAMultiSliceScaling.Create(ABitmap: TBGRABitmap;
   AMarginTop, AMarginRight, AMarginBottom, AMarginLeft, NumberOfItems: integer;
-  Direction: TSliceScalingDirection);
+  Direction: TSliceScalingDirection; ABitmapOwner: boolean = false);
 var
   i: integer;
   ItemWidth,ItemHeight,ItemStepX,ItemStepY: integer;
 begin
   FBitmap := ABitmap;
-  FBitmapOwned := false;
+  FBitmapOwned := ABitmapOwner;
   ItemWidth := ABitmap.Width;
   ItemHeight := ABitmap.Height;
   ItemStepX := 0;
@@ -202,17 +208,23 @@ constructor TBGRAMultiSliceScaling.Create(ABitmap: TBitmap;
   Direction: TSliceScalingDirection);
 begin
   Create(TBGRABitmap.Create(ABitmap), AMarginTop, AMarginRight, AMarginBottom, AMarginLeft,
-    NumberOfItems, Direction);
-  FBitmapOwned := true;
+    NumberOfItems, Direction, True);
 end;
 
-constructor TBGRAMultiSliceScaling.Create(AFilename: string;
+constructor TBGRAMultiSliceScaling.Create(ABitmapFilename: string;
   AMarginTop, AMarginRight, AMarginBottom, AMarginLeft, NumberOfItems: integer;
   Direction: TSliceScalingDirection);
 begin
-  Create(TBGRABitmap.Create(AFilename), AMarginTop, AMarginRight, AMarginBottom, AMarginLeft,
-    NumberOfItems, Direction);
-  FBitmapOwned := true;
+  Create(TBGRABitmap.Create(ABitmapFilename), AMarginTop, AMarginRight, AMarginBottom, AMarginLeft,
+    NumberOfItems, Direction, True);
+end;
+
+constructor TBGRAMultiSliceScaling.Create(ABitmapFilename: string; AIsUtf8: boolean;
+  AMarginTop, AMarginRight, AMarginBottom, AMarginLeft, NumberOfItems: integer;
+  Direction: TSliceScalingDirection);
+begin
+  Create(TBGRABitmap.Create(ABitmapFilename,AIsUtf8), AMarginTop, AMarginRight, AMarginBottom, AMarginLeft,
+    NumberOfItems, Direction, True);
 end;
 
 constructor TBGRAMultiSliceScaling.Create(AStream: TStream;
@@ -220,8 +232,7 @@ constructor TBGRAMultiSliceScaling.Create(AStream: TStream;
   Direction: TSliceScalingDirection);
 begin
   Create(TBGRABitmap.Create(AStream), AMarginTop, AMarginRight, AMarginBottom, AMarginLeft,
-    NumberOfItems, Direction);
-  FBitmapOwned := true;
+    NumberOfItems, Direction, True);
 end;
 
 destructor TBGRAMultiSliceScaling.Destroy;
@@ -235,42 +246,49 @@ begin
   inherited Destroy;
 end;
 
-constructor TBGRAMultiSliceScaling.Create(Filename, Section: string);
+constructor TBGRAMultiSliceScaling.Create(AIniFilename, ASection: string;
+  AIsUtf8Filename: boolean);
 var
   i: integer;
   temp: TMemIniFile;
   Direction: TSliceScalingDirection;
   defaultRepeat: string;
-  IniPath,BitmapFilename: string;
+  IniPathUTF8,BitmapFilename: string;
 begin
-  if FileExistsUTF8(Filename) then
+  if AIsUtf8Filename then
   begin
-    temp := TMemIniFile.Create(Filename);
-    IniPath := ExtractFilePath(Filename);
-
-    if temp.ReadBool(Section, 'HorizontalDirection', False) then
-      Direction := sdHorizontal
-    else
-      Direction := sdVertical;
-
-    BitmapFilename := temp.ReadString(Section, 'Bitmap', '');
-    if (copy(BitmapFilename,1,2) = '.\') or (copy(BitmapFilename,1,2) = './') then
-      BitmapFilename := IniPath+copy(BitmapFilename,3,Length(BitmapFilename)-2);
-    Create(
-      BitmapFilename,
-      temp.ReadInteger(Section, 'MarginTop', 0),
-      temp.ReadInteger(Section, 'MarginRight', 0),
-      temp.ReadInteger(Section, 'MarginBottom', 0),
-      temp.ReadInteger(Section, 'MarginLeft', 0),
-      temp.ReadInteger(Section, 'NumberOfItems', 1),
-      Direction);
-
-    defaultRepeat := temp.ReadString(Section, 'Repeat', 'Auto');
-    for i := 0 to High(FSliceScalingArray) do
-      FSliceScalingArray[i].SliceRepeatAsString := temp.ReadString(Section, 'Repeat'+IntToStr(i+1), defaultRepeat);
-
-    temp.Free;
+    if not FileExistsUTF8(AIniFilename) then exit;
+    temp := TMemIniFile.Create(UTF8ToSys(AIniFilename));
+    IniPathUTF8 := ExtractFilePath(AIniFilename);
+  end else
+  begin
+    if not FileExists(AIniFilename) then exit;
+    temp := TMemIniFile.Create(AIniFilename);
+    IniPathUTF8 := SysToUTF8(ExtractFilePath(AIniFilename));
   end;
+
+  if temp.ReadBool(ASection, 'HorizontalDirection', False) then
+    Direction := sdHorizontal
+  else
+    Direction := sdVertical;
+
+  BitmapFilename := temp.ReadString(ASection, 'Bitmap', '');
+  if (copy(BitmapFilename,1,2) = '.\') or (copy(BitmapFilename,1,2) = './') then
+    BitmapFilename := IniPathUTF8+SysToUTF8(copy(BitmapFilename,3,Length(BitmapFilename)-2));
+  Create(
+    BitmapFilename,True,
+    temp.ReadInteger(ASection, 'MarginTop', 0),
+    temp.ReadInteger(ASection, 'MarginRight', 0),
+    temp.ReadInteger(ASection, 'MarginBottom', 0),
+    temp.ReadInteger(ASection, 'MarginLeft', 0),
+    temp.ReadInteger(ASection, 'NumberOfItems', 1),
+    Direction);
+
+  defaultRepeat := temp.ReadString(ASection, 'Repeat', 'Auto');
+  for i := 0 to High(FSliceScalingArray) do
+    FSliceScalingArray[i].SliceRepeatAsString := temp.ReadString(ASection, 'Repeat'+IntToStr(i+1), defaultRepeat);
+
+  temp.Free;
 end;
 
 procedure TBGRAMultiSliceScaling.Draw(ItemNumber: integer; ABitmap: TBGRABitmap;
@@ -581,9 +599,9 @@ begin
 end;
 
 constructor TBGRASliceScaling.Create(ABitmap: TBGRABitmap;
-  AMarginTop, AMarginRight, AMarginBottom, AMarginLeft: integer);
+  AMarginTop, AMarginRight, AMarginBottom, AMarginLeft: integer; ABitmapOwner: boolean = false);
 begin
-  Create(ABitmap);
+  Create(ABitmap, ABitmapOwner);
   SetMargins(AMarginTop, AMarginRight, AMarginBottom, AMarginLeft);
 end;
 
@@ -601,6 +619,13 @@ begin
   SetMargins(AMarginTop, AMarginRight, AMarginBottom, AMarginLeft);
 end;
 
+constructor TBGRASliceScaling.Create(AFilename: string; AIsUtf8: boolean;
+  AMarginTop, AMarginRight, AMarginBottom, AMarginLeft: integer);
+begin
+  Create(AFilename, AIsUtf8);
+  SetMargins(AMarginTop, AMarginRight, AMarginBottom, AMarginLeft);
+end;
+
 constructor TBGRASliceScaling.Create(AStream: TStream;
   AMarginTop, AMarginRight, AMarginBottom, AMarginLeft: integer);
 begin
@@ -608,11 +633,11 @@ begin
   SetMargins(AMarginTop, AMarginRight, AMarginBottom, AMarginLeft);
 end;
 
-constructor TBGRASliceScaling.Create(ABitmap: TBGRABitmap);
+constructor TBGRASliceScaling.Create(ABitmap: TBGRABitmap; ABitmapOwner: boolean = false);
 begin
   Init;
   FBitmap := ABitmap;
-  FBitmapOwned := False;
+  FBitmapOwned := ABitmapOwner;
   FBitmapSourceRect := rect(0,0,FBitmap.Width,FBitmap.Height);
 end;
 
@@ -628,6 +653,14 @@ constructor TBGRASliceScaling.Create(AFilename: string);
 begin
   Init;
   FBitmap := TBGRABitmap.Create(AFilename);
+  FBitmapOwned := True;
+  FBitmapSourceRect := rect(0,0,FBitmap.Width,FBitmap.Height);
+end;
+
+constructor TBGRASliceScaling.Create(AFilename: string; AIsUtf8: boolean);
+begin
+  Init;
+  FBitmap := TBGRABitmap.Create(AFilename,AIsUtf8);
   FBitmapOwned := True;
   FBitmapSourceRect := rect(0,0,FBitmap.Width,FBitmap.Height);
 end;

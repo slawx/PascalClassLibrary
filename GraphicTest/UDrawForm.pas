@@ -15,8 +15,9 @@ type
   TDrawForm = class(TForm)
     procedure FormCreate(Sender: TObject);
   private
-    { private declarations }
+
   public
+    FrameSize: TPoint;
     EraseBackgroundEnabled: Boolean;
     procedure EraseBackground(DC: HDC); override;
   end;

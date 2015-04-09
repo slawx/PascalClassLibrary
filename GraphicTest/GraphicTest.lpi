@@ -127,6 +127,7 @@
       <Unit8>
         <Filename Value="Methods/ULazIntfImageColorsCopy.pas"/>
         <IsPartOfProject Value="True"/>
+        <UnitName Value="ULazIntfImageColorsCopy"/>
       </Unit8>
       <Unit9>
         <Filename Value="Methods/ULazIntfImageColorsNoCopy.pas"/>
@@ -162,6 +163,7 @@
       <Unit16>
         <Filename Value="Methods/UOpenGLPBOMethod.pas"/>
         <IsPartOfProject Value="True"/>
+        <UnitName Value="UOpenGLPBOMethod"/>
       </Unit16>
       <Unit17>
         <Filename Value="Methods/UGraphics32Method.pas"/>
@@ -200,9 +202,6 @@
       <VerifyObjMethodCallValidity Value="True"/>
     </CodeGeneration>
     <Linking>
-      <Debugging>
-        <UseExternalDbgSyms Value="True"/>
-      </Debugging>
       <Options>
         <Win32>
           <GraphicApplication Value="True"/>
