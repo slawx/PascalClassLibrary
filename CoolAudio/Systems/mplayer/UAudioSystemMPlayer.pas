@@ -188,6 +188,7 @@ end;
 
 function TPlayerMPlayer.GetVolume: Real;
 begin
+  Result := 0;
 end;
 
 function TPlayerMPlayer.GetMuted: Boolean;
@@ -250,7 +251,6 @@ end;
 procedure TPlayerMPlayer.Play;
 var
   MPOptions: String;
-  Vol: Real;
 begin
   if FPlaying then Stop;
   //FProcess := TProcess.Create(nil);

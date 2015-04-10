@@ -25,7 +25,7 @@ type
     procedure Play;
     procedure PlayNext;
     procedure PlayPrevious;
-    constructor Create(AOwner: TComponent);
+    constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
   published
     Player: TMediaPlayer;

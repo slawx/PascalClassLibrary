@@ -7,7 +7,7 @@ interface
 
 {$IFDEF AudioSystemDSP}
 uses
-  Classes, SysUtils, UAudioSystem, BaseUnix, UWavFile, StdCtrls, ExtCtrls;
+  Classes, SysUtils, UAudioSystem, BaseUnix, UWavFile, ExtCtrls;
 
 type
 
@@ -82,7 +82,7 @@ end;
 
 procedure TAudioSystemDSP.OpenDevice;
 var
-  Stereo, Error: Longint;
+  Stereo: Longint;
 begin
   Write('Openning /dev/dsp');
   FDeviceId := fpOpen('/dev/dsp', O_WRONLY, 0);
@@ -195,4 +195,4 @@ end;
 
 {$ENDIF}
 
-end.
+end.
