@@ -2,7 +2,7 @@ unit UPersistentForm;
 
 {$mode delphi}
 
-// Date: 2010-06-01
+// Date: 2015-04-18
 
 interface
 
@@ -19,6 +19,12 @@ type
     FMinVisiblePart: Integer;
     FRegistryContext: TRegistryContext;
   public
+    FormNormalSize: TRect;
+    FormRestoredSize: TRect;
+    FormWindowState: TWindowState;
+    Form: TForm;
+    procedure LoadFromRegistry(RegistryContext: TRegistryContext);
+    procedure SaveToRegistry(RegistryContext: TRegistryContext);
     function CheckEntireVisible(Rect: TRect): TRect;
     function CheckPartVisible(Rect: TRect; Part: Integer): TRect;
     procedure Load(Form: TForm; DefaultMaximized: Boolean = False);
@@ -39,9 +45,60 @@ implementation
 procedure Register;
 begin
   RegisterComponents('Common', [TPersistentForm]);
+  Screen.Desk;
 end;
 
 { TPersistentForm }
+
+procedure TPersistentForm.LoadFromRegistry(RegistryContext: TRegistryContext);
+begin
+  with TRegistryEx.Create do
+  try
+    RootKey := RegistryContext.RootKey;
+    OpenKey(RegistryContext.Key + '\Forms\' + Form.Name, True);
+    // Normal size
+    FormNormalSize.Left := ReadIntegerWithDefault('NormalLeft', FormNormalSize.Left);
+    FormNormalSize.Top := ReadIntegerWithDefault('NormalTop', FormNormalSize.Top);
+    FormNormalSize.Right := ReadIntegerWithDefault('NormalWidth', FormNormalSize.Right - FormNormalSize.Left)
+      + FormNormalSize.Left;
+    FormNormalSize.Bottom := ReadIntegerWithDefault('NormalHeight', FormNormalSize.Bottom - FormNormalSize.Top)
+      + FormNormalSize.Top;
+    // Restored size
+    FormRestoredSize.Left := ReadIntegerWithDefault('RestoredLeft', FormRestoredSize.Left);
+    FormRestoredSize.Top := ReadIntegerWithDefault('RestoredTop', FormRestoredSize.Top);
+    FormRestoredSize.Right := ReadIntegerWithDefault('RestoredWidth', FormRestoredSize.Right - FormRestoredSize.Left)
+      + FormRestoredSize.Left;
+    FormRestoredSize.Bottom := ReadIntegerWithDefault('RestoredHeight', FormRestoredSize.Bottom - FormRestoredSize.Top)
+      + FormRestoredSize.Top;
+    // Other state
+    FormWindowState := TWindowState(ReadIntegerWithDefault('WindowState', Integer(wsNormal)));
+  finally
+    Free;
+  end;
+end;
+
+procedure TPersistentForm.SaveToRegistry(RegistryContext: TRegistryContext);
+begin
+  with Form, TRegistryEx.Create do
+  try
+    RootKey := RegistryContext.RootKey;
+    OpenKey(RegistryContext.Key + '\Forms\' + Form.Name, True);
+    // Normal state
+    WriteInteger('NormalWidth', FormNormalSize.Right - FormNormalSize.Left);
+    WriteInteger('NormalHeight', FormNormalSize.Bottom - FormNormalSize.Top);
+    WriteInteger('NormalTop', FormNormalSize.Top);
+    WriteInteger('NormalLeft', FormNormalSize.Left);
+    // Restored state
+    WriteInteger('RestoredWidth', FormRestoredSize.Right - FormRestoredSize.Left);
+    WriteInteger('RestoredHeight', FormRestoredSize.Bottom - FormRestoredSize.Top);
+    WriteInteger('RestoredTop', FormRestoredSize.Top);
+    WriteInteger('RestoredLeft', FormRestoredSize.Left);
+    // Other state
+    WriteInteger('WindowState', Integer(FormWindowState));
+  finally
+    Free;
+  end;
+end;
 
 function TPersistentForm.CheckEntireVisible(Rect: TRect): TRect;
 var
@@ -97,79 +154,53 @@ end;
 
 procedure TPersistentForm.Load(Form: TForm; DefaultMaximized: Boolean = False);
 var
-  Normal: TRect;
-  Restored: TRect;
   LoadDefaults: Boolean;
 begin
-  with TRegistryEx.Create do
-    try
-      RootKey := RegistryContext.RootKey;
-      OpenKey(RegistryContext.Key + '\Forms\' + Form.Name, True);
+  Self.Form := Form;
+  // Set default
+  FormNormalSize := Bounds((Screen.Width - Form.Width) div 2,
+    (Screen.Height - Form.Height) div 2, Form.Width, Form.Height);
+  FormRestoredSize := Bounds((Screen.Width - Form.Width) div 2,
+    (Screen.Height - Form.Height) div 2, Form.Width, Form.Height);
 
-      //RestoredWindowState := TWindowState(ReadIntegerWithDefault('WindowState', Integer(Form.WindowState)));
-      //if RestoredWindowState = wsMinimized then
-      //  RestoredWindowState := wsNormal;
-      //Form.WindowState := RestoredWindowState;
-      LoadDefaults := not ValueExists('NormalLeft');
-      Normal := Bounds(ReadIntegerWithDefault('NormalLeft', (Screen.Width - Form.Width) div 2),
-        ReadIntegerWithDefault('NormalTop', (Screen.Height - Form.Height) div 2),
-        ReadIntegerWithDefault('NormalWidth', Form.Width),
-        ReadIntegerWithDefault('NormalHeight', Form.Height));
-      Restored := Bounds(ReadIntegerWithDefault('RestoredLeft', (Screen.Width - Form.Width) div 2),
-        ReadIntegerWithDefault('RestoredTop', (Screen.Height - Form.Height) div 2),
-        ReadIntegerWithDefault('RestoredWidth', Form.Width),
-        ReadIntegerWithDefault('RestoredHeight', Form.Height));
+  LoadFromRegistry(RegistryContext);
 
-      if not EqualRect(Normal, Restored) or
-        (LoadDefaults and DefaultMaximized) then begin
-        // Restore to maximized state
-        Form.WindowState := wsNormal;
-        if not EqualRect(Restored, Form.BoundsRect) then
-          Form.BoundsRect := Restored;
-        Form.WindowState := wsMaximized;
-      end else begin
-        // Restore to normal state
-        Form.WindowState := wsNormal;
-        if FEntireVisible then Normal := CheckEntireVisible(Normal)
-          else if FMinVisiblePart > 0 then
-        Normal := CheckPartVisible(Normal, FMinVisiblePart);
-        if not EqualRect(Normal, Form.BoundsRect) then
-          Form.BoundsRect := Normal;
-      end;
-
-      //if ReadBoolWithDefault('Visible', False) then Form.Show;
-    finally
-      Free;
-    end;
+  if not EqualRect(FormNormalSize, FormRestoredSize) or
+    (LoadDefaults and DefaultMaximized) then begin
+    // Restore to maximized state
+    Form.WindowState := wsNormal;
+    if not EqualRect(FormRestoredSize, Form.BoundsRect) then
+      Form.BoundsRect := FormRestoredSize;
+    Form.WindowState := wsMaximized;
+  end else begin
+    // Restore to normal state
+    Form.WindowState := wsNormal;
+    if FEntireVisible then FormNormalSize := CheckEntireVisible(FormNormalSize)
+      else if FMinVisiblePart > 0 then
+    FormNormalSize := CheckPartVisible(FormNormalSize, FMinVisiblePart);
+    if not EqualRect(FormNormalSize, Form.BoundsRect) then
+      Form.BoundsRect := FormNormalSize;
+  end;
 end;
 
 procedure TPersistentForm.Save(Form: TForm);
 begin
-  with Form, TRegistryEx.Create do
-    try
-      RootKey := RegistryContext.RootKey;
-      OpenKey(RegistryContext.Key + '\Forms\' + Form.Name, True);
-      WriteInteger('NormalWidth', Form.Width);
-      WriteInteger('NormalHeight', Form.Height);
-      WriteInteger('NormalTop', Form.Top);
-      WriteInteger('NormalLeft', Form.Left);
-      WriteInteger('RestoredWidth', Form.RestoredWidth);
-      WriteInteger('RestoredHeight', Form.RestoredHeight);
-      WriteInteger('RestoredTop', Form.RestoredTop);
-      WriteInteger('RestoredLeft', Form.RestoredLeft);
-      //WriteInteger('WindowState', Integer(Form.WindowState));
-      //WriteBool('Visible', Form.Visible);
-    finally
-      Free;
-    end;
+  Self.Form := Form;
+  FormNormalSize := Bounds(Form.Left, Form.Top, Form.Width, Form.Height);
+  FormRestoredSize := Bounds(Form.RestoredLeft, Form.RestoredTop, Form.RestoredWidth,
+    Form.RestoredHeight);
+  FormWindowState := Form.WindowState;
+  SaveToRegistry(RegistryContext);
 end;
 
 constructor TPersistentForm.Create(AOwner: TComponent);
 begin
   inherited;
+  if AOwner is TForm then Form := TForm(AOwner)
+    else Form := nil;
   FMinVisiblePart := 50;
   FRegistryContext.RootKey := HKEY_CURRENT_USER;
 end;
 
 end.
-
+
