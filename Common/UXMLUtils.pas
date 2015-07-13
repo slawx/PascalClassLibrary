@@ -13,9 +13,11 @@ function DateTimeToXMLTime(Value: TDateTime; ApplyLocalBias: Boolean = True): Wi
 procedure WriteInteger(Node: TDOMNode; Name: string; Value: Integer);
 procedure WriteBoolean(Node: TDOMNode; Name: string; Value: Boolean);
 procedure WriteString(Node: TDOMNode; Name: string; Value: string);
+procedure WriteDateTime(Node: TDOMNode; Name: string; Value: TDateTime);
 function ReadInteger(Node: TDOMNode; Name: string; DefaultValue: Integer): Integer;
 function ReadBoolean(Node: TDOMNode; Name: string; DefaultValue: Boolean): Boolean;
 function ReadString(Node: TDOMNode; Name: string; DefaultValue: string): string;
+function ReadDateTime(Node: TDOMNode; Name: string; DefaultValue: TDateTime): TDateTime;
 
 
 implementation
@@ -71,6 +73,7 @@ var
   Hour: Integer;
   Minute: Integer;
   Second: Integer;
+  SecondFraction: Double;
   Millisecond: Integer;
 begin
   if LeftCutString(XMLDateTime, Part, '-') then
@@ -93,7 +96,8 @@ begin
         LeftCutString(XMLDateTime, Part, '-') else
       if Pos('Z', XMLDateTime) > 0 then
         LeftCutString(XMLDateTime, Part, 'Z');
-      Millisecond := StrToInt(Part);
+      SecondFraction := StrToFloat('0.' + Part);
+      Millisecond := Trunc(SecondFraction * 1000);
     end else begin
       if Pos('+', XMLDateTime) > 0 then
         LeftCutString(XMLDateTime, Part, '+') else
@@ -155,6 +159,15 @@ begin
   Node.AppendChild(NewNode);
 end;
 
+procedure WriteDateTime(Node: TDOMNode; Name: string; Value: TDateTime);
+var
+  NewNode: TDOMNode;
+begin
+  NewNode := Node.OwnerDocument.CreateElement(Name);
+  NewNode.TextContent := DateTimeToXMLTime(Value);
+  Node.AppendChild(NewNode);
+end;
+
 function ReadInteger(Node: TDOMNode; Name: string; DefaultValue: Integer): Integer;
 var
   NewNode: TDOMNode;
@@ -185,5 +198,16 @@ begin
     Result := NewNode.TextContent;
 end;
 
+function ReadDateTime(Node: TDOMNode; Name: string; DefaultValue: TDateTime
+  ): TDateTime;
+var
+  NewNode: TDOMNode;
+begin
+  Result := DefaultValue;
+  NewNode := Node.FindNode(Name);
+  if Assigned(NewNode) then
+    Result := XMLTimeToDateTime(NewNode.TextContent);
+end;
+
 end.
-
+

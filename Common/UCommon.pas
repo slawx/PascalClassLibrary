@@ -63,6 +63,7 @@ procedure OpenWebPage(URL: string);
 procedure OpenFileInShell(FileName: string);
 procedure ExecuteProgram(CommandLine: string);
 procedure FreeThenNil(var Obj);
+function RemoveQuotes(Text: string): string;
 
 
 implementation
@@ -438,6 +439,14 @@ procedure OpenFileInShell(FileName: string);
 begin
   ExecuteProgram('cmd.exe /c start "' + FileName + '"');
 end;
+
+function RemoveQuotes(Text: string): string;
+begin
+  Result := Text;
+  if (Pos('"', Text) = 1) and (Text[Length(Text)] = '"') then
+    Result := Copy(Text, 2, Length(Text) - 2);
+end;
+
 
 initialization
 
