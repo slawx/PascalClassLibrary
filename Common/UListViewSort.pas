@@ -72,6 +72,7 @@ type
     constructor Create(AOwner: TComponent); override;
     procedure UpdateFromListView(ListView: TListView);
     function TextEntered: Boolean;
+    function TextEnteredColumn(Index: Integer): Boolean;
     function GetColValue(Index: Integer): string;
     property StringGrid: TStringGrid read FStringGrid1 write FStringGrid1;
   published
@@ -141,6 +142,11 @@ begin
       Break;
     end;
   end;
+end;
+
+function TListViewFilter.TextEnteredColumn(Index: Integer): Boolean;
+begin
+  Result := FStringGrid1.Cells[Index, 0] <> '';
 end;
 
 function TListViewFilter.GetColValue(Index: Integer): string;
