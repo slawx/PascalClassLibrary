@@ -45,7 +45,6 @@ implementation
 procedure Register;
 begin
   RegisterComponents('Common', [TPersistentForm]);
-  Screen.Desk;
 end;
 
 { TPersistentForm }
