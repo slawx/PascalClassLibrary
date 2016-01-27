@@ -113,14 +113,14 @@ function TStreamHelper.ReadCardinal: Cardinal;
 begin
   Result := 0;
   FStream.ReadBuffer(Result, SizeOf(Cardinal));
-  if SwapData then Result := Swap(Result);
+  if SwapData then Result := SwapEndian(Result);
 end;
 
 function TStreamHelper.ReadInt64: Int64;
 begin
   Result := 0;
   FStream.ReadBuffer(Result, SizeOf(Int64));
-  if SwapData then Result := Swap(Result);
+  if SwapData then Result := SwapEndian(Result);
 end;
 
 function TStreamHelper.ReadString(Length: Integer): string;
@@ -297,7 +297,7 @@ function TStreamHelper.ReadWord: Word;
 begin
   Result := 0;
   FStream.ReadBuffer(Result, SizeOf(Word));
-  if SwapData then Result := Swap(Result);
+  if SwapData then Result := SwapEndian(Result);
 end;
 
 procedure TStreamHelper.SetEndianness(const AValue: TEndianness);
@@ -357,13 +357,13 @@ end;
 
 procedure TStreamHelper.WriteCardinal(Data: Cardinal);
 begin
-  if SwapData then Data := Swap(Data);
+  if SwapData then Data := SwapEndian(Data);
   Write(Data, SizeOf(Cardinal));
 end;
 
 procedure TStreamHelper.WriteInt64(Data: Int64);
 begin
-  if SwapData then Data := Swap(Data);
+  if SwapData then Data := SwapEndian(Data);
   Write(Data, SizeOf(Int64));
 end;
 
@@ -414,7 +414,7 @@ end;
 
 procedure TStreamHelper.WriteWord(Data: Word);
 begin
-  if SwapData then Data := Swap(Data);
+  if SwapData then Data := SwapEndian(Data);
   Write(Data, SizeOf(Word));
 end;
 
