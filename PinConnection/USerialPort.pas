@@ -104,7 +104,7 @@ begin
   if not FActive and AValue then begin
     FActive := True;
     Open;
-    FActive := FHandle <> INVALID_HANDLE_VALUE;
+    FActive := FHandle <> THandle(INVALID_HANDLE_VALUE);
     if not FActive then FreeAndNil(FReceiveThread);
   end else
   if FActive and not AValue then begin
