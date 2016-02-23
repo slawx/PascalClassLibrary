@@ -92,6 +92,7 @@ begin
     end;
     Result := Result + 1;
   end;
+  if Result >= FList.Count then Result := -1;
 end;
 
 procedure TGDictionary<TKey, TValue>.Add(Key: TKey; Value: TValue);

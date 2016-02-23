@@ -240,7 +240,7 @@ begin
     WriteOutput('Values[Key2] = None');
     Values['Key2'] := 'None';
     WriteOutput('Values[Key2]', Values['Key2']);
-    WriteOutput('Values[Key0]', Values['Key0']);
+    WriteOutput('Index of Key0', IntToStr(SearchKey('Key0')));
     WriteOutput('Keys[2]', Keys[2]);
   finally
     Free;

@@ -51,8 +51,8 @@ type
     function ReadArray(Count: TIndex): TItemArray; override;
     function ReadList(List: TGList<TItem>; Count: TIndex): TIndex;
     function ReadBuffer(var Buffer; Count: Integer): Integer; override;
-    function Insert(Count: TIndex): Integer; override;
-    function Remove(Count: TIndex): Integer; override;
+    function Insert(Count: TIndex): TIndex; override;
+    function Remove(Count: TIndex): TIndex; override;
     function Seek(Offset: TIndex; Origin: TSeekOrigin = soCurrent): TIndex; override;
     constructor Create; override;
     destructor Destroy; override;

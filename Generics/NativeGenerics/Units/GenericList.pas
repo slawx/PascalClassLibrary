@@ -95,9 +95,9 @@ type
     function Get(Index: TIndex): TItem; override;
     function GetInternal(Index: TIndex): TItem; override;
     function GetCount: TIndex; override;
-    function GetCapacity: TIndex;
+    function GetCapacity: TIndex; virtual;
     procedure SetCount(const AValue: TIndex); override;
-    procedure SetCapacity(const AValue: TIndex);
+    procedure SetCapacity(const AValue: TIndex); virtual;
     procedure SetCapacityOptimized(const NewCapacity: TIndex);
     procedure Put(Index: TIndex; const AValue: TItem); override;
     procedure PutInternal(Index: TIndex; const AValue: TItem); override;
@@ -114,12 +114,12 @@ type
 
   TGObjectList<TItem> = class(TGList<TItem>)
   protected
-    procedure Put(Index: Integer; const AValue: TItem); override;
+    procedure Put(Index: TIndex; const AValue: TItem); override;
   public
     OwnsObjects: Boolean;
     procedure SetCount(const AValue: TIndex); override;
     function AddNew(NewObject: TItem = nil): TItem;
-    procedure Delete(const Index: Integer); override;
+    procedure Delete(const Index: TIndex); override;
     procedure Clear; override;
     procedure Assign(Source: TGAbstractList<TItem>); override;
     constructor Create; override;
@@ -129,7 +129,7 @@ type
   TGStringList<TItem> = class(TGList<TItem>)
   private
   public
-    procedure Delete(const Index: Integer); override;
+    procedure Delete(const Index: TIndex); override;
     procedure Clear; override;
     procedure Assign(Source: TGAbstractList<TItem>); override;
     constructor Create; override;
@@ -156,7 +156,7 @@ type
   public
     procedure Open;
     procedure Close;
-    constructor Create;
+    constructor Create; override;
     destructor Destroy; override;
     property FileName: string read FFileName write SetFileName;
     property Mode: Word read FMode write SetMode;
@@ -327,7 +327,7 @@ begin
   inherited;
 end;
 
-procedure TGObjectList<TItem>.Put(Index: Integer; const AValue: TItem);
+procedure TGObjectList<TItem>.Put(Index: TIndex; const AValue: TItem);
 begin
   if OwnsObjects and Assigned(FItems[Index]) then FItems[Index].Free;
   inherited Put(Index, AValue);
@@ -347,7 +347,7 @@ begin
   Add(Result);
 end;
 
-procedure TGObjectList<TItem>.Delete(const Index: Integer);
+procedure TGObjectList<TItem>.Delete(const Index: TIndex);
 begin
   (*if OwnsObjects then begin
     FItems[Index].Free;
@@ -382,7 +382,7 @@ begin
   inherited;
 end;
 
-procedure TGStringList<TItem>.Delete(const Index: Integer);
+procedure TGStringList<TItem>.Delete(const Index: TIndex);
 begin
   FItems[Index] := '';
   inherited Delete(Index);
@@ -719,7 +719,7 @@ begin
       ReplaceList(NewIndex, Temp);
     end else
     if NewIndex < CurIndex then begin
-      Temp.AddListPart(Self, CurIndex, ACount);
+       Temp.AddListPart(Self, CurIndex, ACount);
       CopyItems(NewIndex, NewIndex + ACount, CurIndex - NewIndex);
       ReplaceList(NewIndex, Temp);
     end;

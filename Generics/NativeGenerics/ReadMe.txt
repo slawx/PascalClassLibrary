@@ -14,5 +14,5 @@ Main subversion repository:
 http://svn.zdechov.net/svn/PascalClassLibrary/Generics/NativeGenerics
 
 
-Require FPC version 2.7.1 and newer
+Require FPC version 3.0.0 and newer
 
