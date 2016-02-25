@@ -1,4 +1,4 @@
-unit UCommProtocol;
+unit UCommProtocol1;
 
 {$mode delphi}
 
