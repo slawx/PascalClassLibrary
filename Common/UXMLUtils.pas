@@ -96,7 +96,7 @@ begin
         LeftCutString(XMLDateTime, Part, '-') else
       if Pos('Z', XMLDateTime) > 0 then
         LeftCutString(XMLDateTime, Part, 'Z');
-      SecondFraction := StrToFloat('0.' + Part);
+      SecondFraction := StrToFloat('0' + DecimalSeparator + Part);
       Millisecond := Trunc(SecondFraction * 1000);
     end else begin
       if Pos('+', XMLDateTime) > 0 then
