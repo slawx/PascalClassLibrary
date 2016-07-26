@@ -23,6 +23,7 @@ begin
   RegisterUnit('UListViewSort', @UListViewSort.Register);
   RegisterUnit('UPersistentForm', @UPersistentForm.Register);
   RegisterUnit('UFindFile', @UFindFile.Register);
+  RegisterUnit('UScaleDPI', @UScaleDPI.Register);
 end;
 
 initialization

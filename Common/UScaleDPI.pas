@@ -16,9 +16,13 @@ type
 
   TControlDimension = class
     BoundsRect: TRect;
-    AuxSize: TPoint;
     FontHeight: Integer;
     Controls: TObjectList; // TList<TControlDimension>
+    // Class specifics
+    ButtonSize: TPoint; // TToolBar
+    CoolBandWidth: Integer;
+    ConstraintsMin: TPoint; // TForm
+    ConstraintsMax: TPoint; // TForm
     constructor Create;
     destructor Destroy; override;
   end;
@@ -73,7 +77,7 @@ end;
 
 destructor TControlDimension.Destroy;
 begin
-  Controls.Free;
+  FreeAndNil(Controls);
   inherited Destroy;
 end;
 
@@ -112,11 +116,18 @@ begin
   Dimensions.FontHeight := Control.Font.GetTextHeight('Hg');
   Dimensions.Controls.Clear;
   if Control is TToolBar then
-    Dimensions.AuxSize := Point(TToolBar(Control).ButtonWidth, TToolBar(Control).ButtonHeight);
-
+    Dimensions.ButtonSize := Point(TToolBar(Control).ButtonWidth, TToolBar(Control).ButtonHeight);
+  if Control is TForm then begin
+    Dimensions.ConstraintsMin := Point(TForm(Control).Constraints.MinWidth,
+      TForm(Control).Constraints.MinHeight);
+    Dimensions.ConstraintsMax := Point(TForm(Control).Constraints.MaxWidth,
+      TForm(Control).Constraints.MaxHeight);
+  end;
   if Control is TWinControl then
   for I := 0 to TWinControl(Control).ControlCount - 1 do begin
-    if TWinControl(Control).Controls[I] is TControl then begin
+    if TWinControl(Control).Controls[I] is TControl then
+    // Do not scale docked forms twice
+    if not (TWinControl(Control).Controls[I] is TForm) then begin
       NewControl := TControlDimension.Create;
       Dimensions.Controls.Add(NewControl);
       StoreDimensions(TWinControl(Control).Controls[I], NewControl);
@@ -132,12 +143,20 @@ begin
   Control.BoundsRect := Dimensions.BoundsRect;
   Control.Font.Height := Dimensions.FontHeight;
   if Control is TToolBar then begin
-    TToolBar(Control).ButtonWidth := Dimensions.AuxSize.X;
-    TToolBar(Control).ButtonHeight := Dimensions.AuxSize.Y;
+    TToolBar(Control).ButtonWidth := Dimensions.ButtonSize.X;
+    TToolBar(Control).ButtonHeight := Dimensions.ButtonSize.Y;
+  end;
+  if Control is TForm then begin
+    TForm(Control).Constraints.MinWidth := Dimensions.ConstraintsMin.X;
+    TForm(Control).Constraints.MinHeight := Dimensions.ConstraintsMin.Y;
+    TForm(Control).Constraints.MaxWidth := Dimensions.ConstraintsMax.X;
+    TForm(Control).Constraints.MaxHeight := Dimensions.ConstraintsMax.Y;
   end;
   if Control is TWinControl then
   for I := 0 to TWinControl(Control).ControlCount - 1 do begin
-    if TWinControl(Control).Controls[I] is TControl then begin
+    if TWinControl(Control).Controls[I] is TControl then
+    // Do not scale docked forms twice
+    if not (TWinControl(Control).Controls[I] is TForm) then begin
       RestoreDimensions(TWinControl(Control).Controls[I], TControlDimension(Dimensions.Controls[I]));
     end;
   end;
@@ -151,12 +170,29 @@ begin
   Control.BoundsRect := ScaleRect(Dimensions.BoundsRect, DesignDPI);
   Control.Font.Height := ScaleY(Dimensions.FontHeight, DesignDPI.Y);
   if Control is TToolBar then begin
-    TToolBar(Control).ButtonWidth := ScaleX(Dimensions.AuxSize.X, DesignDPI.X);
-    TToolBar(Control).ButtonHeight := ScaleY(Dimensions.AuxSize.Y, DesignDPI.Y);
+    TToolBar(Control).ButtonWidth := ScaleX(Dimensions.ButtonSize.X, DesignDPI.X);
+    TToolBar(Control).ButtonHeight := ScaleY(Dimensions.ButtonSize.Y, DesignDPI.Y);
+  end;
+  if Control is TCoolBar then begin
+    with TCoolBar(Control) do
+    for I := 0 to Bands.Count - 1 do
+    with TCoolBand(Bands[I]) do begin
+      MinWidth := ScaleX(Dimensions.ButtonSize.X, DesignDPI.X);
+      MinHeight := ScaleY(Dimensions.ButtonSize.Y, DesignDPI.Y);
+      //Width := ScaleX(Dimensions.BoundsRect.Left -
+    end;
+  end;
+  if Control is TForm then begin
+    TForm(Control).Constraints.MinWidth := ScaleX(Dimensions.ConstraintsMin.X, DesignDPI.X);
+    TForm(Control).Constraints.MaxWidth := ScaleX(Dimensions.ConstraintsMax.X, DesignDPI.X);
+    TForm(Control).Constraints.MinHeight := ScaleY(Dimensions.ConstraintsMin.Y, DesignDPI.Y);
+    TForm(Control).Constraints.MaxHeight := ScaleY(Dimensions.ConstraintsMax.Y, DesignDPI.Y);
   end;
   if Control is TWinControl then
   for I := 0 to TWinControl(Control).ControlCount - 1 do begin
-    if TWinControl(Control).Controls[I] is TControl then begin
+    if TWinControl(Control).Controls[I] is TControl then
+    // Do not scale docked forms twice
+    if not (TWinControl(Control).Controls[I] is TForm) then begin
       ScaleDimensions(TWinControl(Control).Controls[I], TControlDimension(Dimensions.Controls[I]));
     end;
   end;
@@ -182,13 +218,14 @@ begin
   NewHeight := ScaleY(ImgList.Height, FromDPI.Y);
 
   SetLength(Temp, ImgList.Count);
-  TempBmp := TBitmap.Create;
   for I := 0 to ImgList.Count - 1 do
   begin
+    TempBmp := TBitmap.Create;
+    TempBmp.PixelFormat := pf32bit;
     ImgList.GetBitmap(I, TempBmp);
-    //TempBmp.PixelFormat := pfDevice;
     Temp[I] := TBitmap.Create;
     Temp[I].SetSize(NewWidth, NewHeight);
+    Temp[I].PixelFormat := pf32bit;
     Temp[I].TransparentColor := TempBmp.TransparentColor;
     //Temp[I].TransparentMode := TempBmp.TransparentMode;
     Temp[I].Transparent := True;
@@ -198,8 +235,8 @@ begin
 
     if (Temp[I].Width = 0) or (Temp[I].Height = 0) then Continue;
     Temp[I].Canvas.StretchDraw(Rect(0, 0, Temp[I].Width, Temp[I].Height), TempBmp);
+    TempBmp.Free;
   end;
-  TempBmp.Free;
 
   ImgList.Clear;
   ImgList.Width := NewWidth;
@@ -271,8 +308,6 @@ begin
     //AutoSize := OldAutoSize;
   end;
 
-
-
   if Control is TToolBar then begin
     ToolBarControl := TToolBar(Control);
     with ToolBarControl do begin
@@ -296,4 +331,4 @@ begin
   //  Control.EnableAutoSizing;
 end;
 
-end.
+end.

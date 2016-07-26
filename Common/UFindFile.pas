@@ -54,6 +54,14 @@ type
     property FileMask : string read fFileMask write fFileMask ;
   end;
 
+const
+{$IFDEF WINDOWS}
+  FilterAll = '*.*';
+{$ENDIF}
+{$IFDEF LINUX}
+  FilterAll = '*';
+{$ENDIF}
+
 procedure Register;
 
 implementation
@@ -70,7 +78,7 @@ constructor TFindFile.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
   Path := IncludeTrailingBackslash(UTF8Encode(GetCurrentDir));
-  FileMask := '*.*';
+  FileMask := FilterAll;
   FileAttr := [ffaAnyFile];
   s := TStringList.Create;
 end;
@@ -126,7 +134,7 @@ begin
 
   If not InSubFolders then Exit;
 
-  if SysUtils.FindFirst(UTF8Decode(inPath + '*.*'), faDirectory, Rec) = 0 then
+  if SysUtils.FindFirst(UTF8Decode(inPath + FilterAll), faDirectory, Rec) = 0 then
   try
     repeat
       if ((Rec.Attr and faDirectory) > 0) and (Rec.Name <> '.')

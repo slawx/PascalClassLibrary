@@ -5,8 +5,8 @@ unit Unit1;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, Buttons,
-  StdCtrls, ExtCtrls, ComCtrls, UPersistentForm;
+  Classes, SysUtils, XMLConf, FileUtil, Forms, Controls, Graphics, Dialogs,
+  Buttons, StdCtrls, ExtCtrls, ComCtrls, Menus, XMLPropStorage, UPersistentForm;
 
 type
 
@@ -16,6 +16,7 @@ type
     ListView1: TListView;
     PersistentForm1: TPersistentForm;
     Timer1: TTimer;
+    XMLConfig1: TXMLConfig;
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormResize(Sender: TObject);
     procedure FormShow(Sender: TObject);

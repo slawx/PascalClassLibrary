@@ -16,4 +16,4 @@ msgstr "Zásobník objektů je prázdný"
 #: upool.sreleaseerror
 msgid "Unknown object for release from pool"
 msgstr "Neznýmý objekt pro uvolnění ze zásobníku"
-
+

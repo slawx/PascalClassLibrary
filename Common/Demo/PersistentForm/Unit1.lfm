@@ -1,7 +1,7 @@
 object Form1: TForm1
-  Left = 779
+  Left = 952
   Height = 622
-  Top = 364
+  Top = 489
   Width = 698
   Caption = 'PersistentForm demo'
   ClientHeight = 622
@@ -38,5 +38,11 @@ object Form1: TForm1
     OnTimer = Timer1Timer
     left = 391
     top = 314
+  end
+  object XMLConfig1: TXMLConfig
+    StartEmpty = False
+    RootName = 'CONFIG'
+    left = 240
+    top = 217
   end
 end
