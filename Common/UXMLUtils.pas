@@ -11,10 +11,12 @@ uses
 function XMLTimeToDateTime(XMLDateTime: string): TDateTime;
 function DateTimeToXMLTime(Value: TDateTime; ApplyLocalBias: Boolean = True): WideString;
 procedure WriteInteger(Node: TDOMNode; Name: string; Value: Integer);
+procedure WriteInt64(Node: TDOMNode; Name: string; Value: Int64);
 procedure WriteBoolean(Node: TDOMNode; Name: string; Value: Boolean);
 procedure WriteString(Node: TDOMNode; Name: string; Value: string);
 procedure WriteDateTime(Node: TDOMNode; Name: string; Value: TDateTime);
 function ReadInteger(Node: TDOMNode; Name: string; DefaultValue: Integer): Integer;
+function ReadInt64(Node: TDOMNode; Name: string; DefaultValue: Int64): Int64;
 function ReadBoolean(Node: TDOMNode; Name: string; DefaultValue: Boolean): Boolean;
 function ReadString(Node: TDOMNode; Name: string; DefaultValue: string): string;
 function ReadDateTime(Node: TDOMNode; Name: string; DefaultValue: TDateTime): TDateTime;
@@ -141,6 +143,15 @@ begin
   Node.AppendChild(NewNode);
 end;
 
+procedure WriteInt64(Node: TDOMNode; Name: string; Value: Int64);
+var
+  NewNode: TDOMNode;
+begin
+  NewNode := Node.OwnerDocument.CreateElement(Name);
+  NewNode.TextContent := IntToStr(Value);
+  Node.AppendChild(NewNode);
+end;
+
 procedure WriteBoolean(Node: TDOMNode; Name: string; Value: Boolean);
 var
   NewNode: TDOMNode;
@@ -176,6 +187,16 @@ begin
   NewNode := Node.FindNode(Name);
   if Assigned(NewNode) then
     Result := StrToInt(NewNode.TextContent);
+end;
+
+function ReadInt64(Node: TDOMNode; Name: string; DefaultValue: Int64): Int64;
+var
+  NewNode: TDOMNode;
+begin
+  Result := DefaultValue;
+  NewNode := Node.FindNode(Name);
+  if Assigned(NewNode) then
+    Result := StrToInt64(NewNode.TextContent);
 end;
 
 function ReadBoolean(Node: TDOMNode; Name: string; DefaultValue: Boolean): Boolean;
