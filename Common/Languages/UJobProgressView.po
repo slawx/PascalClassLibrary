@@ -13,6 +13,10 @@ msgstr ""
 msgid "Finished"
 msgstr ""
 
+#: ujobprogressview.soperations
+msgid "Operations"
+msgstr ""
+
 #: ujobprogressview.spleasewait
 msgid "Please wait..."
 msgstr ""
