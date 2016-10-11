@@ -5,7 +5,7 @@ unit UCoolTranslator;
 interface
 
 uses
-  Classes, SysUtils, Forms, ExtCtrls, Controls, Contnrs,
+  Classes, SysUtils, Forms, ExtCtrls, Controls, Contnrs, LazFileUtils, LazUTF8,
   Translations, TypInfo, Dialogs, FileUtil, LCLProc, ULanguages, LCLType;
 
 type
@@ -45,11 +45,12 @@ type
     procedure SetLanguage(const AValue: TLanguage);
     procedure TranslateProperty(Component: TPersistent; PropInfo: PPropInfo);
     function IsExcluded(Component: TPersistent; PropertyName: string): Boolean;
+    function GetLangFileDir: string;
   public
     ComponentExcludes: TComponentExcludesList;
     Languages: TLanguageList;
-    procedure LanguageListToStrings(Strings: TStrings);
     procedure Translate;
+    procedure LanguageListToStrings(Strings: TStrings);
     procedure TranslateResourceStrings(PoFileName: string);
     procedure TranslateUnitResourceStrings(UnitName: string; PoFileName: string);
     procedure TranslateComponent(Component: TPersistent);
@@ -149,6 +150,7 @@ var
   FileList: TStringList;
   I: Integer;
   LocaleShort: string;
+  SearchMask: string;
 begin
   FPOFiles.Clear;
   if Assigned(FLanguage) then
@@ -156,12 +158,16 @@ begin
     LocaleShort := GetLocaleShort;
     //ShowMessage(ExtractFileDir(Application.ExeName) +
     //  DirectorySeparator + 'Languages' + ' ' + '*.' + LocaleShort + '.po');
-    FileList := FindAllFiles(ExtractFileDir(UTF8Encode(Application.ExeName)) +
-      DirectorySeparator + FPOFilesFolder, '*.' + LocaleShort + '.po');
+    SearchMask := '*';
+    if LocaleShort <> '' then SearchMask := SearchMask + '.' + LocaleShort;
+    SearchMask := SearchMask + '.po';
+    FileList := FindAllFiles(GetLangFileDir, SearchMask);
     for I := 0 to FileList.Count - 1 do begin
       FileName := FileList[I];
       //FileName := FindLocaleFileName('.po');
-      if FileExistsUTF8(FileName) then FPOFiles.Add(TPOFile.Create(FileName));
+      if FileExists(FileName) and (
+      ((LocaleShort = '') and (Pos('.', FileName) = Pos('.po', FileName))) or
+      (LocaleShort <> '')) then FPOFiles.Add(TPOFile.Create(FileName));
     end;
   finally
     FileList.Free;
@@ -173,6 +179,7 @@ begin
   if FPoFilesFolder = AValue then Exit;
   FPoFilesFolder := AValue;
   ReloadFiles;
+  CheckLanguageFiles;
 end;
 
 procedure TCoolTranslator.SetLanguage(const AValue: TLanguage);
@@ -283,6 +290,14 @@ begin
   end;
 end;
 
+function TCoolTranslator.GetLangFileDir: string;
+begin
+  Result := FPOFilesFolder;
+  if Copy(Result, 1, 1) <> DirectorySeparator then
+    Result := ExtractFileDir(UTF8Encode(Application.ExeName)) +
+      DirectorySeparator + Result;
+end;
+
 procedure TCoolTranslator.LanguageListToStrings(Strings: TStrings);
 var
   I: Integer;
@@ -315,6 +330,7 @@ function TCoolTranslator.TranslateText(Identifier, Text: string): string;
 var
   I: Integer;
 begin
+  Result := '';
   if Text <> '' then begin
     for I := 0 to FPoFiles.Count - 1 do begin
       Result := TPoFile(FPOFiles[I]).Translate(Identifier, Text);
@@ -341,12 +357,14 @@ end;
 procedure TCoolTranslator.CheckLanguageFiles;
 var
   I: Integer;
+  LangDir: string;
 begin
+  LangDir := GetLangFileDir;
   TLanguage(Languages[0]).Available := True; // Automatic
 
   for I := 1 to Languages.Count - 1 do
   with TLanguage(Languages[I]) do begin
-    Available := FileExistsUTF8(POFilesFolder + DirectorySeparator + ExtractFileNameOnly(Application.ExeName) +
+    Available := FileExists(LangDir + DirectorySeparator + ExtractFileNameOnly(Application.ExeName) +
       '.' + Code + ExtensionSeparator + 'po') or (Code = 'en');
   end;
 end;
@@ -381,7 +399,7 @@ var
   T: string;
 begin
   // Win32 user may decide to override locale with LANG variable.
-  Lang := GetEnvironmentVariableUTF8('LANG');
+  Lang := GetEnvironmentVariable('LANG');
 
   // Use user selected language
   if Assigned(Language) and (Language.Code <> '') then
@@ -389,9 +407,9 @@ begin
 
   if Lang = '' then begin
     for i := 1 to Paramcount - 1 do
-      if (ParamStrUTF8(i) = '--LANG') or (ParamStrUTF8(i) = '-l') or
-        (ParamStrUTF8(i) = '--lang') then
-        Lang := ParamStrUTF8(i + 1);
+      if (ParamStr(i) = '--LANG') or (ParamStr(i) = '-l') or
+        (ParamStr(i) = '--lang') then
+        Lang := ParamStr(i + 1);
   end;
   if Lang = '' then
     LCLGetLanguageIDs(Lang, T);
@@ -399,8 +417,6 @@ begin
   if Assigned(Language) and (Language.Code = '') and Assigned(FOnAutomaticLanguage) then begin
     Lang := FOnAutomaticLanguage(Lang);
   end;
-
-  if Lang = 'en' then Lang := ''; // English files are without en code
 
   Result := Lang;
 end;
@@ -422,7 +438,7 @@ begin
   if Result <> '' then
     Exit;
 
-  Result := ChangeFileExt(ParamStrUTF8(0), LCExt);
+  Result := ChangeFileExt(ParamStr(0), LCExt);
   if FileExistsUTF8(Result) then
     Exit;
 
