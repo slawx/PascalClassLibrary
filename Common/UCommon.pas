@@ -64,6 +64,10 @@ procedure OpenFileInShell(FileName: string);
 procedure ExecuteProgram(CommandLine: string);
 procedure FreeThenNil(var Obj);
 function RemoveQuotes(Text: string): string;
+function ComputerName: string;
+function OccurenceOfChar(What: Char; Where: string): Integer;
+function GetDirCount(Dir: string): Integer;
+function MergeArray(A, B: array of string): TArrayOfString;
 
 
 implementation
@@ -286,7 +290,6 @@ const
 var
   L: LongWord;
 begin
-
   L := MAX_USERNAME_LENGTH + 2;
   SetLength(Result, L);
   if Windows.GetUserName(PChar(Result), L) and (L > 0) then begin
@@ -301,6 +304,29 @@ begin
   if GetVersionEx(Result) then begin
   end;
 end;
+
+function ComputerName: string;
+{$ifdef mswindows}
+const
+ INFO_BUFFER_SIZE = 32767;
+var
+  Buffer : array[0..INFO_BUFFER_SIZE] of WideChar;
+  Ret : DWORD;
+begin
+  Ret := INFO_BUFFER_SIZE;
+  If (GetComputerNameW(@Buffer[0],Ret)) then begin
+    Result := UTF8Encode(WideString(Buffer));
+  end
+  else begin
+    Result := 'ERROR_NO_COMPUTERNAME_RETURNED';
+  end;
+end;
+{$endif}
+{$ifdef unix}
+begin
+  Result := GetHostName;
+end;
+{$endif}
 
 function LoggedOnUserNameEx(Format: TUserNameFormat): string;
 const
@@ -446,6 +472,34 @@ begin
   if (Pos('"', Text) = 1) and (Text[Length(Text)] = '"') then
     Result := Copy(Text, 2, Length(Text) - 2);
 end;
+
+function OccurenceOfChar(What: Char; Where: string): Integer;
+var
+  I: Integer;
+begin
+  Result := 0;
+  for I := 1 to Length(Where) do
+    if Where[I] = What then Inc(Result);
+end;
+
+function GetDirCount(Dir: string): Integer;
+begin
+  Result := OccurenceOfChar(DirectorySeparator, Dir);
+  if Copy(Dir, Length(Dir), 1) = DirectorySeparator then
+    Dec(Result);
+end;
+
+function MergeArray(A, B: array of string): TArrayOfString;
+var
+  I: Integer;
+begin
+  SetLength(Result, Length(A) + Length(B));
+  for I := 0 to Length(A) - 1 do
+    Result[I] := A[I];
+  for I := 0 to Length(B) - 1 do
+    Result[Length(A) + I] := B[I];
+end;
+
 
 
 initialization
