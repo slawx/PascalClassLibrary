@@ -107,7 +107,7 @@ begin
 
   Find := FindFirst(UTF8Decode(Path + AFileSpec), faAnyFile xor faDirectory, SearchRec);
   while Find = 0 do begin
-    DeleteFileUTF8(Path + UTF8Encode(SearchRec.Name));
+    DeleteFile(Path + UTF8Encode(SearchRec.Name));
 
     Find := SysUtils.FindNext(SearchRec);
   end;

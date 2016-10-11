@@ -49,8 +49,8 @@
     procedure Fill(Start, Count: TIndex; Value: TGMatrixItem);
     function Implode(RowSeparator, ColSeparator: string; Converter: TToStringConverter): string;
     procedure Explode(Text, Separator: string; Converter: TFromStringConverter; SlicesCount: Integer = -1);
-    function IndexOf(Item: TGMatrixItem; Start: TIndex = 0): TIndex;
-    function IndexOfList(List: TGMatrix; Start: TIndex = 0): TIndex;
+    function IndexOf(Item: TGMatrixItem; Start: TIndex): TIndex;
+    function IndexOfList(List: TGMatrix; Start: TIndex): TIndex;
     procedure Insert(Index: TIndex; Item: TGMatrixItem);
     procedure InsertList(Index: TIndex; List: TGMatrix);
     procedure InsertArray(Index: TIndex; Values: array of TGMatrixItem);

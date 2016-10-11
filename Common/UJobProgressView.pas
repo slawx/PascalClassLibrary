@@ -165,6 +165,7 @@ resourcestring
   SEstimatedTime = 'Estimated time: %s';
   STotalEstimatedTime = 'Total estimated time: %s';
   SFinished = 'Finished';
+  SOperations = 'Operations';
 
 procedure Register;
 begin
@@ -627,4 +628,4 @@ begin
   inherited;
 end;
 
-end.
+end.

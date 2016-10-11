@@ -8,7 +8,8 @@ interface
 
 uses
   {$IFDEF Windows}Windows, CommCtrl, {$ENDIF}Classes, Graphics, ComCtrls, SysUtils,
-  Controls, DateUtils, Dialogs, SpecializedList, Forms, Grids, StdCtrls, ExtCtrls;
+  Controls, DateUtils, Dialogs, SpecializedList, Forms, Grids, StdCtrls, ExtCtrls,
+  LclIntf, LMessages, LclType, LResources;
 
 type
   TSortOrder = (soNone, soUp, soDown);
@@ -17,6 +18,8 @@ type
 
   TCompareEvent = function (Item1, Item2: TObject): Integer of object;
   TListFilterEvent = procedure (ListViewSort: TListViewSort) of object;
+
+  { TListViewSort }
 
   TListViewSort = class(TComponent)
   private
@@ -27,6 +30,11 @@ type
     {$IFDEF Windows}FHeaderHandle: HWND;{$ENDIF}
     FColumn: Integer;
     FOrder: TSortOrder;
+    FOldListViewWindowProc: TWndMethod;
+    FOnColumnWidthChanged: TNotifyEvent;
+    procedure DoColumnBeginResize(const AColIndex: Integer);
+    procedure DoColumnResized(const AColIndex: Integer);
+    procedure DoColumnResizing(const AColIndex, AWidth: Integer);
     procedure SetListView(const Value: TListView);
     procedure ColumnClick(Sender: TObject; Column: TListColumn);
     procedure Sort(Compare: TCompareEvent);
@@ -39,6 +47,9 @@ type
     procedure UpdateColumns;
     procedure SetColumn(const Value: Integer);
     procedure SetOrder(const Value: TSortOrder);
+    {$IFDEF WINDOWS}
+    procedure NewListViewWindowProc(var AMsg: TMessage);
+    {$ENDIF}
   public
     List: TListObject;
     Source: TListObject;
@@ -57,6 +68,8 @@ type
       write FOnFilter;
     property OnCustomDraw: TLVCustomDrawItemEvent read FOnCustomDraw
       write FOnCustomDraw;
+    property OnColumnWidthChanged: TNotifyEvent read FOnColumnWidthChanged
+      write FOnColumnWidthChanged;
     property Column: Integer read FColumn write SetColumn;
     property Order: TSortOrder read FOrder write SetOrder;
   end;
@@ -68,10 +81,12 @@ type
     FOnChange: TNotifyEvent;
     FStringGrid1: TStringGrid;
     procedure DoOnKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure DoOnResize(Sender: TObject);
   public
     constructor Create(AOwner: TComponent); override;
     procedure UpdateFromListView(ListView: TListView);
     function TextEntered: Boolean;
+    function TextEnteredCount: Integer;
     function TextEnteredColumn(Index: Integer): Boolean;
     function GetColValue(Index: Integer): string;
     property StringGrid: TStringGrid read FStringGrid1 write FStringGrid1;
@@ -79,6 +94,7 @@ type
     property OnChange: TNotifyEvent read FOnChange write FOnChange;
     property Align;
     property Anchors;
+    property BorderSpacing;
   end;
 
 procedure Register;
@@ -100,6 +116,11 @@ begin
     FOnChange(Self);
 end;
 
+procedure TListViewFilter.DoOnResize(Sender: TObject);
+begin
+  FStringGrid1.DefaultRowHeight := FStringGrid1.Height;
+end;
+
 constructor TListViewFilter.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
@@ -114,17 +135,17 @@ begin
   FStringGrid1.Options := [goFixedHorzLine, goFixedVertLine, goVertLine,
     goHorzLine, goRangeSelect, goEditing, goAlwaysShowEditor, goSmoothScroll];
   FStringGrid1.OnKeyUp := DoOnKeyUp;
+  FStringGrid1.OnResize := DoOnResize;
 end;
 
 procedure TListViewFilter.UpdateFromListView(ListView: TListView);
 var
   I: Integer;
-  NewColumn: TGridColumn;
 begin
   with FStringGrid1 do begin
-    Columns.Clear;
+    //Columns.Clear;
     while Columns.Count > ListView.Columns.Count do Columns.Delete(Columns.Count - 1);
-    while Columns.Count < ListView.Columns.Count do NewColumn := Columns.Add;
+    while Columns.Count < ListView.Columns.Count do Columns.Add;
     for I := 0 to ListView.Columns.Count - 1 do begin
       Columns[I].Width := ListView.Columns[I].Width;
     end;
@@ -132,14 +153,18 @@ begin
 end;
 
 function TListViewFilter.TextEntered: Boolean;
+begin
+  Result := TextEnteredCount > 0;
+end;
+
+function TListViewFilter.TextEnteredCount: Integer;
 var
   I: Integer;
 begin
-  Result := False;
+  Result := 0;
   for I := 0 to FStringGrid1.ColCount - 1 do begin
     if FStringGrid1.Cells[I, 0] <> '' then begin
-      Result := True;
-      Break;
+      Inc(Result);
     end;
   end;
 end;
@@ -158,6 +183,55 @@ end;
 
 { TListViewSort }
 
+{$IFDEF WINDOWS}
+procedure TListViewSort.NewListViewWindowProc(var AMsg: TMessage);
+var
+  vColWidth: Integer;
+  vMsgNotify: TLMNotify absolute AMsg;
+  Code: Integer;
+begin
+  // call the old WindowProc of ListView
+  FOldListViewWindowProc(AMsg);
+
+  // Currently we care only with WM_NOTIFY message
+  if AMsg.Msg = WM_NOTIFY then
+  begin
+    Code := PHDNotify(vMsgNotify.NMHdr)^.Hdr.Code;
+    case Code of
+      HDN_ENDTRACKA, HDN_ENDTRACKW:
+        DoColumnResized(PHDNotify(vMsgNotify.NMHdr)^.Item);
+
+      HDN_BEGINTRACKA, HDN_BEGINTRACKW:
+        DoColumnBeginResize(PHDNotify(vMsgNotify.NMHdr)^.Item);
+
+      HDN_TRACKA, HDN_TRACKW:
+        begin
+          vColWidth := -1;
+          if (PHDNotify(vMsgNotify.NMHdr)^.PItem<>nil)
+             and (PHDNotify(vMsgNotify.NMHdr)^.PItem^.Mask and HDI_WIDTH <> 0)
+          then
+            vColWidth := PHDNotify(vMsgNotify.NMHdr)^.PItem^.cxy;
+
+          DoColumnResizing(PHDNotify(vMsgNotify.NMHdr)^.Item, vColWidth);
+        end;
+    end;
+  end;
+end;
+{$ENDIF}
+
+procedure TListViewSort.DoColumnBeginResize(const AColIndex: Integer);
+begin
+end;
+
+procedure TListViewSort.DoColumnResizing(const AColIndex, AWidth: Integer);
+begin
+end;
+
+procedure TListViewSort.DoColumnResized(const AColIndex: Integer);
+begin
+  if Assigned(FOnColumnWidthChanged) then
+    FOnColumnWidthChanged(Self);
+end;
 
 procedure TListViewSort.ColumnClick(Sender: TObject; Column: TListColumn);
 begin
@@ -184,10 +258,17 @@ end;
 
 procedure TListViewSort.SetListView(const Value: TListView);
 begin
+  if FListView = Value then Exit;
+  if Assigned(FListView) then
+    ListView.WindowProc := FOldListViewWindowProc;
   FListView := Value;
   FListView.OnColumnClick := ColumnClick;
   FListView.OnCustomDrawItem := ListViewCustomDrawItem;
   FListView.OnClick := ListViewClick;
+  FOldListViewWindowProc := FListView.WindowProc;
+  {$IFDEF WINDOWS}
+  FListView.WindowProc := NewListViewWindowProc;
+  {$ENDIF}
 end;
 
 procedure TListViewSort.Sort(Compare: TCompareEvent);
@@ -204,7 +285,7 @@ begin
     List.Clear;
   if ListView.Items.Count <> List.Count then
     ListView.Items.Count := List.Count;
-  if Assigned(FOnCompareItem) then Sort(FOnCompareItem);
+  if Assigned(FOnCompareItem) and (Order <> soNone) then Sort(FOnCompareItem);
   //ListView.Items[-1]; // Workaround for not show first row if selected
   ListView.Refresh;
   // Workaround for not working item selection on first row
@@ -409,4 +490,4 @@ begin
 end;
 {$ENDIF}
 
-end.
+end.

@@ -1,6 +1,6 @@
 unit SpecializedPoint;
 
-{$mode objfpc}{$H+}
+{$mode Delphi}{$H+}
 
 interface
 
@@ -60,4 +60,4 @@ implementation
 {$DEFINE IMPLEMENTATION}
 {$I 'GenericPoint.inc'}
 end.
-
+
