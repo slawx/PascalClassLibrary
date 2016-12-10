@@ -69,6 +69,7 @@ function ComputerName: string;
 function OccurenceOfChar(What: Char; Where: string): Integer;
 function GetDirCount(Dir: string): Integer;
 function MergeArray(A, B: array of string): TArrayOfString;
+function LoadFileToStr(const FileName: TFileName): AnsiString;
 
 
 implementation
@@ -489,6 +490,24 @@ begin
     Result[I] := A[I];
   for I := 0 to Length(B) - 1 do
     Result[Length(A) + I] := B[I];
+end;
+
+function LoadFileToStr(const FileName: TFileName): AnsiString;
+var
+  FileStream: TFileStream;
+  Read: Integer;
+begin
+  Result := '';
+  FileStream := TFileStream.Create(FileName, fmOpenRead);
+  try
+    if FileStream.Size > 0 then begin
+      SetLength(Result, FileStream.Size);
+      Read := FileStream.Read(Pointer(Result)^, FileStream.Size);
+      SetLength(Result, Read);
+    end;
+  finally
+    FileStream.Free;
+  end;
 end;
 
 
