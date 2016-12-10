@@ -7,7 +7,7 @@ unit UPersistentForm;
 interface
 
 uses
-  Classes, SysUtils, Forms, URegistry, LCLIntf, Registry;
+  Classes, SysUtils, Forms, URegistry, LCLIntf, Registry, Controls, ComCtrls;
 
 type
 
@@ -18,6 +18,8 @@ type
     FEntireVisible: Boolean;
     FMinVisiblePart: Integer;
     FRegistryContext: TRegistryContext;
+    procedure LoadControl(Control: TControl);
+    procedure SaveControl(Control: TControl);
   public
     FormNormalSize: TRect;
     FormRestoredSize: TRect;
@@ -48,6 +50,68 @@ begin
 end;
 
 { TPersistentForm }
+
+procedure TPersistentForm.LoadControl(Control: TControl);
+var
+  I: Integer;
+  WinControl: TWinControl;
+  Count: Integer;
+begin
+  if Control is TListView then begin
+    with Form, TRegistryEx.Create do
+    try
+      RootKey := RegistryContext.RootKey;
+      OpenKey(RegistryContext.Key + '\Forms\' + Form.Name + '\' + Control.Name, True);
+      for I := 0 to TListView(Control).Columns.Count - 1 do begin
+        if ValueExists('ColWidth' + IntToStr(I)) then
+          TListView(Control).Columns[I].Width := ReadInteger('ColWidth' + IntToStr(I));
+      end;
+    finally
+      Free;
+    end;
+  end;
+
+  if Control is TWinControl then begin
+    WinControl := TWinControl(Control);
+    if WinControl.ControlCount > 0 then begin
+      for I := 0 to WinControl.ControlCount - 1 do begin
+        if WinControl.Controls[I] is TControl then begin
+          LoadControl(WinControl.Controls[I]);
+        end;
+      end;
+    end;
+  end;
+end;
+
+procedure TPersistentForm.SaveControl(Control: TControl);
+var
+  I: Integer;
+  WinControl: TWinControl;
+begin
+  if Control is TListView then begin
+    with Form, TRegistryEx.Create do
+    try
+      RootKey := RegistryContext.RootKey;
+      OpenKey(RegistryContext.Key + '\Forms\' + Form.Name + '\' + Control.Name, True);
+      for I := 0 to TListView(Control).Columns.Count - 1 do begin
+        WriteInteger('ColWidth' + IntToStr(I), TListView(Control).Columns[I].Width);
+      end;
+    finally
+      Free;
+    end;
+  end;
+
+  if Control is TWinControl then begin
+      WinControl := TWinControl(Control);
+      if WinControl.ControlCount > 0 then begin
+        for I := 0 to WinControl.ControlCount - 1 do begin
+          if WinControl.Controls[I] is TControl then begin
+            SaveControl(WinControl.Controls[I]);
+          end;
+        end;
+      end;
+    end;
+end;
 
 procedure TPersistentForm.LoadFromRegistry(RegistryContext: TRegistryContext);
 begin
@@ -180,6 +244,7 @@ begin
     if not EqualRect(FormNormalSize, Form.BoundsRect) then
       Form.BoundsRect := FormNormalSize;
   end;
+  LoadControl(Form);
 end;
 
 procedure TPersistentForm.Save(Form: TForm);
@@ -190,6 +255,7 @@ begin
     Form.RestoredHeight);
   FormWindowState := Form.WindowState;
   SaveToRegistry(RegistryContext);
+  SaveControl(Form);
 end;
 
 constructor TPersistentForm.Create(AOwner: TComponent);

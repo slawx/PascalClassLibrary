@@ -308,6 +308,19 @@ begin
     //AutoSize := OldAutoSize;
   end;
 
+  if Control is TCoolBar then
+  with TCoolBar(Control) do begin
+    BeginUpdate;
+    for I := 0 to Bands.Count - 1 do
+      with Bands[I] do begin
+        MinWidth := ScaleX(MinWidth, FromDPI.X);
+        MinHeight := ScaleY(MinHeight, FromDPI.Y);
+        Width := ScaleX(Width, FromDPI.X);
+        //Control.Invalidate;
+      end;
+    EndUpdate;
+  end;
+
   if Control is TToolBar then begin
     ToolBarControl := TToolBar(Control);
     with ToolBarControl do begin
