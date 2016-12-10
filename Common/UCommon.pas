@@ -5,7 +5,8 @@ unit UCommon;
 interface
 
 uses
-  {$IFDEF Windows}Windows,{$ENDIF}
+  {$ifdef Windows}Windows,{$endif}
+  {$ifdef Linux}baseunix,{$endif}
   Classes, SysUtils, StrUtils, Dialogs, Process, LCLIntf,
   FileUtil; //, ShFolder, ShellAPI;
 
@@ -304,6 +305,7 @@ begin
   if GetVersionEx(Result) then begin
   end;
 end;
+{$endif}
 
 function ComputerName: string;
 {$ifdef mswindows}
@@ -323,11 +325,15 @@ begin
 end;
 {$endif}
 {$ifdef unix}
+var
+  Name: UtsName;
 begin
-  Result := GetHostName;
+  fpuname(Name);
+  Result := Name.Nodename;
 end;
 {$endif}
 
+{$ifdef windows}
 function LoggedOnUserNameEx(Format: TUserNameFormat): string;
 const
   MaxLength = 1000;
@@ -442,23 +448,8 @@ begin
 end;
 
 procedure OpenWebPage(URL: string);
-var
-  Process: TProcess;
-  Browser, Params: string;
 begin
   OpenURL(URL);
-  {try
-    Process := TProcess.Create(nil);
-    Browser := '';
-    //FindDefaultBrowser(Browser, Params);
-    //Process.Executable := Browser;
-    //Process.Parameters.Add(Format(Params, [ApplicationInfo.HomePage]);
-    Process.CommandLine := 'cmd.exe /c start ' + URL;
-    Process.Options := [poNoConsole];
-    Process.Execute;
-  finally
-    Process.Free;
-  end;}
 end;
 
 procedure OpenFileInShell(FileName: string);
