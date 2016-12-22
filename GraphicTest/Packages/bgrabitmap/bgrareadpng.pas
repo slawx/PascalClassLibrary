@@ -55,7 +55,6 @@ Type
       CountBitsUsed : byte;  // number of bit groups (1 pixel) per byte (when bytewidth = 1)
       //CFmt : TColorFormat; // format of the colors to convert from
       StartX,StartY, DeltaX,DeltaY, StartPass,EndPass : integer;  // number and format of passes
-      FSwitchLine, FCurrentLine, FPreviousLine : pByteArray;
       FPalette : TFPPalette;
       FSetPixel : TSetPixelProc;
       FConvertColor : TConvertColorProc;
@@ -99,21 +98,16 @@ Type
       UsingBitGroup : byte;
       DataIndex : longword;
       DataBytes : TColorData;
-      function CurrentLine(x:longword) : byte;
-      function PrevSample (x:longword): byte;
-      function PreviousLine (x:longword) : byte;
-      function PrevLinePrevSample (x:longword): byte;
       procedure HandleChunk; virtual;
       procedure HandlePalette; virtual;
       procedure HandleAlpha; virtual;
       function CalcX (relX:integer) : integer;
       function CalcY (relY:integer) : integer;
-      function CalcColor: TColorData;
+      function CalcColor(const ScanLine : PByteArray): TColorData;
       procedure HandleScanLine (const y : integer; const ScanLine : PByteArray); virtual;
       procedure BGRAHandleScanLine(const y: integer; const ScanLine: PByteArray);
       procedure BGRAHandleScanLineTr(const y: integer; const ScanLine: PByteArray);
       procedure DoDecompress; virtual;
-      function  DoFilter(LineFilter:byte;index:longword; b:byte) : byte; virtual;
       procedure SetPalettePixel (x,y:integer; const CD : TColordata);
       procedure SetPalColPixel (x,y:integer; const CD : TColordata);
       procedure SetColorPixel (x,y:integer; const CD : TColordata);
@@ -380,79 +374,6 @@ begin
   end;
 end;
 
-function TBGRAReaderPNG.CurrentLine(x:longword):byte;
-begin
-  result := FCurrentLine^[x];
-end;
-
-function TBGRAReaderPNG.PrevSample (x:longword): byte;
-begin
-  if x < byteWidth then
-    result := 0
-  else
-    result := FCurrentLine^[x - bytewidth];
-end;
-
-function TBGRAReaderPNG.PreviousLine (x:longword) : byte;
-begin
-  result := FPreviousline^[x];
-end;
-
-function TBGRAReaderPNG.PrevLinePrevSample (x:longword): byte;
-begin
-  if x < byteWidth then
-    result := 0
-  else
-    result := FPreviousLine^[x - bytewidth];
-end;
-
-function TBGRAReaderPNG.DoFilter(LineFilter:byte;index:longword; b:byte) : byte;
-var diff : byte;
-  procedure FilterSub;
-  begin
-    diff := PrevSample(index);
-  end;
-  procedure FilterUp;
-  begin
-    diff := PreviousLine(index);
-  end;
-  procedure FilterAverage;
-  var l, p : word;
-  begin
-    l := PrevSample(index);
-    p := PreviousLine(index);
-    diff := (l + p) div 2;
-  end;
-  procedure FilterPaeth;
-  var dl, dp, dlp : word; // index for previous and distances for:
-      l, p, lp : byte;  // r:predictor, Left, Previous, LeftPrevious
-      r : integer;
-  begin
-    l := PrevSample(index);
-    lp := PrevLinePrevSample(index);
-    p := PreviousLine(index);
-    r := integer(l) + integer(p) - integer(lp);
-    dl := abs (r - l);
-    dlp := abs (r - lp);
-    dp := abs (r - p);
-    if (dl <= dp) and (dl <= dlp) then
-      diff := l
-    else if dp <= dlp then
-      diff := p
-    else
-      diff := lp;
-  end;
-begin
-  case LineFilter of
-    0 : diff := 0;
-    1 : FilterSub;
-    2 : FilterUp;
-    3 : FilterAverage;
-    4 : FilterPaeth;
-  end;
-  result := (b + diff) mod $100;
-end;
-
 function TBGRAReaderPNG.DecideSetPixel : TSetPixelProc;
 begin
   if Pltte then
@@ -487,7 +408,7 @@ begin
   result := StartY + (relY * deltaY);
 end;
 
-function TBGRAReaderPNG.CalcColor: TColorData;
+function TBGRAReaderPNG.CalcColor(const ScanLine : PByteArray): TColorData;
 var cd : longword;
     r : word;
     p : pbyte;
@@ -498,14 +419,14 @@ begin
     if Header.BitDepth = 16 then
       begin
        p := @Databytes;
-       p^ := 0;
-       for r:=0 to bytewidth-2 do
+       for r:=0 to bytewidth shr 1 - 1 do
        begin
-        inc(p);
-        p^:=FCurrentLine^[Dataindex+r];
+        p^ := ScanLine^[Dataindex+(r shl 1)+1];
+        (p+1)^ := ScanLine^[Dataindex+(r shl 1)];
+        inc(p,2);
        end;
       end
-    else move (FCurrentLine^[DataIndex], Databytes, bytewidth);
+    else move (ScanLine^[DataIndex], Databytes, bytewidth);
     {$IFDEF ENDIAN_BIG}
     Databytes:=swap(Databytes);
     {$ENDIF}
@@ -585,7 +506,7 @@ begin
 
   for rx := 0 to ScanlineLength[CurrentPass]-1 do
     begin
-    c := CalcColor;
+    c := CalcColor(ScanLine);
     FSetPixel (x,y,c);
     Inc(X, deltaX);
     end
@@ -665,7 +586,7 @@ begin
   X := StartX;
   for rx := 0 to ScanlineLength[CurrentPass]-1 do
     begin
-    c := CalcColor;
+    c := CalcColor(ScanLine);
     FSetPixel (x,y,c);
     Inc(X, deltaX);
     end
@@ -766,7 +687,7 @@ begin
   X := StartX;
   for rx := 0 to ScanlineLength[CurrentPass]-1 do
     begin
-    c := CalcColor;
+    c := CalcColor(ScanLine);
     FSetPixel (x,y,c);
     Inc(X, deltaX);
     end
@@ -933,13 +854,7 @@ begin
   c := CD and 3;
   c := c + (c shl 2);
   c := c + (c shl 4);
-  with result do
-    begin
-    red := c;
-    green := c;
-    blue := c;
-    alpha := 255;
-    end;
+  result := BGRA(c,c,c);
 end;
 
 function TBGRAReaderPNG.BGRAColorGray4(const CD: TColorData): TBGRAPixel;
@@ -947,115 +862,59 @@ var c : NativeUint;
 begin
   c := CD and $F;
   c := c + (c shl 4);
-  with result do
-    begin
-    red := c;
-    green := c;
-    blue := c;
-    alpha := 255;
-    end;
+  result := BGRA(c,c,c);
 end;
 
 function TBGRAReaderPNG.BGRAColorGray8(const CD: TColorData): TBGRAPixel;
 var c : NativeUint;
 begin
   c := CD and $FF;
-  with result do
-    begin
-    red := c;
-    green := c;
-    blue := c;
-    alpha := 255;
-    end;
+  result := BGRA(c,c,c);
 end;
 
 function TBGRAReaderPNG.BGRAColorGray16(const CD: TColorData): TBGRAPixel;
 var c : NativeUint;
 begin
   c := (CD shr 8) and $FF;
-  with result do
-    begin
-    red := c;
-    green := c;
-    blue := c;
-    alpha := 255;
-    end;
+  result := BGRA(c,c,c);
 end;
 
 function TBGRAReaderPNG.BGRAColorGrayAlpha8(const CD: TColorData): TBGRAPixel;
 var c : NativeUint;
 begin
   c := CD and $00FF;
-  with result do
-    begin
-    red := c;
-    green := c;
-    blue := c;
-    alpha := (CD shr 8) and $FF;
-    end;
+  result := BGRA(c,c,c,(CD shr 8) and $FF);
 end;
 
 function TBGRAReaderPNG.BGRAColorGrayAlpha16(const CD: TColorData): TBGRAPixel;
 var c : NativeUint;
 begin
   c := (CD shr 8) and $FF;
-  with result do
-    begin
-    red := c;
-    green := c;
-    blue := c;
-    alpha := (CD shr 24) and $FF;
-    end;
+  result := BGRA(c,c,c,(CD shr 24) and $FF);
 end;
 
 function TBGRAReaderPNG.BGRAColorColor8(const CD: TColorData): TBGRAPixel;
 var temp: DWord;
 begin
   temp := CD;
-  temp := ((temp and $ff) shl 16) or
-    (temp and $ff00) or ((temp shr 16) and $ff) or
-    $ff000000;
-  {$IFDEF ENDIAN_BIG}
-  DWord(result) := swap(temp);
-  {$ELSE}
-  DWord(result) := temp;
-  {$ENDIF}
+  result := BGRA(temp and $ff, (temp shr 8) and $ff, (temp shr 16) and $ff);
 end;
 
 function TBGRAReaderPNG.BGRAColorColor16(const CD: TColorData): TBGRAPixel;
 begin
-  with result do
-    begin
-    red := CD shr 8 and $FF;
-    green := (CD shr 24) and $FF;
-    blue := (CD shr 40) and $FF;
-    alpha := 255;
-    end;
+  result := BGRA(CD shr 8 and $FF,(CD shr 24) and $FF,(CD shr 40) and $FF);
 end;
 
 function TBGRAReaderPNG.BGRAColorColorAlpha8(const CD: TColorData): TBGRAPixel;
 var temp: DWord;
 begin
   temp := CD;
-  temp := ((temp and $ff) shl 16) or
-    (temp and $ff00) or ((temp shr 16) and $ff) or
-    (temp and $ff000000);
-  {$IFDEF ENDIAN_BIG}
-  DWord(result) := swap(temp);
-  {$ELSE}
-  DWord(result) := temp;
-  {$ENDIF}
+  result := BGRA(temp and $ff, (temp shr 8) and $ff, (temp shr 16) and $ff, temp shr 24);
 end;
 
 function TBGRAReaderPNG.BGRAColorColorAlpha16(const CD: TColorData): TBGRAPixel;
 begin
-  with result do
-    begin
-    red := (CD shr 8) and $FF;
-    green := (CD shr 24) and $FF;
-    blue := (CD shr 40) and $FF;
-    alpha := (CD shr 56) and $FF;
-    end;
+  result := BGRA(CD shr 8 and $FF,(CD shr 24) and $FF,(CD shr 40) and $FF, CD shr 56);
 end;
 
 procedure TBGRAReaderPNG.DoDecompress;
@@ -1184,9 +1043,120 @@ procedure TBGRAReaderPNG.DoDecompress;
       end;
   end;
 
+  procedure FilterSub(p: PByte; Count: NativeInt; bw: NativeInt);
+  begin
+    inc(p,bw);
+    dec(Count,bw);
+    while Count > 0 do
+    begin
+      {$push}{$r-}
+      p^ += (p-bw)^;
+      {$pop}
+      inc(p);
+      dec(Count);
+    end;
+  end;
+
+  procedure FilterUp(p,pPrev: PByte; Count: NativeUInt);
+  var Count4: NativeInt;
+  begin
+    Count4 := Count shr 2;
+    dec(Count, Count4 shl 2);
+    while Count4 > 0 do
+    begin
+      {$push}{$r-}
+      PDWord(p)^ := (((PDWord(pPrev)^ and $00FF00FF) + (PDWord(p)^ and $00FF00FF)) and $00FF00FF)
+        or (((PDWord(pPrev)^ and $FF00FF00) + (PDWord(p)^ and $FF00FF00)) and $FF00FF00);
+      {$pop}
+      inc(p,4);
+      inc(pPrev,4);
+      dec(Count4);
+    end;
+    while Count > 0 do
+    begin
+      {$push}{$r-}
+      p^ += pPrev^;
+      {$pop}
+
+      inc(p);
+      inc(pPrev);
+      dec(Count);
+    end;
+  end;
+
+  procedure FilterAverage(p,pPrev: PByte; Count: NativeUInt; bw: NativeInt);
+  var CountBW: NativeInt;
+  begin
+    CountBW := bw;
+    dec(Count,CountBW);
+    while CountBW > 0 do
+    begin
+      {$push}{$r-}
+      p^ += pPrev^ shr 1;
+      {$pop}
+      inc(p);
+      inc(pPrev);
+      dec(CountBW);
+    end;
+
+    while Count > 0 do
+    begin
+      {$push}{$r-}
+      p^ += (pPrev^+(p-bw)^) shr 1;
+      {$pop}
+      inc(p);
+      inc(pPrev);
+      dec(Count);
+    end;
+  end;
+
+  procedure FilterPaeth(p,pPrev: PByte; Count: NativeUInt; bw: NativeInt);
+  var
+    rx, dl, dp, dlp : NativeInt;
+    diag,left: NativeUInt;
+  begin
+    for rx := 0 to bw-1 do
+    begin
+      {$push}{$r-}
+      p^ += pPrev^;
+      {$pop}
+      inc(p);
+      inc(pPrev);
+    end;
+    dec(Count,bw);
+    while Count > 0 do
+    begin
+      diag := (pPrev-bw)^;
+      left := (p - bw)^;
+      dl := pPrev^ - NativeInt(diag);
+      dp := NativeInt(left) - NativeInt(diag);
+      dlp := abs(dl+dp);
+      if dl < 0 then dl := -dl;
+      if dp < 0 then dp := -dp;
+      {$push}{$r-}
+      if dp <= dlp then
+      begin
+        if dl <= dp then
+          p^ += left
+        else
+          p^ += pPrev^
+      end
+      else
+      if dl <= dlp then
+        p^ += left
+      else
+        p^ += diag;
+      {$pop}
+      inc(p);
+      inc(pPrev);
+      dec(Count);
+     end;
+  end;
+
   procedure Decode;
-  var y, rp, ry, rx, l : integer;
+  var y, rp, ry, l : NativeInt;
       lf : byte;
+      switchLine, currentLine, previousLine : pByteArray;
   begin
     FSetPixel := DecideSetPixel;
     if not Pltte and (TheImage is TBGRACustomBitmap) then
@@ -1214,32 +1184,37 @@ procedure TBGRAReaderPNG.DoDecompress;
         l := ScanLineLength[rp]*ByteWidth;
       if (l>0) then
         begin
-        GetMem (FPreviousLine, l);
-        GetMem (FCurrentLine, l);
-        fillchar (FCurrentLine^,l,0);
+        GetMem (previousLine, l);
+        GetMem (currentLine, l);
+        fillchar (currentLine^,l,0);
         try
           for ry := 0 to CountScanlines[rp]-1 do
             begin
-            FSwitchLine := FCurrentLine;
-            FCurrentLine := FPreviousLine;
-            FPreviousLine := FSwitchLine;
-            Y := CalcY(ry);
+            switchLine := currentLine;
+            currentLine := previousLine;
+            previousLine := switchLine;
+            Y := StartY + (ry * deltaY);
             lf := 0;
             Decompress.Read (lf, sizeof(lf));
-            Decompress.Read (FCurrentLine^, l);
-            if lf <> 0 then  // Do nothing when there is no filter used
-              for rx := 0 to l-1 do
-                FCurrentLine^[rx] := DoFilter (lf, rx, FCurrentLine^[rx]);
+            Decompress.Read (currentLine^, l);
+
+            case lf of
+              1: FilterSub(PByte(currentLine), l, ByteWidth);
+              2: FilterUp(PByte(currentLine), PByte(previousLine), l);
+              3: FilterAverage(PByte(currentLine), PByte(previousLine), l, ByteWidth);
+              4: FilterPaeth(PByte(currentLine), PByte(previousLine), l, ByteWidth);
+            end;
+
             if FVerticalShrinkShr <> 0 then
               begin
                 if (y and FVerticalShrinkMask) = 0 then
-                  FHandleScanLine (y shr FVerticalShrinkShr, FCurrentLine);
+                  FHandleScanLine (y shr FVerticalShrinkShr, currentLine);
               end else
-                FHandleScanLine (y, FCurrentLine);
+                FHandleScanLine (y, currentLine);
             end;
         finally
-          freemem (FPreviousLine);
-          freemem (FCurrentLine);
+          freemem (previousLine);
+          freemem (currentLine);
         end;
         end;
       end;

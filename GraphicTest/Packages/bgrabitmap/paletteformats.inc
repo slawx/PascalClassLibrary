@@ -315,12 +315,16 @@ end;
 function LoadFromStreamAsAdobeSwatchExchange(APalette: TBGRAPalette; AStream: TStream): boolean;
   function ReadInt16: int16;
   begin
-    AStream.Read({%H-}result, sizeof(result));
+    {$PUSH}{$HINTS OFF}
+    AStream.Read(result, sizeof(result));
+    {$POP}
     result := BEtoN(result);
   end;
   function ReadInt32: int32;
   begin
-    AStream.Read({%H-}result, sizeof(result));
+    {$PUSH}{$HINTS OFF}
+    AStream.Read(result, sizeof(result));
+    {$POP}
     result := BEtoN(result);
   end;
   function ReadStr(ALength: integer): string;
@@ -331,7 +335,9 @@ function LoadFromStreamAsAdobeSwatchExchange(APalette: TBGRAPalette; AStream: TS
   end;
   function ReadSingle: single;
   begin
-    AStream.Read({%H-}Result, sizeof(result));
+    {$PUSH}{$HINTS OFF}
+    AStream.Read(Result, sizeof(result));
+    {$POP}
     DWord(Result) := BEtoN(DWord(Result));
   end;
   function DblToByte(AValue: double): byte;

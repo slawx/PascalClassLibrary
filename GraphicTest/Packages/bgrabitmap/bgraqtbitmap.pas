@@ -27,15 +27,15 @@ unit BGRAQtBitmap;
 interface
 
 uses
-  Classes, SysUtils, BGRADefaultBitmap, Graphics,
-  GraphType;
+  Classes, SysUtils, BGRALCLBitmap, Graphics,
+  GraphType, BGRABitmapTypes;
 
 type
   { TBGRAQtBitmap }
 
-  TBGRAQtBitmap = class(TBGRADefaultBitmap)
+  TBGRAQtBitmap = class(TBGRALCLBitmap)
   private
-    procedure SlowDrawTransparent(ABitmap: TBGRADefaultBitmap;
+    procedure SlowDrawTransparent(ABitmap: TBGRACustomBitmap;
       ACanvas: TCanvas; ARect: TRect);
   public
     procedure DataDrawTransparent(ACanvas: TCanvas; Rect: TRect;
@@ -43,20 +43,17 @@ type
       override;
     procedure Draw(ACanvas: TCanvas; x, y: integer; Opaque: boolean = True); override;
     procedure Draw(ACanvas: TCanvas; Rect: TRect; Opaque: boolean = True); override;
-    procedure DataDrawOpaque(ACanvas: TCanvas; Rect: TRect; AData: Pointer;
-      ALineOrder: TRawImageLineOrder; AWidth, AHeight: integer);
-      override;
     procedure GetImageFromCanvas(CanvasSource: TCanvas; x, y: integer); override;
   end;
 
 implementation
 
-uses BGRABitmapTypes, LCLType,
+uses LCLType,
   LCLIntf, IntfGraphics,
   qtobjects, qt4,
   FPImage;
 
-procedure TBGRAQtBitmap.SlowDrawTransparent(ABitmap: TBGRADefaultBitmap;
+procedure TBGRAQtBitmap.SlowDrawTransparent(ABitmap: TBGRACustomBitmap;
   ACanvas: TCanvas; ARect: TRect);
 begin
   ACanvas.StretchDraw(ARect, ABitmap.Bitmap);
@@ -65,9 +62,9 @@ end;
 procedure TBGRAQtBitmap.DataDrawTransparent(ACanvas: TCanvas; Rect: TRect;
   AData: Pointer; ALineOrder: TRawImageLineOrder; AWidth, AHeight: integer);
 var
-  Temp: TBGRAPtrBitmap;
+  Temp: TBGRALCLPtrBitmap;
 begin
-  Temp := TBGRAPtrBitmap.Create(AWidth, AHeight, AData);
+  Temp := TBGRALCLPtrBitmap.Create(AWidth, AHeight, AData);
   Temp.LineOrder := ALineOrder;
   SlowDrawTransparent(Temp, ACanvas, Rect);
   Temp.Free;
@@ -94,34 +91,6 @@ begin
     SlowDrawTransparent(Self, ACanvas, Rect);
 end;
 
-procedure TBGRAQtBitmap.DataDrawOpaque(ACanvas: TCanvas; Rect: TRect;
-  AData: Pointer; ALineOrder: TRawImageLineOrder; AWidth, AHeight: integer);
-var
-  Temp:     TBitmap;
-  RawImage: TRawImage;
-  BitmapHandle, MaskHandle: HBitmap;
-  CreateSuccess: boolean;
-begin
-  if (AHeight = 0) or (AWidth = 0) then
-    exit;
-
-  RawImage.Init;
-  RawImage.Description.Init_BPP32_B8G8R8_BIO_TTB(AWidth, AHeight);
-  RawImage.Description.LineOrder := ALineOrder;
-  RawImage.Description.LineEnd := rileDWordBoundary;
-  RawImage.Data     := PByte(AData);
-  RawImage.DataSize := AWidth * AHeight * Sizeof(TBGRAPixel);
-  CreateSuccess     := RawImage_CreateBitmaps(RawImage, BitmapHandle, MaskHandle, False);
-
-  if not CreateSuccess then
-    raise FPImageException.Create('Failed to create bitmap handle');
-  Temp := TBitmap.Create;
-  Temp.Handle := BitmapHandle;
-  Temp.MaskHandle := MaskHandle;
-  ACanvas.StretchDraw(Rect, Temp);
-  Temp.Free;
-end;
-
 procedure TBGRAQtBitmap.GetImageFromCanvas(CanvasSource: TCanvas; x, y: integer);
 var
   bmp: TBitmap;
@@ -143,7 +112,6 @@ begin
   SrcX     := x + Ofs.X;
   SrcY     := y + Ofs.Y;
 
-  {$warning QT: recheck this}
   if (dcSource.vImage <> nil) and (dcSource.vImage.Handle <> nil) then
   begin
     // we must stop painting on device
@@ -156,10 +124,6 @@ begin
       QPainter_begin(dcDest.Widget, TQtImage(bmp.Handle).Handle);
   end;
 
-  (*
-  gdk_window_copy_area(dcDest.Drawable, dcDest.GC, 0, 0, dcSource.Drawable,
-    SrcX, SrcY, Width, Height);
-  *)
   LoadFromRawImage(bmp.RawImage, 255, True);
   bmp.Free;
   InvalidateBitmap;

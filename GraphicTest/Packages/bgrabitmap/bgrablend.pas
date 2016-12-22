@@ -19,6 +19,8 @@ procedure DrawPixelInlineExpandedOrNotWithAlphaCheck(dest: PBGRAPixel; const ec:
 procedure DrawPixelInlineNoAlphaCheck(dest: PBGRAPixel; const c: TBGRAPixel); inline; overload;
 procedure DrawExpandedPixelInlineNoAlphaCheck(dest: PBGRAPixel; const ec: TExpandedPixel; calpha: byte); inline; overload;
 procedure ClearTypeDrawPixel(pdest: PBGRAPixel; Cr, Cg, Cb: byte; Color: TBGRAPixel); inline;
+procedure InterpolateBilinear(pUpLeft,pUpRight,pDownLeft,pDownRight: PBGRAPixel;
+                iFactX,iFactY: Integer; ADest: PBGRAPixel);
 
 procedure CopyPixelsWithOpacity(dest,src: PBGRAPixel; opacity: byte; Count: integer); inline;
 function ApplyOpacity(opacity1,opacity2: byte): byte; inline;
@@ -99,10 +101,226 @@ procedure LightenPixelInline(dest: PBGRAPixel; c: TBGRAPixel); inline;
 procedure DarkenPixelInline(dest: PBGRAPixel; c: TBGRAPixel); inline;
 procedure ScreenPixelInline(dest: PBGRAPixel; c: TBGRAPixel); inline;
 procedure SoftLightPixelInline(dest: PBGRAPixel; c: TBGRAPixel); inline;
+procedure SvgSoftLightPixelInline(dest: PBGRAPixel; c: TBGRAPixel); inline;
 procedure HardLightPixelInline(dest: PBGRAPixel; c: TBGRAPixel); inline;
 procedure BlendXorPixelInline(dest: PBGRAPixel; c: TBGRAPixel); inline;
+procedure BGRAFillClearTypeMask(dest: TBGRACustomBitmap; x,y: integer; xThird: integer; mask: TBGRACustomBitmap; color: TBGRAPixel; texture: IBGRAScanner; RGBOrder: boolean);
+procedure BGRAFillClearTypeRGBMask(dest: TBGRACustomBitmap; x, y: integer;
+  mask: TBGRACustomBitmap; color: TBGRAPixel; texture: IBGRAScanner;
+  KeepRGBOrder: boolean);
+procedure BGRAFillClearTypeMaskPtr(dest: TBGRACustomBitmap; x,y: integer; xThird: integer; maskData: PByte; maskPixelSize: NativeInt; maskRowSize: NativeInt; maskWidth,maskHeight: integer; color: TBGRAPixel; texture: IBGRAScanner; RGBOrder: boolean);
 
 implementation
+
+procedure BGRAFillClearTypeMaskPtr(dest: TBGRACustomBitmap; x,y: integer; xThird: integer; maskData: PByte; maskPixelSize: NativeInt; maskRowSize: NativeInt; maskWidth,maskHeight: integer; color: TBGRAPixel; texture: IBGRAScanner; RGBOrder: boolean);
+var
+  pdest: PBGRAPixel;
+  ClearTypePixel: array[0..2] of byte;
+  curThird: integer;
+
+  procedure OutputPixel; inline;
+  begin
+    if texture <> nil then
+      color := texture.ScanNextPixel;
+    if RGBOrder then
+      ClearTypeDrawPixel(pdest, ClearTypePixel[0],ClearTypePixel[1],ClearTypePixel[2], color)
+    else
+      ClearTypeDrawPixel(pdest, ClearTypePixel[2],ClearTypePixel[1],ClearTypePixel[0], color);
+  end;
+
+  procedure NextAlpha(alphaValue: byte); inline;
+  begin
+    ClearTypePixel[curThird] := alphaValue;
+    inc(curThird);
+    if curThird = 3 then
+    begin
+      OutputPixel;
+      curThird := 0;
+      Fillchar(ClearTypePixel, sizeof(ClearTypePixel),0);
+      inc(pdest);
+    end;
+  end;
+
+  procedure EndRow; inline;
+  begin
+    if curThird > 0 then OutputPixel;
+  end;
+
+var
+  yMask,n: integer;
+  a: byte;
+  pmask: PByte;
+  dx:integer;
+  miny,maxy,minx,minxThird,maxx,alphaMinX,alphaMaxX,alphaLineLen: integer;
+  leftOnSide, rightOnSide: boolean;
+  countBetween: integer;
+  v1,v2,v3: byte;
+
+  procedure StartRow; inline;
+  begin
+    pdest := dest.Scanline[yMask+y]+minx;
+    if texture <> nil then
+      texture.ScanMoveTo(minx,yMask+y);
+
+    curThird := minxThird;
+    ClearTypePixel[0] := 0;
+    ClearTypePixel[1] := 0;
+    ClearTypePixel[2] := 0;
+  end;
+
+begin
+  alphaLineLen := maskWidth+2;
+
+  xThird -= 1; //for first subpixel
+
+  if xThird >= 0 then dx := xThird div 3
+   else dx := -((-xThird+2) div 3);
+  x += dx;
+  xThird -= dx*3;
+
+  if y >= dest.ClipRect.Top then miny := 0
+    else miny := dest.ClipRect.Top-y;
+  if y+maskHeight-1 < dest.ClipRect.Bottom then
+    maxy := maskHeight-1 else
+      maxy := dest.ClipRect.Bottom-1-y;
+
+  if x >= dest.ClipRect.Left then
+  begin
+    minx := x;
+    minxThird := xThird;
+    alphaMinX := 0;
+    leftOnSide := false;
+  end else
+  begin
+    minx := dest.ClipRect.Left;
+    minxThird := 0;
+    alphaMinX := (dest.ClipRect.Left-x)*3 - xThird;
+    leftOnSide := true;
+  end;
+
+  if x*3+xThird+maskWidth-1 < dest.ClipRect.Right*3 then
+  begin
+    maxx := (x*3+xThird+maskWidth-1) div 3;
+    alphaMaxX := alphaLineLen-1;
+    rightOnSide := false;
+  end else
+  begin
+    maxx := dest.ClipRect.Right-1;
+    alphaMaxX := maxx*3+2 - (x*3+xThird);
+    rightOnSide := true;
+  end;
+
+  countBetween := alphaMaxX-alphaMinX-1;
+
+  if (alphaMinX <= alphaMaxX) then
+  begin
+    for yMask := miny to maxy do
+    begin
+      StartRow;
+
+      if leftOnSide then
+      begin
+        pmask := maskData + (yMask*maskRowSize)+ (alphaMinX-1)*maskPixelSize;
+        a := pmask^ div 3;
+        v1 := a+a;
+        v2 := a;
+        v3 := 0;
+        inc(pmask, maskPixelSize);
+      end else
+      begin
+        pmask := maskData + (yMask*maskRowSize);
+        v1 := 0;
+        v2 := 0;
+        v3 := 0;
+      end;
+
+      for n := countBetween-1 downto 0 do
+      begin
+        a := pmask^ div 3;
+        v1 += a;
+        v2 += a;
+        v3 += a;
+        inc(pmask, maskPixelSize);
+
+        NextAlpha(v1);
+        v1 := v2;
+        v2 := v3;
+        v3 := 0;
+      end;
+
+      if rightOnSide then
+      begin
+        a := pmask^ div 3;
+        v1 += a;
+        v2 += a+a;
+      end;
+
+      NextAlpha(v1);
+      NextAlpha(v2);
+
+      EndRow;
+    end;
+  end;
+end;
+
+procedure BGRAFillClearTypeMask(dest: TBGRACustomBitmap; x,y: integer; xThird: integer; mask: TBGRACustomBitmap; color: TBGRAPixel; texture: IBGRAScanner; RGBOrder: boolean);
+var delta: NativeInt;
+begin
+  delta := mask.Width*sizeof(TBGRAPixel);
+  if mask.LineOrder = riloBottomToTop then
+    delta := -delta;
+  BGRAFillClearTypeMaskPtr(dest,x,y,xThird,pbyte(mask.ScanLine[0])+1,sizeof(TBGRAPixel),delta,mask.Width,mask.Height,color,texture,RGBOrder);
+end;
+
+procedure BGRAFillClearTypeRGBMask(dest: TBGRACustomBitmap; x, y: integer;
+  mask: TBGRACustomBitmap; color: TBGRAPixel; texture: IBGRAScanner;
+  KeepRGBOrder: boolean);
+var
+  minx,miny,maxx,maxy,countx,n,yb: integer;
+  pdest,psrc: PBGRAPixel;
+begin
+  if y >= dest.ClipRect.Top then miny := 0
+    else miny := dest.ClipRect.Top-y;
+  if y+mask.Height-1 < dest.ClipRect.Bottom then
+    maxy := mask.Height-1 else
+      maxy := dest.ClipRect.Bottom-1-y;
+
+  if x >= dest.ClipRect.Left then minx := 0
+    else minx := dest.ClipRect.Left-x;
+  if x+mask.Width-1 < dest.ClipRect.Right then
+    maxx := mask.Width-1 else
+      maxx := dest.ClipRect.Right-1-x;
+
+  countx := maxx-minx+1;
+  if countx <= 0 then exit;
+
+  for yb := miny to maxy do
+  begin
+    pdest := dest.ScanLine[y+yb]+(x+minx);
+    psrc := mask.ScanLine[yb]+minx;
+    if texture <> nil then
+      texture.ScanMoveTo(x+minx, y+yb);
+    if KeepRGBOrder then
+    begin
+      for n := countx-1 downto 0 do
+      begin
+        if texture <> nil then color := texture.ScanNextPixel;
+        ClearTypeDrawPixel(pdest, psrc^.red, psrc^.green, psrc^.blue, color);
+        inc(pdest);
+        inc(psrc);
+      end;
+    end else
+    begin
+      for n := countx-1 downto 0 do
+      begin
+        if texture <> nil then color := texture.ScanNextPixel;
+        ClearTypeDrawPixel(pdest, psrc^.blue, psrc^.green, psrc^.red, color);
+        inc(pdest);
+        inc(psrc);
+      end;
+    end;
+  end;
+end;
 
 procedure ClearTypeDrawPixel(pdest: PBGRAPixel; Cr, Cg, Cb: byte; Color: TBGRAPixel);
 var merge,mergeClearType: TBGRAPixel;
@@ -140,6 +358,85 @@ begin
       merge.alpha := mergeClearType.alpha + ApplyOpacity(merge.alpha, not mergeClearType.alpha);
     end;
     pdest^ := merge;
+  end;
+end;
+
+procedure InterpolateBilinear(pUpLeft, pUpRight, pDownLeft,
+  pDownRight: PBGRAPixel; iFactX,iFactY: Integer; ADest: PBGRAPixel);
+var
+  w1,w2,w3,w4,alphaW: cardinal;
+  rSum, gSum, bSum: cardinal; //rgbDiv = aSum
+  aSum, aDiv: cardinal;
+begin
+  rSum   := 0;
+  gSum   := 0;
+  bSum   := 0;
+  aSum   := 0;
+  aDiv   := 0;
+
+  w4 := (iFactX*iFactY+127) shr 8;
+  w3 := iFactY-w4;
+  {$PUSH}{$HINTS OFF}
+  w1 := (256-iFactX)-w3;
+  {$POP}
+  w2 := iFactX-w4;
+
+  { For each pixel around the coordinate, compute
+    the weight for it and multiply values by it before
+    adding to the sum }
+  if pUpLeft <> nil then
+  with pUpLeft^ do
+  begin
+    alphaW := alpha * w1;
+    aDiv   += w1;
+    aSum   += alphaW;
+    rSum   += red * alphaW;
+    gSum   += green * alphaW;
+    bSum   += blue * alphaW;
+  end;
+  if pUpRight <> nil then
+  with pUpRight^ do
+  begin
+    alphaW := alpha * w2;
+    aDiv   += w2;
+    aSum   += alphaW;
+    rSum   += red * alphaW;
+    gSum   += green * alphaW;
+    bSum   += blue * alphaW;
+  end;
+  if pDownLeft <> nil then
+  with pDownLeft^ do
+  begin
+    alphaW := alpha * w3;
+    aDiv   += w3;
+    aSum   += alphaW;
+    rSum   += red * alphaW;
+    gSum   += green * alphaW;
+    bSum   += blue * alphaW;
+  end;
+  if pDownRight <> nil then
+  with pDownRight^ do
+  begin
+    alphaW := alpha * w4;
+    aDiv   += w4;
+    aSum   += alphaW;
+    rSum   += red * alphaW;
+    gSum   += green * alphaW;
+    bSum   += blue * alphaW;
+  end;
+
+  if aSum < 128 then //if there is no alpha
+    ADest^ := BGRAPixelTransparent
+  else
+  with ADest^ do
+  begin
+    red   := (rSum + aSum shr 1) div aSum;
+    green := (gSum + aSum shr 1) div aSum;
+    blue  := (bSum + aSum shr 1) div aSum;
+    if aDiv = 256 then
+      alpha := (aSum + 128) shr 8
+    else
+      alpha := (aSum + aDiv shr 1) div aDiv;
   end;
 end;
 
@@ -474,7 +771,6 @@ end;
 
 procedure DrawPixelInlineNoAlphaCheck(dest: PBGRAPixel; const c: TBGRAPixel);
 var
-  p: PByte;
   a1f, a2f, a12, a12m: cardinal;
 begin
   {$HINTS OFF}
@@ -485,25 +781,18 @@ begin
   a1f := dest^.alpha * (not c.alpha);
   a2f := (c.alpha shl 8) - c.alpha;
 
-  p := PByte(dest);
-
-  p^ := GammaCompressionTab[(GammaExpansionTab[dest^.blue] * a1f +
-    GammaExpansionTab[c.blue] * a2f + a12m) div a12];
-  Inc(p);
-  p^ := GammaCompressionTab[(GammaExpansionTab[dest^.green] * a1f +
-    GammaExpansionTab[c.green] * a2f + a12m) div a12];
-  Inc(p);
-  p^ := GammaCompressionTab[(GammaExpansionTab[dest^.red] * a1f +
-    GammaExpansionTab[c.red] * a2f + a12m) div a12];
-  Inc(p);
-
-  p^ := (a12 + a12 shr 7) shr 8;
+  PDWord(dest)^ := ((GammaCompressionTab[(GammaExpansionTab[dest^.red] * a1f +
+                     GammaExpansionTab[c.red] * a2f + a12m) div a12]) shl TBGRAPixel_RedShift) or
+                   ((GammaCompressionTab[(GammaExpansionTab[dest^.green] * a1f +
+                     GammaExpansionTab[c.green] * a2f + a12m) div a12]) shl TBGRAPixel_GreenShift) or
+                   ((GammaCompressionTab[(GammaExpansionTab[dest^.blue] * a1f +
+                     GammaExpansionTab[c.blue] * a2f + a12m) div a12]) shl TBGRAPixel_BlueShift) or
+                   (((a12 + a12 shr 7) shr 8) shl TBGRAPixel_AlphaShift);
 end;
 
 procedure DrawExpandedPixelInlineNoAlphaCheck(dest: PBGRAPixel;
   const ec: TExpandedPixel; calpha: byte);
 var
-  p: PByte;
   a1f, a2f, a12, a12m: cardinal;
 begin
   {$HINTS OFF}
@@ -514,24 +803,17 @@ begin
   a1f := dest^.alpha * (not calpha);
   a2f := (calpha shl 8) - calpha;
 
-  p := PByte(dest);
-
-  p^ := GammaCompressionTab[(GammaExpansionTab[dest^.blue] * a1f +
-    ec.blue * a2f + a12m) div a12];
-  Inc(p);
-  p^ := GammaCompressionTab[(GammaExpansionTab[dest^.green] * a1f +
-    ec.green * a2f + a12m) div a12];
-  Inc(p);
-  p^ := GammaCompressionTab[(GammaExpansionTab[dest^.red] * a1f +
-    ec.red * a2f + a12m) div a12];
-  Inc(p);
-
-  p^ := (a12 + a12 shr 7) shr 8;
+  PDWord(dest)^ := ((GammaCompressionTab[(GammaExpansionTab[dest^.red] * a1f +
+                     ec.red * a2f + a12m) div a12]) shl TBGRAPixel_RedShift) or
+                   ((GammaCompressionTab[(GammaExpansionTab[dest^.green] * a1f +
+                     ec.green * a2f + a12m) div a12]) shl TBGRAPixel_GreenShift) or
+                   ((GammaCompressionTab[(GammaExpansionTab[dest^.blue] * a1f +
+                     ec.blue * a2f + a12m) div a12]) shl TBGRAPixel_BlueShift) or
+                   (((a12 + a12 shr 7) shr 8) shl TBGRAPixel_AlphaShift);
 end;
 
 procedure FastBlendPixelInline(dest: PBGRAPixel; const c: TBGRAPixel);
 var
-  p: PByte;
   a1f, a2f, a12, a12m: cardinal;
 begin
   if c.alpha = 0 then
@@ -550,16 +832,10 @@ begin
   a1f := dest^.alpha * (not c.alpha);
   a2f := (c.alpha shl 8) - c.alpha;
 
-  p := PByte(dest);
-
-  p^ := (dest^.blue * a1f + c.blue * a2f + a12m) div a12;
-  Inc(p);
-  p^ := (dest^.green * a1f + c.green * a2f + a12m) div a12;
-  Inc(p);
-  p^ := (dest^.red * a1f + c.red * a2f + a12m) div a12;
-  Inc(p);
-
-  p^ := (a12 + a12 shr 7) shr 8;
+  PDWord(dest)^ := (((dest^.red * a1f + c.red * a2f + a12m) div a12) shl TBGRAPixel_RedShift) or
+                   (((dest^.green * a1f + c.green * a2f + a12m) div a12) shl TBGRAPixel_GreenShift) or
+                   (((dest^.blue * a1f + c.blue * a2f + a12m) div a12) shl TBGRAPixel_BlueShift) or
+                   (((a12 + a12 shr 7) shr 8) shl TBGRAPixel_AlphaShift);
 end;
 
 procedure FastBlendPixelInline(dest: PBGRAPixel; c: TBGRAPixel;
@@ -571,10 +847,12 @@ end;
 
 procedure DrawPixelInlineDiff(dest: PBGRAPixel; c, compare: TBGRAPixel;
   maxDiff: byte); inline;
+var alpha: NativeInt;
 begin
-  DrawPixelInlineWithAlphaCheck(dest, BGRA(c.red, c.green, c.blue,
-    (c.alpha * (maxDiff + 1 - BGRADiff(dest^, compare)) + (maxDiff + 1) shr 1) div
-    (maxDiff + 1)));
+  alpha := (c.alpha * (maxDiff + 1 - BGRADiff(dest^, compare)) + (maxDiff + 1) shr 1) div
+    (maxDiff + 1);
+  if alpha > 0 then
+    DrawPixelInlineWithAlphaCheck(dest, BGRA(c.red, c.green, c.blue, alpha));
 end;
 
 procedure ErasePixelInline(dest: PBGRAPixel; alpha: byte); inline;

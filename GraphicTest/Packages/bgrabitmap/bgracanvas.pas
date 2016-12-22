@@ -5,7 +5,7 @@ unit BGRACanvas;
 interface
 
 uses
-  Classes, SysUtils, FPCanvas, Graphics, GraphType, Types, FPImage, BGRABitmapTypes;
+  Classes, SysUtils, FPCanvas, BGRAGraphics, Types, FPImage, BGRABitmapTypes;
 
 type
 
@@ -1098,7 +1098,7 @@ end;
 procedure TBGRACanvas.Frame3D(var bounds: TRect; width: integer;
   Style: TGraphicsBevelCut);
 begin
-  Frame3D(bounds,width,style,ColorToBGRA(ColorToRGB(clBtnHighlight)),ColorToBGRA(ColorToRGB(clBtnShadow)));
+  Frame3D(bounds,width,style,ColorToBGRA(clRgbBtnHighlight),ColorToBGRA(clRgbBtnShadow));
 end;
 
 procedure TBGRACanvas.Frame3D(var bounds: TRect; width: integer;
@@ -1149,7 +1149,7 @@ var
     GStop,GStart: Byte;
     RStop,RStart: Byte;
   begin
-    RedGreenBlue(ColorToRGB(AStart), RStart, GStart, BStart);
+      RedGreenBlue(ColorToRGB(AStart), RStart, GStart, BStart);
       RedGreenBlue(ColorToRGB(AStop),  RStop,  GStop,  BStop);
 
       RDiff := RStop - RStart;

@@ -20,8 +20,14 @@ const FLAG_ENABLED_SSE = true;
 
 var UseSSE, UseSSE2, UseSSE3 : boolean;
 
-{$ifdef BGRASSE_AVAILABLE}
+{$ifdef CPUI386}
   {$asmmode intel}
+{$ENDIF}
+{$ifdef cpux86_64}
+  {$asmmode intel}
+{$ENDIF}
+
+{$ifdef BGRASSE_AVAILABLE}
   //SSE rotate singles
   const Shift231 = 1 + 8;
         Shift312 = 2 + 16;
@@ -350,7 +356,7 @@ procedure Normalize3D_128_SSE1(var v: TPoint3D_128);
 var len: single;
 begin
   asm
-    {$i sseloadv.inc}
+    {$DEFINE SSE_LOADV}{$i bgrasse.inc}
     movaps xmm2, xmm1
     mulps xmm2, xmm2
 
@@ -376,7 +382,7 @@ begin
   asm
     rsqrtps xmm2, xmm2
     mulps xmm1, xmm2  //apply
-    {$i ssesavev.inc}
+    {$DEFINE SSE_SAVEV}{$i bgrasse.inc}
   end;
 end;
 {$endif}
@@ -386,7 +392,7 @@ procedure Normalize3D_128_SSE3(var v: TPoint3D_128);
 var len: single;
 begin
   asm
-    {$i sseloadv.inc}
+    {$DEFINE SSE_LOADV}{$i bgrasse.inc}
     movaps xmm2, xmm1
     mulps xmm2, xmm2
 
@@ -406,7 +412,7 @@ begin
   asm
     rsqrtps xmm2, xmm2
     mulps xmm1, xmm2  //apply
-    {$i ssesavev.inc}
+    {$DEFINE SSE_SAVEV}{$i bgrasse.inc}
   end;
 end;
 {$endif}
@@ -418,7 +424,7 @@ begin
     if UseSSE then
     begin
       asm
-        {$i sseloadv.inc}
+        {$DEFINE SSE_LOADV}{$i bgrasse.inc}
         movaps xmm2, xmm1
         mulps xmm2, xmm2
       end;
@@ -450,7 +456,7 @@ begin
       asm
         rsqrtps xmm2, xmm2
         mulps xmm1, xmm2  //apply
-        {$i ssesavev.inc}
+        {$DEFINE SSE_SAVEV}{$i bgrasse.inc}
       end;
     end
     else

@@ -430,7 +430,7 @@ var
   ix1, ix2: integer;
 
 begin
-  If not polyInfo.ComputeMinMax(minx,miny,maxx,maxy,bmp) then exit;
+  If not BGRAShapeComputeMinMax(polyInfo,minx,miny,maxx,maxy,bmp) then exit;
   inter := polyInfo.CreateIntersectionArray;
 
   //vertical scan
@@ -667,7 +667,7 @@ var
   ix1, ix2: integer;
 
 begin
-  If not polyInfo.ComputeMinMax(minx,miny,maxx,maxy,bmp) then exit;
+  If not BGRAShapeComputeMinMax(polyInfo,minx,miny,maxx,maxy,bmp) then exit;
   inter := polyInfo.CreateIntersectionArray;
 
   //vertical scan
@@ -734,7 +734,7 @@ var
   ix1, ix2: integer;
 
 begin
-  If not polyInfo.ComputeMinMax(minx,miny,maxx,maxy,bmp) then exit;
+  If not BGRAShapeComputeMinMax(polyInfo,minx,miny,maxx,maxy,bmp) then exit;
 
   scanAtFunc := @texture.ScanAt;
   scanAtIntegerFunc := @texture.ScanAtInteger;

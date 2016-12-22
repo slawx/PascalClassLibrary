@@ -4,7 +4,9 @@
                                 --------------
                  Free easy-to-use memory bitmap 32-bit,
                  8-bit for each channel, transparency.
-                 Channels in that order : B G R A
+                 Channels can be in the following orders:
+                 - B G R A (recommended for Windows, required for fpGUI)
+                 - R G B A (recommended for Gtk and MacOS)
 
                  - Drawing primitives
                  - Resample
@@ -37,6 +39,7 @@
 unit BGRABitmap;
 
 {$mode objfpc}{$H+}
+{$i bgrabitmap.inc}
 
 interface
 
@@ -45,42 +48,66 @@ interface
 
 uses
   Classes, SysUtils,
-{$IFDEF LCLwin32}
-  BGRAWinBitmap,
+{$IFDEF BGRABITMAP_USE_FPGUI}
+    BGRAfpGUIBitmap,
 {$ELSE}
-  {$IFDEF LCLgtk}
-  BGRAGtkBitmap,
-  {$ELSE}
-    {$IFDEF LCLgtk2}
-  BGRAGtkBitmap,
-    {$ELSE}
-      {$IFDEF LCLqt}
-  BGRAQtBitmap,
-      {$ELSE}
-  BGRADefaultBitmap,
-      {$ENDIF} 
-    {$ENDIF}
-  {$ENDIF}
+	{$IFDEF BGRABITMAP_USE_LCL}
+	  {$IFDEF LCLwin32}
+		BGRAWinBitmap,
+	  {$ELSE}
+		{$IFDEF LCLgtk}
+		BGRAGtkBitmap,
+		{$ELSE}
+		  {$IFDEF LCLgtk2}
+		BGRAGtkBitmap,
+		  {$ELSE}
+			{$IFDEF LCLqt}
+		BGRAQtBitmap,
+			{$ELSE}
+              {$IFDEF DARWIN}
+        BGRAMacBitmap,
+              {$ELSE}
+		BGRALCLBitmap,
+              {$ENDIF}
+			{$ENDIF}
+		  {$ENDIF}
+		{$ENDIF}
+	  {$ENDIF}
+	{$ELSE}
+	  BGRANoGuiBitmap,
+	{$ENDIF}
 {$ENDIF}
-  Graphics;
+  BGRAGraphics;
 
 type
-{$IFDEF LCLwin32}
-  TBGRABitmap = TBGRAWinBitmap;
+{$IFDEF BGRABITMAP_USE_FPGUI}
+  TBGRABitmap = class(TBGRAfpGUIBitmap);
 {$ELSE}
-  {$IFDEF LCLgtk}
-  TBGRABitmap = TBGRAGtkBitmap;
-  {$ELSE}
-    {$IFDEF LCLgtk2}
-  TBGRABitmap = TBGRAGtkBitmap;
-    {$ELSE}
-      {$IFDEF LCLqt}
-  TBGRABitmap = TBGRAQtBitmap;
+    {$IFDEF BGRABITMAP_USE_LCL}
+      {$IFDEF LCLwin32}
+        TBGRABitmap = class(TBGRAWinBitmap);
       {$ELSE}
-  TBGRABitmap = TBGRADefaultBitmap;
+        {$IFDEF LCLgtk}
+        TBGRABitmap = class(TBGRAGtkBitmap);
+        {$ELSE}
+          {$IFDEF LCLgtk2}
+        TBGRABitmap = class(TBGRAGtkBitmap);
+          {$ELSE}
+            {$IFDEF LCLqt}
+        TBGRABitmap = class(TBGRAQtBitmap);
+            {$ELSE}
+              {$IFDEF DARWIN}
+        TBGRABitmap = class(TBGRAMacBitmap);
+              {$ELSE}
+        TBGRABitmap = class(TBGRALCLBitmap);
+              {$ENDIF}
+            {$ENDIF}
+          {$ENDIF}
+        {$ENDIF}
       {$ENDIF}
+    {$ELSE}
+      TBGRABitmap = class(TBGRANoGUIBitmap);
     {$ENDIF}
-  {$ENDIF}
 {$ENDIF}
 
 // draw a bitmap from pure data
@@ -112,8 +139,8 @@ procedure BGRAReplace(var Destination: TBGRABitmap; Temp: TObject);
 
 implementation
 
-uses GraphType, BGRABitmapTypes, BGRAReadBMP, BGRAReadGif,
-  BGRAReadIco, bgrareadjpeg, BGRAReadLzp, BGRAReadPCX,
+uses BGRABitmapTypes, BGRAReadBMP, BGRAReadBmpMioMap, BGRAReadGif,
+  BGRAReadIco, BGRAReadJpeg, BGRAReadLzp, BGRAReadPCX,
   BGRAReadPng, BGRAReadPSD, BGRAReadTGA, BGRAReadXPM,
   BGRAWriteLzp;
 

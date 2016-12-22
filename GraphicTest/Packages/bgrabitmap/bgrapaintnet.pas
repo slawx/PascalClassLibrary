@@ -79,7 +79,7 @@ procedure RegisterPaintNetFormat;
 
 implementation
 
-uses zstream, Math, graphtype, Graphics, lazutf8classes, FileUtil;
+uses zstream, Math, BGRAUTF8;
 
 {$hints off}
 function BEReadLongword(Stream: TStream): longword;
@@ -284,7 +284,7 @@ begin
     raise Exception.Create('Xml header size error');
   Stream.Position:= Stream.Position + XmlHeaderSize;
      {$hints off}
-  stream.Read(CompressionFormat, sizeof(CompressionFormat));
+  stream.ReadBuffer(CompressionFormat, sizeof(CompressionFormat));
      {$hints on}
   CompressionFormat := LEToN(CompressionFormat);
   Content := TDotNetDeserialization.Create;
@@ -326,7 +326,7 @@ begin
     for j := 0 to nbbytes - 1 do
     begin
         {$hints off}
-      LayerData[i].Read(b, 1);
+      LayerData[i].ReadBuffer(b, 1);
         {$hints on}
       Result += IntToHex(b, 2) + ' ';
     end;
@@ -417,6 +417,7 @@ begin
   begin
     layerData[layer].Position := 0;
     layerData[layer].Read(Result.Data^, LayerData[layer].Size);
+    if TBGRAPixel_RGBAOrder then result.SwapRedBlue;
     Result.InvalidateBitmap;
 
     if Result.LineOrder = riloBottomToTop then
@@ -475,7 +476,7 @@ var
 
 begin
   {$hints off}
-  src.Read(CompressionFlag, 1);
+  src.ReadBuffer(CompressionFlag, 1);
   {$hints on}
   if CompressionFlag = 1 then
     dest.CopyFrom(src, uncompressedSize)

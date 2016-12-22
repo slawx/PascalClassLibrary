@@ -23,6 +23,11 @@ const
   palCustom : TBGRAPaletteFormat = 100;
 
 type
+  TBGRAIndexedPaletteEntry = packed record
+    Color: TBGRAPixel;
+    Index: UInt32;
+  end;
+  PBGRAIndexedPaletteEntry = ^TBGRAIndexedPaletteEntry;
   TBGRAWeightedPaletteEntry = packed record
     Color: TBGRAPixel;
     Weight: UInt32;
@@ -30,9 +35,13 @@ type
   PBGRAWeightedPaletteEntry = ^TBGRAWeightedPaletteEntry;
   ArrayOfWeightedColor = array of TBGRAWeightedPaletteEntry;
 
+  TBGRAPixelComparer = function (p1,p2 : PBGRAPixel): boolean;
+
   { TBGRACustomPalette }
 
   TBGRACustomPalette = class
+  private
+    function GetDominantColor: TBGRAPixel;
   protected
     function GetCount: integer; virtual; abstract;
     function GetColorByIndex(AIndex: integer): TBGRAPixel; virtual; abstract;
@@ -43,6 +52,7 @@ type
     function GetAsArrayOfWeightedColor: ArrayOfWeightedColor; virtual; abstract;
     procedure AssignTo(AImage: TFPCustomImage); overload;
     procedure AssignTo(APalette: TFPPalette); overload;
+    property DominantColor: TBGRAPixel read GetDominantColor;
     property Count: integer read GetCount;
     property Color[AIndex: integer]: TBGRAPixel read GetColorByIndex;
   end;
@@ -85,7 +95,12 @@ type
     procedure ExceptionInvalidPaletteFormat;
   public
     constructor Create(ABitmap: TBGRACustomBitmap); virtual; overload;
+    constructor Create(APalette: TBGRACustomPalette); virtual; overload;
+    constructor Create(AColors: ArrayOfTBGRAPixel); virtual; overload;
+    constructor Create(AColors: ArrayOfWeightedColor); virtual; overload;
     function AddColor(AValue: TBGRAPixel): boolean; virtual;
+    procedure AddColors(ABitmap: TBGRACustomBitmap); virtual; overload;
+    procedure AddColors(APalette: TBGRACustomPalette); virtual; overload;
     function RemoveColor(AValue: TBGRAPixel): boolean; virtual;
     procedure LoadFromFile(AFilenameUTF8: string); virtual;
     procedure LoadFromStream(AStream: TStream; AFormat: TBGRAPaletteFormat); virtual;
@@ -94,6 +109,21 @@ type
     function DetectPaletteFormat(AStream: TStream): TBGRAPaletteFormat; virtual;
     function DetectPaletteFormat(AFilenameUTF8: string): TBGRAPaletteFormat;
     function SuggestPaletteFormat(AFilenameUTF8: string): TBGRAPaletteFormat; virtual;
+  end;
+
+  { TBGRAIndexedPalette }
+
+  TBGRAIndexedPalette = class(TBGRAPalette)
+  private
+    FCurrentIndex: UInt32;
+  protected
+    procedure NeedArray; override;
+    function CreateEntry(AColor: TBGRAPixel): PBGRAPixel; override;
+    procedure FreeEntry(AEntry: PBGRAPixel); override;
+  public
+    function RemoveColor({%H-}AValue: TBGRAPixel): boolean; override;
+    function IndexOfColor(AValue: TBGRAPixel): integer; override;
+    procedure Clear; override;
   end;
 
   { TBGRAWeightedPalette }
@@ -106,6 +136,7 @@ type
     function GetWeightByIndex(AIndex: Integer): UInt32; virtual;
     procedure IncludePixel(PPixel: PBGRAPixel); override;
   public
+    constructor Create(AColors: ArrayOfWeightedColor); override;
     function GetAsArrayOfWeightedColor: ArrayOfWeightedColor; override;
     function IncColor(AValue: TBGRAPixel; out NewWeight: UInt32): boolean;
     function DecColor(AValue: TBGRAPixel; out NewWeight: UInt32): boolean;
@@ -126,12 +157,70 @@ type
 
   TBGRACustomApproxPalette = class(TBGRACustomPalette)
   private
-    function FindNearestColorIgnoreAlpha(AValue: TBGRAPixel): TBGRAPixel;
+    function FindNearestColorIgnoreAlpha(AValue: TBGRAPixel): TBGRAPixel; inline;
+    function FindNearestColorIndexIgnoreAlpha(AValue: TBGRAPixel): integer; inline;
+  protected
+    function GetWeightByIndex({%H-}AIndex: Integer): UInt32; virtual;
   public
     function FindNearestColor(AValue: TBGRAPixel; AIgnoreAlpha: boolean): TBGRAPixel; overload;
-    function FindNearestColor(AValue: TBGRAPixel): TBGRAPixel; virtual; abstract;
-    function FindNearestColorIndex(AValue: TBGRAPixel): integer; virtual; abstract;
+    function FindNearestColor(AValue: TBGRAPixel): TBGRAPixel; virtual; abstract; overload;
+    function FindNearestColorIndex(AValue: TBGRAPixel; AIgnoreAlpha: boolean): integer; overload;
+    function FindNearestColorIndex(AValue: TBGRAPixel): integer; virtual; abstract; overload;
+    property Weight[AIndex: Integer]: UInt32 read GetWeightByIndex;
   end;
+
+  { TBGRA16BitPalette }
+
+  TBGRA16BitPalette = class(TBGRACustomApproxPalette)
+  protected
+    function GetCount: integer; override;
+    function GetColorByIndex(AIndex: integer): TBGRAPixel; override;
+  public
+    function ContainsColor(AValue: TBGRAPixel): boolean; override;
+    function IndexOfColor(AValue: TBGRAPixel): integer; override;
+    function GetAsArrayOfColor: ArrayOfTBGRAPixel; override;
+    function GetAsArrayOfWeightedColor: ArrayOfWeightedColor; override;
+    function FindNearestColor(AValue: TBGRAPixel): TBGRAPixel; override;
+    function FindNearestColorIndex(AValue: TBGRAPixel): integer; override;
+  end;
+
+  { TBGRACustomColorQuantizer }
+
+  TBGRACustomColorQuantizer = class
+  protected
+    function GetDominantColor: TBGRAPixel; virtual;
+    function GetPalette: TBGRACustomApproxPalette; virtual; abstract;
+    function GetSourceColor(AIndex: integer): TBGRAPixel; virtual; abstract;
+    function GetSourceColorCount: Integer; virtual; abstract;
+    function GetReductionColorCount: integer; virtual; abstract;
+    procedure SetReductionColorCount(AValue: Integer); virtual; abstract;
+  public
+    constructor Create(APalette: TBGRACustomPalette; ASeparateAlphaChannel: boolean); virtual; abstract; overload;
+    constructor Create(ABitmap: TBGRACustomBitmap; AAlpha: TAlphaChannelPaletteOption); virtual; abstract; overload;
+    constructor Create(APalette: TBGRACustomPalette; ASeparateAlphaChannel: boolean; AReductionColorCount: integer); virtual; abstract; overload;
+    constructor Create(ABitmap: TBGRACustomBitmap; AAlpha: TAlphaChannelPaletteOption; AReductionColorCount: integer); virtual; abstract; overload;
+    procedure ApplyDitheringInplace(AAlgorithm: TDitheringAlgorithm; ABitmap: TBGRACustomBitmap; ABounds: TRect); virtual; abstract; overload;
+    procedure ApplyDitheringInplace(AAlgorithm: TDitheringAlgorithm; ABitmap: TBGRACustomBitmap); overload;
+    function GetDitheredBitmap(AAlgorithm: TDitheringAlgorithm; ABitmap: TBGRACustomBitmap; ABounds: TRect): TBGRACustomBitmap; virtual; abstract; overload;
+    function GetDitheredBitmap(AAlgorithm: TDitheringAlgorithm; ABitmap: TBGRACustomBitmap): TBGRACustomBitmap; overload;
+    procedure SaveBitmapToFile(AAlgorithm: TDitheringAlgorithm; ABitmap: TBGRACustomBitmap; AFilenameUTF8: string); overload;
+    procedure SaveBitmapToFile(AAlgorithm: TDitheringAlgorithm; ABitmap: TBGRACustomBitmap; AFilenameUTF8: string; AFormat: TBGRAImageFormat); overload;
+    procedure SaveBitmapToStream(AAlgorithm: TDitheringAlgorithm; ABitmap: TBGRACustomBitmap; AStream: TStream; AFormat: TBGRAImageFormat); virtual; abstract;
+    function GetDitheredBitmapIndexedData(ABitDepth: integer; AAlgorithm: TDitheringAlgorithm; ABitmap: TBGRACustomBitmap; out AScanlineSize: PtrInt): Pointer; overload;
+    function GetDitheredBitmapIndexedData(ABitDepth: integer; AAlgorithm: TDitheringAlgorithm; ABitmap: TBGRACustomBitmap): Pointer; overload;
+    function GetDitheredBitmapIndexedData(ABitDepth: integer; AByteOrder: TRawImageByteOrder; AAlgorithm: TDitheringAlgorithm;
+      ABitmap: TBGRACustomBitmap; out AScanlineSize: PtrInt): Pointer; virtual; abstract; overload;
+    property SourceColorCount: Integer read GetSourceColorCount;
+    property SourceColor[AIndex: integer]: TBGRAPixel read GetSourceColor;
+    property ReductionColorCount: Integer read GetReductionColorCount write SetReductionColorCount;
+    property ReducedPalette: TBGRACustomApproxPalette read GetPalette;
+    property DominantColor: TBGRAPixel read GetDominantColor;
+  end;
+
+  TBGRAColorQuantizerAny = class of TBGRACustomColorQuantizer;
+
+var
+  BGRAColorQuantizerFactory: TBGRAColorQuantizerAny;
 
 function BGRARequiredBitDepth(ABitmap: TBGRACustomBitmap; AAlpha: TAlphaChannelPaletteOption): integer; overload;
 function BGRARequiredBitDepth(APalette: TBGRACustomPalette): integer; overload;
@@ -145,9 +234,169 @@ procedure BGRARegisterPaletteFormat(AFormatIndex: TBGRAPaletteFormat; AExtension
   AReadProc: TPaletteReaderProc; AWriteProc: TPaletteWriterProc; ACheckFormatProc: TCheckPaletteFormatProc);
 function BGRARegisteredPaletteFormatFilter(AAllSupportedDescription: string) : string;
 
+procedure ArrayOfWeightedColor_QuickSort(AColors: ArrayOfWeightedColor; AMinIndex,
+  AMaxIndex: NativeInt; AComparer: TBGRAPixelComparer = nil);
+
+procedure ArrayOfWeightedColor_InsertionSort(AColors: ArrayOfWeightedColor; AMinIndex,
+  AMaxIndex: NativeInt; AComparer: TBGRAPixelComparer = nil);
+
+procedure ArrayOfTBGRAPixel_QuickSort(AColors: ArrayOfTBGRAPixel; AMinIndex,
+  AMaxIndex: NativeInt; AComparer: TBGRAPixelComparer = nil);
+
+procedure ArrayOfTBGRAPixel_InsertionSort(AColors: ArrayOfTBGRAPixel; AMinIndex,
+  AMaxIndex: NativeInt; AComparer: TBGRAPixelComparer = nil);
+
 implementation
 
-uses lazutf8classes, bufstream;
+uses BGRAUTF8, bufstream;
+
+function IsDWordGreater(p1, p2: PBGRAPixel): boolean;
+begin
+  result := DWord(p1^) > DWord(p2^);
+end;
+
+const
+  InsertionSortLimit = 10;
+
+procedure ArrayOfWeightedColor_InsertionSort(AColors: ArrayOfWeightedColor; AMinIndex,
+  AMaxIndex: NativeInt; AComparer: TBGRAPixelComparer = nil);
+var i,j,insertPos: NativeInt;
+  compared: TBGRAWeightedPaletteEntry;
+begin
+  if AComparer = nil then AComparer := @IsDWordGreater;
+  for i := AMinIndex+1 to AMaxIndex do
+  begin
+    insertPos := i;
+    compared := AColors[i];
+    while (insertPos > AMinIndex) and AComparer(@AColors[insertPos-1].Color,@compared.Color) do
+      dec(insertPos);
+    if insertPos <> i then
+    begin
+      for j := i downto insertPos+1 do
+        AColors[j] := AColors[j-1];
+      AColors[insertPos] := compared;
+    end;
+  end;
+end;
+
+procedure ArrayOfWeightedColor_QuickSort(AColors: ArrayOfWeightedColor; AMinIndex,
+  AMaxIndex: NativeInt; AComparer: TBGRAPixelComparer = nil);
+var Pivot: TBGRAPixel;
+  CurMin,CurMax,i : NativeInt;
+
+  procedure Swap(a,b: NativeInt);
+  var Temp: TBGRAWeightedPaletteEntry;
+  begin
+    if a = b then exit;
+    Temp := AColors[a];
+    AColors[a] := AColors[b];
+    AColors[b] := Temp;
+  end;
+begin
+  if AComparer = nil then AComparer := @IsDWordGreater;
+  if AMaxIndex-AMinIndex+1 <= InsertionSortLimit then
+  begin
+    ArrayOfWeightedColor_InsertionSort(AColors,AMinIndex,AMaxIndex,AComparer);
+    exit;
+  end;
+  Pivot := AColors[(AMinIndex+AMaxIndex) shr 1].Color;
+  CurMin := AMinIndex;
+  CurMax := AMaxIndex;
+  i := CurMin;
+  while i < CurMax do
+  begin
+    if AComparer(@AColors[i].Color, @Pivot) then
+    begin
+      Swap(i, CurMax);
+      dec(CurMax);
+    end else
+    begin
+      if AComparer(@Pivot, @AColors[i].Color) then
+      begin
+        Swap(i, CurMin);
+        inc(CurMin);
+      end;
+      inc(i);
+    end;
+  end;
+  if AComparer(@Pivot, @AColors[i].Color) then
+  begin
+    Swap(i, CurMin);
+    inc(CurMin);
+  end;
+  if CurMin > AMinIndex then ArrayOfWeightedColor_QuickSort(AColors,AMinIndex,CurMin,AComparer);
+  if CurMax < AMaxIndex then ArrayOfWeightedColor_QuickSort(AColors,CurMax,AMaxIndex,AComparer);
+end;
+
+procedure ArrayOfTBGRAPixel_InsertionSort(AColors: ArrayOfTBGRAPixel; AMinIndex,
+  AMaxIndex: NativeInt; AComparer: TBGRAPixelComparer = nil);
+var i,j,insertPos: NativeInt;
+  compared: TBGRAPixel;
+begin
+  if AComparer = nil then AComparer := @IsDWordGreater;
+  for i := AMinIndex+1 to AMaxIndex do
+  begin
+    insertPos := i;
+    compared := AColors[i];
+    while (insertPos > AMinIndex) and AComparer(@AColors[insertPos-1],@compared) do
+      dec(insertPos);
+    if insertPos <> i then
+    begin
+      for j := i downto insertPos+1 do
+        AColors[j] := AColors[j-1];
+      AColors[insertPos] := compared;
+    end;
+  end;
+end;
+
+procedure ArrayOfTBGRAPixel_QuickSort(AColors: ArrayOfTBGRAPixel; AMinIndex,
+  AMaxIndex: NativeInt; AComparer: TBGRAPixelComparer = nil);
+var Pivot: TBGRAPixel;
+  CurMin,CurMax,i : NativeInt;
+
+  procedure Swap(a,b: NativeInt);
+  var Temp: TBGRAPixel;
+  begin
+    if a = b then exit;
+    Temp := AColors[a];
+    AColors[a] := AColors[b];
+    AColors[b] := Temp;
+  end;
+begin
+  if AComparer = nil then AComparer := @IsDWordGreater;
+  if AMaxIndex-AMinIndex+1 <= InsertionSortLimit then
+  begin
+    ArrayOfTBGRAPixel_InsertionSort(AColors,AMinIndex,AMaxIndex,AComparer);
+    exit;
+  end;
+  Pivot := AColors[(AMinIndex+AMaxIndex) shr 1];
+  CurMin := AMinIndex;
+  CurMax := AMaxIndex;
+  i := CurMin;
+  while i < CurMax do
+  begin
+    if AComparer(@AColors[i], @Pivot) then
+    begin
+      Swap(i, CurMax);
+      dec(CurMax);
+    end else
+    begin
+      if AComparer(@Pivot, @AColors[i]) then
+      begin
+        Swap(i, CurMin);
+        inc(CurMin);
+      end;
+      inc(i);
+    end;
+  end;
+  if AComparer(@Pivot, @AColors[i]) then
+  begin
+    Swap(i, CurMin);
+    inc(CurMin);
+  end;
+  if CurMin > AMinIndex then ArrayOfTBGRAPixel_QuickSort(AColors,AMinIndex,CurMin,AComparer);
+  if CurMax < AMaxIndex then ArrayOfTBGRAPixel_QuickSort(AColors,CurMax,AMaxIndex,AComparer);
+end;
 
 {$i paletteformats.inc}
 
@@ -232,7 +481,215 @@ begin
   end;
 end;
 
+{ TBGRA16BitPalette }
+
+function TBGRA16BitPalette.GetCount: integer;
+begin
+  result := 65537;
+end;
+
+function TBGRA16BitPalette.GetColorByIndex(AIndex: integer): TBGRAPixel;
+begin
+  if (AIndex >= 65536) or (AIndex < 0) then
+    result := BGRAPixelTransparent
+  else
+    result := Color16BitToBGRA(AIndex);
+end;
+
+function TBGRA16BitPalette.ContainsColor(AValue: TBGRAPixel): boolean;
+begin
+  if AValue.alpha = 0 then
+    result := true
+  else
+    result := (AValue.alpha = 255) and (FindNearestColor(AValue)=AValue);
+end;
+
+function TBGRA16BitPalette.IndexOfColor(AValue: TBGRAPixel): integer;
+var idx: integer;
+begin
+  if AValue.Alpha = 0 then
+    result := 65536
+  else
+  begin
+    idx := BGRAToColor16Bit(AValue);
+    if Color16BitToBGRA(idx)=AValue then
+      result := idx
+    else
+      result := -1;
+  end;
+end;
+
+function TBGRA16BitPalette.GetAsArrayOfColor: ArrayOfTBGRAPixel;
+begin
+  result := nil;
+  raise exception.Create('Palette too big');
+end;
+
+function TBGRA16BitPalette.GetAsArrayOfWeightedColor: ArrayOfWeightedColor;
+begin
+  result := nil;
+  raise exception.Create('Palette too big');
+end;
+
+function TBGRA16BitPalette.FindNearestColor(AValue: TBGRAPixel): TBGRAPixel;
+begin
+  if AValue.alpha = 0 then result := BGRAPixelTransparent
+  else
+    result := GetColorByIndex(BGRAToColor16Bit(AValue));
+end;
+
+function TBGRA16BitPalette.FindNearestColorIndex(AValue: TBGRAPixel): integer;
+begin
+  result := BGRAToColor16Bit(AValue);
+end;
+
+{ TBGRAIndexedPalette }
+
+procedure TBGRAIndexedPalette.NeedArray;
+var Node: TAvgLvlTreeNode;
+  n: UInt32;
+begin
+  n := Count;
+  if UInt32(length(FArray)) <> n then
+  begin
+    setLength(FArray,n);
+    for Node in FTree do
+    with PBGRAIndexedPaletteEntry(Node.Data)^ do
+    begin
+      if Index < n then //index is unsigned so always >= 0
+        FArray[Index] := @Color;
+    end;
+  end;
+end;
+
+function TBGRAIndexedPalette.CreateEntry(AColor: TBGRAPixel): PBGRAPixel;
+begin
+  result := PBGRAPixel(GetMem(sizeOf(TBGRAIndexedPaletteEntry)));
+  result^ := AColor;
+  PBGRAIndexedPaletteEntry(result)^.Index := FCurrentIndex;
+  Inc(FCurrentIndex);
+end;
+
+procedure TBGRAIndexedPalette.FreeEntry(AEntry: PBGRAPixel);
+begin
+  FreeMem(AEntry);
+end;
+
+function TBGRAIndexedPalette.RemoveColor(AValue: TBGRAPixel): boolean;
+begin
+  Result:= false;
+  raise exception.Create('It is not possible to remove a color from an indexed palette');
+end;
+
+function TBGRAIndexedPalette.IndexOfColor(AValue: TBGRAPixel): integer;
+Var Node: TAvgLvlTreeNode;
+begin
+  Node := FTree.Find(@AValue);
+  if Assigned(Node) then
+    result := PBGRAIndexedPaletteEntry(Node.Data)^.Index
+  else
+    result := -1;
+end;
+
+procedure TBGRAIndexedPalette.Clear;
+begin
+  inherited Clear;
+  FCurrentIndex := 0;
+end;
+
+{ TBGRACustomColorQuantizer }
+
+function TBGRACustomColorQuantizer.GetDominantColor: TBGRAPixel;
+begin
+  result := ReducedPalette.DominantColor;
+end;
+
+procedure TBGRACustomColorQuantizer.ApplyDitheringInplace(
+  AAlgorithm: TDitheringAlgorithm; ABitmap: TBGRACustomBitmap);
+begin
+  ApplyDitheringInplace(AAlgorithm, ABitmap, rect(0,0,ABitmap.Width,ABitmap.Height));
+end;
+
+function TBGRACustomColorQuantizer.GetDitheredBitmap(
+  AAlgorithm: TDitheringAlgorithm; ABitmap: TBGRACustomBitmap
+  ): TBGRACustomBitmap;
+begin
+  result := GetDitheredBitmap(AAlgorithm, ABitmap, rect(0,0,ABitmap.Width,ABitmap.Height));
+end;
+
+procedure TBGRACustomColorQuantizer.SaveBitmapToFile(
+  AAlgorithm: TDitheringAlgorithm; ABitmap: TBGRACustomBitmap;
+  AFilenameUTF8: string);
+begin
+  SaveBitmapToFile(AAlgorithm, ABitmap, AFilenameUTF8, SuggestImageFormat(AFilenameUTF8));
+end;
+
+procedure TBGRACustomColorQuantizer.SaveBitmapToFile(
+  AAlgorithm: TDitheringAlgorithm; ABitmap: TBGRACustomBitmap;
+  AFilenameUTF8: string; AFormat: TBGRAImageFormat);
+var
+  stream: TFileStreamUTF8;
+begin
+   stream := TFileStreamUTF8.Create(AFilenameUTF8,fmCreate);
+   try
+     SaveBitmapToStream(AAlgorithm, ABitmap, stream, AFormat);
+   finally
+     stream.Free;
+   end;
+end;
+
+function TBGRACustomColorQuantizer.GetDitheredBitmapIndexedData(
+  ABitDepth: integer; AAlgorithm: TDitheringAlgorithm; ABitmap: TBGRACustomBitmap;
+  out AScanlineSize: PtrInt): Pointer;
+begin
+  result := GetDitheredBitmapIndexedData(ABitDepth,
+  {$IFDEF ENDIAN_LITTLE}riboLSBFirst{$ELSE}riboMSBFirst{$endif},
+  AAlgorithm, ABitmap, AScanlineSize);
+end;
+
+function TBGRACustomColorQuantizer.GetDitheredBitmapIndexedData(
+  ABitDepth: integer; AAlgorithm: TDitheringAlgorithm;
+  ABitmap: TBGRACustomBitmap): Pointer;
+var dummy: PtrInt;
+begin
+  result := GetDitheredBitmapIndexedData(ABitDepth, AAlgorithm, ABitmap, dummy);
+end;
+
 { TBGRACustomPalette }
+
+function TBGRACustomPalette.GetDominantColor: TBGRAPixel;
+var
+  w: ArrayOfWeightedColor;
+  i: Integer;
+  maxWeight, totalWeight: UInt32;
+begin
+  result := BGRAWhite;
+  maxWeight := 0;
+  w := GetAsArrayOfWeightedColor;
+  totalWeight:= 0;
+  for i := 0 to high(w) do
+    inc(totalWeight, w[i].Weight);
+  for i := 0 to high(w) do
+    if (w[i].Weight > maxWeight) and (BGRAToGSBA(w[i].Color).saturation > 16000) then
+    begin
+      maxWeight:= w[i].Weight;
+      result := w[i].Color;
+    end;
+  if maxWeight > totalWeight div 20 then exit;
+  for i := 0 to high(w) do
+    if (w[i].Weight > maxWeight) and (BGRAToGSBA(w[i].Color).lightness < 56000) and (BGRAToGSBA(w[i].Color).lightness > 16000) then
+    begin
+      maxWeight:= w[i].Weight;
+      result := w[i].Color;
+    end;
+  if maxWeight > 0 then exit;
+  for i := 0 to high(w) do
+    if (w[i].Weight > maxWeight) then
+    begin
+      maxWeight:= w[i].Weight;
+      result := w[i].Color;
+    end;
+end;
 
 procedure TBGRACustomPalette.AssignTo(AImage: TFPCustomImage);
 begin
@@ -264,6 +721,23 @@ begin
   end;
 end;
 
+function TBGRACustomApproxPalette.FindNearestColorIndexIgnoreAlpha(
+  AValue: TBGRAPixel): integer;
+const AlphaMask : DWord = {$IFDEF ENDIAN_LITTLE}$ff000000{$ELSE}$000000ff{$endif};
+begin
+  if AValue.alpha = 0 then
+    result := -1
+  else
+  begin
+    result := FindNearestColorIndex(TBGRAPixel(DWord(AValue) or AlphaMask));
+  end;
+end;
+
+function TBGRACustomApproxPalette.GetWeightByIndex(AIndex: Integer): UInt32;
+begin
+  result := 1;
+end;
+
 function TBGRACustomApproxPalette.FindNearestColor(AValue: TBGRAPixel; AIgnoreAlpha: boolean): TBGRAPixel;
 begin
   if AIgnoreAlpha then
@@ -272,9 +746,18 @@ begin
     result := FindNearestColor(AValue);
 end;
 
+function TBGRACustomApproxPalette.FindNearestColorIndex(AValue: TBGRAPixel;
+  AIgnoreAlpha: boolean): integer;
+begin
+  if AIgnoreAlpha then
+    result := FindNearestColorIndexIgnoreAlpha(AValue)
+  else
+    result := FindNearestColorIndex(AValue);
+end;
+
 { TBGRAWeightedPalette }
 
-function TBGRAWeightedPalette.GetWeightByIndex(AIndex: integer): UInt32;
+function TBGRAWeightedPalette.GetWeightByIndex(AIndex: Integer): UInt32;
 begin
   NeedArray;
   if (AIndex >= 0) and (AIndex < length(FArray)) then
@@ -287,6 +770,15 @@ procedure TBGRAWeightedPalette.IncludePixel(PPixel: PBGRAPixel);
 var dummy: UInt32;
 begin
   IncColor(PPixel^,dummy);
+end;
+
+constructor TBGRAWeightedPalette.Create(AColors: ArrayOfWeightedColor);
+var
+  i: Integer;
+begin
+  inherited Create;
+  for i := 0 to high(AColors) do
+    with AColors[i] do IncColor(Color,Weight);
 end;
 
 function TBGRAWeightedPalette.GetAsArrayOfWeightedColor: ArrayOfWeightedColor;
@@ -644,6 +1136,30 @@ begin
   end;
 end;
 
+constructor TBGRAPalette.Create(APalette: TBGRACustomPalette);
+begin
+  inherited Create;
+  AddColors(APalette);
+end;
+
+constructor TBGRAPalette.Create(AColors: ArrayOfTBGRAPixel);
+var
+  i: Integer;
+begin
+  inherited Create;
+  for i := 0 to high(AColors) do
+    AddColor(AColors[i]);
+end;
+
+constructor TBGRAPalette.Create(AColors: ArrayOfWeightedColor);
+var
+  i: Integer;
+begin
+  inherited Create;
+  for i := 0 to high(AColors) do
+    AddColor(AColors[i].Color);
+end;
+
 function TBGRAPalette.AddColor(AValue: TBGRAPixel): boolean;
 Var Node: TAvgLvlTreeNode;
   Entry: PBGRAPixel;
@@ -667,6 +1183,27 @@ begin
     ClearArray;
     AddLastColor(Entry);
   end;
+end;
+
+procedure TBGRAPalette.AddColors(ABitmap: TBGRACustomBitmap);
+var p: PBGRAPixel;
+  n: integer;
+begin
+  n := ABitmap.NbPixels;
+  p := ABitmap.Data;
+  while n > 0 do
+  begin
+    AddColor(p^);
+    inc(p);
+    dec(n);
+  end;
+end;
+
+procedure TBGRAPalette.AddColors(APalette: TBGRACustomPalette);
+var i: NativeInt;
+begin
+  for i := 0 to APalette.Count- 1 do
+    AddColor(APalette.Color[i]);
 end;
 
 function TBGRAPalette.RemoveColor(AValue: TBGRAPixel): boolean;

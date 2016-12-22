@@ -83,7 +83,7 @@ procedure RegisterOpenRasterFormat;
 
 implementation
 
-uses Graphics, XMLRead, XMLWrite, FPReadPNG, dialogs, BGRABitmapTypes, zstream, lazutf8classes,
+uses XMLRead, XMLWrite, FPReadPNG, BGRABitmapTypes, zstream, BGRAUTF8,
   UnzipperExt;
 
 function IsZipStream(stream: TStream): boolean;
@@ -131,14 +131,16 @@ end;
 { TFPReaderOpenRaster }
 
 function TFPReaderOpenRaster.InternalCheck(Stream: TStream): boolean;
-var {%h-}magic: packed array[0..3] of byte;
+var magic: packed array[0..3] of byte;
   OldPos,BytesRead: Int64;
   doc : TBGRAOpenRasterDocument;
 begin
   Result:=false;
   if Stream=nil then exit;
   oldPos := stream.Position;
-  BytesRead := Stream.Read({%h-}magic,sizeof(magic));
+  {$PUSH}{$HINTS OFF}
+  BytesRead := Stream.Read(magic,sizeof(magic));
+  {$POP}
   stream.Position:= OldPos;
   if BytesRead<>sizeof(magic) then exit;
   if (magic[0] = $50) and (magic[1] = $4b) and (magic[2] = $03) and (magic[3] = $04) then
@@ -302,7 +304,7 @@ begin
             if opstr = 'svg:overlay' then
               BlendOperation[idx] := boOverlay else
             if opstr = 'svg:soft-light' then
-              BlendOperation[idx] := boSoftLight else
+              BlendOperation[idx] := boSvgSoftLight else
             if opstr = 'svg:hard-light' then
               BlendOperation[idx] := boHardLight else
             if opstr = 'svg:difference' then
@@ -319,6 +321,8 @@ begin
               BlendOperation[idx] := boLinearExclusion else
             if opstr = 'krita:divide' then
               BlendOperation[idx] := boDivide else
+            if opstr = 'bgra:soft-light' then
+              BlendOperation[idx] := boSoftLight else
             if opstr = 'bgra:nice-glow' then
               BlendOperation[idx] := boNiceGlow else
             if opstr = 'bgra:glow' then
@@ -330,7 +334,8 @@ begin
             if (opstr = 'bgra:xor') or (opstr = 'xor') then
               BlendOperation[idx] := boXor else
             begin
-              messagedlg('Unknown blend operation : ' + attr.NodeValue,mtInformation,[mbOk],0);
+              //messagedlg('Unknown blend operation : ' + attr.NodeValue,mtInformation,[mbOk],0);
+              BlendOperation[idx] := boTransparent;
             end;
           end;
         end;
@@ -407,7 +412,7 @@ begin
         boDarken: strval := 'svg:darken';
         boMultiply: strval := 'svg:multiply';
         boOverlay, boDarkOverlay: strval := 'svg:overlay';
-        boSoftLight: strval := 'svg:soft-light';
+        boSoftLight: strval := 'bgra:soft-light';
         boHardLight: strval := 'svg:hard-light';
         boDifference,boLinearDifference: strval := 'svg:difference';
         boLinearSubtractInverse, boSubtractInverse: strval := 'krita:inverse_subtract';
@@ -419,6 +424,7 @@ begin
         boReflect: strval := 'bgra:reflect';
         boLinearNegation,boNegation: strval := 'bgra:negation';
         boXor: strval := 'bgra:xor';
+        boSvgSoftLight: strval := 'svg:soft-light';
         else strval := 'svg:src-over';
       end;
       layerNode.SetAttribute('composite-op',strval);

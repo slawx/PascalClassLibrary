@@ -36,10 +36,6 @@ type
       //returns integer bounds
       function GetBounds: TRect; override;
 
-      //compute min-max to be drawn on destination bitmap according to cliprect. Returns false if
-      //there is nothing to draw
-      function ComputeMinMax(out minx,miny,maxx,maxy: integer; bmpDest: TBGRACustomBitmap): boolean; override;
-
       //check if the point is inside the filling zone
       function IsPointInside(x,y: single; windingMode: boolean): boolean; override;
 
@@ -53,6 +49,10 @@ type
       //nbInter gets the number of computed intersections
       procedure ComputeAndSort(cury: single; var inter: ArrayOfTIntersectionInfo; out nbInter: integer; windingMode: boolean); override;
 
+      //can be called after ComputeAndSort or ComputeIntersection to determine the current horizontal slice
+      //so that it can be checked if the intermediates scanlines can be skipped
+      function GetSliceIndex: integer; override;
+
   end;
 
   { TFillEllipseInfo }
@@ -60,6 +60,7 @@ type
   TFillEllipseInfo = class(TFillShapeInfo)
   private
     FX, FY, FRX, FRY: single;
+    FSliceIndex: integer;
     function GetCenter: TPointF;
   protected
     function NbMaxIntersection: integer; override;
@@ -70,6 +71,7 @@ type
     constructor Create(x, y, rx, ry: single);
     function GetBounds: TRect; override;
     function SegmentsCurved: boolean; override;
+    function GetSliceIndex: integer; override;
     property Center: TPointF read GetCenter;
     property RadiusX: single read FRX;
     property RadiusY: single read FRY;
@@ -89,6 +91,7 @@ type
     function GetBounds: TRect; override;
     function SegmentsCurved: boolean; override;
     destructor Destroy; override;
+    function GetSliceIndex: integer; override;
     property InnerBorder: TFillEllipseInfo read FInnerBorder;
     property OuterBorder: TFillEllipseInfo read FOuterBorder;
   end;
@@ -178,6 +181,7 @@ type
   public
     constructor Create(const points: array of TPointF);
     destructor Destroy; override;
+    function GetSliceIndex: integer; override;
   end;
 
   POnePassRecord = ^TOnePassRecord;
@@ -207,11 +211,13 @@ type
     FSortedByY: array of POnePassRecord;
     FFirstWaiting, FFirstDrawing: POnePassRecord;
     FShouldInitializeDrawing: boolean;
+    FSliceIndex: integer;
     procedure ComputeIntersection(cury: single;
       var inter: ArrayOfTIntersectionInfo; var nbInter: integer); override;
   public
     constructor Create(const points: array of TPointF);
     function CreateIntersectionArray: ArrayOfTIntersectionInfo; override;
+    function GetSliceIndex: integer; override;
     destructor Destroy; override;
   end;
 
@@ -242,9 +248,53 @@ function IsPointInEllipse(x,y,rx,ry: single; point: TPointF): boolean;
 function IsPointInRoundRectangle(x1, y1, x2, y2, rx, ry: single; point: TPointF): boolean;
 function IsPointInRectangle(x1, y1, x2, y2: single; point: TPointF): boolean;
 
+function BGRAShapeComputeMinMax(AShape: TBGRACustomFillInfo; out minx, miny, maxx, maxy: integer;
+  bmpDest: TBGRACustomBitmap): boolean;
+
 implementation
 
 uses Math;
+
+function BGRAShapeComputeMinMax(AShape: TBGRACustomFillInfo; out minx, miny, maxx, maxy: integer;
+  bmpDest: TBGRACustomBitmap): boolean;
+var clip,bounds: TRect;
+begin
+  result := true;
+  bounds := AShape.GetBounds;
+
+  if (bounds.Right <= bounds.left) or (bounds.bottom <= bounds.top) then
+  begin
+    result := false;
+    exit;
+  end;
+
+  miny := bounds.top;
+  maxy := bounds.bottom - 1;
+  minx := bounds.left;
+  maxx := bounds.right - 1;
+
+  clip := bmpDest.ClipRect;
+
+  if minx < clip.Left then
+    minx := clip.Left;
+  if maxx < clip.Left then
+    result := false;
+
+  if maxx > clip.Right - 1 then
+    maxx := clip.Right- 1;
+  if minx > clip.Right - 1 then
+    result := false;
+
+  if miny < clip.Top then
+    miny := clip.Top;
+  if maxy < clip.Top then
+    result := false;
+
+  if maxy > clip.Bottom - 1 then
+    maxy := clip.Bottom - 1;
+  if miny > clip.Bottom - 1 then
+    result := false;
+end;
 
 procedure ComputeAliasedRowBounds(x1,x2: single; minx,maxx: integer; out ix1,ix2: integer);
 begin
@@ -344,46 +394,6 @@ begin
   Result := rect(0, 0, 0, 0);
 end;
 
-function TFillShapeInfo.ComputeMinMax(out minx, miny, maxx, maxy: integer;
-  bmpDest: TBGRACustomBitmap): boolean;
-var clip,bounds: TRect;
-begin
-  result := true;
-  bounds := GetBounds;
-
-  if (bounds.Right <= bounds.left) or (bounds.bottom <= bounds.top) then
-  begin
-    result := false;
-    exit;
-  end;
-
-  miny := bounds.top;
-  maxy := bounds.bottom - 1;
-  minx := bounds.left;
-  maxx := bounds.right - 1;
-
-  clip := bmpDest.ClipRect;
-
-  if minx < clip.Left then
-    minx := clip.Left;
-  if maxx < clip.Left then
-    result := false;
-
-  if maxx > clip.Right - 1 then
-    maxx := clip.Right- 1;
-  if minx > clip.Right - 1 then
-    result := false;
-
-  if miny < clip.Top then
-    miny := clip.Top;
-  if maxy < clip.Top then
-    result := false;
-
-  if maxy > clip.Bottom - 1 then
-    maxy := clip.Bottom - 1;
-  if miny > clip.Bottom - 1 then
-    result := false;
-end;
 
 function TFillShapeInfo.IsPointInside(x, y: single; windingMode: boolean
   ): boolean;
@@ -488,6 +498,11 @@ begin
   if nbInter < 2 then exit;
   SortIntersection(inter,nbInter);
   if windingMode then ConvertFromNonZeroWinding(inter,nbInter);
+end;
+
+function TFillShapeInfo.GetSliceIndex: integer;
+begin
+  result := 0;
 end;
 
 function TFillShapeInfo.CreateIntersectionArray: ArrayOfTIntersectionInfo;
@@ -885,6 +900,11 @@ begin
   inherited Destroy;
 end;
 
+function TFillPolyInfo.GetSliceIndex: integer;
+begin
+  Result:= FCurSlice;
+end;
+
 { TOnePassFillPolyInfo }
 
 function TOnePassFillPolyInfo.PartitionByY(left,right: integer): integer;
@@ -982,6 +1002,7 @@ begin
       begin
         p^.nextDrawing := FFirstDrawing;
         FFirstDrawing := p;
+        inc(FSliceIndex);
       end;
     end
       else break;
@@ -1012,6 +1033,7 @@ begin
       else
         FFirstDrawing:= pnext;
       p := pnext;
+      Inc(FSliceIndex);
       continue;
     end;
     pprev := p;
@@ -1055,6 +1077,7 @@ begin
   end;
 
   SortByY;
+  FSliceIndex := 0;
 end;
 
 function TOnePassFillPolyInfo.CreateIntersectionArray: ArrayOfTIntersectionInfo;
@@ -1085,6 +1108,13 @@ begin
   end;
 
   setlength(result, NbMaxIntersection);
+  for i := 0 to high(result) do
+    result[i] := nil;
+end;
+
+function TOnePassFillPolyInfo.GetSliceIndex: integer;
+begin
+  Result:= FSliceIndex;
 end;
 
 destructor TOnePassFillPolyInfo.Destroy;
@@ -1153,6 +1183,7 @@ begin
   FRX := abs(rx);
   FRY := abs(ry);
   WindingFactor := 1;
+  FSliceIndex:= -1;
 end;
 
 function TFillEllipseInfo.GetBounds: TRect;
@@ -1163,6 +1194,11 @@ end;
 function TFillEllipseInfo.SegmentsCurved: boolean;
 begin
   Result:= true;
+end;
+
+function TFillEllipseInfo.GetSliceIndex: integer;
+begin
+  Result:= FSliceIndex;
 end;
 
 function TFillEllipseInfo.GetCenter: TPointF;
@@ -1189,6 +1225,13 @@ begin
     Inc(nbinter);
     inter[nbinter].SetValues( FX + d, windingFactor, 1);
     Inc(nbinter);
+    FSliceIndex := 0;
+  end else
+  begin
+    if cury < FY then
+      FSliceIndex:= -1
+    else
+      FSliceIndex:= 1;
   end;
 end;
 
@@ -1240,6 +1283,11 @@ begin
   if FInnerBorder <> nil then
     FInnerBorder.Free;
   inherited Destroy;
+end;
+
+function TFillBorderEllipseInfo.GetSliceIndex: integer;
+begin
+  Result:= FOuterBorder.GetSliceIndex;
 end;
 
 { TFillRoundRectangleInfo }

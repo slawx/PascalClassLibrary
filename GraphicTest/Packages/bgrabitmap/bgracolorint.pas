@@ -25,8 +25,8 @@ function ColorInt65536ToColorF(color: TColorInt65536): TColorF;
 operator +(const color1,color2: TColorInt65536): TColorInt65536; inline;
 operator *(const color1,color2: TColorInt65536): TColorInt65536;
 operator *(const color1: TColorInt65536; factor65536: integer): TColorInt65536;
-function ColorIntToBGRA(const AColor: TColorInt65536): TBGRAPixel;
-function BGRAToColorInt(const AColor: TBGRAPixel): TColorInt65536;
+function ColorIntToBGRA(const AColor: TColorInt65536; AGammaCompression: boolean = false): TBGRAPixel;
+function BGRAToColorInt(const AColor: TBGRAPixel; AGammaExpansion: boolean = false): TColorInt65536;
 function BGRAToColorIntMultiply(const color1: TBGRAPixel; const color2: TColorInt65536): TColorInt65536;
 
 implementation
@@ -183,11 +183,19 @@ begin
 end;
 {$endif}
 
-function BGRAToColorInt(const AColor: TBGRAPixel): TColorInt65536;
+function BGRAToColorInt(const AColor: TBGRAPixel; AGammaExpansion: boolean): TColorInt65536;
 begin
-  result.r := AColor.red shl 8 + AColor.red + (AColor.red shr 7);
-  result.g := AColor.green shl 8 + AColor.green + (AColor.green shr 7);
-  result.b := AColor.blue shl 8 + AColor.blue + (AColor.blue shr 7);
+  if AGammaExpansion then
+  begin
+    result.r := GammaExpansionTab[AColor.red] + (AColor.red shr 7);
+    result.g := GammaExpansionTab[AColor.green] + (AColor.green shr 7);
+    result.b := GammaExpansionTab[AColor.blue] + (AColor.blue shr 7);
+  end else
+  begin
+    result.r := AColor.red shl 8 + AColor.red + (AColor.red shr 7);
+    result.g := AColor.green shl 8 + AColor.green + (AColor.green shr 7);
+    result.b := AColor.blue shl 8 + AColor.blue + (AColor.blue shr 7);
+  end;
   result.a := AColor.alpha shl 8 + AColor.alpha+ (AColor.alpha shr 7);
 end;
 
@@ -202,29 +210,9 @@ function BGRAToColorIntMultiply(const color1: TBGRAPixel;
     mov ebx, result
     mov ecx, [Color1]
 
-    movzx eax, cl //b
-    mov edx, eax
-    shr edx, 7
-    add eax, edx
-    imul [esi+8]
-    shl edx, 24
-    shr eax, 8
-    or edx, eax
-    mov [ebx+8], edx
-    shr ecx, 8
-
-    movzx eax, cl //g
-    mov edx, eax
-    shr edx, 7
-    add eax, edx
-    imul [esi+4]
-    shl edx, 24
-    shr eax, 8
-    or edx, eax
-    mov [ebx+4], edx
-    shr ecx, 8
-
-    movzx eax, cl //r
+    mov eax, ecx
+    shr eax, TBGRAPixel_RedShift
+    and eax, 255
     mov edx, eax
     shr edx, 7
     add eax, edx
@@ -233,9 +221,34 @@ function BGRAToColorIntMultiply(const color1: TBGRAPixel;
     shr eax, 8
     or edx, eax
     mov [ebx], edx
-    shr ecx, 8
 
-    movzx eax, cl //a
+    mov eax, ecx
+    shr eax, TBGRAPixel_GreenShift
+    and eax, 255
+    mov edx, eax
+    shr edx, 7
+    add eax, edx
+    imul [esi+4]
+    shl edx, 24
+    shr eax, 8
+    or edx, eax
+    mov [ebx+4], edx
+
+    mov eax, ecx
+    shr eax, TBGRAPixel_BlueShift
+    and eax, 255
+    mov edx, eax
+    shr edx, 7
+    add eax, edx
+    imul [esi+8]
+    shl edx, 24
+    shr eax, 8
+    or edx, eax
+    mov [ebx+8], edx
+
+    mov eax, ecx
+    shr eax, TBGRAPixel_AlphaShift
+    and eax, 255
     mov edx, eax
     shr edx, 7
     add eax, edx
@@ -257,7 +270,7 @@ begin
 end;
 {$ENDIF}
 
-function ColorIntToBGRA(const AColor: TColorInt65536): TBGRAPixel;
+function ColorIntToBGRA(const AColor: TColorInt65536; AGammaCompression: boolean): TBGRAPixel;
 var maxValue,invMaxValue,r,g,b: integer;
 begin
   if AColor.a <= 0 then
@@ -279,34 +292,69 @@ begin
     exit;
   end;
 
-  if maxValue <= 65535 then
+  if AGammaCompression then
   begin
-    if AColor.r <= 0 then result.red := 0 else
-      result.red := AColor.r shr 8 - (AColor.r shr 15);
+    if maxValue <= 65535 then
+    begin
+      if AColor.r <= 0 then result.red := 0 else
+        result.red := GammaCompressionTab[AColor.r - (AColor.r shr 15)];
 
-    if AColor.g <= 0 then result.green := 0 else
-      result.green := AColor.g shr 8 - (AColor.g shr 15);
+      if AColor.g <= 0 then result.green := 0 else
+        result.green :=GammaCompressionTab[AColor.g - (AColor.g shr 15)];
 
-    if AColor.b <= 0 then result.blue := 0 else
-      result.blue := AColor.b shr 8 - (AColor.b shr 15);
-    exit;
+      if AColor.b <= 0 then result.blue := 0 else
+        result.blue := GammaCompressionTab[AColor.b - (AColor.b shr 15)];
+      exit;
+    end;
+
+    invMaxValue := (1073741824+maxValue-1) div maxValue;
+
+    maxValue := (maxValue-65535) shr 1;
+    if AColor.r < 0 then r := maxValue else
+      r := AColor.r*invMaxValue shr 14 + maxValue;
+    if AColor.g < 0 then g := maxValue else
+      g := AColor.g*invMaxValue shr 14 + maxValue;
+    if AColor.b < 0 then b := maxValue else
+      b := AColor.b*invMaxValue shr 14 + maxValue;
+
+    if r >= 65535 then result.red := 255 else
+      result.red := GammaCompressionTab[r];
+    if g >= 65535 then result.green := 255 else
+        result.green := GammaCompressionTab[g];
+    if b >= 65535 then result.blue := 255 else
+      result.blue := GammaCompressionTab[b];
+  end else
+  begin
+    if maxValue <= 65535 then
+    begin
+      if AColor.r <= 0 then result.red := 0 else
+        result.red := AColor.r shr 8 - (AColor.r shr 15);
+
+      if AColor.g <= 0 then result.green := 0 else
+        result.green := AColor.g shr 8 - (AColor.g shr 15);
+
+      if AColor.b <= 0 then result.blue := 0 else
+        result.blue := AColor.b shr 8 - (AColor.b shr 15);
+      exit;
+    end;
+
+    invMaxValue := (1073741824+maxValue-1) div maxValue;
+
+    maxValue := (maxValue-65535) shr 9;
+    if AColor.r < 0 then r := maxValue else
+      r := AColor.r*invMaxValue shr 22 + maxValue;
+    if AColor.g < 0 then g := maxValue else
+      g := AColor.g*invMaxValue shr 22 + maxValue;
+    if AColor.b < 0 then b := maxValue else
+      b := AColor.b*invMaxValue shr 22 + maxValue;
+
+    if r >= 255 then result.red := 255 else
+      result.red := r;
+    if g >= 255 then result.green := 255 else
+        result.green := g;
+    if b >= 255 then result.blue := 255 else
+      result.blue := b;
   end;
-
-  invMaxValue := (1073741824+maxValue-1) div maxValue;
-  maxValue := (maxValue-65535) shr 9;
-  if AColor.r < 0 then r := 0 else
-    r := AColor.r*invMaxValue shr 22 + maxValue;
-  if AColor.g < 0 then g := 0 else
-    g := AColor.g*invMaxValue shr 22 + maxValue;
-  if AColor.b < 0 then b := 0 else
-    b := AColor.b*invMaxValue shr 22 + maxValue;
-
-  if r >= 255 then result.red := 255 else
-    result.red := r;
-  if g >= 255 then result.green := 255 else
-      result.green := g;
-  if b >= 255 then result.blue := 255 else
-    result.blue := b;
 end;
 
 
