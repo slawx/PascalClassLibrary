@@ -412,7 +412,7 @@ begin
         Lang := ParamStr(i + 1);
   end;
   if Lang = '' then
-    LCLGetLanguageIDs(Lang, T);
+    LazGetLanguageIDs(Lang, T);
 
   if Assigned(Language) and (Language.Code = '') and Assigned(FOnAutomaticLanguage) then begin
     Lang := FOnAutomaticLanguage(Lang);
