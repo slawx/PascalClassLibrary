@@ -1,103 +1,103 @@
 object MainForm: TMainForm
-  Left = 261
-  Height = 520
-  Top = 104
-  Width = 692
-  ActiveControl = IntegerListButton
-  Caption = 'Template generics demo'
-  ClientHeight = 520
-  ClientWidth = 692
+  Left = 619
+  Height = 678
+  Top = 203
+  Width = 934
+  ActiveControl = ButtonIntegerList
+  Caption = 'Native generics demo'
+  ClientHeight = 678
+  ClientWidth = 934
   OnCreate = FormCreate
   OnDestroy = FormDestroy
-  LCLVersion = '0.9.31'
-  object IntegerListButton: TButton
+  LCLVersion = '1.8.0.4'
+  object ButtonIntegerList: TButton
     Left = 8
     Height = 25
     Top = 8
-    Width = 152
-    Caption = 'TList<Integer>'
-    OnClick = IntegerListButtonClick
+    Width = 264
+    Caption = 'TGList<Integer>'
+    OnClick = ButtonIntegerListClick
     TabOrder = 0
   end
-  object StringListButton: TButton
+  object ButtonStringList: TButton
     Left = 8
     Height = 25
     Top = 40
-    Width = 152
-    Caption = 'TStringList<string>'
-    OnClick = StringListButtonClick
+    Width = 264
+    Caption = 'TGList<String>'
+    OnClick = ButtonStringListClick
     TabOrder = 1
   end
-  object DictionaryStringButton: TButton
+  object ButtonDictionaryString: TButton
     Left = 8
     Height = 25
     Top = 72
-    Width = 152
-    Caption = 'TDictionary<string,string>'
-    OnClick = DictionaryStringButtonClick
+    Width = 264
+    Caption = 'TGDictionary<string>'
+    OnClick = ButtonDictionaryStringClick
     TabOrder = 2
   end
-  object QueueIntegerButton: TButton
+  object ButtonQueueInteger: TButton
     Left = 8
     Height = 25
     Top = 102
-    Width = 152
-    Caption = 'TQueue<Integer>'
-    OnClick = QueueIntegerButtonClick
+    Width = 264
+    Caption = 'TGQueue<Integer>'
+    OnClick = ButtonQueueIntegerClick
     TabOrder = 3
   end
-  object CharListButton: TButton
+  object ButtonCharList: TButton
     Left = 8
     Height = 25
     Top = 134
-    Width = 152
-    Caption = 'TString<Char>'
-    OnClick = CharListButtonClick
+    Width = 264
+    Caption = 'TListChar(TString)'
+    OnClick = ButtonCharListClick
     TabOrder = 4
   end
   object ButtonBenchmarkListString: TButton
     Left = 8
     Height = 24
-    Top = 456
-    Width = 152
+    Top = 614
+    Width = 264
     Anchors = [akLeft, akBottom]
-    Caption = 'TStringList<string>'
+    Caption = 'TGList<string>'
     OnClick = ButtonBenchmarkListStringClick
     TabOrder = 5
   end
-  object ListObjectButton: TButton
+  object ButtonListObject: TButton
     Left = 8
     Height = 25
     Top = 163
-    Width = 152
-    Caption = 'TObjectList<Object>'
-    OnClick = ListObjectButtonClick
+    Width = 264
+    Caption = 'TGListObject<TObject>'
+    OnClick = ButtonListObjectClick
     TabOrder = 6
   end
   object ButtonBenchmarkDictionary: TButton
     Left = 8
     Height = 25
-    Top = 424
-    Width = 152
+    Top = 582
+    Width = 264
     Anchors = [akLeft, akBottom]
-    Caption = 'TDictionary<string,string>'
+    Caption = 'TGDictionary<string,string>'
     OnClick = ButtonBenchmarkDictionaryClick
     TabOrder = 7
   end
-  object MatrixIntegerButton: TButton
+  object ButtonMatrixInteger: TButton
     Left = 8
     Height = 25
     Top = 192
-    Width = 152
-    Caption = 'TMatrix<Integer>'
-    OnClick = MatrixIntegerButtonClick
+    Width = 264
+    Caption = 'TGMatrix<Integer>'
+    OnClick = ButtonMatrixIntegerClick
     TabOrder = 8
   end
   object ListViewOutput: TListView
-    Left = 168
-    Height = 491
+    Left = 280
+    Height = 649
     Top = 24
-    Width = 518
+    Width = 648
     Anchors = [akTop, akLeft, akRight, akBottom]
     Columns = <    
       item
@@ -106,25 +106,25 @@ object MainForm: TMainForm
       end    
       item
         Caption = 'Value'
-        Width = 321
+        Width = 428
       end>
     ReadOnly = True
     TabOrder = 9
     ViewStyle = vsReport
   end
   object LabelTestName: TLabel
-    Left = 168
-    Height = 14
+    Left = 144
+    Height = 26
     Top = 8
-    Width = 10
+    Width = 15
     Caption = '   '
     ParentColor = False
   end
   object Label1: TLabel
-    Left = 8
-    Height = 14
-    Top = 408
-    Width = 62
+    Left = 10
+    Height = 26
+    Top = 554
+    Width = 111
     Anchors = [akLeft, akBottom]
     Caption = 'Benchmarks:'
     ParentColor = False
@@ -132,29 +132,20 @@ object MainForm: TMainForm
   object ButtonBenchmarkListPointer: TButton
     Left = 8
     Height = 24
-    Top = 488
-    Width = 152
+    Top = 646
+    Width = 264
     Anchors = [akLeft, akBottom]
-    Caption = 'TList<Pointer>'
+    Caption = 'TGList<Pointer>'
     OnClick = ButtonBenchmarkListPointerClick
     TabOrder = 10
   end
-  object StreamByteButton: TButton
-    Left = 8
+  object ButtonStreamByte: TButton
+    Left = 10
     Height = 25
     Top = 224
-    Width = 152
-    Caption = 'TStream<Byte>'
-    OnClick = StreamByteButtonClick
+    Width = 264
+    Caption = 'TMemoryStreamByte'
+    OnClick = ButtonStreamByteClick
     TabOrder = 11
-  end
-  object TreeButton: TButton
-    Left = 8
-    Height = 25
-    Top = 256
-    Width = 152
-    Caption = 'TTree<string>'
-    OnClick = TreeButtonClick
-    TabOrder = 12
   end
 end

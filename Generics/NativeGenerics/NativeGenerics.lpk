@@ -1,104 +1,90 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <CONFIG>
   <Package Version="4">
-    <PathDelim Value="\"/>
     <Name Value="NativeGenerics"/>
-    <AddToProjectUsesSection Value="True"/>
-    <Author Value="Chronos (robie@centrum.cz)"/>
+    <Type Value="RunAndDesignTime"/>
     <CompilerOptions>
       <Version Value="11"/>
-      <PathDelim Value="\"/>
       <SearchPaths>
-        <OtherUnitFiles Value="Units;Additional"/>
-        <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
+        <IncludeFiles Value="Generic"/>
+        <OtherUnitFiles Value="Generic;Specialized;Additional"/>
+        <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)/"/>
       </SearchPaths>
-      <CodeGeneration>
-        <Checks>
-          <IOChecks Value="True"/>
-          <RangeChecks Value="True"/>
-          <OverflowChecks Value="True"/>
-          <StackChecks Value="True"/>
-        </Checks>
-      </CodeGeneration>
-      <Other>
-        <CompilerPath Value="$(CompPath)"/>
-      </Other>
     </CompilerOptions>
-    <Description Value="Native generics library. 
-Require FPC 2.7.1"/>
-    <License Value="GNU/GPLv3"/>
-    <Version Minor="2"/>
-    <Files Count="15">
+    <Files Count="17">
       <Item1>
-        <Filename Value="ReadMe.txt"/>
-        <Type Value="Text"/>
+        <Filename Value="Generic/GenericBitmap.pas"/>
+        <UnitName Value="GenericBitmap"/>
       </Item1>
       <Item2>
-        <Filename Value="Units\GenericList.pas"/>
-        <UnitName Value="GenericList"/>
+        <Filename Value="Generic/GenericDictionary.pas"/>
+        <UnitName Value="GenericDictionary"/>
       </Item2>
       <Item3>
-        <Filename Value="Units\GenericTree.pas"/>
-        <UnitName Value="GenericTree"/>
+        <Filename Value="Generic/GenericFileList.pas"/>
+        <Type Value="Include"/>
       </Item3>
       <Item4>
-        <Filename Value="Units\GenericDictionary.pas"/>
-        <UnitName Value="GenericDictionary"/>
+        <Filename Value="Generic/GenericList.pas"/>
+        <UnitName Value="GenericList"/>
       </Item4>
       <Item5>
-        <Filename Value="Units\GenericQueue.pas"/>
-        <UnitName Value="GenericQueue"/>
+        <Filename Value="Generic/GenericMatrix.pas"/>
+        <UnitName Value="GenericMatrix"/>
       </Item5>
       <Item6>
-        <Filename Value="Units\GenericRange.pas"/>
-        <UnitName Value="GenericRange"/>
+        <Filename Value="Generic/GenericPoint.pas"/>
+        <UnitName Value="GenericPoint"/>
       </Item6>
       <Item7>
-        <Filename Value="Units\GenericSet.pas"/>
-        <UnitName Value="GenericSet"/>
+        <Filename Value="Generic/GenericQueue.pas"/>
+        <UnitName Value="GenericQueue"/>
       </Item7>
       <Item8>
-        <Filename Value="Units\GenericStack.pas"/>
-        <UnitName Value="GenericStack"/>
+        <Filename Value="Generic/GenericRange.pas"/>
+        <UnitName Value="GenericRange"/>
       </Item8>
       <Item9>
-        <Filename Value="Units\GenericStream.pas"/>
-        <UnitName Value="GenericStream"/>
+        <Filename Value="Generic/GenericRectangle.pas"/>
+        <UnitName Value="GenericRectangle"/>
       </Item9>
       <Item10>
-        <Filename Value="Units\GenericMatrix.pas"/>
-        <UnitName Value="GenericMatrix"/>
+        <Filename Value="Generic/GenericSet.pas"/>
+        <UnitName Value="GenericSet"/>
       </Item10>
       <Item11>
-        <Filename Value="Units\GenericString.pas"/>
-        <UnitName Value="GenericString"/>
+        <Filename Value="Generic/GenericStack.pas"/>
+        <UnitName Value="GenericStack"/>
       </Item11>
       <Item12>
-        <Filename Value="Units\GenericBitmap.pas"/>
-        <UnitName Value="GenericBitmap"/>
+        <Filename Value="Generic/GenericStream.pas"/>
+        <UnitName Value="GenericStream"/>
       </Item12>
       <Item13>
-        <Filename Value="Units\GenericRectangle.pas"/>
-        <UnitName Value="GenericRectangle"/>
+        <Filename Value="Generic/GenericTree.pas"/>
+        <UnitName Value="GenericTree"/>
       </Item13>
       <Item14>
-        <Filename Value="Units\GenericPoint.pas"/>
-        <UnitName Value="GenericPoint"/>
+        <Filename Value="Specialized/SpecializedList.pas"/>
+        <UnitName Value="SpecializedList"/>
       </Item14>
       <Item15>
-        <Filename Value="Additional\UBinarySerializer.pas"/>
-        <UnitName Value="UBinarySerializer"/>
+        <Filename Value="Specialized/SpecializedRectangle.pas"/>
+        <UnitName Value="SpecializedRectangle"/>
       </Item15>
+      <Item16>
+        <Filename Value="Specialized/SpecializedStream.pas"/>
+        <UnitName Value="SpecializedStream"/>
+      </Item16>
+      <Item17>
+        <Filename Value="Additional/UBinarySerializer.pas"/>
+        <UnitName Value="UBinarySerializer"/>
+      </Item17>
     </Files>
-    <Type Value="RunAndDesignTime"/>
-    <RequiredPkgs Count="2">
+    <RequiredPkgs Count="1">
       <Item1>
-        <PackageName Value="LCL"/>
-      </Item1>
-      <Item2>
         <PackageName Value="FCL"/>
-        <MinVersion Major="1" Valid="True"/>
-      </Item2>
+      </Item1>
     </RequiredPkgs>
     <UsageOptions>
       <UnitPath Value="$(PkgOutDir)"/>

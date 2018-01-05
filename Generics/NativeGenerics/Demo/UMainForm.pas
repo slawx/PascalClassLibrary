@@ -6,46 +6,44 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  ComCtrls, GenericList, GenericDictionary, GenericQueue, GenericStream,
-  DateUtils, GenericString, GenericTree;
+  ComCtrls, DateUtils, GenericList, GenericMatrix, GenericQueue, fgl,
+  GenericDictionary, SpecializedStream, SpecializedList;
 
 type
 
   { TMainForm }
 
   TMainForm = class(TForm)
-    TreeButton: TButton;
-    StreamByteButton: TButton;
+    ButtonStreamByte: TButton;
     ButtonBenchmarkDictionary: TButton;
     ButtonBenchmarkListPointer: TButton;
-    ListObjectButton: TButton;
+    ButtonListObject: TButton;
     ButtonBenchmarkListString: TButton;
-    CharListButton: TButton;
-    MatrixIntegerButton: TButton;
-    QueueIntegerButton: TButton;
-    DictionaryStringButton: TButton;
-    IntegerListButton: TButton;
-    StringListButton: TButton;
+    ButtonCharList: TButton;
+    ButtonMatrixInteger: TButton;
+    ButtonQueueInteger: TButton;
+    ButtonDictionaryString: TButton;
+    ButtonIntegerList: TButton;
+    ButtonStringList: TButton;
     Label1: TLabel;
     LabelTestName: TLabel;
     ListViewOutput: TListView;
     procedure ButtonBenchmarkDictionaryClick(Sender: TObject);
     procedure ButtonBenchmarkListPointerClick(Sender: TObject);
     procedure ButtonBenchmarkListStringClick(Sender: TObject);
-    procedure CharListButtonClick(Sender: TObject);
-    procedure DictionaryStringButtonClick(Sender: TObject);
-    procedure IntegerListButtonClick(Sender: TObject);
-    procedure MatrixIntegerButtonClick(Sender: TObject);
-    procedure ListObjectButtonClick(Sender: TObject);
-    procedure QueueIntegerButtonClick(Sender: TObject);
-    procedure StreamByteButtonClick(Sender: TObject);
-    procedure StringListButtonClick(Sender: TObject);
+    procedure ButtonCharListClick(Sender: TObject);
+    procedure ButtonDictionaryStringClick(Sender: TObject);
+    procedure ButtonIntegerListClick(Sender: TObject);
+    procedure ButtonMatrixIntegerClick(Sender: TObject);
+    procedure ButtonListObjectClick(Sender: TObject);
+    procedure ButtonQueueIntegerClick(Sender: TObject);
+    procedure ButtonStringListClick(Sender: TObject);
+    procedure ButtonStreamByteClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
-    procedure TreeButtonClick(Sender: TObject);
-  private
   public
     MeasureDuration: TDateTime;
+    Bitmap: TBitmap;
     procedure UpdateButtonState(Enabled: Boolean);
     procedure WriteOutput(Text1: string = ''; Text2: string = '');
   end;
@@ -64,14 +62,14 @@ begin
   MeasureDuration := 100 * OneMillisecond;
 end;
 
-procedure TMainForm.IntegerListButtonClick(Sender: TObject);
+procedure TMainForm.ButtonIntegerListClick(Sender: TObject);
 var
   List: TGList<Integer>;
   List2: TGList<Integer>;
   I: Integer;
 begin
   ListViewOutput.Clear;
-  LabelTestName.Caption := 'TGList<Integer> test';
+  LabelTestName.Caption := 'TListInteger test';
   List := TGList<Integer>.Create;
   List2 := TGList<Integer>.Create;
   with List do try
@@ -86,6 +84,7 @@ begin
     WriteOutput('Reverse', Implode(',', IntToStr));
     WriteOutput('First', IntToStr(First));
     WriteOutput('Last', IntToStr(Last));
+    WriteOutput('IndexOf(7)', IntToStr(IndexOf(7)));
     MoveItems(3, 2, 3);
     WriteOutput('MoveItems(3, 2, 3)', Implode(',', IntToStr));
     Insert(5, 11);
@@ -106,13 +105,14 @@ begin
   end;
 end;
 
-procedure TMainForm.MatrixIntegerButtonClick(Sender: TObject);
-//var
-//  Matrix: TGMatrix<Integer, Integer, Integer>;
+procedure TMainForm.ButtonMatrixIntegerClick(Sender: TObject);
+var
+  Matrix: TGMatrix<Integer>;
+  I: Integer;
 begin
-  (*  ListViewOutput.Clear;
-  LabelTestName.Caption := 'TGMatrix<Integer> test';
-  Matrix := TGMatrix<Integer, Integer, Integer>.Create;
+  ListViewOutput.Clear;
+  LabelTestName.Caption := 'TMatrixInteger test';
+  Matrix := TGMatrix<Integer>.Create;
   with Matrix do try
     Count := CreateIndex(2, 2);
     WriteOutput('Count := CreateIndex(2, 2)', '[' + Implode('; ', ', ', IntToStr) + ']');
@@ -126,70 +126,19 @@ begin
     WriteOutput('Count [Y, X]', IntToStr(Count.Y) + ', ' + IntToStr(Count.X));
   finally
     Free;
-  end; *)
-end;
-
-function ObjectToStr(Obj: TObject): string;
-begin
-  Result := Obj.ClassName;
-end;
-
-procedure TMainForm.ListObjectButtonClick(Sender: TObject);
-var
-  List: TGObjectList<TObject>;
-  I: Integer;
-begin
-  ListViewOutput.Clear;
-  LabelTestName.Caption := 'TObjectList<TObject> test';
-  List := TGObjectList<TObject>.Create;
-  with List do try
-    AddArray([TObject.Create, TObject.Create, TObject.Create, TObject.Create]);
-    WriteOutput('AddArray([TObject.Create, TObject.Create, TObject.Create, TObject.Create])', Implode(',', ObjectToStr));
-    Clear;
-    WriteOutput('Clear', Implode(',', ObjectToStr));
-    for I := 0 to 10 do Add(TObject.Create);
-    WriteOutput('for I := 0 to 10 do Add(TObject.Create)', Implode(',', ObjectToStr));
-    WriteOutput('Count', IntToStr(Count));
-    Reverse;
-    WriteOutput('Reverse', Implode(',', ObjectToStr));
-    MoveItems(3, 2, 3);
-    WriteOutput('MoveItems(3, 2, 3)', Implode(',', ObjectToStr));
-  finally
-    Free;
   end;
 end;
 
-procedure TMainForm.QueueIntegerButtonClick(Sender: TObject);
+procedure TMainForm.ButtonStreamByteClick(Sender: TObject);
 var
-  Queue: TGQueue<Integer>;
-begin
-  ListViewOutput.Clear;
-  LabelTestName.Caption := 'TGQueue<Integer> test';
-  Queue := TGQueue<Integer>.Create;
-  with Queue do try
-    Enqueue(1);
-    Enqueue(2);
-    Enqueue(3);
-    WriteOutput('Enqueue(1),Enqueue(2),Enqueue(3) ', List.Implode(',', IntToStr));
-    Enqueue(4);
-    WriteOutput('Enqueue(4)', List.Implode(',', IntToStr));
-    WriteOutput('Dequeued item', IntToStr(Dequeue));
-    WriteOutput('Dequeue', List.Implode(',', IntToStr));
-  finally
-    Free;
-  end;
-end;
-
-procedure TMainForm.StreamByteButtonClick(Sender: TObject);
-var
-  Stream: TGStream<Byte>;
+  Stream: TMemoryStreamByte;
   I: Integer;
   ByteArray: array of Byte;
   ByteArrayText: string;
 begin
   ListViewOutput.Clear;
-  LabelTestName.Caption := 'TGStream<Byte> test';
-  Stream := TGStream<Byte>.Create;
+  LabelTestName.Caption := 'TStreamByte test';
+  Stream := TMemoryStreamByte.Create;
   with Stream do try
     WriteOutput('Size := ', IntToStr(Stream.Size));
     Write(1);
@@ -217,19 +166,69 @@ begin
   end;
 end;
 
-function StringPairToStr(Pair: TGPair<String, String>): string;
+function ObjectToStr(Obj: TObject): string;
+begin
+  Result := Obj.ClassName;
+end;
+
+procedure TMainForm.ButtonListObjectClick(Sender: TObject);
+var
+  List: TGListObject<TObject>;
+  I: Integer;
+begin
+  ListViewOutput.Clear;
+  LabelTestName.Caption := 'TListObject test';
+  List := TGListObject<TObject>.Create;
+  with List do try
+    AddArray([TObject.Create, TObject.Create, TObject.Create, TObject.Create]);
+    WriteOutput('AddArray([TObject.Create, TObject.Create, TObject.Create, TObject.Create])', Implode(',', ObjectToStr));
+    Clear;
+    WriteOutput('Clear', Implode(',', ObjectToStr));
+    for I := 0 to 10 do Add(TObject.Create);
+    WriteOutput('for I := 0 to 10 do Add(TObject.Create)', Implode(',', ObjectToStr));
+    WriteOutput('Count', IntToStr(Count));
+    Reverse;
+    WriteOutput('Reverse', Implode(',', ObjectToStr));
+    MoveItems(3, 2, 3);
+    WriteOutput('MoveItems(3, 2, 3)', Implode(',', ObjectToStr));
+  finally
+    Free;
+  end;
+end;
+
+procedure TMainForm.ButtonQueueIntegerClick(Sender: TObject);
+var
+  Queue: TGQueue<Integer>;
+  I: Integer;
+begin
+  ListViewOutput.Clear;
+  LabelTestName.Caption := 'TQueueInteger test';
+  Queue := TGQueue<Integer>.Create;
+  with Queue do try
+    Enqueue(1);
+    Enqueue(2);
+    Enqueue(3);
+    WriteOutput('Enqueue(1),Enqueue(2),Enqueue(3) ', List.Implode(',', IntToStr));
+    Enqueue(4);
+    WriteOutput('Enqueue(4)', List.Implode(',', IntToStr));
+    WriteOutput('Dequeued item', IntToStr(Dequeue));
+    WriteOutput('Dequeue', List.Implode(',', IntToStr));
+  finally
+    Free;
+  end;
+end;
+
+function StringPairToStr(Pair: TGPair<string,string>): string;
 begin
   Result := Pair.Key + ':' + Pair.Value;
 end;
 
-procedure TMainForm.DictionaryStringButtonClick(Sender: TObject);
-//type
-//  TPairStringString = TGPair<string, string>;
+procedure TMainForm.ButtonDictionaryStringClick(Sender: TObject);
 var
   Dictionary: TGDictionary<string, string>;
 begin
   ListViewOutput.Clear;
-  LabelTestName.Caption := 'TGDictionary<string, string> test';
+  LabelTestName.Caption := 'TDictionaryString test';
   Dictionary := TGDictionary<string, string>.Create;
   with Dictionary do try
     Add('Key1', 'Value1');
@@ -240,7 +239,7 @@ begin
     WriteOutput('Values[Key2] = None');
     Values['Key2'] := 'None';
     WriteOutput('Values[Key2]', Values['Key2']);
-    WriteOutput('Index of Key0', IntToStr(SearchKey('Key0')));
+    WriteOutput('Values[Key0]', Values['Key0']);
     WriteOutput('Keys[2]', Keys[2]);
   finally
     Free;
@@ -252,15 +251,15 @@ begin
   Result := Value;
 end;
 
-procedure TMainForm.CharListButtonClick(Sender: TObject);
+procedure TMainForm.ButtonCharListClick(Sender: TObject);
 var
-  List: TGString<Char>;
-  List2: TGString<Char>;
+  List: TListChar;
+  List2: TListChar;
 begin
   ListViewOutput.Clear;
-  LabelTestName.Caption := 'TGString<Char> test';
-  List := TGString<Char>.Create;
-  List2 := TGString<Char>.Create;
+  LabelTestName.Caption := 'TListChar test';
+  List := TListChar.Create;
+  List2 := TListChar.Create;
   with List do try
     AddArray([' ', ' ', 'A', 'b', 'c', 'd', ' ']);
     WriteOutput('AddArray(['' '', '' '', ''A'', ''b'', ''c'', ''d'', '' ''])',
@@ -286,7 +285,7 @@ end;
 
 procedure TMainForm.ButtonBenchmarkListStringClick(Sender: TObject);
 var
-  List: TGList<String>;
+  List: TGList<string>;
   List2: TStringList;
   StartTime: TDateTime;
   I: Integer;
@@ -294,18 +293,18 @@ const
   SampleText: string = 'text';
   SampleCount: Integer = 100000;
 begin
-  LabelTestName.Caption := 'Generic specialized TGStringList<string> vs. classic non-generic TStringList benchmark';
+  LabelTestName.Caption := 'Generic specialized TListString vs. classic non-generic TStringList benchmark';
   ListViewOutput.Clear;
   try
     UpdateButtonState(False);
-    List := TGList<String>.Create;
+    List := TGList<string>.Create;
     List2 := TStringList.Create;
 
     StartTime := Now;
     repeat
       List.Add(SampleText);
     until (Now - StartTime) > MeasureDuration;
-    WriteOutput('TListString.Add', IntToStr(List.Count) + ' ops');
+    WriteOutput('TGList<String>.Add', IntToStr(List.Count) + ' ops');
     List.Clear;
     Application.ProcessMessages;
 
@@ -321,7 +320,7 @@ begin
     repeat
       List.Insert(0, SampleText);
     until (Now - StartTime) > MeasureDuration;
-    WriteOutput('TListString.Insert', IntToStr(List.Count) + ' ops');
+    WriteOutput('TGList<String>.Insert', IntToStr(List.Count) + ' ops');
     List.Clear;
     Application.ProcessMessages;
 
@@ -341,7 +340,7 @@ begin
       List.Delete(0);
       Inc(I);
     until (Now - StartTime) > MeasureDuration;
-    WriteOutput('TListString.Delete', IntToStr(I) + ' ops');
+    WriteOutput('TGList<String>.Delete', IntToStr(I) + ' ops');
     List.Clear;
     Application.ProcessMessages;
 
@@ -364,7 +363,7 @@ begin
       List.Move(Round(SampleCount * 0.3), Round(SampleCount * 0.7));
       Inc(I);
     until (Now - StartTime) > MeasureDuration;
-    WriteOutput('TListString.Move', IntToStr(I) + ' ops');
+    WriteOutput('TGList<String>.Move', IntToStr(I) + ' ops');
     List.Clear;
     Application.ProcessMessages;
 
@@ -387,7 +386,7 @@ begin
       List.Exchange(Round(SampleCount * 0.3), Round(SampleCount * 0.7));
       Inc(I);
     until (Now - StartTime) > MeasureDuration;
-    WriteOutput('TListString.Exchange', IntToStr(I) + ' ops');
+    WriteOutput('TGList<String>.Exchange', IntToStr(I) + ' ops');
     List.Clear;
     Application.ProcessMessages;
 
@@ -410,7 +409,7 @@ begin
       List.IndexOf(SampleText + IntToStr(I mod List.Count));
       Inc(I);
     until (Now - StartTime) > MeasureDuration;
-    WriteOutput('TListString.IndexOf', IntToStr(I) + ' ops');
+    WriteOutput('TGList<String>.IndexOf', IntToStr(I) + ' ops');
     List.Clear;
     Application.ProcessMessages;
 
@@ -433,20 +432,18 @@ begin
 end;
 
 procedure TMainForm.ButtonBenchmarkDictionaryClick(Sender: TObject);
-//type
-//  TPairStringString = TGPair<String, String>;
 var
-  Dictionary: TGDictionary<string, string>;
+  Dictionary: TGDictionary<string,string>;
   Dictionary2: TStringList;
   StartTime: TDateTime;
   I: Integer;
   R: string;
 begin
-  LabelTestName.Caption := 'Generic specialized TGDictionary<string,string> vs. classic non-generic TStringList benchmark';
+  LabelTestName.Caption := 'Generic specialized TDictionaryStringString vs. classic non-generic TStringList benchmark';
   ListViewOutput.Clear;
   try
     UpdateButtonState(False);
-    Dictionary := TGDictionary<string, string>.Create;
+    Dictionary := TGDictionary<string,string>.Create;
     Dictionary2 := TStringList.Create;
     Dictionary2.NameValueSeparator := '|';
 
@@ -456,7 +453,7 @@ begin
       Dictionary.Add(IntToStr(I), IntToStr(I));
       I := I + 1;
     until (Now - StartTime) > MeasureDuration;
-    WriteOutput('TDictionaryStringString.Add', IntToStr(Dictionary.List.Count) + ' ops');
+    WriteOutput('TGDictionary<string,string>.Add', IntToStr(Dictionary.Count) + ' ops');
     Application.ProcessMessages;
 
     I := 0;
@@ -471,10 +468,10 @@ begin
     I := 0;
     StartTime := Now;
     repeat
-      R := Dictionary.Values[IntToStr(I mod Dictionary.List.Count)];
+      R := Dictionary.Values[IntToStr(I mod Dictionary.Count)];
       I := I + 1;
     until (Now - StartTime) > MeasureDuration;
-    WriteOutput('TDictionaryStringString.Values', IntToStr(I) + ' ops');
+    WriteOutput('TGDictionary<string,string>.Values', IntToStr(I) + ' ops');
     Application.ProcessMessages;
 
     I := 0;
@@ -489,10 +486,10 @@ begin
     I := 0;
     StartTime := Now;
     repeat
-      R := Dictionary.Keys[I mod Dictionary.List.Count];
+      R := Dictionary.Keys[I mod Dictionary.Count];
       I := I + 1;
     until (Now - StartTime) > MeasureDuration;
-    WriteOutput('TDictionaryStringString.Keys', IntToStr(I) + ' ops');
+    WriteOutput('TGDictionary<string,string>.Keys', IntToStr(I) + ' ops');
     Application.ProcessMessages;
 
     I := 0;
@@ -507,10 +504,10 @@ begin
     I := 0;
     StartTime := Now;
     repeat
-      R := Dictionary.List.Items[I mod Dictionary.List.Count].Value;
+      R := Dictionary.List.Items[I mod Dictionary.Count].Value;
       I := I + 1;
     until (Now - StartTime) > MeasureDuration;
-    WriteOutput('TDictionaryStringString.Items', IntToStr(I) + ' ops');
+    WriteOutput('TGDictionary<string,string>.Items', IntToStr(I) + ' ops');
     Application.ProcessMessages;
 
     I := 0;
@@ -533,26 +530,31 @@ procedure TMainForm.ButtonBenchmarkListPointerClick(Sender: TObject);
 var
   List: TGList<Pointer>;
   List2: TFPList;
+  List3: TFPGList<Pointer>;
+  S: TList;
   StartTime: TDateTime;
   I: Integer;
+  K: Integer;
 const
   SampleCount: Integer = 100000;
 begin
-  LabelTestName.Caption := 'Generic specialized TGObjectList<Object> vs. classic non-generic TFPList benchmark';
+  LabelTestName.Caption := 'Generic specialized TListObject vs. classic non-generic TFPList benchmark';
   ListViewOutput.Clear;
   try
     UpdateButtonState(False);
     List := TGList<Pointer>.Create;
     List2 := TFPList.Create;
+    List3 := TFPGList<Pointer>.Create;
 
-    WriteOutput('TListPointer.InstanceSize', IntToStr(TGList<Pointer>.InstanceSize) + ' bytes');
+    WriteOutput('TGList<Pointer>.InstanceSize', IntToStr(TGList<Pointer>.InstanceSize) + ' bytes');
     WriteOutput('TFPList.InstanceSize', IntToStr(TFPList.InstanceSize) + ' bytes');
+    WriteOutput('TFPGList<Pointer>.InstanceSize', IntToStr(TFPGList<Pointer>.InstanceSize) + ' bytes');
 
     StartTime := Now;
     repeat
       List.Add(Pointer(1));
     until (Now - StartTime) > MeasureDuration;
-    WriteOutput('TListPointer.Add', IntToStr(List.Count) + ' ops');
+    WriteOutput('TGList<Pointer>.Add', IntToStr(List.Count) + ' ops');
     List.Clear;
     Application.ProcessMessages;
 
@@ -566,9 +568,17 @@ begin
 
     StartTime := Now;
     repeat
+      List3.Add(Pointer(1));
+    until (Now - StartTime) > MeasureDuration;
+    WriteOutput('TFPGList<Pointer>.Add', IntToStr(List3.Count) + ' ops');
+    List3.Clear;
+    Application.ProcessMessages;
+
+    StartTime := Now;
+    repeat
       List.Insert(0, Pointer(1));
     until (Now - StartTime) > MeasureDuration;
-    WriteOutput('TListPointer.Insert', IntToStr(List.Count) + ' ops');
+    WriteOutput('TGList<Pointer>.Insert', IntToStr(List.Count) + ' ops');
     List.Clear;
     Application.ProcessMessages;
 
@@ -580,6 +590,14 @@ begin
     List2.Clear;
     Application.ProcessMessages;
 
+    StartTime := Now;
+    repeat
+      List3.Insert(0, Pointer(1));
+    until (Now - StartTime) > MeasureDuration;
+    WriteOutput('TFPGList<Pointer>.Insert', IntToStr(List3.Count) + ' ops');
+    List3.Clear;
+    Application.ProcessMessages;
+
     for I := 0 to SampleCount - 1 do
       List.Add(Pointer(1));
     StartTime := Now;
@@ -588,7 +606,7 @@ begin
       List.Delete(0);
       Inc(I);
     until (Now - StartTime) > MeasureDuration;
-    WriteOutput('TListPointer.Delete', IntToStr(I) + ' ops');
+    WriteOutput('TGList<Pointer>.Delete', IntToStr(I) + ' ops');
     List.Clear;
     Application.ProcessMessages;
 
@@ -604,6 +622,17 @@ begin
     Application.ProcessMessages;
 
     for I := 0 to SampleCount - 1 do
+      List3.Add(Pointer(1));
+    StartTime := Now;
+    I := 0;
+    repeat
+      List3.Delete(0);
+      Inc(I);
+    until (Now - StartTime) > MeasureDuration;
+    WriteOutput('TFPGList<Pointer>.Delete', IntToStr(I) + ' ops');
+    Application.ProcessMessages;
+
+    for I := 0 to SampleCount - 1 do
       List.Add(Pointer(1));
     StartTime := Now;
     I := 0;
@@ -611,12 +640,12 @@ begin
       List.Move(Round(SampleCount * 0.3), Round(SampleCount * 0.7));
       Inc(I);
     until (Now - StartTime) > MeasureDuration;
-    WriteOutput('TListPointer.Move', IntToStr(I) + ' ops');
+    WriteOutput('TGList<Pointer>.Move', IntToStr(I) + ' ops');
     List.Clear;
     Application.ProcessMessages;
 
     for I := 0 to SampleCount - 1 do
-    List2.Add(Pointer(1));
+      List2.Add(Pointer(1));
     StartTime := Now;
     I := 0;
     repeat
@@ -627,6 +656,17 @@ begin
     Application.ProcessMessages;
 
     for I := 0 to SampleCount - 1 do
+      List3.Add(Pointer(1));
+    StartTime := Now;
+    I := 0;
+    repeat
+      List3.Move(Round(SampleCount * 0.3), Round(SampleCount * 0.7));
+      Inc(I);
+    until (Now - StartTime) > MeasureDuration;
+    WriteOutput('TFPGList<Pointer>.Move', IntToStr(I) + ' ops');
+    Application.ProcessMessages;
+
+    for I := 0 to SampleCount - 1 do
       List.Add(Pointer(1));
     StartTime := Now;
     I := 0;
@@ -634,12 +674,11 @@ begin
       List.Exchange(Round(SampleCount * 0.3), Round(SampleCount * 0.7));
       Inc(I);
     until (Now - StartTime) > MeasureDuration;
-    WriteOutput('TListPointer.Exchange', IntToStr(I) + ' ops');
-    List.Clear;
+    WriteOutput('TGList<Pointer>.Exchange', IntToStr(I) + ' ops');
     Application.ProcessMessages;
 
     for I := 0 to SampleCount - 1 do
-    List2.Add(Pointer(1));
+      List2.Add(Pointer(1));
     StartTime := Now;
     I := 0;
     repeat
@@ -650,26 +689,48 @@ begin
     Application.ProcessMessages;
 
     for I := 0 to SampleCount - 1 do
-      List.Add(Pointer(1));
+      List3.Add(Pointer(1));
     StartTime := Now;
     I := 0;
     repeat
-      List.IndexOf(Pointer(I mod List.Count));
+      List3.Exchange(Round(SampleCount * 0.3), Round(SampleCount * 0.7));
       Inc(I);
     until (Now - StartTime) > MeasureDuration;
-    WriteOutput('TListPointer.IndexOf', IntToStr(I) + ' ops');
+    WriteOutput('TFPGList<Pointer>.Exchange', IntToStr(I) + ' ops');
+    Application.ProcessMessages;
+
+    for I := 0 to SampleCount - 1 do
+      List.Add(Pointer(I));
+    StartTime := Now;
+    I := 0;
+    repeat
+      K := List.IndexOf(Pointer(I mod List.Count));
+      Inc(I);
+    until (Now - StartTime) > MeasureDuration;
+    WriteOutput('TGList<Pointer>.IndexOf', IntToStr(I) + ' ops');
     List.Clear;
     Application.ProcessMessages;
 
     for I := 0 to SampleCount - 1 do
-    List2.Add(Pointer(1));
+      List2.Add(Pointer(I));
     StartTime := Now;
     I := 0;
     repeat
-      List2.IndexOf(Pointer(I mod List2.Count));
+      K := List2.IndexOf(Pointer(I mod List2.Count));
       Inc(I);
     until (Now - StartTime) > MeasureDuration;
     WriteOutput('TFPList.IndexOf', IntToStr(I) + ' ops');
+    Application.ProcessMessages;
+
+    for I := 0 to SampleCount - 1 do
+      List3.Add(Pointer(I));
+    StartTime := Now;
+    I := 0;
+    repeat
+      K := List3.IndexOf(Pointer(I mod List3.Count));
+      Inc(I);
+    until (Now - StartTime) > MeasureDuration;
+    WriteOutput('TFPGList<Pointer>.IndexOf', IntToStr(I) + ' ops');
     Application.ProcessMessages;
 
     for I := 0 to SampleCount - 1 do
@@ -680,12 +741,12 @@ begin
       List[I mod List.Count] := Pointer(1);
       Inc(I);
     until (Now - StartTime) > MeasureDuration;
-    WriteOutput('TListPointer[I] write', IntToStr(I) + ' ops');
+    WriteOutput('TGList<Pointer>[I] write', IntToStr(I) + ' ops');
     List.Clear;
     Application.ProcessMessages;
 
     for I := 0 to SampleCount - 1 do
-    List2.Add(Pointer(1));
+      List2.Add(Pointer(1));
     StartTime := Now;
     I := 0;
     repeat
@@ -696,6 +757,17 @@ begin
     Application.ProcessMessages;
 
     for I := 0 to SampleCount - 1 do
+      List3.Add(Pointer(1));
+    StartTime := Now;
+    I := 0;
+    repeat
+      List3[I mod List3.Count] := Pointer(1);
+      Inc(I);
+    until (Now - StartTime) > MeasureDuration;
+    WriteOutput('TFPGList<Pointer>[I] write', IntToStr(I) + ' ops');
+    Application.ProcessMessages;
+
+    for I := 0 to SampleCount - 1 do
       List.Add(Pointer(1));
     StartTime := Now;
     I := 0;
@@ -703,12 +775,12 @@ begin
       List[I mod List.Count];
       Inc(I);
     until (Now - StartTime) > MeasureDuration;
-    WriteOutput('TListPointer[I] read', IntToStr(I) + ' ops');
+    WriteOutput('TGList<Pointer>[I] read', IntToStr(I) + ' ops');
     List.Clear;
     Application.ProcessMessages;
 
     for I := 0 to SampleCount - 1 do
-    List2.Add(Pointer(1));
+      List2.Add(Pointer(1));
     StartTime := Now;
     I := 0;
     repeat
@@ -717,10 +789,23 @@ begin
     until (Now - StartTime) > MeasureDuration;
     WriteOutput('TFPList[I] read', IntToStr(I) + ' ops');
     Application.ProcessMessages;
+
+    for I := 0 to SampleCount - 1 do
+      List3.Add(Pointer(1));
+    StartTime := Now;
+    I := 0;
+    repeat
+      List3[I mod List3.Count];
+      Inc(I);
+    until (Now - StartTime) > MeasureDuration;
+    WriteOutput('TFPGList<Pointer>[I] read', IntToStr(I) + ' ops');
+    Application.ProcessMessages;
+
   finally
     UpdateButtonState(True);
     List.Free;
     List2.Free;
+    List3.Free;
   end;
 end;
 
@@ -729,13 +814,13 @@ begin
   Result := Value;
 end;
 
-procedure TMainForm.StringListButtonClick(Sender: TObject);
+procedure TMainForm.ButtonStringListClick(Sender: TObject);
 var
-  List: TGList<String>;
+  List: TGList<string>;
 begin
   ListViewOutput.Clear;
-  WriteOutput('TGList<string> test');
-  List := TGList<String>.Create;
+  WriteOutput('TListString test');
+  List := TGList<string>.Create;
   with List do try
     AddArray(['One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven']);
     WriteOutput('Count', IntToStr(Count));
@@ -760,60 +845,17 @@ procedure TMainForm.FormDestroy(Sender: TObject);
 begin
 end;
 
-procedure TMainForm.TreeButtonClick(Sender: TObject);
-var
-  //Tree: TGTree<string>;
-  //Tree2: TGTree<string>;
-  I: Integer;
-begin
- (* ListViewOutput.Clear;
-  LabelTestName.Caption := 'TGTree<string> test';
-  Tree := TGTree<string>.Create;
-  Tree2 := TGTree<string>.Create;
-  with Tree do try
-    Tree.TopItem.Add('test');
-    AddArray([10, 20, 30, 40]);
-    WriteOutput('AddArray([10, 20, 30, 40])', Implode(',', IntToStr));
-    Clear;
-    WriteOutput('Clear', Implode(',', IntToStr));
-    for I := 0 to 10 do Add(I);
-    WriteOutput('for I := 0 to 10 do Add(I)', Implode(',', IntToStr));
-    WriteOutput('Count', IntToStr(Count));
-    Reverse;
-    WriteOutput('Reverse', Implode(',', IntToStr));
-    WriteOutput('First', IntToStr(First));
-    WriteOutput('Last', IntToStr(Last));
-    MoveItems(3, 2, 3);
-    WriteOutput('MoveItems(3, 2, 3)', Implode(',', IntToStr));
-    Insert(5, 11);
-    WriteOutput('Insert(5, 11)', Implode(',', IntToStr));
-    DeleteItems(0, 10);
-    WriteOutput('Delete(0, 10)', Implode(',', IntToStr));
-    List2.SetArray([1, 0]);
-    WriteOutput('EqualTo([6, 11])', BoolToStr(EqualTo(List2)));
-    List2.SetArray([2, 0]);
-    WriteOutput('EqualTo([7, 11])', BoolToStr(EqualTo(List2)));
-    InsertCount(0, 3);
-    WriteOutput('InsertCount(0, 3)', Implode(',', IntToStr));
-    Fill(0, 3, 9);
-    WriteOutput('Fill(0, 3, 9)', Implode(',', IntToStr));
-  finally
-    Free;
-    Tree2.Free;
-  end;   *)
-end;
-
 procedure TMainForm.UpdateButtonState(Enabled: Boolean);
 begin
   ButtonBenchmarkDictionary.Enabled := Enabled;
   ButtonBenchmarkListString.Enabled := Enabled;
-  CharListButton.Enabled := Enabled;
-  DictionaryStringButton.Enabled := Enabled;
-  IntegerListButton.Enabled := Enabled;
-  ListObjectButton.Enabled := Enabled;
-  MatrixIntegerButton.Enabled := Enabled;
-  QueueIntegerButton.Enabled := Enabled;
-  StringListButton.Enabled := Enabled;
+  ButtonCharList.Enabled := Enabled;
+  ButtonDictionaryString.Enabled := Enabled;
+  ButtonIntegerList.Enabled := Enabled;
+  ButtonListObject.Enabled := Enabled;
+  ButtonMatrixInteger.Enabled := Enabled;
+  ButtonQueueInteger.Enabled := Enabled;
+  ButtonStringList.Enabled := Enabled;
 end;
 
 procedure TMainForm.WriteOutput(Text1: string = ''; Text2: string = '');

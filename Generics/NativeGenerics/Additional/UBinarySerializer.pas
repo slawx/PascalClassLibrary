@@ -5,7 +5,7 @@ unit UBinarySerializer;
 interface
 
 uses
-  Classes, SysUtils, DateUtils, GenericList, GenericStream;
+  Classes, SysUtils, DateUtils, SpecializedList, SpecializedStream;
 
 type
   TEndianness = (enBig, enLittle);
@@ -73,7 +73,7 @@ var
   StringLength: Longint;
 begin
   StringLength := 0;
-  FList.ReadBuffer(StringLength, SizeOf(StringLength));
+  Read(StringLength, SizeOf(StringLength));
   Result := ReadString(StringLength);
 end;
 

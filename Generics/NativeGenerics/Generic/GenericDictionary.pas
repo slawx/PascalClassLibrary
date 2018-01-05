@@ -1,11 +1,11 @@
 unit GenericDictionary;
 
-{$mode delphi}{$H+}
+{$mode delphi}
 
 interface
 
 uses
-  SysUtils, Classes, GenericList;
+  GenericList, fgl;
 
 type
   TGPair<TKey, TValue> = record
@@ -13,35 +13,39 @@ type
     Value: TValue;
   end;
 
+  // Construction of complext generic types not supported by FPC:
+  //   TGDictionay<TKey, TValue> = class(TGList<TGPair<TKey, TValue>>)
   TGDictionary<TKey, TValue> = class
   private
-  type
-    TIndex = NativeInt;
-    TDictionaryPair = TGPair<TKey, TValue>;
-  var
-    FList: TGList<TDictionaryPair>;
-    function GetKey(Index: TIndex): TKey;
+    type
+      TPair = TGPair<TKey, TValue>;
+    var
+    FList: TGList<TPair>;
+    function GetCount: Integer;
+    function GetKey(Index: Integer): TKey;
     function GetValue(Key: TKey): TValue;
-    procedure PutKey(Index: TIndex; const AValue: TKey);
+    procedure SetCount(const AValue: Integer);
+    procedure PutKey(Index: Integer; const AValue: TKey);
     procedure PutValue(Key: TKey; const AValue: TValue);
   public
+    function SearchKey(Key: TKey): Integer;
+    procedure Add(Key: TKey; Value: TValue);
     constructor Create;
     destructor Destroy; override;
-    function SearchKey(Key: TKey): TIndex;
-    procedure Add(Key: TKey; Value: TValue);
     property Values[Index: TKey]: TValue
       read GetValue write PutValue;
-    property Keys[Index: TIndex]: TKey
+    property Keys[Index: Integer]: TKey
       read GetKey write PutKey;
-    property List: TGList<TDictionaryPair> read FList;
+    property List: TGList<TPair> read FList;
+    property Count: Integer read GetCount write SetCount;
   end;
+
 
 implementation
 
-
 constructor TGDictionary<TKey, TValue>.Create;
 begin
-  FList := TGList<TDictionaryPair>.Create;
+  FList := TGList<TPair>.Create;
 end;
 
 destructor TGDictionary<TKey, TValue>.Destroy;
@@ -49,7 +53,17 @@ begin
   FList.Free;
 end;
 
-function TGDictionary<TKey, TValue>.GetKey(Index: TIndex): TKey;
+function TGDictionary<TKey, TValue>.GetCount: Integer;
+begin
+  Result := FList.Count;
+end;
+
+procedure TGDictionary<TKey, TValue>.SetCount(const AValue: Integer);
+begin
+  FList.Count := AValue;
+end;
+
+function TGDictionary<TKey, TValue>.GetKey(Index: Integer): TKey;
 begin
   Result := FList.Items[Index].Key;
 end;
@@ -59,10 +73,10 @@ begin
   Result := FList.Items[SearchKey(Key)].Value;
 end;
 
-procedure TGDictionary<TKey, TValue>.PutKey(Index: TIndex;
+procedure TGDictionary<TKey, TValue>.PutKey(Index: Integer;
   const AValue: TKey);
 var
-  Item: TDictionaryPair;
+  Item: TPair;
 begin
   //Items[Index].Key := AValue;
   Item := FList.Items[Index];
@@ -73,8 +87,8 @@ end;
 procedure TGDictionary<TKey, TValue>.PutValue(Key: TKey;
   const AValue: TValue);
 var
-  Item: TDictionaryPair;
-  Index: TIndex;
+  Item: TPair;
+  Index: Integer;
 begin
   //Items[SearchKey(Index)].Value := AValue;
   Index := SearchKey(Key);
@@ -83,7 +97,7 @@ begin
   FList.Items[Index] := Item;
 end;
 
-function TGDictionary<TKey, TValue>.SearchKey(Key: TKey): TIndex;
+function TGDictionary<TKey, TValue>.SearchKey(Key: TKey): Integer;
 begin
   Result := 0;
   while Result < FList.Count do begin
@@ -92,12 +106,11 @@ begin
     end;
     Result := Result + 1;
   end;
-  if Result >= FList.Count then Result := -1;
 end;
 
 procedure TGDictionary<TKey, TValue>.Add(Key: TKey; Value: TValue);
 var
-  NewPair: TDictionaryPair;
+  NewPair: TPair;
 begin
   NewPair.Key := Key;
   NewPair.Value := Value;

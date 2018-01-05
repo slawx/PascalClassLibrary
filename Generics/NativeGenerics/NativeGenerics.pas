@@ -4,13 +4,14 @@
 
 unit NativeGenerics;
 
+{$warn 5023 off : no warning about unused units}
 interface
 
 uses
-  GenericList, GenericTree, GenericDictionary, GenericQueue, GenericRange, 
-  GenericSet, GenericStack, GenericStream, GenericMatrix, GenericString, 
-  GenericBitmap, GenericRectangle, GenericPoint, UBinarySerializer, 
-  LazarusPackageIntf;
+  GenericBitmap, GenericDictionary, GenericList, GenericMatrix, GenericPoint, 
+  GenericQueue, GenericRange, GenericRectangle, GenericSet, GenericStack, 
+  GenericStream, GenericTree, SpecializedList, SpecializedRectangle, 
+  SpecializedStream, UBinarySerializer, LazarusPackageIntf;
 
 implementation
 
