@@ -51,8 +51,6 @@ type
     InitializeFinished: Boolean;
     procedure FileModified(Sender: TObject);
     function FindFirstNonOption: string;
-    procedure FileOpen(FileName: string);
-    procedure FileNew;
     procedure UpdateFile;
     procedure LoadConfig;
     procedure SaveConfig;
@@ -61,6 +59,9 @@ type
     FileClosed: Boolean;
     ReopenLastFileOnStart: Boolean;
     ToolbarVisible: Boolean;
+    procedure FileNew;
+    procedure FileOpen(FileName: string);
+    procedure FileClose;
     procedure Initialize;
     procedure UpdateInterface;
   end;
@@ -99,29 +100,9 @@ begin
 end;
 
 procedure TCore.AFileCloseExecute(Sender: TObject);
-var
-  ModalResult: TModalResult;
-  DoClose: Boolean;
 begin
-  DoClose := False;
-  if Assigned(DataFile) then begin
-    if DataFile.Modified then begin
-       ModalResult := MessageDlg(SAppExit, SAppExitQuery,
-       mtConfirmation, [mbYes, mbNo, mbCancel], 0);
-      if ModalResult = mrYes then begin
-        AFileSave.Execute;
-        DoClose := True;
-      end
-      else if ModalResult = mrNo then begin
-        DoClose := True;
-      end else FileClosed := False;
-    end else DoClose := True;
-  end else DoClose := True;
-  if DoClose then begin
-    FreeAndNil(DataFile);
-    UpdateFile;
-    FileClosed := True;
-  end;
+  FileClose;
+  UpdateFile;
 end;
 
 procedure TCore.AHomePageExecute(Sender: TObject);
@@ -156,12 +137,14 @@ begin
   end;
   if OpenDialog1.Execute then begin
     FileOpen(OpenDialog1.FileName);
+    UpdateFile;
   end;
 end;
 
 procedure TCore.AFileOpenRecentExecute(Sender: TObject);
 begin
   FileOpen(TMenuItem(Sender).Caption);
+  UpdateFile;
 end;
 
 procedure TCore.AFileSaveAsExecute(Sender: TObject);
@@ -209,20 +192,42 @@ end;
 
 procedure TCore.FileOpen(FileName: string);
 begin
-  AFileClose.Execute;
-  if FileClosed then
-  try
+  FileClose;
+  if FileClosed then begin
     FileNew;
     DataFile.LoadFromFile(FileName);
     LastOpenedList1.AddItem(FileName);
-  finally
-    UpdateFile;
+  end;
+end;
+
+procedure TCore.FileClose;
+var
+  ModalResult: TModalResult;
+  DoClose: Boolean;
+begin
+  DoClose := False;
+  if Assigned(DataFile) then begin
+    if DataFile.Modified then begin
+       ModalResult := MessageDlg(SAppExit, SAppExitQuery,
+       mtConfirmation, [mbYes, mbNo, mbCancel], 0);
+      if ModalResult = mrYes then begin
+        AFileSave.Execute;
+        DoClose := True;
+      end
+      else if ModalResult = mrNo then begin
+        DoClose := True;
+      end else FileClosed := False;
+    end else DoClose := True;
+  end else DoClose := True;
+  if DoClose then begin
+    FreeAndNil(DataFile);
+    FileClosed := True;
   end;
 end;
 
 procedure TCore.FileNew;
 begin
-  AFileClose.Execute;
+  FileClose;
   if FileClosed then begin
     DataFile := TDataFile.Create;
     DataFile.OnModify := FileModified;

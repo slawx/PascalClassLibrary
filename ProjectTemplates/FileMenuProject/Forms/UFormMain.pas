@@ -73,7 +73,7 @@ end;
 
 procedure TFormMain.FormCloseQuery(Sender: TObject; var CanClose: boolean);
 begin
-  Core.AFileClose.Execute;
+  Core.FileClose;
   CanClose := Core.FileClosed;
 end;
 
