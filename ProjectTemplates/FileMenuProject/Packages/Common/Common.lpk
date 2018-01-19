@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <Package Version="4">
+    <PathDelim Value="\"/>
+    <Name Value="Common"/>
+    <Type Value="RunAndDesignTime"/>
+    <AddToProjectUsesSection Value="True"/>
+    <Author Value="Chronos (robie@centrum.cz)"/>
+    <CompilerOptions>
+      <Version Value="11"/>
+      <PathDelim Value="\"/>
+      <SearchPaths>
+        <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
+      </SearchPaths>
+    </CompilerOptions>
+    <Description Value="Various libraries"/>
+    <License Value="GNU/GPL"/>
+    <Version Minor="7"/>
+    <Files Count="20">
+      <Item1>
+        <Filename Value="StopWatch.pas"/>
+        <UnitName Value="StopWatch"/>
+      </Item1>
+      <Item2>
+        <Filename Value="UCommon.pas"/>
+        <UnitName Value="UCommon"/>
+      </Item2>
+      <Item3>
+        <Filename Value="UDebugLog.pas"/>
+        <HasRegisterProc Value="True"/>
+        <UnitName Value="UDebugLog"/>
+      </Item3>
+      <Item4>
+        <Filename Value="UDelay.pas"/>
+        <UnitName Value="UDelay"/>
+      </Item4>
+      <Item5>
+        <Filename Value="UPrefixMultiplier.pas"/>
+        <UnitName Value="UPrefixMultiplier"/>
+      </Item5>
+      <Item6>
+        <Filename Value="UURI.pas"/>
+        <UnitName Value="UURI"/>
+      </Item6>
+      <Item7>
+        <Filename Value="UThreading.pas"/>
+        <UnitName Value="UThreading"/>
+      </Item7>
+      <Item8>
+        <Filename Value="UMemory.pas"/>
+        <UnitName Value="UMemory"/>
+      </Item8>
+      <Item9>
+        <Filename Value="UResetableThread.pas"/>
+        <UnitName Value="UResetableThread"/>
+      </Item9>
+      <Item10>
+        <Filename Value="UPool.pas"/>
+        <UnitName Value="UPool"/>
+      </Item10>
+      <Item11>
+        <Filename Value="ULastOpenedList.pas"/>
+        <HasRegisterProc Value="True"/>
+        <UnitName Value="ULastOpenedList"/>
+      </Item11>
+      <Item12>
+        <Filename Value="URegistry.pas"/>
+        <UnitName Value="URegistry"/>
+      </Item12>
+      <Item13>
+        <Filename Value="UJobProgressView.pas"/>
+        <HasRegisterProc Value="True"/>
+        <UnitName Value="UJobProgressView"/>
+      </Item13>
+      <Item14>
+        <Filename Value="UXMLUtils.pas"/>
+        <UnitName Value="UXMLUtils"/>
+      </Item14>
+      <Item15>
+        <Filename Value="UApplicationInfo.pas"/>
+        <HasRegisterProc Value="True"/>
+        <UnitName Value="UApplicationInfo"/>
+      </Item15>
+      <Item16>
+        <Filename Value="USyncCounter.pas"/>
+        <UnitName Value="USyncCounter"/>
+      </Item16>
+      <Item17>
+        <Filename Value="UListViewSort.pas"/>
+        <HasRegisterProc Value="True"/>
+        <UnitName Value="UListViewSort"/>
+      </Item17>
+      <Item18>
+        <Filename Value="UPersistentForm.pas"/>
+        <HasRegisterProc Value="True"/>
+        <UnitName Value="UPersistentForm"/>
+      </Item18>
+      <Item19>
+        <Filename Value="UFindFile.pas"/>
+        <HasRegisterProc Value="True"/>
+        <UnitName Value="UFindFile"/>
+      </Item19>
+      <Item20>
+        <Filename Value="UScaleDPI.pas"/>
+        <HasRegisterProc Value="True"/>
+        <UnitName Value="UScaleDPI"/>
+      </Item20>
+    </Files>
+    <i18n>
+      <EnableI18N Value="True"/>
+      <OutDir Value="Languages"/>
+      <EnableI18NForLFM Value="True"/>
+    </i18n>
+    <RequiredPkgs Count="3">
+      <Item1>
+        <PackageName Value="LCL"/>
+      </Item1>
+      <Item2>
+        <PackageName Value="TemplateGenerics"/>
+      </Item2>
+      <Item3>
+        <PackageName Value="FCL"/>
+        <MinVersion Major="1" Valid="True"/>
+      </Item3>
+    </RequiredPkgs>
+    <UsageOptions>
+      <UnitPath Value="$(PkgOutDir)"/>
+    </UsageOptions>
+    <PublishOptions>
+      <Version Value="2"/>
+    </PublishOptions>
+    <CustomOptions Items="ExternHelp" Version="2">
+      <_ExternHelp Items="Count"/>
+    </CustomOptions>
+  </Package>
+</CONFIG>

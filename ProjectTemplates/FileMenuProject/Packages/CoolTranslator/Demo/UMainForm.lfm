@@ -1,0 +1,74 @@
+object MainForm: TMainForm
+  Left = 406
+  Height = 240
+  Top = 191
+  Width = 466
+  Caption = 'Translator Demo'
+  ClientHeight = 240
+  ClientWidth = 466
+  OnCreate = FormCreate
+  LCLVersion = '1.1'
+  object ListBox1: TListBox
+    Left = 171
+    Height = 168
+    Top = 24
+    Width = 141
+    ItemHeight = 0
+    OnSelectionChange = ListBox1SelectionChange
+    TabOrder = 0
+  end
+  object Button1: TButton
+    Left = 8
+    Height = 25
+    Top = 208
+    Width = 128
+    Caption = 'Show MainForm.Name'
+    OnClick = Button1Click
+    TabOrder = 1
+  end
+  object Label1: TLabel
+    Left = 10
+    Height = 13
+    Top = 24
+    Width = 46
+    Caption = 'MainForm'
+    ParentColor = False
+  end
+  object Label2: TLabel
+    Left = 10
+    Height = 13
+    Top = 6
+    Width = 134
+    Caption = 'Form name as label caption:'
+    ParentColor = False
+  end
+  object Label3: TLabel
+    Left = 171
+    Height = 13
+    Top = 8
+    Width = 67
+    Caption = 'Language list:'
+    ParentColor = False
+  end
+  object ListBox2: TListBox
+    Left = 321
+    Height = 168
+    Top = 24
+    Width = 135
+    ItemHeight = 0
+    TabOrder = 2
+  end
+  object Label4: TLabel
+    Left = 321
+    Height = 13
+    Top = 10
+    Width = 46
+    Caption = 'Excludes:'
+    ParentColor = False
+  end
+  object CoolTranslator1: TCoolTranslator
+    POFilesFolder = 'Languages'
+    left = 72
+    top = 72
+  end
+end

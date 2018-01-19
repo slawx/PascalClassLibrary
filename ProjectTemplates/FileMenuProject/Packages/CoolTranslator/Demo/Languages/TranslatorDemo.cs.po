@@ -1,0 +1,45 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Project-Id-Version: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: Jiří Hajda <software@mezservis.cz>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: tform1.form1.caption
+msgctxt "TFORM1.FORM1.CAPTION"
+msgid "Translator Demo"
+msgstr "Ukázka Translatoru"
+
+#: tmainform.button1.caption
+msgid "Show MainForm.Name"
+msgstr "Ukázat MainForm.Name"
+
+#: tmainform.caption
+msgctxt "TMAINFORM.CAPTION"
+msgid "Translator Demo"
+msgstr "Ukázka Translatoru"
+
+#: tmainform.label1.caption
+msgid "MainForm"
+msgstr "HlavníFormulář"
+
+#: tmainform.label2.caption
+msgid "Form name as label caption:"
+msgstr "Jméno formuláře jako titulek textu:"
+
+#: tmainform.label3.caption
+msgid "Language list:"
+msgstr ""
+
+#: tmainform.label4.caption
+msgid "Excludes:"
+msgstr ""
+
+#: umainform.stranslatedtext
+msgid "Text stored in resourcestring"
+msgstr "TExt uložený jako zdrojový řetězec"
+

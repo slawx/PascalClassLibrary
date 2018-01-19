@@ -1,0 +1,164 @@
+<?xml version="1.0"?>
+<CONFIG>
+  <Package Version="4">
+    <PathDelim Value="\"/>
+    <Name Value="TemplateGenerics"/>
+    <AddToProjectUsesSection Value="True"/>
+    <Author Value="Chronos (robie@centrum.cz)"/>
+    <CompilerOptions>
+      <Version Value="11"/>
+      <PathDelim Value="\"/>
+      <SearchPaths>
+        <IncludeFiles Value="Generic"/>
+        <OtherUnitFiles Value="Specialized;Generic;Additional"/>
+        <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
+      </SearchPaths>
+      <CodeGeneration>
+        <Optimizations>
+          <VariablesInRegisters Value="True"/>
+          <OptimizationLevel Value="3"/>
+        </Optimizations>
+      </CodeGeneration>
+      <Other>
+        <CompilerMessages>
+          <UseMsgFile Value="True"/>
+        </CompilerMessages>
+        <CompilerPath Value="$(CompPath)"/>
+      </Other>
+    </CompilerOptions>
+    <Description Value="Generic classes implemented as templates."/>
+    <Version Minor="4"/>
+    <Files Count="28">
+      <Item1>
+        <Filename Value="ReadMe.txt"/>
+        <Type Value="Text"/>
+      </Item1>
+      <Item2>
+        <Filename Value="Generic\GenericDictionary.inc"/>
+        <Type Value="Include"/>
+      </Item2>
+      <Item3>
+        <Filename Value="Generic\GenericList.inc"/>
+        <Type Value="Include"/>
+      </Item3>
+      <Item4>
+        <Filename Value="Generic\GenericListObject.inc"/>
+        <Type Value="Include"/>
+      </Item4>
+      <Item5>
+        <Filename Value="Generic\GenericFileList.inc"/>
+      </Item5>
+      <Item6>
+        <Filename Value="Generic\GenericQueue.inc"/>
+        <Type Value="Include"/>
+      </Item6>
+      <Item7>
+        <Filename Value="Generic\GenericRange.inc"/>
+        <Type Value="Include"/>
+      </Item7>
+      <Item8>
+        <Filename Value="Generic\GenericSet.inc"/>
+        <Type Value="Include"/>
+      </Item8>
+      <Item9>
+        <Filename Value="Generic\GenericStack.inc"/>
+        <Type Value="Include"/>
+      </Item9>
+      <Item10>
+        <Filename Value="Generic\GenericTree.inc"/>
+        <Type Value="Include"/>
+      </Item10>
+      <Item11>
+        <Filename Value="Generic\GenericMatrix.inc"/>
+        <UnitName Value="GenericMatrix"/>
+      </Item11>
+      <Item12>
+        <Filename Value="Generic\GenericListString.inc"/>
+        <UnitName Value="GenericListString"/>
+      </Item12>
+      <Item13>
+        <Filename Value="Generic\GenericBitmap.inc"/>
+        <UnitName Value="GenericBitmap"/>
+      </Item13>
+      <Item14>
+        <Filename Value="Generic\GenericPoint.inc"/>
+        <Type Value="Include"/>
+      </Item14>
+      <Item15>
+        <Filename Value="Generic\GenericStream.inc"/>
+        <UnitName Value="GenericStream"/>
+      </Item15>
+      <Item16>
+        <Filename Value="Generic\GenericRectangle.inc"/>
+        <UnitName Value="GenericRectangle"/>
+      </Item16>
+      <Item17>
+        <Filename Value="Specialized\SpecializedList.pas"/>
+        <UnitName Value="SpecializedList"/>
+      </Item17>
+      <Item18>
+        <Filename Value="Specialized\SpecializedDictionary.pas"/>
+        <UnitName Value="SpecializedDictionary"/>
+      </Item18>
+      <Item19>
+        <Filename Value="Specialized\SpecializedStack.pas"/>
+        <UnitName Value="SpecializedStack"/>
+      </Item19>
+      <Item20>
+        <Filename Value="Specialized\SpecializedTree.pas"/>
+        <UnitName Value="SpecializedTree"/>
+      </Item20>
+      <Item21>
+        <Filename Value="Specialized\SpecializedQueue.pas"/>
+        <UnitName Value="SpecializedQueue"/>
+      </Item21>
+      <Item22>
+        <Filename Value="Specialized\SpecializedSet.pas"/>
+        <UnitName Value="SpecializedSet"/>
+      </Item22>
+      <Item23>
+        <Filename Value="Specialized\SpecializedPoint.pas"/>
+        <UnitName Value="SpecializedPoint"/>
+      </Item23>
+      <Item24>
+        <Filename Value="Specialized\SpecializedMatrix.pas"/>
+        <UnitName Value="SpecializedMatrix"/>
+      </Item24>
+      <Item25>
+        <Filename Value="Specialized\SpecializedBitmap.pas"/>
+        <UnitName Value="SpecializedBitmap"/>
+      </Item25>
+      <Item26>
+        <Filename Value="Specialized\SpecializedStream.pas"/>
+        <UnitName Value="SpecializedStream"/>
+      </Item26>
+      <Item27>
+        <Filename Value="Specialized\SpecializedRectangle.pas"/>
+        <UnitName Value="SpecializedRectangle"/>
+      </Item27>
+      <Item28>
+        <Filename Value="Additional\UBinarySerializer.pas"/>
+        <UnitName Value="UBinarySerializer"/>
+      </Item28>
+    </Files>
+    <Type Value="RunAndDesignTime"/>
+    <RequiredPkgs Count="2">
+      <Item1>
+        <PackageName Value="LCLBase"/>
+      </Item1>
+      <Item2>
+        <PackageName Value="FCL"/>
+        <MinVersion Major="1" Valid="True"/>
+      </Item2>
+    </RequiredPkgs>
+    <UsageOptions>
+      <UnitPath Value="$(PkgOutDir)"/>
+    </UsageOptions>
+    <PublishOptions>
+      <Version Value="2"/>
+    </PublishOptions>
+    <CustomOptions Items="ExternHelp" Version="2">
+      <_ExternHelp Items="Count"/>
+    </CustomOptions>
+  </Package>
+</CONFIG>

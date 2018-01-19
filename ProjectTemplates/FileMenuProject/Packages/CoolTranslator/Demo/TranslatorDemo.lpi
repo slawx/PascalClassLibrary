@@ -1,0 +1,305 @@
+<?xml version="1.0"?>
+<CONFIG>
+  <ProjectOptions>
+    <Version Value="9"/>
+    <PathDelim Value="\"/>
+    <General>
+      <MainUnit Value="0"/>
+      <ResourceType Value="res"/>
+      <UseXPManifest Value="True"/>
+      <Icon Value="0"/>
+      <ActiveWindowIndexAtStart Value="0"/>
+    </General>
+    <i18n>
+      <EnableI18N Value="True"/>
+      <OutDir Value="Languages"/>
+    </i18n>
+    <VersionInfo>
+      <StringTable ProductVersion=""/>
+    </VersionInfo>
+    <BuildModes Count="1" Active="Default">
+      <Item1 Name="Default" Default="True"/>
+    </BuildModes>
+    <PublishOptions>
+      <Version Value="2"/>
+      <IncludeFileFilter Value="*.(pas|pp|inc|lfm|lpr|lrs|lpi|lpk|sh|xml)"/>
+      <ExcludeFileFilter Value="*.(bak|ppu|o|so);*~;backup"/>
+    </PublishOptions>
+    <RunParams>
+      <local>
+        <FormatVersion Value="1"/>
+      </local>
+    </RunParams>
+    <RequiredPackages Count="2">
+      <Item1>
+        <PackageName Value="CoolTranslator"/>
+        <MinVersion Minor="1" Valid="True"/>
+      </Item1>
+      <Item2>
+        <PackageName Value="LCL"/>
+      </Item2>
+    </RequiredPackages>
+    <Units Count="12">
+      <Unit0>
+        <Filename Value="TranslatorDemo.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="TranslatorDemo"/>
+        <UsageCount Value="21"/>
+      </Unit0>
+      <Unit1>
+        <Filename Value="UMainForm.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="MainForm"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="UMainForm"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="0"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="29" Y="18"/>
+        <UsageCount Value="21"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="E:\Projekty2\FreePascalManager\trunk\Instance\5\Lazarus\lcl\stdctrls.pp"/>
+        <UnitName Value="StdCtrls"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="565"/>
+        <CursorPos X="24" Y="577"/>
+        <UsageCount Value="11"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="E:\Projekty2\FreePascalManager\trunk\Instance\5\FPC\rtl\objpas\classes\classesh.inc"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="686"/>
+        <CursorPos X="3" Y="659"/>
+        <UsageCount Value="11"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="..\UCoolTranslator.pas"/>
+        <UnitName Value="UCoolTranslator"/>
+        <EditorIndex Value="1"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="274"/>
+        <CursorPos X="33" Y="288"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="E:\Projekty2\FreePascalManager\trunk\Instance\5\Lazarus\lcl\include\customlistbox.inc"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="524"/>
+        <CursorPos X="1" Y="535"/>
+        <UsageCount Value="10"/>
+      </Unit5>
+      <Unit6>
+        <Filename Value="E:\Projekty2\FreePascalManager\trunk\Instance\5\Lazarus\lcl\interfaces\win32\win32listsl.inc"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="226"/>
+        <CursorPos X="1" Y="238"/>
+        <UsageCount Value="10"/>
+      </Unit6>
+      <Unit7>
+        <Filename Value="E:\Projekty2\FreePascalManager\trunk\Instance\5\Lazarus\lcl\include\winfileutil.inc"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="549"/>
+        <CursorPos X="1" Y="566"/>
+        <UsageCount Value="10"/>
+      </Unit7>
+      <Unit8>
+        <Filename Value="E:\Projekty2\FreePascalManager\trunk\Instance\5\Lazarus\lcl\translations.pas"/>
+        <UnitName Value="Translations"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="747"/>
+        <CursorPos X="54" Y="759"/>
+        <UsageCount Value="10"/>
+      </Unit8>
+      <Unit9>
+        <Filename Value="E:\Projekty2\FreePascalManager\trunk\Instance\5\Lazarus\lcl\include\control.inc"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="2702"/>
+        <CursorPos X="18" Y="2717"/>
+        <UsageCount Value="10"/>
+      </Unit9>
+      <Unit10>
+        <Filename Value="E:\Projekty2\FreePascalManager\trunk\Instance\5\FPC\rtl\inc\objpash.inc"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="189"/>
+        <CursorPos X="26" Y="201"/>
+        <UsageCount Value="10"/>
+      </Unit10>
+      <Unit11>
+        <Filename Value="..\ULanguages.pas"/>
+        <UnitName Value="ULanguages"/>
+        <EditorIndex Value="2"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="32" Y="10"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit11>
+    </Units>
+    <JumpHistory Count="30" HistoryIndex="29">
+      <Position1>
+        <Filename Value="..\UCoolTranslator.pas"/>
+        <Caret Line="37" Column="48" TopLine="23"/>
+      </Position1>
+      <Position2>
+        <Filename Value="..\UCoolTranslator.pas"/>
+        <Caret Line="106" Column="17" TopLine="103"/>
+      </Position2>
+      <Position3>
+        <Filename Value="..\UCoolTranslator.pas"/>
+        <Caret Line="110" Column="52" TopLine="103"/>
+      </Position3>
+      <Position4>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="56" Column="1" TopLine="36"/>
+      </Position4>
+      <Position5>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="57" Column="1" TopLine="37"/>
+      </Position5>
+      <Position6>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="58" Column="1" TopLine="38"/>
+      </Position6>
+      <Position7>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="48" Column="45" TopLine="39"/>
+      </Position7>
+      <Position8>
+        <Filename Value="..\UCoolTranslator.pas"/>
+        <Caret Line="110" Column="65" TopLine="103"/>
+      </Position8>
+      <Position9>
+        <Filename Value="..\UCoolTranslator.pas"/>
+        <Caret Line="240" Column="56" TopLine="231"/>
+      </Position9>
+      <Position10>
+        <Filename Value="..\UCoolTranslator.pas"/>
+        <Caret Line="248" Column="23" TopLine="231"/>
+      </Position10>
+      <Position11>
+        <Filename Value="..\UCoolTranslator.pas"/>
+        <Caret Line="241" Column="45" TopLine="231"/>
+      </Position11>
+      <Position12>
+        <Filename Value="..\UCoolTranslator.pas"/>
+        <Caret Line="240" Column="53" TopLine="228"/>
+      </Position12>
+      <Position13>
+        <Filename Value="..\UCoolTranslator.pas"/>
+        <Caret Line="249" Column="25" TopLine="228"/>
+      </Position13>
+      <Position14>
+        <Filename Value="..\UCoolTranslator.pas"/>
+        <Caret Line="241" Column="1" TopLine="228"/>
+      </Position14>
+      <Position15>
+        <Filename Value="..\UCoolTranslator.pas"/>
+        <Caret Line="242" Column="13" TopLine="228"/>
+      </Position15>
+      <Position16>
+        <Filename Value="..\UCoolTranslator.pas"/>
+        <Caret Line="241" Column="5" TopLine="228"/>
+      </Position16>
+      <Position17>
+        <Filename Value="..\UCoolTranslator.pas"/>
+        <Caret Line="242" Column="1" TopLine="228"/>
+      </Position17>
+      <Position18>
+        <Filename Value="..\UCoolTranslator.pas"/>
+        <Caret Line="243" Column="1" TopLine="228"/>
+      </Position18>
+      <Position19>
+        <Filename Value="..\UCoolTranslator.pas"/>
+        <Caret Line="279" Column="37" TopLine="276"/>
+      </Position19>
+      <Position20>
+        <Filename Value="..\UCoolTranslator.pas"/>
+        <Caret Line="278" Column="7" TopLine="274"/>
+      </Position20>
+      <Position21>
+        <Filename Value="..\UCoolTranslator.pas"/>
+        <Caret Line="224" Column="1" TopLine="212"/>
+      </Position21>
+      <Position22>
+        <Filename Value="..\UCoolTranslator.pas"/>
+        <Caret Line="279" Column="30" TopLine="267"/>
+      </Position22>
+      <Position23>
+        <Filename Value="..\UCoolTranslator.pas"/>
+        <Caret Line="224" Column="49" TopLine="212"/>
+      </Position23>
+      <Position24>
+        <Filename Value="..\UCoolTranslator.pas"/>
+        <Caret Line="64" Column="28" TopLine="52"/>
+      </Position24>
+      <Position25>
+        <Filename Value="..\UCoolTranslator.pas"/>
+        <Caret Line="278" Column="6" TopLine="276"/>
+      </Position25>
+      <Position26>
+        <Filename Value="..\UCoolTranslator.pas"/>
+        <Caret Line="279" Column="29" TopLine="274"/>
+      </Position26>
+      <Position27>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="48" Column="45" TopLine="39"/>
+      </Position27>
+      <Position28>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="59" Column="20" TopLine="39"/>
+      </Position28>
+      <Position29>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="9" Column="29" TopLine="1"/>
+      </Position29>
+      <Position30>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="18" Column="29" TopLine="1"/>
+      </Position30>
+    </JumpHistory>
+  </ProjectOptions>
+  <CompilerOptions>
+    <Version Value="11"/>
+    <PathDelim Value="\"/>
+    <Target>
+      <Filename Value="TranslatorDemo"/>
+    </Target>
+    <SearchPaths>
+      <IncludeFiles Value="$(ProjOutDir)"/>
+      <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
+    </SearchPaths>
+    <Linking>
+      <Options>
+        <Win32>
+          <GraphicApplication Value="True"/>
+        </Win32>
+      </Options>
+    </Linking>
+    <Other>
+      <CompilerMessages>
+        <UseMsgFile Value="True"/>
+      </CompilerMessages>
+      <CompilerPath Value="$(CompPath)"/>
+    </Other>
+  </CompilerOptions>
+  <Debugging>
+    <Exceptions Count="3">
+      <Item1>
+        <Name Value="EAbort"/>
+      </Item1>
+      <Item2>
+        <Name Value="ECodetoolError"/>
+      </Item2>
+      <Item3>
+        <Name Value="EFOpenError"/>
+      </Item3>
+    </Exceptions>
+  </Debugging>
+  <EditorMacros Count="0"/>
+</CONFIG>

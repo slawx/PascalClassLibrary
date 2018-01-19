@@ -95,7 +95,7 @@ msgstr "Nápověda"
 #: tformmain.menuitemtoolbar.caption
 msgctxt "tformmain.menuitemtoolbar.caption"
 msgid "Main toolbar"
-msgstr ""
+msgstr "Hlavní nástrojový panel"
 
 #: tformmain.menuitemtools.caption
 msgid "Tools"
@@ -162,4 +162,3 @@ msgstr "Verze"
 #: uformmain.smodified
 msgid "Modified"
 msgstr "Upraveno"
-

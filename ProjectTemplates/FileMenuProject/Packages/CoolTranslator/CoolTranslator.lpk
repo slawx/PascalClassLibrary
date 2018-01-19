@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<CONFIG>
+  <Package Version="4">
+    <PathDelim Value="\"/>
+    <Name Value="CoolTranslator"/>
+    <AddToProjectUsesSection Value="True"/>
+    <Author Value="Chronos (robie@centrum.cz)"/>
+    <CompilerOptions>
+      <Version Value="10"/>
+      <PathDelim Value="\"/>
+      <SearchPaths>
+        <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
+      </SearchPaths>
+      <Other>
+        <CompilerPath Value="$(CompPath)"/>
+      </Other>
+    </CompilerOptions>
+    <Description Value="Application interface translator tool"/>
+    <License Value="GNU/GPL"/>
+    <Version Minor="1"/>
+    <Files Count="3">
+      <Item1>
+        <Filename Value="UCoolTranslator.pas"/>
+        <HasRegisterProc Value="True"/>
+        <UnitName Value="UCoolTranslator"/>
+      </Item1>
+      <Item2>
+        <Filename Value="ULanguages.pas"/>
+        <UnitName Value="ULanguages"/>
+      </Item2>
+      <Item3>
+        <Filename Value="ReadMe.txt"/>
+        <Type Value="Text"/>
+      </Item3>
+    </Files>
+    <i18n>
+      <EnableI18N Value="True"/>
+      <OutDir Value="Languages"/>
+    </i18n>
+    <Type Value="RunAndDesignTime"/>
+    <RequiredPkgs Count="2">
+      <Item1>
+        <PackageName Value="LCL"/>
+      </Item1>
+      <Item2>
+        <PackageName Value="FCL"/>
+        <MinVersion Major="1" Valid="True"/>
+      </Item2>
+    </RequiredPkgs>
+    <UsageOptions>
+      <UnitPath Value="$(PkgOutDir)"/>
+    </UsageOptions>
+    <PublishOptions>
+      <Version Value="2"/>
+    </PublishOptions>
+  </Package>
+</CONFIG>
