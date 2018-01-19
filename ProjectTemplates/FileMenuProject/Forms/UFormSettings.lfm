@@ -1,0 +1,99 @@
+object FormSettings: TFormSettings
+  Left = 798
+  Height = 300
+  Top = 367
+  Width = 481
+  Caption = 'Settings'
+  ClientHeight = 300
+  ClientWidth = 481
+  Constraints.MinHeight = 300
+  Constraints.MinWidth = 400
+  DesignTimePPI = 120
+  OnCreate = FormCreate
+  OnShow = FormShow
+  Position = poScreenCenter
+  LCLVersion = '1.8.0.6'
+  object ComboBoxLanguage: TComboBox
+    Left = 160
+    Height = 28
+    Top = 30
+    Width = 260
+    ItemHeight = 20
+    Style = csDropDownList
+    TabOrder = 0
+  end
+  object Label1: TLabel
+    Left = 20
+    Height = 20
+    Top = 30
+    Width = 68
+    Caption = 'Language:'
+    ParentColor = False
+  end
+  object ButtonOk: TButton
+    Left = 376
+    Height = 31
+    Top = 256
+    Width = 94
+    Anchors = [akRight, akBottom]
+    Caption = 'Ok'
+    ModalResult = 1
+    OnClick = ButtonOkClick
+    TabOrder = 2
+  end
+  object ButtonCancel: TButton
+    Left = 256
+    Height = 31
+    Top = 256
+    Width = 94
+    Anchors = [akRight, akBottom]
+    Caption = 'Cancel'
+    ModalResult = 2
+    TabOrder = 1
+  end
+  object CheckBoxAutomaticDPI: TCheckBox
+    Left = 16
+    Height = 24
+    Top = 104
+    Width = 120
+    Caption = 'Automatic DPI'
+    OnChange = CheckBoxAutomaticDPIChange
+    TabOrder = 3
+    Visible = False
+  end
+  object SpinEditDPI: TSpinEdit
+    Left = 152
+    Height = 28
+    Top = 144
+    Width = 121
+    MaxValue = 300
+    MinValue = 96
+    TabOrder = 4
+    Value = 96
+    Visible = False
+  end
+  object LabelDPI: TLabel
+    Left = 80
+    Height = 20
+    Top = 152
+    Width = 26
+    Caption = 'DPI:'
+    ParentColor = False
+    Visible = False
+  end
+  object CheckBoxReopenLastFileOnStart: TCheckBox
+    Left = 16
+    Height = 24
+    Top = 72
+    Width = 181
+    Caption = 'Reopen last file on start'
+    TabOrder = 5
+  end
+  object Bevel1: TBevel
+    Left = 10
+    Height = 2
+    Top = 240
+    Width = 456
+    Anchors = [akLeft, akRight, akBottom]
+  end
+end

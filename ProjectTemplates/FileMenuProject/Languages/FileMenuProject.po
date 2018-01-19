@@ -1,0 +1,155 @@
+msgid ""
+msgstr "Content-Type: text/plain; charset=UTF-8"
+
+#: tcore.aabout.caption
+msgid "About..."
+msgstr ""
+
+#: tcore.aexit.caption
+msgid "Exit"
+msgstr ""
+
+#: tcore.afileclose.caption
+msgctxt "tcore.afileclose.caption"
+msgid "Close"
+msgstr ""
+
+#: tcore.afilenew.caption
+msgid "New"
+msgstr ""
+
+#: tcore.afileopen.caption
+msgid "Open..."
+msgstr ""
+
+#: tcore.afileopenrecent.caption
+msgctxt "tcore.afileopenrecent.caption"
+msgid "Open recent"
+msgstr ""
+
+#: tcore.afilesave.caption
+msgid "Save"
+msgstr ""
+
+#: tcore.afilesaveas.caption
+msgid "Save as..."
+msgstr ""
+
+#: tcore.ahomepage.caption
+msgctxt "tcore.ahomepage.caption"
+msgid "Home page"
+msgstr ""
+
+#: tcore.asettings.caption
+msgctxt "tcore.asettings.caption"
+msgid "Settings"
+msgstr ""
+
+#: tformabout.buttonclose.caption
+msgctxt "tformabout.buttonclose.caption"
+msgid "Close"
+msgstr ""
+
+#: tformabout.buttonhomepage.caption
+msgctxt "tformabout.buttonhomepage.caption"
+msgid "Home page"
+msgstr ""
+
+#: tformabout.caption
+msgid "About"
+msgstr ""
+
+#: tformabout.labelcontent.caption
+msgid "   "
+msgstr ""
+
+#: tformmain.caption
+msgid "FormMain"
+msgstr ""
+
+#: tformmain.menuitemfile.caption
+msgctxt "tformmain.menuitemfile.caption"
+msgid "File"
+msgstr ""
+
+#: tformmain.menuitemfileopenrecent.caption
+msgctxt "tformmain.menuitemfileopenrecent.caption"
+msgid "Open recent"
+msgstr ""
+
+#: tformmain.menuitemhelp.caption
+msgctxt "tformmain.menuitemhelp.caption"
+msgid "Help"
+msgstr ""
+
+#: tformmain.menuitemtoolbar.caption
+msgctxt "tformmain.menuitemtoolbar.caption"
+msgid "Main toolbar"
+msgstr ""
+
+#: tformmain.menuitemtools.caption
+msgid "Tools"
+msgstr ""
+
+#: tformmain.menuitemview.caption
+msgid "View"
+msgstr ""
+
+#: tformsettings.buttoncancel.caption
+msgid "Cancel"
+msgstr ""
+
+#: tformsettings.buttonok.caption
+msgid "Ok"
+msgstr ""
+
+#: tformsettings.caption
+msgctxt "tformsettings.caption"
+msgid "Settings"
+msgstr ""
+
+#: tformsettings.checkboxautomaticdpi.caption
+msgid "Automatic DPI"
+msgstr ""
+
+#: tformsettings.checkboxreopenlastfileonstart.caption
+msgid "Reopen last file on start"
+msgstr ""
+
+#: tformsettings.label1.caption
+msgid "Language:"
+msgstr ""
+
+#: tformsettings.labeldpi.caption
+msgid "DPI:"
+msgstr ""
+
+#: ucore.sappexit
+msgid "Application exit"
+msgstr ""
+
+#: ucore.sappexitquery
+msgid "File was modified. Do you want to save it before exit?"
+msgstr ""
+
+#: udatafile.sdatafilename
+msgctxt "udatafile.sdatafilename"
+msgid "File"
+msgstr ""
+
+#: uformabout.slicense
+msgid "License"
+msgstr ""
+
+#: uformabout.sreleasedate
+msgid "Release date"
+msgstr ""
+
+#: uformabout.sversion
+msgid "Version"
+msgstr ""
+
+#: uformmain.smodified
+msgid "Modified"
+msgstr ""
+

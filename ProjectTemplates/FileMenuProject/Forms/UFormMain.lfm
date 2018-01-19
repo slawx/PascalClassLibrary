@@ -1,0 +1,159 @@
+object FormMain: TFormMain
+  Left = 613
+  Height = 472
+  Top = 423
+  Width = 413
+  Caption = 'FormMain'
+  ClientHeight = 447
+  ClientWidth = 413
+  DesignTimePPI = 120
+  Menu = MainMenu1
+  OnClose = FormClose
+  OnCloseQuery = FormCloseQuery
+  OnCreate = FormCreate
+  OnShow = FormShow
+  LCLVersion = '1.8.0.6'
+  object CoolBar1: TCoolBar
+    Left = 0
+    Height = 38
+    Top = 0
+    Width = 413
+    AutoSize = True
+    Bands = <    
+      item
+        Break = False
+        Control = ToolBarFile
+        Width = 164
+      end    
+      item
+        Break = False
+        Control = ToolBarOther
+        MinWidth = 64
+        Width = 64
+      end>
+    object ToolBarFile: TToolBar
+      AnchorSideLeft.Control = CoolBar1
+      AnchorSideTop.Control = CoolBar1
+      Left = 24
+      Height = 28
+      Top = 5
+      Width = 132
+      Align = alNone
+      AutoSize = True
+      BorderSpacing.Left = 22
+      BorderSpacing.Top = 3
+      EdgeInner = esNone
+      EdgeOuter = esNone
+      Images = Core.ImageList1
+      ParentShowHint = False
+      ShowHint = True
+      TabOrder = 0
+      Transparent = True
+      object ToolButton1: TToolButton
+        Left = 1
+        Top = 0
+        Action = Core.AFileNew
+      end
+      object ToolButton2: TToolButton
+        Left = 30
+        Top = 0
+        Action = Core.AFileOpen
+        DropdownMenu = PopupMenuOpenRecent
+        Style = tbsDropDown
+      end
+      object ToolButton3: TToolButton
+        Left = 74
+        Top = 0
+        Action = Core.AFileSave
+      end
+      object ToolButton4: TToolButton
+        Left = 103
+        Top = 0
+        Action = Core.AFileClose
+      end
+    end
+    object ToolBarOther: TToolBar
+      AnchorSideLeft.Control = CoolBar1
+      AnchorSideTop.Control = CoolBar1
+      Left = 188
+      Height = 28
+      Top = 5
+      Width = 30
+      Align = alNone
+      AutoSize = True
+      BorderSpacing.Left = 186
+      BorderSpacing.Top = 3
+      EdgeInner = esNone
+      EdgeOuter = esNone
+      Images = Core.ImageList1
+      ParentShowHint = False
+      ShowHint = True
+      TabOrder = 1
+      Transparent = True
+      object ToolButton5: TToolButton
+        Left = 1
+        Top = 0
+        Action = Core.ASettings
+      end
+    end
+  end
+  object MainMenu1: TMainMenu
+    Images = Core.ImageList1
+    left = 128
+    top = 80
+    object MenuItemFile: TMenuItem
+      Caption = 'File'
+      object MenuItemFileNew: TMenuItem
+        Action = Core.AFileNew
+      end
+      object MenuItemFileOpen: TMenuItem
+        Action = Core.AFileOpen
+      end
+      object MenuItemFileOpenRecent: TMenuItem
+        Caption = 'Open recent'
+      end
+      object MenuItemFileSave: TMenuItem
+        Action = Core.AFileSave
+      end
+      object MenuItemFileSaveAs: TMenuItem
+        Action = Core.AFileSaveAs
+      end
+      object MenuItemFileClose: TMenuItem
+        Action = Core.AFileClose
+      end
+      object MenuItem2: TMenuItem
+        Caption = '-'
+      end
+      object MenuItemExit: TMenuItem
+        Action = Core.AExit
+      end
+    end
+    object MenuItemView: TMenuItem
+      Caption = 'View'
+      object MenuItemToolbar: TMenuItem
+        AutoCheck = True
+        Caption = 'Main toolbar'
+        OnClick = MenuItemToolbarClick
+      end
+    end
+    object MenuItemTools: TMenuItem
+      Caption = 'Tools'
+      object MenuItemSettings: TMenuItem
+        Action = Core.ASettings
+      end
+    end
+    object MenuItemHelp: TMenuItem
+      Caption = 'Help'
+      object MenuItemHomePage: TMenuItem
+        Action = Core.AHomePage
+      end
+      object MenuItemAbout: TMenuItem
+        Action = Core.AAbout
+      end
+    end
+  end
+  object PopupMenuOpenRecent: TPopupMenu
+    left = 280
+    top = 80
+  end
+end

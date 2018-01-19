@@ -1,0 +1,165 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Project-Id-Version: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: Chronos <robie@centrum.cz>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: cs\n"
+"X-Generator: Poedit 1.8.8\n"
+
+#: tcore.aabout.caption
+msgid "About..."
+msgstr "O aplikaci..."
+
+#: tcore.aexit.caption
+msgid "Exit"
+msgstr "Ukončit"
+
+#: tcore.afileclose.caption
+msgctxt "tcore.afileclose.caption"
+msgid "Close"
+msgstr "Zavřít"
+
+#: tcore.afilenew.caption
+msgid "New"
+msgstr "Nový"
+
+#: tcore.afileopen.caption
+msgid "Open..."
+msgstr "Otevřít..."
+
+#: tcore.afileopenrecent.caption
+msgctxt "tcore.afileopenrecent.caption"
+msgid "Open recent"
+msgstr "Otevřít nedávné"
+
+#: tcore.afilesave.caption
+msgid "Save"
+msgstr "Uložit"
+
+#: tcore.afilesaveas.caption
+msgid "Save as..."
+msgstr "Uložit jako..."
+
+#: tcore.ahomepage.caption
+msgctxt "tcore.ahomepage.caption"
+msgid "Home page"
+msgstr "Domovská stránka"
+
+#: tcore.asettings.caption
+msgctxt "tcore.asettings.caption"
+msgid "Settings"
+msgstr "Nastavení"
+
+#: tformabout.buttonclose.caption
+msgctxt "tformabout.buttonclose.caption"
+msgid "Close"
+msgstr "Zavřít"
+
+#: tformabout.buttonhomepage.caption
+msgctxt "tformabout.buttonhomepage.caption"
+msgid "Home page"
+msgstr "Domovská stránka"
+
+#: tformabout.caption
+msgid "About"
+msgstr "O aplikaci"
+
+#: tformabout.labelcontent.caption
+msgid "   "
+msgstr "  "
+
+#: tformmain.caption
+msgid "FormMain"
+msgstr "FormMain"
+
+#: tformmain.menuitemfile.caption
+msgctxt "tformmain.menuitemfile.caption"
+msgid "File"
+msgstr "Soubor"
+
+#: tformmain.menuitemfileopenrecent.caption
+msgctxt "tformmain.menuitemfileopenrecent.caption"
+msgid "Open recent"
+msgstr "Otevřít nedávné"
+
+#: tformmain.menuitemhelp.caption
+msgctxt "tformmain.menuitemhelp.caption"
+msgid "Help"
+msgstr "Nápověda"
+
+#: tformmain.menuitemtoolbar.caption
+msgctxt "tformmain.menuitemtoolbar.caption"
+msgid "Main toolbar"
+msgstr ""
+
+#: tformmain.menuitemtools.caption
+msgid "Tools"
+msgstr "Nástroje"
+
+#: tformmain.menuitemview.caption
+msgid "View"
+msgstr "Zobrazení"
+
+#: tformsettings.buttoncancel.caption
+msgid "Cancel"
+msgstr "Zrušit"
+
+#: tformsettings.buttonok.caption
+msgid "Ok"
+msgstr "Ok"
+
+#: tformsettings.caption
+msgctxt "tformsettings.caption"
+msgid "Settings"
+msgstr "Nastavení"
+
+#: tformsettings.checkboxautomaticdpi.caption
+msgid "Automatic DPI"
+msgstr "Automatické DPI"
+
+#: tformsettings.checkboxreopenlastfileonstart.caption
+msgid "Reopen last file on start"
+msgstr "Znovuotevřít poslední soubor při startu"
+
+#: tformsettings.label1.caption
+msgid "Language:"
+msgstr "Jazyk:"
+
+#: tformsettings.labeldpi.caption
+msgid "DPI:"
+msgstr "DPI:"
+
+#: ucore.sappexit
+msgid "Application exit"
+msgstr "Ukončení aplikace"
+
+#: ucore.sappexitquery
+msgid "File was modified. Do you want to save it before exit?"
+msgstr "Soubor byl upraven. Chcete jej uložit před ukončením?"
+
+#: udatafile.sdatafilename
+msgctxt "udatafile.sdatafilename"
+msgid "File"
+msgstr "Soubor"
+
+#: uformabout.slicense
+msgid "License"
+msgstr "Licence"
+
+#: uformabout.sreleasedate
+msgid "Release date"
+msgstr "Datum uvolnění"
+
+#: uformabout.sversion
+msgid "Version"
+msgstr "Verze"
+
+#: uformmain.smodified
+msgid "Modified"
+msgstr "Upraveno"
+
