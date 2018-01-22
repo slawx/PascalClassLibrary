@@ -62,7 +62,7 @@ procedure FileDialogUpdateFilterFileType(FileDialog: TOpenDialog);
 procedure DeleteFiles(APath, AFileSpec: string);
 procedure OpenWebPage(URL: string);
 procedure OpenFileInShell(FileName: string);
-procedure ExecuteProgram(CommandLine: string);
+procedure ExecuteProgram(Executable: string; Parameters: array of string);
 procedure FreeThenNil(var Obj);
 function RemoveQuotes(Text: string): string;
 function ComputerName: string;
@@ -111,9 +111,9 @@ var
 begin
   Path := IncludeTrailingPathDelimiter(APath);
 
-  Find := FindFirst(UTF8Decode(Path + AFileSpec), faAnyFile xor faDirectory, SearchRec);
+  Find := FindFirst(Path + AFileSpec, faAnyFile xor faDirectory, SearchRec);
   while Find = 0 do begin
-    DeleteFile(Path + UTF8Encode(SearchRec.Name));
+    DeleteFile(Path + SearchRec.Name);
 
     Find := SysUtils.FindNext(SearchRec);
   end;
@@ -428,13 +428,16 @@ begin
   {$ENDIF}
 end;
 
-procedure ExecuteProgram(CommandLine: string);
+procedure ExecuteProgram(Executable: string; Parameters: array of string);
 var
   Process: TProcess;
+  I: Integer;
 begin
   try
     Process := TProcess.Create(nil);
-    Process.CommandLine := CommandLine;
+    Process.Executable := Executable;
+    for I := 0 to Length(Parameters) - 1 do
+      Process.Parameters.Add(Parameters[I]);
     Process.Options := [poNoConsole];
     Process.Execute;
   finally
@@ -455,7 +458,7 @@ end;
 
 procedure OpenFileInShell(FileName: string);
 begin
-  ExecuteProgram('cmd.exe /c start "' + FileName + '"');
+  ExecuteProgram('cmd.exe', ['/c', 'start', FileName]);
 end;
 
 function RemoveQuotes(Text: string): string;
