@@ -26,7 +26,7 @@
           <Version Value="11"/>
           <PathDelim Value="\"/>
           <Target>
-            <Filename Value="lib\$(TargetCPU)-$(TargetOS)-${BuildMode}\FileMenuProject"/>
+            <Filename Value="FileMenuProject"/>
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
@@ -62,10 +62,6 @@
             <CompilerMessages>
               <IgnoredMessages idx5024="True"/>
             </CompilerMessages>
-            <ExecuteBefore>
-              <Command Value="prepare.bat lib\$(TargetCPU)-$(TargetOS)-${BuildMode}"/>
-              <CompileReasons Compile="False" Build="False"/>
-            </ExecuteBefore>
           </Other>
         </CompilerOptions>
       </Item2>
@@ -142,7 +138,7 @@
     <Version Value="11"/>
     <PathDelim Value="\"/>
     <Target>
-      <Filename Value="lib\$(TargetCPU)-$(TargetOS)-${BuildMode}\FileMenuProject"/>
+      <Filename Value="FileMenuProject"/>
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
@@ -182,10 +178,6 @@
         <IgnoredMessages idx5024="True"/>
       </CompilerMessages>
       <CustomOptions Value="-dDEBUG"/>
-      <ExecuteBefore>
-        <Command Value="prepare.bat lib\$(TargetCPU)-$(TargetOS)-${BuildMode}"/>
-        <CompileReasons Compile="False" Build="False"/>
-      </ExecuteBefore>
     </Other>
   </CompilerOptions>
   <Debugging>
