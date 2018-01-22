@@ -8,13 +8,8 @@ uses
   Classes, Registry;
 
 type
-  TRegistryRoot = (rrKeyClassesRoot = HKEY($80000000),
-    rrKeyCurrentUser = HKEY($80000001),
-    rrKeyLocalMachine = HKEY($80000002),
-    rrKeyUsers = HKEY($80000003),
-    rrKeyPerformanceData = HKEY($80000004),
-    rrKeyCurrentConfig = HKEY($80000005),
-    rrKeyDynData = HKEY($80000006));
+  TRegistryRoot = (rrKeyClassesRoot, rrKeyCurrentUser, rrKeyLocalMachine,
+    rrKeyUsers, rrKeyPerformanceData, rrKeyCurrentConfig, rrKeyDynData);
 
   { TRegistryContext }
 
@@ -22,6 +17,8 @@ type
     RootKey: HKEY;
     Key: string;
     class operator Equal(A, B: TRegistryContext): Boolean;
+    function Create(RootKey: TRegistryRoot; Key: string): TRegistryContext; overload;
+    function Create(RootKey: HKEY; Key: string): TRegistryContext; overload;
   end;
 
   { TRegistryEx }
@@ -42,22 +39,31 @@ type
     property CurrentContext: TRegistryContext read GetCurrentContext write SetCurrentContext;
   end;
 
-function RegContext(RootKey: HKEY; Key: string): TRegistryContext;
-
+const
+  RegistryRootHKEY: array[TRegistryRoot] of HKEY = (HKEY_CLASSES_ROOT,
+    HKEY_CURRENT_USER, HKEY_LOCAL_MACHINE, HKEY_USERS, HKEY_PERFORMANCE_DATA,
+    HKEY_CURRENT_CONFIG, HKEY_DYN_DATA);
 
 implementation
 
-function RegContext(RootKey: HKEY; Key: string): TRegistryContext;
-begin
-  Result.RootKey := RootKey;
-  Result.Key := Key;
-end;
 
 { TRegistryContext }
 
 class operator TRegistryContext.Equal(A, B: TRegistryContext): Boolean;
 begin
   Result := (A.Key = B.Key) and (A.RootKey = B.RootKey);
+end;
+
+function TRegistryContext.Create(RootKey: TRegistryRoot; Key: string): TRegistryContext;
+begin
+  Result.RootKey := RegistryRootHKEY[RootKey];
+  Result.Key := Key;
+end;
+
+function TRegistryContext.Create(RootKey: HKEY; Key: string): TRegistryContext;
+begin
+  Result.RootKey := RootKey;
+  Result.Key := Key;
 end;
 
 { TRegistryEx }

@@ -13,6 +13,7 @@ type
 
   TApplicationInfo = class(TComponent)
   private
+    FDescription: string;
     FIdentification: Byte;
     FLicense: string;
     FVersionMajor: Byte;
@@ -32,6 +33,7 @@ type
   public
     constructor Create(AOwner: TComponent); override;
     property Version: string read GetVersion;
+    function GetRegistryContext: TRegistryContext;
   published
     property Identification: Byte read FIdentification write FIdentification;
     property VersionMajor: Byte read FVersionMajor write FVersionMajor;
@@ -44,6 +46,7 @@ type
     property AuthorsName: string read FAuthorsName write FAuthorsName;
     property EmailContact: string read FEmailContact write FEmailContact;
     property AppName: string read FAppName write FAppName;
+    property Description: string read FDescription write FDescription;
     property ReleaseDate: TDateTime read FReleaseDate write FReleaseDate;
     property RegistryKey: string read FRegistryKey write FRegistryKey;
     property RegistryRoot: TRegistryRoot read FRegistryRoot write FRegistryRoot;
@@ -78,4 +81,9 @@ begin
   FRegistryRoot := rrKeyCurrentUser;
 end;
 
-end.
+function TApplicationInfo.GetRegistryContext: TRegistryContext;
+begin
+  Result := TRegistryContext.Create(RegistryRoot, RegistryKey);
+end;
+
+end.
