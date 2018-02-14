@@ -7,10 +7,10 @@ unit Common;
 interface
 
 uses
-  StopWatch, UCommon, UDebugLog, UDelay, UPrefixMultiplier, UURI, UThreading, 
-  UMemory, UResetableThread, UPool, ULastOpenedList, URegistry, 
-  UJobProgressView, UXMLUtils, UApplicationInfo, USyncCounter, UListViewSort, 
-  UPersistentForm, UFindFile, UScaleDPI, LazarusPackageIntf;
+  StopWatch, UCommon, UDebugLog, UDelay, UPrefixMultiplier, UURI, UThreading,
+  UMemory, UResetableThread, UPool, ULastOpenedList, URegistry,
+  UJobProgressView, UXMLUtils, UApplicationInfo, USyncCounter, UListViewSort,
+  UPersistentForm, UFindFile, UScaleDPI, UTheme, LazarusPackageIntf;
 
 implementation
 
@@ -24,6 +24,7 @@ begin
   RegisterUnit('UPersistentForm', @UPersistentForm.Register);
   RegisterUnit('UFindFile', @UFindFile.Register);
   RegisterUnit('UScaleDPI', @UScaleDPI.Register);
+  RegisterUnit('UTheme', @UTheme.Register);
 end;
 
 initialization
