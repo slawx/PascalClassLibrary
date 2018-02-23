@@ -1,0 +1,22 @@
+object FormMain: TFormMain
+  Left = 609
+  Height = 300
+  Top = 492
+  Width = 400
+  Caption = 'FormMain'
+  ClientHeight = 300
+  ClientWidth = 400
+  DesignTimePPI = 120
+  OnShow = FormShow
+  LCLVersion = '1.8.0.6'
+  object Memo1: TMemo
+    Left = 16
+    Height = 249
+    Top = 40
+    Width = 376
+    Anchors = [akTop, akLeft, akRight, akBottom]
+    ReadOnly = True
+    ScrollBars = ssAutoBoth
+    TabOrder = 0
+  end
+end
