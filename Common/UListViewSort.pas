@@ -143,12 +143,14 @@ var
   I: Integer;
 begin
   with FStringGrid1 do begin
+    Options := Options - [goEditing, goAlwaysShowEditor];
     //Columns.Clear;
     while Columns.Count > ListView.Columns.Count do Columns.Delete(Columns.Count - 1);
     while Columns.Count < ListView.Columns.Count do Columns.Add;
     for I := 0 to ListView.Columns.Count - 1 do begin
       Columns[I].Width := ListView.Columns[I].Width;
     end;
+    Options := Options + [goEditing, goAlwaysShowEditor];
   end;
 end;
 

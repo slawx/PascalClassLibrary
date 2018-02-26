@@ -137,13 +137,18 @@ begin
   if Component is TControl then begin
     Control := (Component as TControl);
     if (Control is TEdit) or (Control is TSpinEdit) or (Control is TComboBox) and
-    (Control is TMemo) or (Control is TListView) or (Control is TStringGrid) or
+    (Control is TMemo) or (Control is TListView) or (Control is TCustomDrawGrid) or
     (Control is TCheckBox) then begin
       Control.Color := FTheme.ColorWindow;
       Control.Font.Color := FTheme.ColorWindowText;
     end else begin
       Control.Color := FTheme.ColorControl;
       Control.Font.Color := FTheme.ColorControlText;
+    end;
+
+    if Control is TCustomDrawGrid then begin
+      (Control as TCustomDrawGrid).Editor.Color := FTheme.ColorWindow;
+      (Control as TCustomDrawGrid).Editor.Font.Color := FTheme.ColorWindowText;
     end;
   end;
 end;
