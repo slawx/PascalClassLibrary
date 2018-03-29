@@ -243,7 +243,7 @@ procedure TCore.FileNew;
 begin
   FileClose;
   if FileClosed then begin
-    DataFile := TDataFile.Create;
+    DataFile := DataFileClass.Create;
     DataFile.OnModify := FileModified;
   end;
 end;
@@ -311,13 +311,13 @@ begin
     FileNameOption := FindFirstNonOption;
     if FileNameOption <> '' then begin
       // Open file specified as command line parameter
-      AFileNew.Execute;
+      FileNew;
       DataFile.LoadFromFile(FileNameOption);
       LastOpenedList1.AddItem(FileNameOption);
     end else
     if (LastOpenedList1.Items.Count > 0) and FileExists(LastOpenedList1.Items[0]) then begin
       // Open last opened file
-      AFileNew.Execute;
+      FileNew;
       DataFile.LoadFromFile(LastOpenedList1.Items[0])
     end;
 

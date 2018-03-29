@@ -103,7 +103,7 @@ end;
 procedure TFormMain.FormShow(Sender: TObject);
 begin
   Core.Initialize;
-  Core.PersistentForm1.Load(Self);
+  Core.PersistentForm1.Load(Self, True);
   Core.ThemeManager1.UseTheme(Self);
   SetToolbarHints;
 end;

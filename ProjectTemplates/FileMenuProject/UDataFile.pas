@@ -14,6 +14,7 @@ type
   private
     FFileName: string;
     FModified: Boolean;
+    FOnDestroy: TNotifyEvent;
     FOnModify: TNotifyEvent;
     procedure SetFileName(AValue: string);
     procedure SetModified(AValue: Boolean);
@@ -23,9 +24,11 @@ type
     procedure LoadFromFile(FileName: string); virtual;
     procedure SaveToFile(FileName: string); virtual;
     constructor Create; virtual;
+    destructor Destroy; override;
     property FileName: string read FFileName write SetFileName;
     property Modified: Boolean read FModified write SetModified;
     property OnModify: TNotifyEvent read FOnModify write FOnModify;
+    property OnDestroy: TNotifyEvent read FOnDestroy write FOnDestroy;
   end;
 
   TDataFileClass = class of TDataFile;
@@ -78,6 +81,12 @@ end;
 constructor TDataFile.Create;
 begin
   FileName := SDataFileName + GetFileExt;
+end;
+
+destructor TDataFile.Destroy;
+begin
+  if Assigned(FOnDestroy) then FOnDestroy(Self);
+  inherited Destroy;
 end;
 
 procedure TDataFile.SetFileName(AValue: string);
