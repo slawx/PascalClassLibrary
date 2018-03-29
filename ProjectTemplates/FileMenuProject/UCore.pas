@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, FileUtil, Controls, ActnList, Forms, Dialogs,
   ULastOpenedList, UApplicationInfo, UPersistentForm, UScaleDPI, UCommon,
-  UCoolTranslator, UDataFile, Menus, URegistry, Registry;
+  UCoolTranslator, UDataFile, Menus, URegistry, UTheme, Registry;
 
 type
 
@@ -33,6 +33,7 @@ type
     PersistentForm1: TPersistentForm;
     SaveDialog1: TSaveDialog;
     ScaleDPI1: TScaleDPI;
+    ThemeManager1: TThemeManager;
     procedure AAboutExecute(Sender: TObject);
     procedure AExitExecute(Sender: TObject);
     procedure AFileNewExecute(Sender: TObject);
@@ -56,6 +57,8 @@ type
     procedure SaveConfig;
   public
     DataFile: TDataFile;
+    DataFileClass: TDataFileClass;
+
     FileClosed: Boolean;
     ReopenLastFileOnStart: Boolean;
     ToolbarVisible: Boolean;
@@ -63,6 +66,7 @@ type
     procedure FileOpen(FileName: string);
     procedure FileClose;
     procedure Initialize;
+    procedure Finalize;
     procedure UpdateInterface;
   end;
 
@@ -129,8 +133,17 @@ begin
 end;
 
 procedure TCore.AFileOpenExecute(Sender: TObject);
+var
+  TempFile: TDataFile;
 begin
   OpenDialog1.DefaultExt := '';
+  TempFile := DataFileClass.Create;
+  try
+    OpenDialog1.Filter := TempFile.GetFileDialogFilter;
+    OpenDialog1.DefaultExt := TempFile.GetFileExt;
+  finally
+    TempFile.Free;
+  end;
   if Assigned(DataFile) then begin
     OpenDialog1.InitialDir := ExtractFileDir(DataFile.FileName);
     OpenDialog1.FileName := ExtractFileName(DataFile.FileName);
@@ -152,6 +165,7 @@ begin
   SaveDialog1.DefaultExt := DataFile.GetFileExt;
   SaveDialog1.InitialDir := ExtractFileDir(DataFile.FileName);
   SaveDialog1.FileName := ExtractFileName(DataFile.FileName);
+  SaveDialog1.Filter := DataFile.GetFileDialogFilter;
   if SaveDialog1.Execute then begin
     DataFile.SaveToFile(SaveDialog1.FileName);
     LastOpenedList1.AddItem(SaveDialog1.FileName);
@@ -172,11 +186,11 @@ procedure TCore.DataModuleCreate(Sender: TObject);
 begin
   DataFile := nil;
   FileClosed := True;
+  DataFileClass := TDataFile;
 end;
 
 procedure TCore.DataModuleDestroy(Sender: TObject);
 begin
-  SaveConfig;
 end;
 
 procedure TCore.LastOpenedList1Change(Sender: TObject);
@@ -254,6 +268,7 @@ begin
       else CoolTranslator1.Language := CoolTranslator1.Languages.SearchByCode('');
     FormMain.MenuItemToolbar.Checked := ReadBoolWithDefault('ToolBarVisible', True);
     ReopenLastFileOnStart := ReadBoolWithDefault('ReopenLastFileOnStart', True);
+    ThemeManager1.Theme := ThemeManager1.Themes.FindByName(ReadStringWithDefault('Theme', 'System'));
   finally
     Free;
   end;
@@ -272,6 +287,7 @@ begin
       else DeleteValue('LanguageCode');
     WriteBool('ToolBarVisible', FormMain.MenuItemToolbar.Checked);
     WriteBool('ReopenLastFileOnStart', ReopenLastFileOnStart);
+    WriteString('Theme', ThemeManager1.Theme.Name);
   finally
     Free;
   end;
@@ -308,6 +324,11 @@ begin
     UpdateFile;
     InitializeFinished := True;
   end;
+end;
+
+procedure TCore.Finalize;
+begin
+  SaveConfig;
 end;
 
 function TCore.FindFirstNonOption: string;

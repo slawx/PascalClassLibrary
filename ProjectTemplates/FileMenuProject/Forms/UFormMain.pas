@@ -45,6 +45,7 @@ type
     procedure FormShow(Sender: TObject);
     procedure MenuItemToolbarClick(Sender: TObject);
   private
+    procedure SetToolbarHints;
     procedure UpdateFormTitle;
   public
     procedure UpdateInterface;
@@ -69,6 +70,7 @@ resourcestring
 procedure TFormMain.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
   Core.PersistentForm1.Save(Self);
+  Core.Finalize;
 end;
 
 procedure TFormMain.FormCloseQuery(Sender: TObject; var CanClose: boolean);
@@ -77,18 +79,33 @@ begin
   CanClose := Core.FileClosed;
 end;
 
-procedure TFormMain.FormCreate(Sender: TObject);
+procedure TFormMain.SetToolbarHints;
 var
   I: Integer;
+  J: Integer;
+  Control: TControl;
 begin
-  for I := 0 to ToolBarFile.ButtonCount - 1 do
-    ToolBarFile.Buttons[I].Hint := ToolBarFile.Buttons[I].Caption;
+ for J := 0 to CoolBar1.ControlCount - 1 do begin
+    Control := CoolBar1.Controls[J];
+    if Control is TToolBar then begin
+      for I := 0 to TToolBar(Control).ButtonCount - 1 do begin
+        TToolBar(Control).Buttons[I].ShowHint := True;
+        TToolBar(Control).Buttons[I].Hint := TToolBar(Control).Buttons[I].Caption;
+      end;
+    end;
+  end;
+end;
+
+procedure TFormMain.FormCreate(Sender: TObject);
+begin
 end;
 
 procedure TFormMain.FormShow(Sender: TObject);
 begin
-  Core.PersistentForm1.Load(Self);
   Core.Initialize;
+  Core.PersistentForm1.Load(Self);
+  Core.ThemeManager1.UseTheme(Self);
+  SetToolbarHints;
 end;
 
 procedure TFormMain.MenuItemToolbarClick(Sender: TObject);

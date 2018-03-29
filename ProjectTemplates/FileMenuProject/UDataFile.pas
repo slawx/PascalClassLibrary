@@ -19,6 +19,7 @@ type
     procedure SetModified(AValue: Boolean);
   public
     function GetFileExt: string; virtual;
+    function GetFileDialogFilter: string; virtual;
     procedure LoadFromFile(FileName: string); virtual;
     procedure SaveToFile(FileName: string); virtual;
     constructor Create; virtual;
@@ -27,14 +28,21 @@ type
     property OnModify: TNotifyEvent read FOnModify write FOnModify;
   end;
 
+  TDataFileClass = class of TDataFile;
+
   TDataFiles = class(TObjectList)
   end;
 
+
+resourcestring
+  SAllFiles = 'All files';
 
 implementation
 
 resourcestring
   SDataFileName = 'File';
+  SDataFiles = 'Data files';
+
 
 { TDataFile }
 
@@ -47,6 +55,12 @@ end;
 function TDataFile.GetFileExt: string;
 begin
   Result := '.dat';
+end;
+
+function TDataFile.GetFileDialogFilter: string;
+begin
+  Result := SDataFiles + ' (' + GetFileExt + ')|*' + GetFileExt + '|' +
+    SAllFiles + '|*.*';
 end;
 
 procedure TDataFile.LoadFromFile(FileName: string);

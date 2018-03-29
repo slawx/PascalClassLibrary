@@ -80,8 +80,8 @@ type
   private
     FOnChange: TNotifyEvent;
     FStringGrid1: TStringGrid;
-    procedure DoOnKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
-    procedure DoOnResize(Sender: TObject);
+    procedure GridDoOnKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure GridDoOnResize(Sender: TObject);
   public
     constructor Create(AOwner: TComponent); override;
     procedure UpdateFromListView(ListView: TListView);
@@ -109,14 +109,14 @@ end;
 
 { TListViewFilter }
 
-procedure TListViewFilter.DoOnKeyUp(Sender: TObject; var Key: Word;
+procedure TListViewFilter.GridDoOnKeyUp(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
   if Assigned(FOnChange) then
     FOnChange(Self);
 end;
 
-procedure TListViewFilter.DoOnResize(Sender: TObject);
+procedure TListViewFilter.GridDoOnResize(Sender: TObject);
 begin
   FStringGrid1.DefaultRowHeight := FStringGrid1.Height;
 end;
@@ -134,8 +134,8 @@ begin
   FStringGrid1.RowCount := 1;
   FStringGrid1.Options := [goFixedHorzLine, goFixedVertLine, goVertLine,
     goHorzLine, goRangeSelect, goEditing, goAlwaysShowEditor, goSmoothScroll];
-  FStringGrid1.OnKeyUp := DoOnKeyUp;
-  FStringGrid1.OnResize := DoOnResize;
+  FStringGrid1.OnKeyUp := GridDoOnKeyUp;
+  FStringGrid1.OnResize := GridDoOnResize;
 end;
 
 procedure TListViewFilter.UpdateFromListView(ListView: TListView);
@@ -143,12 +143,14 @@ var
   I: Integer;
 begin
   with FStringGrid1 do begin
+    Options := Options - [goEditing, goAlwaysShowEditor];
     //Columns.Clear;
     while Columns.Count > ListView.Columns.Count do Columns.Delete(Columns.Count - 1);
     while Columns.Count < ListView.Columns.Count do Columns.Add;
     for I := 0 to ListView.Columns.Count - 1 do begin
       Columns[I].Width := ListView.Columns[I].Width;
     end;
+    Options := Options + [goEditing, goAlwaysShowEditor];
   end;
 end;
 
@@ -196,7 +198,7 @@ begin
   // Currently we care only with WM_NOTIFY message
   if AMsg.Msg = WM_NOTIFY then
   begin
-    Code := PHDNotify(vMsgNotify.NMHdr)^.Hdr.Code;
+    Code := NMHDR(PHDNotify(vMsgNotify.NMHdr)^.Hdr).Code;
     case Code of
       HDN_ENDTRACKA, HDN_ENDTRACKW:
         DoColumnResized(PHDNotify(vMsgNotify.NMHdr)^.Item);
@@ -352,7 +354,8 @@ procedure TListViewSort.DrawCheckMark(Item: TListItem; Checked:
 var
   TP1: TPoint;
   XBias, YBias: Integer;
-  OldColor: TColor;
+  PenColor: TColor;
+  BrushColor: TColor;
   BiasTop, BiasLeft: Integer;
   Rect1: TRect;
   lRect: TRect;
@@ -364,7 +367,8 @@ begin
   BiasLeft := 0;
   Item.Left := 0;
   GetCheckBias(XBias, YBias, BiasTop, BiasLeft, ListView);
-  OldColor := ListView.Canvas.Pen.Color;
+  PenColor := ListView.Canvas.Pen.Color;
+  BrushColor := ListView.Canvas.Brush.Color;
   //TP1 := Item.GetPosition;
   lRect := Item.DisplayRect(drBounds); // Windows 7 workaround
   TP1.X := lRect.Left;
@@ -407,8 +411,8 @@ begin
       Tp1.Y + BiasTop + (CheckHeight div 2) + YBias - 1);
   end;
   //ListView.Canvas.Brush.Color := ListView.Color;
-  ListView.Canvas.Brush.Color := clWindow;
-  ListView.Canvas.Pen.Color := OldColor;
+  ListView.Canvas.Brush.Color := BrushColor;
+  ListView.Canvas.Pen.Color := PenColor;
 end;
 
 procedure TListViewSort.GetCheckBias(var XBias, YBias, BiasTop, BiasLeft: Integer;

@@ -27,6 +27,7 @@ type
     unfNameServicePrincipal = 10,  // Generalized service principal name
     unfDNSDomainName = 11);
 
+  TFilterMethodMethod = function (FileName: string): Boolean of object;
 var
   ExceptionHandler: TExceptionEvent;
   DLLHandle1: HModule;
@@ -62,13 +63,16 @@ procedure FileDialogUpdateFilterFileType(FileDialog: TOpenDialog);
 procedure DeleteFiles(APath, AFileSpec: string);
 procedure OpenWebPage(URL: string);
 procedure OpenFileInShell(FileName: string);
-procedure ExecuteProgram(CommandLine: string);
+procedure ExecuteProgram(Executable: string; Parameters: array of string);
 procedure FreeThenNil(var Obj);
 function RemoveQuotes(Text: string): string;
 function ComputerName: string;
 function OccurenceOfChar(What: Char; Where: string): Integer;
 function GetDirCount(Dir: string): Integer;
 function MergeArray(A, B: array of string): TArrayOfString;
+function LoadFileToStr(const FileName: TFileName): AnsiString;
+procedure SearchFiles(AList: TStrings; Dir: string;
+  FilterMethod: TFilterMethodMethod);
 
 
 implementation
@@ -110,9 +114,9 @@ var
 begin
   Path := IncludeTrailingPathDelimiter(APath);
 
-  Find := FindFirst(UTF8Decode(Path + AFileSpec), faAnyFile xor faDirectory, SearchRec);
+  Find := FindFirst(Path + AFileSpec, faAnyFile xor faDirectory, SearchRec);
   while Find = 0 do begin
-    DeleteFile(Path + UTF8Encode(SearchRec.Name));
+    DeleteFile(Path + SearchRec.Name);
 
     Find := SysUtils.FindNext(SearchRec);
   end;
@@ -427,13 +431,16 @@ begin
   {$ENDIF}
 end;
 
-procedure ExecuteProgram(CommandLine: string);
+procedure ExecuteProgram(Executable: string; Parameters: array of string);
 var
   Process: TProcess;
+  I: Integer;
 begin
   try
     Process := TProcess.Create(nil);
-    Process.CommandLine := CommandLine;
+    Process.Executable := Executable;
+    for I := 0 to Length(Parameters) - 1 do
+      Process.Parameters.Add(Parameters[I]);
     Process.Options := [poNoConsole];
     Process.Execute;
   finally
@@ -454,7 +461,7 @@ end;
 
 procedure OpenFileInShell(FileName: string);
 begin
-  ExecuteProgram('cmd.exe /c start "' + FileName + '"');
+  ExecuteProgram('cmd.exe', ['/c', 'start', FileName]);
 end;
 
 function RemoveQuotes(Text: string): string;
@@ -491,6 +498,47 @@ begin
     Result[Length(A) + I] := B[I];
 end;
 
+function LoadFileToStr(const FileName: TFileName): AnsiString;
+var
+  FileStream: TFileStream;
+  Read: Integer;
+begin
+  Result := '';
+  FileStream := TFileStream.Create(FileName, fmOpenRead);
+  try
+    if FileStream.Size > 0 then begin
+      SetLength(Result, FileStream.Size);
+      Read := FileStream.Read(Pointer(Result)^, FileStream.Size);
+      SetLength(Result, Read);
+    end;
+  finally
+    FileStream.Free;
+  end;
+end;
+
+function DefaultSearchFilter(const FileName: string): Boolean;
+begin
+  Result := True;
+end;
+
+procedure SearchFiles(AList: TStrings; Dir: string;
+  FilterMethod: TFilterMethodMethod);
+var
+  SR: TSearchRec;
+begin
+  Dir := IncludeTrailingPathDelimiter(Dir);
+  if FindFirst(Dir + '*', faAnyFile, SR) = 0 then
+    try
+      repeat
+        if (SR.Name = '.') or (SR.Name = '..') or not FilterMethod(SR.Name) then Continue;
+        AList.Add(Dir + SR.Name);
+        if (SR.Attr and faDirectory) <> 0 then
+          SearchFiles(AList, Dir + SR.Name, FilterMethod);
+      until FindNext(SR) <> 0;
+    finally
+      FindClose(SR);
+    end;
+end;
 
 
 initialization

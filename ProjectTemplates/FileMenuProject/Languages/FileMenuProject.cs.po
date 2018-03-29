@@ -130,9 +130,17 @@ msgstr "Znovuotevřít poslední soubor při startu"
 msgid "Language:"
 msgstr "Jazyk:"
 
+#: tformsettings.label2.caption
+msgid "Theme:"
+msgstr "Téma:"
+
 #: tformsettings.labeldpi.caption
 msgid "DPI:"
 msgstr "DPI:"
+
+#: tformsettings.tabsheetgeneral.caption
+msgid "General"
+msgstr "Obecné"
 
 #: ucore.sappexit
 msgid "Application exit"
@@ -142,10 +150,18 @@ msgstr "Ukončení aplikace"
 msgid "File was modified. Do you want to save it before exit?"
 msgstr "Soubor byl upraven. Chcete jej uložit před ukončením?"
 
+#: udatafile.sallfiles
+msgid "All files"
+msgstr "Všechny soubory"
+
 #: udatafile.sdatafilename
 msgctxt "udatafile.sdatafilename"
 msgid "File"
 msgstr "Soubor"
+
+#: udatafile.sdatafiles
+msgid "Data files"
+msgstr "Datové soubory"
 
 #: uformabout.slicense
 msgid "License"
@@ -162,3 +178,11 @@ msgstr "Verze"
 #: uformmain.smodified
 msgid "Modified"
 msgstr "Upraveno"
+
+#: uproject.sprojectfiles
+msgid "Project files"
+msgstr "Projektové soubory"
+
+#: uproject.sprojectname
+msgid "New project"
+msgstr "Nový projekt"

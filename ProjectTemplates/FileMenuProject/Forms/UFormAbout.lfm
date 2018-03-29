@@ -10,7 +10,7 @@ object FormAbout: TFormAbout
   OnCreate = FormCreate
   OnShow = FormShow
   Position = poScreenCenter
-  LCLVersion = '1.8.0.6'
+  LCLVersion = '1.8.2.0'
   object LabelDescription: TLabel
     Left = 25
     Height = 40

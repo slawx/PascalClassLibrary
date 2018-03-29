@@ -1,7 +1,7 @@
 object FormJobProgressView: TFormJobProgressView
-  Left = 656
+  Left = 467
   Height = 246
-  Top = 354
+  Top = 252
   Width = 328
   BorderIcons = [biSystemMenu]
   ClientHeight = 246

@@ -48,6 +48,7 @@ resourcestring
 
 procedure TFormAbout.FormShow(Sender: TObject);
 begin
+  Core.ThemeManager1.UseTheme(Self);
   if Assigned(ApplicationInfo) then begin
     LabelAppName.Caption := ApplicationInfo.AppName;
     LabelAppName.AutoSize := True;

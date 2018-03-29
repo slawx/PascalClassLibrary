@@ -120,8 +120,16 @@ msgstr ""
 msgid "Language:"
 msgstr ""
 
+#: tformsettings.label2.caption
+msgid "Theme:"
+msgstr ""
+
 #: tformsettings.labeldpi.caption
 msgid "DPI:"
+msgstr ""
+
+#: tformsettings.tabsheetgeneral.caption
+msgid "General"
 msgstr ""
 
 #: ucore.sappexit
@@ -132,9 +140,17 @@ msgstr ""
 msgid "File was modified. Do you want to save it before exit?"
 msgstr ""
 
+#: udatafile.sallfiles
+msgid "All files"
+msgstr ""
+
 #: udatafile.sdatafilename
 msgctxt "udatafile.sdatafilename"
 msgid "File"
+msgstr ""
+
+#: udatafile.sdatafiles
+msgid "Data files"
 msgstr ""
 
 #: uformabout.slicense
@@ -151,5 +167,13 @@ msgstr ""
 
 #: uformmain.smodified
 msgid "Modified"
+msgstr ""
+
+#: uproject.sprojectfiles
+msgid "Project files"
+msgstr ""
+
+#: uproject.sprojectname
+msgid "New project"
 msgstr ""
 
