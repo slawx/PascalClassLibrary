@@ -131,14 +131,16 @@ var
   Control: TControl;
   I: Integer;
 begin
-  for I := 0 to Component.ComponentCount - 1 do
-    ApplyTheme(Component.Components[I]);
+  if Component is TWinControl then begin
+    for I := 0 to TWinControl(Component).ControlCount - 1 do
+      ApplyTheme(TWinControl(Component).Controls[I]);
+  end;
 
   if Component is TControl then begin
     Control := (Component as TControl);
     if (Control is TEdit) or (Control is TSpinEdit) or (Control is TComboBox) and
     (Control is TMemo) or (Control is TListView) or (Control is TCustomDrawGrid) or
-    (Control is TCheckBox) then begin
+    (Control is TCheckBox) or (Control is TPageControl) or (Control is TRadioButton) then begin
       Control.Color := FTheme.ColorWindow;
       Control.Font.Color := FTheme.ColorWindowText;
     end else begin
@@ -149,6 +151,11 @@ begin
     if Control is TCustomDrawGrid then begin
       (Control as TCustomDrawGrid).Editor.Color := FTheme.ColorWindow;
       (Control as TCustomDrawGrid).Editor.Font.Color := FTheme.ColorWindowText;
+    end;
+
+    if Control is TPageControl then begin
+      for I := 0 to TPageControl(Component).PageCount - 1 do
+        ApplyTheme(TPageControl(Component).Pages[I]);
     end;
   end;
 end;
