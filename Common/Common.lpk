@@ -39,7 +39,7 @@
     <Description Value="Various libraries"/>
     <License Value="GNU/GPL"/>
     <Version Minor="7"/>
-    <Files Count="21">
+    <Files Count="22">
       <Item1>
         <Filename Value="StopWatch.pas"/>
         <UnitName Value="StopWatch"/>
@@ -133,6 +133,10 @@
         <HasRegisterProc Value="True"/>
         <UnitName Value="UTheme"/>
       </Item21>
+      <Item22>
+        <Filename Value="UStringTable.pas"/>
+        <UnitName Value="UStringTable"/>
+      </Item22>
     </Files>
     <i18n>
       <EnableI18N Value="True"/>

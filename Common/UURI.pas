@@ -88,7 +88,7 @@ implementation
 
 function LeftCutString(var Source: string; out Output: string; Delimiter: string; Allowed: string = ''): Boolean;
 var
-  I, J: Integer;
+  I: Integer;
   Matched: Boolean;
 begin
   I := 1;
@@ -112,7 +112,7 @@ end;
 
 function RightCutString(var Source: string; out Output: string; Delimiter: string; Allowed: string = ''): Boolean;
 var
-  I, J: Integer;
+  I: Integer;
   Matched: Boolean;
 begin
   I := Length(Source);
@@ -201,9 +201,6 @@ begin
 end;
 
 procedure TURI.SetAsString(Value: string);
-var
-  HostAddr: string;
-  HostPort: string;
 begin
   LeftCutString(Value, Scheme, ':');
   if Copy(Value, 1, 2) = '//' then begin

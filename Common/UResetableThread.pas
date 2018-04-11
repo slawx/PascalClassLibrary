@@ -155,7 +155,7 @@ begin
   FThread := TResetableThreadExecute.Create(True);
   FThread.Name := 'ResetableThread';
   FThread.Parent := Self;
-  FThread.Resume;
+  FThread.Start;
 end;
 
 destructor TResetableThread.Destroy;

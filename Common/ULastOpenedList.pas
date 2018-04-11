@@ -5,7 +5,7 @@ unit ULastOpenedList;
 interface
 
 uses
-  Classes, SysUtils, Registry, URegistry, Menus, XMLConf;
+  Classes, SysUtils, Registry, URegistry, Menus, XMLConf, DOM;
 
 type
 
@@ -138,7 +138,7 @@ begin
     RootKey := Context.RootKey;
     OpenKey(Context.Key, True);
     for I := 0 to Items.Count - 1 do
-      WriteString('File' + IntToStr(I), UTF8Decode(Items[I]));
+      WriteString('File' + IntToStr(I), Items[I]);
   finally
     Free;
   end;
@@ -152,11 +152,11 @@ var
   Count: Integer;
 begin
   with XMLConfig do begin
-    Count := GetValue(Path + '/Count', 0);
+    Count := GetValue(DOMString(Path + '/Count'), 0);
     if Count > MaxCount then Count := MaxCount;
     Items.Clear;
     for I := 0 to Count - 1 do begin
-      Value := GetValue(Path + '/File' + IntToStr(I), '');
+      Value := string(GetValue(DOMString(Path + '/File' + IntToStr(I)), ''));
       if Trim(Value) <> '' then Items.Add(Value);
     end;
     if Assigned(FOnChange) then
@@ -169,9 +169,9 @@ var
   I: Integer;
 begin
   with XMLConfig do begin
-    SetValue(Path + '/Count', Items.Count);
+    SetValue(DOMString(Path + '/Count'), Items.Count);
     for I := 0 to Items.Count - 1 do
-      SetValue(Path + '/File' + IntToStr(I), Items[I]);
+      SetValue(DOMString(Path + '/File' + IntToStr(I)), DOMString(Items[I]));
     Flush;
   end;
 end;
@@ -185,4 +185,4 @@ begin
 end;
 
 end.
-
+

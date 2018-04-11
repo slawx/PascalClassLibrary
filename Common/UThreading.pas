@@ -29,8 +29,6 @@ type
   public
     Name: string;
     procedure Execute; virtual; abstract;
-    procedure Resume; virtual; abstract;
-    procedure Suspend; virtual; abstract;
     procedure Start; virtual; abstract;
     procedure Terminate; virtual; abstract;
     procedure Synchronize(AMethod: TThreadMethod); virtual; abstract;
@@ -80,8 +78,6 @@ type
     destructor Destroy; override;
     procedure Sleep(Delay: Integer); override;
     procedure Execute; override;
-    procedure Resume; override;
-    procedure Suspend; override;
     procedure Start; override;
     procedure Terminate; override;
     procedure Synchronize(AMethod: TThreadMethod); override;
@@ -133,7 +129,7 @@ begin
     Thread := TTermThread.Create(True);
     Thread.FreeOnTerminate := False;
     Thread.Method := Method;
-    Thread.Resume;
+    Thread.Start;
     while (Thread.State = ttsRunning) or (Thread.State = ttsReady) do begin
       if MainThreadID = ThreadID then Application.ProcessMessages;
       Sleep(1);
@@ -154,7 +150,7 @@ begin
     Thread.FreeOnTerminate := True;
     Thread.Method := Method;
     Thread.OnFinished := CallBack;
-    Thread.Resume;
+    Thread.Start;
     //if Thread.State = ttsExceptionOccured then
     //  raise Exception.Create(Thread.ExceptionMessage);
   finally
@@ -312,16 +308,6 @@ end;
 
 procedure TListedThread.Execute;
 begin
-end;
-
-procedure TListedThread.Resume;
-begin
-  FThread.Resume;
-end;
-
-procedure TListedThread.Suspend;
-begin
-  FThread.Suspend;
 end;
 
 procedure TListedThread.Start;

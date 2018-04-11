@@ -23,7 +23,7 @@ unit UFindFile;
 interface
 
 uses
-  SysUtils, Classes, Graphics, Controls, Forms, Dialogs, FileCtrl;
+  SysUtils, Classes, Graphics, Controls, Forms, Dialogs;
 
 type
   EDirNotFound = class(Exception);
@@ -116,17 +116,17 @@ var Rec  : TSearchRec;
 begin
   Attr := 0;
   if ffaReadOnly in FileAttr then Attr := Attr + faReadOnly;
-  if ffaHidden in FileAttr then Attr := Attr + faHidden;
-  if ffaSysFile in FileAttr then Attr := Attr + faSysFile;
-  if ffaVolumeID in FileAttr then Attr := Attr + faVolumeID;
+  if ffaHidden in FileAttr then Attr := Attr + 2; //faHidden; use constant to avoid platform warning
+  if ffaSysFile in FileAttr then Attr := Attr + 4; //faSysFile; use constant to avoid platform warning
+  // Deprecated: if ffaVolumeID in FileAttr then Attr := Attr + faVolumeID;
   if ffaDirectory in FileAttr then Attr := Attr + faDirectory;
   if ffaArchive in FileAttr then Attr := Attr + faArchive;
   if ffaAnyFile in FileAttr then Attr := Attr + faAnyFile;
 
-  if SysUtils.FindFirst(UTF8Decode(inPath + FileMask), Attr, Rec) = 0 then
+  if SysUtils.FindFirst(inPath + FileMask, Attr, Rec) = 0 then
   try
     repeat
-      s.Add(inPath + UTF8Encode(Rec.Name));
+      s.Add(inPath + Rec.Name);
     until SysUtils.FindNext(Rec) <> 0;
   finally
     SysUtils.FindClose(Rec);
@@ -134,12 +134,12 @@ begin
 
   If not InSubFolders then Exit;
 
-  if SysUtils.FindFirst(UTF8Decode(inPath + FilterAll), faDirectory, Rec) = 0 then
+  if SysUtils.FindFirst(inPath + FilterAll, faDirectory, Rec) = 0 then
   try
     repeat
       if ((Rec.Attr and faDirectory) > 0) and (Rec.Name <> '.')
       and (Rec.Name <> '..') then
-        FileSearch(IncludeTrailingBackslash(inPath + UTF8Encode(Rec.Name)));
+        FileSearch(IncludeTrailingBackslash(inPath + Rec.Name));
     until SysUtils.FindNext(Rec) <> 0;
   finally
     SysUtils.FindClose(Rec);
@@ -147,4 +147,4 @@ begin
 end; 
 
 end.
-
+

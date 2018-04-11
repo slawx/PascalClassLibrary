@@ -55,7 +55,6 @@ procedure TPersistentForm.LoadControl(Control: TControl);
 var
   I: Integer;
   WinControl: TWinControl;
-  Count: Integer;
 begin
   if Control is TListView then begin
     with Form, TRegistryEx.Create do
@@ -216,8 +215,6 @@ begin
 end;
 
 procedure TPersistentForm.Load(Form: TForm; DefaultMaximized: Boolean = False);
-var
-  LoadDefaults: Boolean;
 begin
   Self.Form := Form;
   // Set default
@@ -229,7 +226,7 @@ begin
   LoadFromRegistry(RegistryContext);
 
   if not EqualRect(FormNormalSize, FormRestoredSize) or
-    (LoadDefaults and DefaultMaximized) then begin
+    DefaultMaximized then begin
     // Restore to maximized state
     Form.WindowState := wsNormal;
     if not EqualRect(FormRestoredSize, Form.BoundsRect) then

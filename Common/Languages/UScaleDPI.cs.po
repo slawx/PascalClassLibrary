@@ -14,3 +14,4 @@ msgstr ""
 #: uscaledpi.swrongdpi
 msgid "Wrong DPI [%d,%d]"
 msgstr "Chybné DPI [%d,%d]"
+

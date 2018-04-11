@@ -6,10 +6,10 @@ interface
 
 uses
   {$IFDEF WINDOWS}Windows,{$ENDIF}
-  Classes, SysUtils, DateUtils, XMLRead, XMLWrite, DOM;
+  Classes, SysUtils, DateUtils, DOM;
 
 function XMLTimeToDateTime(XMLDateTime: string): TDateTime;
-function DateTimeToXMLTime(Value: TDateTime; ApplyLocalBias: Boolean = True): WideString;
+function DateTimeToXMLTime(Value: TDateTime; ApplyLocalBias: Boolean = True): string;
 procedure WriteInteger(Node: TDOMNode; Name: string; Value: Integer);
 procedure WriteInt64(Node: TDOMNode; Name: string; Value: Int64);
 procedure WriteBoolean(Node: TDOMNode; Name: string; Value: Boolean);
@@ -29,12 +29,14 @@ function GetTimeZoneBias: Integer;
 var
   TimeZoneInfo: TTimeZoneInformation;
 begin
+  {$push}{$warn 5057 off}
   case GetTimeZoneInformation(TimeZoneInfo) of
-  TIME_ZONE_ID_STANDARD: Result := TimeZoneInfo.Bias + TimeZoneInfo.StandardBias;
-  TIME_ZONE_ID_DAYLIGHT: Result := TimeZoneInfo.Bias + TimeZoneInfo.DaylightBias;
+    TIME_ZONE_ID_STANDARD: Result := TimeZoneInfo.Bias + TimeZoneInfo.StandardBias;
+    TIME_ZONE_ID_DAYLIGHT: Result := TimeZoneInfo.Bias + TimeZoneInfo.DaylightBias;
   else
     Result := 0;
   end;
+  {$pop}
 end;
 {$ELSE}
 begin
@@ -44,7 +46,7 @@ end;
 
 function LeftCutString(var Source: string; out Output: string; Delimiter: string; Allowed: string = ''): Boolean;
 var
-  I, J: Integer;
+  I: Integer;
   Matched: Boolean;
 begin
   I := 1;
@@ -98,7 +100,7 @@ begin
         LeftCutString(XMLDateTime, Part, '-') else
       if Pos('Z', XMLDateTime) > 0 then
         LeftCutString(XMLDateTime, Part, 'Z');
-      SecondFraction := StrToFloat('0' + DecimalSeparator + Part);
+      SecondFraction := StrToFloat('0' + DefaultFormatSettings.DecimalSeparator + Part);
       Millisecond := Trunc(SecondFraction * 1000);
     end else begin
       if Pos('+', XMLDateTime) > 0 then
@@ -117,7 +119,7 @@ begin
   // TODO: Correct time by zone bias
 end;
 
-function DateTimeToXMLTime(Value: TDateTime; ApplyLocalBias: Boolean = True): WideString;
+function DateTimeToXMLTime(Value: TDateTime; ApplyLocalBias: Boolean = True): string;
 const
   Neg: array[Boolean] of string =  ('+', '-');
 var
@@ -138,8 +140,8 @@ procedure WriteInteger(Node: TDOMNode; Name: string; Value: Integer);
 var
   NewNode: TDOMNode;
 begin
-  NewNode := Node.OwnerDocument.CreateElement(Name);
-  NewNode.TextContent := IntToStr(Value);
+  NewNode := Node.OwnerDocument.CreateElement(DOMString(Name));
+  NewNode.TextContent := DOMString(IntToStr(Value));
   Node.AppendChild(NewNode);
 end;
 
@@ -147,8 +149,8 @@ procedure WriteInt64(Node: TDOMNode; Name: string; Value: Int64);
 var
   NewNode: TDOMNode;
 begin
-  NewNode := Node.OwnerDocument.CreateElement(Name);
-  NewNode.TextContent := IntToStr(Value);
+  NewNode := Node.OwnerDocument.CreateElement(DOMString(Name));
+  NewNode.TextContent := DOMString(IntToStr(Value));
   Node.AppendChild(NewNode);
 end;
 
@@ -156,8 +158,8 @@ procedure WriteBoolean(Node: TDOMNode; Name: string; Value: Boolean);
 var
   NewNode: TDOMNode;
 begin
-  NewNode := Node.OwnerDocument.CreateElement(Name);
-  NewNode.TextContent := BoolToStr(Value);
+  NewNode := Node.OwnerDocument.CreateElement(DOMString(Name));
+  NewNode.TextContent := DOMString(BoolToStr(Value));
   Node.AppendChild(NewNode);
 end;
 
@@ -165,8 +167,8 @@ procedure WriteString(Node: TDOMNode; Name: string; Value: string);
 var
   NewNode: TDOMNode;
 begin
-  NewNode := Node.OwnerDocument.CreateElement(Name);
-  NewNode.TextContent := Value;
+  NewNode := Node.OwnerDocument.CreateElement(DOMString(Name));
+  NewNode.TextContent := DOMString(Value);
   Node.AppendChild(NewNode);
 end;
 
@@ -174,8 +176,8 @@ procedure WriteDateTime(Node: TDOMNode; Name: string; Value: TDateTime);
 var
   NewNode: TDOMNode;
 begin
-  NewNode := Node.OwnerDocument.CreateElement(Name);
-  NewNode.TextContent := DateTimeToXMLTime(Value);
+  NewNode := Node.OwnerDocument.CreateElement(DOMString(Name));
+  NewNode.TextContent := DOMString(DateTimeToXMLTime(Value));
   Node.AppendChild(NewNode);
 end;
 
@@ -184,9 +186,9 @@ var
   NewNode: TDOMNode;
 begin
   Result := DefaultValue;
-  NewNode := Node.FindNode(Name);
+  NewNode := Node.FindNode(DOMString(Name));
   if Assigned(NewNode) then
-    Result := StrToInt(NewNode.TextContent);
+    Result := StrToInt(string(NewNode.TextContent));
 end;
 
 function ReadInt64(Node: TDOMNode; Name: string; DefaultValue: Int64): Int64;
@@ -194,9 +196,9 @@ var
   NewNode: TDOMNode;
 begin
   Result := DefaultValue;
-  NewNode := Node.FindNode(Name);
+  NewNode := Node.FindNode(DOMString(Name));
   if Assigned(NewNode) then
-    Result := StrToInt64(NewNode.TextContent);
+    Result := StrToInt64(string(NewNode.TextContent));
 end;
 
 function ReadBoolean(Node: TDOMNode; Name: string; DefaultValue: Boolean): Boolean;
@@ -204,9 +206,9 @@ var
   NewNode: TDOMNode;
 begin
   Result := DefaultValue;
-  NewNode := Node.FindNode(Name);
+  NewNode := Node.FindNode(DOMString(Name));
   if Assigned(NewNode) then
-    Result := StrToBool(NewNode.TextContent);
+    Result := StrToBool(string(NewNode.TextContent));
 end;
 
 function ReadString(Node: TDOMNode; Name: string; DefaultValue: string): string;
@@ -214,9 +216,9 @@ var
   NewNode: TDOMNode;
 begin
   Result := DefaultValue;
-  NewNode := Node.FindNode(Name);
+  NewNode := Node.FindNode(DOMString(Name));
   if Assigned(NewNode) then
-    Result := NewNode.TextContent;
+    Result := string(NewNode.TextContent);
 end;
 
 function ReadDateTime(Node: TDOMNode; Name: string; DefaultValue: TDateTime
@@ -225,9 +227,9 @@ var
   NewNode: TDOMNode;
 begin
   Result := DefaultValue;
-  NewNode := Node.FindNode(Name);
+  NewNode := Node.FindNode(DOMString(Name));
   if Assigned(NewNode) then
-    Result := XMLTimeToDateTime(NewNode.TextContent);
+    Result := XMLTimeToDateTime(string(NewNode.TextContent));
 end;
 
 end.

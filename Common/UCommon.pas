@@ -73,6 +73,7 @@ function MergeArray(A, B: array of string): TArrayOfString;
 function LoadFileToStr(const FileName: TFileName): AnsiString;
 procedure SearchFiles(AList: TStrings; Dir: string;
   FilterMethod: TFilterMethodMethod);
+function GetStringPart(var Text: string; Separator: string): string;
 
 
 implementation
@@ -530,7 +531,8 @@ begin
   if FindFirst(Dir + '*', faAnyFile, SR) = 0 then
     try
       repeat
-        if (SR.Name = '.') or (SR.Name = '..') or not FilterMethod(SR.Name) then Continue;
+        if (SR.Name = '.') or (SR.Name = '..') or not FilterMethod(SR.Name) or
+          not FilterMethod(Copy(Dir, 3, Length(Dir)) + SR.Name) then Continue;
         AList.Add(Dir + SR.Name);
         if (SR.Attr and faDirectory) <> 0 then
           SearchFiles(AList, Dir + SR.Name, FilterMethod);
@@ -539,6 +541,23 @@ begin
       FindClose(SR);
     end;
 end;
+
+function GetStringPart(var Text: string; Separator: string): string;
+var
+  P: Integer;
+begin
+  P := Pos(Separator, Text);
+  if P > 0 then begin
+    Result := Copy(Text, 1, P - 1);
+    Delete(Text, 1, P - 1 + Length(Separator));
+  end else begin
+    Result := Text;
+    Text := '';
+  end;
+  Result := Trim(Result);
+  Text := Trim(Text);
+end;
+
 
 
 initialization

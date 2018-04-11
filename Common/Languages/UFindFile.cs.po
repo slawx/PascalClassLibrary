@@ -14,3 +14,4 @@ msgstr ""
 #: ufindfile.sdirnotfound
 msgid "Directory not found"
 msgstr "Adresář nenalezen"
+

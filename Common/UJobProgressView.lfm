@@ -6,6 +6,7 @@ object FormJobProgressView: TFormJobProgressView
   BorderIcons = [biSystemMenu]
   ClientHeight = 246
   ClientWidth = 328
+  DesignTimePPI = 120
   Font.Height = -11
   Font.Name = 'MS Sans Serif'
   OnClose = FormClose
@@ -13,7 +14,7 @@ object FormJobProgressView: TFormJobProgressView
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   Position = poScreenCenter
-  LCLVersion = '1.6.0.4'
+  LCLVersion = '1.8.2.0'
   object PanelOperationsTitle: TPanel
     Left = 0
     Height = 24

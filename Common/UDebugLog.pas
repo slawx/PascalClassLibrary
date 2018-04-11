@@ -103,8 +103,8 @@ begin
   try
     if ExtractFileDir(FileName) <> '' then
       ForceDirectories(ExtractFileDir(FileName));
-    if FileExists(FileName) then LogFile := TFileStream.Create(UTF8Decode(FileName), fmOpenWrite)
-      else LogFile := TFileStream.Create(UTF8Decode(FileName), fmCreate);
+    if FileExists(FileName) then LogFile := TFileStream.Create(FileName, fmOpenWrite)
+      else LogFile := TFileStream.Create(FileName, fmCreate);
     LogFile.Seek(0, soFromEnd);
     Text := FormatDateTime('hh:nn:ss.zzz', Now) + ': ' + Text + LineEnding;
     LogFile.WriteBuffer(Text[1], Length(Text));

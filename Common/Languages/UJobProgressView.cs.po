@@ -23,10 +23,6 @@ msgstr "Vykonané"
 msgid "Finished"
 msgstr "Dokončené"
 
-#: ujobprogressview.soperations
-msgid "Operations"
-msgstr "Operace"
-
 #: ujobprogressview.spleasewait
 msgid "Please wait..."
 msgstr "Prosím čekejte..."
@@ -38,3 +34,4 @@ msgstr "Přerušení"
 #: ujobprogressview.stotalestimatedtime
 msgid "Total estimated time: %s"
 msgstr "Celkový odhadovaný čas: %s"
+

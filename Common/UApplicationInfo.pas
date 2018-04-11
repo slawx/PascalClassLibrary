@@ -5,7 +5,7 @@ unit UApplicationInfo;
 interface
 
 uses
-  SysUtils, Registry, Classes, Forms, URegistry;
+  SysUtils, Classes, Forms, URegistry;
 
 type
 

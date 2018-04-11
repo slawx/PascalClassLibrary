@@ -283,8 +283,8 @@ var
   I: Integer;
   WinControl: TWinControl;
   ToolBarControl: TToolBar;
-  OldAnchors: TAnchors;
-  OldAutoSize: Boolean;
+  //OldAnchors: TAnchors;
+  //OldAutoSize: Boolean;
 begin
   //if Control is TMemo then Exit;
   //if Control is TForm then

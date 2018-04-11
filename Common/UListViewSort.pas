@@ -479,7 +479,9 @@ begin
   if Assigned(FListView) then begin
     FHeaderHandle := ListView_GetHeader(FListView.Handle);
     for I := 0 to FListView.Columns.Count - 1 do begin
+      {$push}{$warn 5057 off}
       FillChar(Item, SizeOf(THDItem), 0);
+      {$pop}
       Item.Mask := HDI_FORMAT;
       Header_GetItem(FHeaderHandle, I, Item);
       Item.fmt := Item.fmt and not (HDF_SORTDOWN or HDF_SORTUP);
