@@ -141,16 +141,19 @@ end;
 procedure TListViewFilter.UpdateFromListView(ListView: TListView);
 var
   I: Integer;
+  R: TRect;
 begin
   with FStringGrid1 do begin
-    Options := Options - [goEditing, goAlwaysShowEditor];
-    //Columns.Clear;
     while Columns.Count > ListView.Columns.Count do Columns.Delete(Columns.Count - 1);
     while Columns.Count < ListView.Columns.Count do Columns.Add;
     for I := 0 to ListView.Columns.Count - 1 do begin
       Columns[I].Width := ListView.Columns[I].Width;
+      if Selection.Left = I then begin
+        R := CellRect(I, 0);
+        Editor.Left := R.Left + 2;
+        Editor.Width := R.Width - 4;
+      end;
     end;
-    Options := Options + [goEditing, goAlwaysShowEditor];
   end;
 end;
 
@@ -380,7 +383,7 @@ begin
     ListView.Canvas.Brush.Color := clWhite;
   ItemLeft := Item.Left;
   ItemLeft := 23; // Windows 7 workaround
-  
+
   Rect1.Left := ItemLeft - CheckWidth - BiasLeft + 1 + XBias;
   //ShowMessage(IntToStr(Tp1.Y) + ', ' + IntToStr(BiasTop) + ', ' + IntToStr(XBias));
   Rect1.Top := Tp1.Y + BiasTop + 1 + YBias;

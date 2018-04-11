@@ -5,7 +5,7 @@ unit UApplicationInfo;
 interface
 
 uses
-  SysUtils, Classes, Forms, URegistry;
+  SysUtils, Classes, Forms, URegistry, Controls;
 
 type
 
@@ -13,7 +13,7 @@ type
 
   TApplicationInfo = class(TComponent)
   private
-    FDescription: string;
+    FDescription: TCaption;
     FIdentification: Byte;
     FLicense: string;
     FVersionMajor: Byte;
@@ -56,7 +56,7 @@ type
 procedure Register;
 
 implementation
-                        
+
 procedure Register;
 begin
   RegisterComponents('Common', [TApplicationInfo]);

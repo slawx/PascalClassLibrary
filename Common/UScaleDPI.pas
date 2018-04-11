@@ -214,6 +214,7 @@ var
   NewWidth, NewHeight: integer;
   I: Integer;
 begin
+  ImgList.BeginUpdate;
   NewWidth := ScaleX(ImgList.Width, FromDPI.X);
   NewHeight := ScaleY(ImgList.Height, FromDPI.Y);
 
@@ -247,6 +248,7 @@ begin
     ImgList.Add(Temp[I], nil);
     Temp[i].Free;
   end;
+  ImgList.EndUpdate;
 end;
 
 function TScaleDPI.ScaleX(Size: Integer; FromDPI: Integer): Integer;
@@ -315,9 +317,17 @@ begin
       with Bands[I] do begin
         MinWidth := ScaleX(MinWidth, FromDPI.X);
         MinHeight := ScaleY(MinHeight, FromDPI.Y);
-        Width := ScaleX(Width, FromDPI.X);
+        // Workaround to bad band width auto sizing
+        //Width := ScaleX(Width, FromDPI.X);
+        Width := ScaleX(Control.Width + 28, FromDPI.X);
         //Control.Invalidate;
       end;
+    // Workaround for bad autosizing of coolbar
+    if AutoSize then begin
+      AutoSize := False;
+      Height := ScaleY(Height, FromDPI.Y);
+      AutoSize := True;
+    end;
     EndUpdate;
   end;
 
