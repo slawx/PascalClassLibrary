@@ -23,6 +23,10 @@ msgstr "Vykonané"
 msgid "Finished"
 msgstr "Dokončené"
 
+#: ujobprogressview.soperations
+msgid "Operations:"
+msgstr ""
+
 #: ujobprogressview.spleasewait
 msgid "Please wait..."
 msgstr "Prosím čekejte..."

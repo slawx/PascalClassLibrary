@@ -6,13 +6,12 @@ interface
 
 uses
   SysUtils, Variants, Classes, Graphics, Controls, Forms, Syncobjs,
-  Dialogs, ComCtrls, StdCtrls, ExtCtrls, Contnrs, UThreading,
+  Dialogs, ComCtrls, StdCtrls, ExtCtrls, Contnrs, UThreading, Math,
   DateUtils;
 
 const
   EstimatedTimeShowTreshold = 4;
   EstimatedTimeShowTresholdTotal = 1;
-  MemoLogHeight = 200;
   UpdateInterval = 100; // ms
 
 type
@@ -23,9 +22,11 @@ type
   private
     FLock: TCriticalSection;
     FOnChange: TNotifyEvent;
+    FText: string;
     FValue: Integer;
     FMax: Integer;
     procedure SetMax(const AValue: Integer);
+    procedure SetText(AValue: string);
     procedure SetValue(const AValue: Integer);
   public
     procedure Increment;
@@ -34,6 +35,7 @@ type
     destructor Destroy; override;
     property Value: Integer read FValue write SetValue;
     property Max: Integer read FMax write SetMax;
+    property Text: string read FText write SetText;
     property OnChange: TNotifyEvent read FOnChange write FOnChange;
   end;
 
@@ -68,6 +70,9 @@ type
     property Terminate: Boolean read FTerminate write SetTerminate;
   end;
 
+  TJobs = class(TObjectList)
+  end;
+
   TJobThread = class(TListedThread)
     procedure Execute; override;
   public
@@ -79,12 +84,14 @@ type
 
   TFormJobProgressView = class(TForm)
     ImageList1: TImageList;
+    LabelText: TLabel;
     Label2: TLabel;
     LabelOperation: TLabel;
     LabelEstimatedTimePart: TLabel;
     LabelEstimatedTimeTotal: TLabel;
     ListViewJobs: TListView;
     MemoLog: TMemo;
+    PanelText: TPanel;
     PanelProgressTotal: TPanel;
     PanelOperationsTitle: TPanel;
     PanelLog: TPanel;
@@ -93,12 +100,16 @@ type
     ProgressBarPart: TProgressBar;
     ProgressBarTotal: TProgressBar;
     TimerUpdate: TTimer;
+    procedure FormHide(Sender: TObject);
+    procedure FormShow(Sender: TObject);
+    procedure ReloadJobList;
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormDestroy(Sender: TObject);
     procedure ListViewJobsData(Sender: TObject; Item: TListItem);
     procedure TimerUpdateTimer(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+    procedure UpdateHeight;
   public
     JobProgressView: TJobProgressView;
   end;
@@ -119,13 +130,10 @@ type
     Log: TStringList;
     procedure SetTerminate(const AValue: Boolean);
     procedure UpdateProgress;
-    procedure ReloadJobList;
-    procedure StartJobs;
-    procedure UpdateHeight;
     procedure JobProgressChange(Sender: TObject);
   public
     Form: TFormJobProgressView;
-    Jobs: TObjectList; // TListObject<TJob>
+    Jobs: TJobs;
     CurrentJob: TJob;
     CurrentJobIndex: Integer;
     constructor Create(TheOwner: TComponent); override;
@@ -133,7 +141,7 @@ type
     procedure Clear;
     procedure AddJob(Title: string; Method: TJobProgressViewMethod;
       NoThreaded: Boolean = False; WaitFor: Boolean = False);
-    procedure Start(AAutoClose: Boolean = True);
+    procedure Start;
     procedure Stop;
     procedure TermSleep(Delay: Integer);
     property Terminate: Boolean read FTerminate write SetTerminate;
@@ -165,6 +173,7 @@ resourcestring
   SEstimatedTime = 'Estimated time: %s';
   STotalEstimatedTime = 'Total estimated time: %s';
   SFinished = 'Finished';
+  SOperations = 'Operations:';
 
 procedure Register;
 begin
@@ -206,13 +215,7 @@ begin
   //ReloadJobList;
 end;
 
-procedure TJobProgressView.Start(AAutoClose: Boolean = True);
-begin
-  AutoClose := AAutoClose;
-  StartJobs;
-end;
-
-procedure TJobProgressView.StartJobs;
+procedure TJobProgressView.Start;
 var
   I: Integer;
 begin
@@ -227,6 +230,7 @@ begin
     Log.Clear;
     Form.MemoLog.Clear;
 
+    Form.PanelText.Visible := False;
     Form.LabelEstimatedTimePart.Visible := False;
     Form.LabelEstimatedTimeTotal.Visible := False;
 
@@ -256,7 +260,7 @@ begin
       Form.ProgressBarPart.Position := 0;
       Form.ProgressBarPart.Visible := False;
       //Show;
-      ReloadJobList;
+      Form.ReloadJobList;
       Application.ProcessMessages;
       if NoThreaded then begin
         Thread := nil;
@@ -294,19 +298,19 @@ begin
     Screen.EnableForms(FormList);
     //if Visible then Hide;
     Form.MemoLog.Lines.Assign(Log);
-    if (Form.MemoLog.Lines.Count = 0) and AutoClose then begin
+    if (Form.MemoLog.Lines.Count = 0) and FAutoClose then begin
       Form.Hide;
     end;
-    Clear;
+    //Clear;
     Form.Caption := SFinished;
     //LabelEstimatedTimePart.Visible := False;
     Finished := True;
     CurrentJobIndex := -1;
-    ReloadJobList;
+    Form.ReloadJobList;
   end;
 end;
 
-procedure TJobProgressView.UpdateHeight;
+procedure TFormJobProgressView.UpdateHeight;
 var
   H: Integer;
   PanelOperationsVisible: Boolean;
@@ -314,36 +318,48 @@ var
   PanelProgressVisible: Boolean;
   PanelProgressTotalVisible: Boolean;
   PanelLogVisible: Boolean;
+  MemoLogHeight: Integer = 200;
+  I: Integer;
+  ItemRect: TRect;
+  MaxH: Integer;
 begin
-  with Form do begin
-  H := PanelOperationsTitle.Height;
-  PanelOperationsVisible := Jobs.Count > 0;
-  if PanelOperationsVisible <> PanelOperations.Visible then
-    PanelOperations.Visible := PanelOperationsVisible;
-  PanelOperationsHeight := 8 + 18 * Jobs.Count;
-  if PanelOperationsHeight <> PanelOperations.Height then
-    PanelOperations.Height := PanelOperationsHeight;
-  if PanelOperationsVisible then
-    H := H + PanelOperations.Height;
+    H := PanelOperationsTitle.Height;
+    PanelOperationsVisible := JobProgressView.Jobs.Count > 0;
+    if PanelOperationsVisible <> PanelOperations.Visible then
+      PanelOperations.Visible := PanelOperationsVisible;
+    if ListViewJobs.Items.Count > 0 then begin
+      Maxh := 0;
+      for I := 0 to ListViewJobs.Items.Count - 1 do
+      begin
+        ItemRect := ListViewJobs.Items[i].DisplayRect(drBounds);
+        Maxh := Max(Maxh, ItemRect.Top + (ItemRect.Bottom - ItemRect.Top));
+      end;
+      PanelOperationsHeight := Scale96ToScreen(12) + Maxh;
+    end else PanelOperationsHeight := Scale96ToScreen(8);
+    if PanelOperationsHeight <> PanelOperations.Height then
+      PanelOperations.Height := PanelOperationsHeight;
+    if PanelOperationsVisible then
+      H := H + PanelOperations.Height;
 
-  PanelProgressVisible := (Jobs.Count > 0) and not Finished;
-  if PanelProgressVisible <> PanelProgress.Visible then
-    PanelProgress.Visible := PanelProgressVisible;
-  if PanelProgressVisible then
-    H := H + PanelProgress.Height;
-  PanelProgressTotalVisible := (Jobs.Count > 1) and not Finished;
-  if PanelProgressTotalVisible <> PanelProgressTotal.Visible then
-    PanelProgressTotal.Visible := PanelProgressTotalVisible;
-  if PanelProgressTotalVisible then
-    H := H + PanelProgressTotal.Height;
-  Constraints.MinHeight := H;
-  PanelLogVisible := MemoLog.Lines.Count > 0;
-  if PanelLogVisible <> PanelLog.Visible then
-    PanelLog.Visible := PanelLogVisible;
-  if PanelLogVisible then
-    H := H + MemoLogHeight;
-  if Height <> H then Height := H;
-  end;
+    PanelProgressVisible := (JobProgressView.Jobs.Count > 0) and not JobProgressView.Finished;
+    if PanelProgressVisible <> PanelProgress.Visible then
+      PanelProgress.Visible := PanelProgressVisible;
+    if PanelProgressVisible then
+      H := H + PanelProgress.Height;
+    PanelProgressTotalVisible := (JobProgressView.Jobs.Count > 1) and not JobProgressView.Finished;
+    if PanelProgressTotalVisible <> PanelProgressTotal.Visible then
+      PanelProgressTotal.Visible := PanelProgressTotalVisible;
+    if PanelProgressTotalVisible then
+      H := H + PanelProgressTotal.Height;
+    Constraints.MinHeight := H;
+    PanelLogVisible := MemoLog.Lines.Count > 0;
+    if PanelLogVisible <> PanelLog.Visible then
+      PanelLog.Visible := PanelLogVisible;
+    if PanelLogVisible then
+      H := H + Scale96ToScreen(MemoLogHeight);
+    if PanelText.Visible then
+      H := H + PanelText.Height;
+    if Height <> H then Height := H;
 end;
 
 procedure TJobProgressView.JobProgressChange(Sender: TObject);
@@ -372,6 +388,13 @@ begin
     TimerUpdate.Interval := UpdateInterval;
     if not JobProgressView.OwnerDraw then Show;
   end;
+  if Assigned(JobProgressView.CurrentJob) then begin
+    LabelText.Caption := JobProgressView.CurrentJob.Progress.Text;
+    if LabelText.Caption <> '' then begin
+      PanelText.Visible := True;
+      UpdateHeight;
+    end;
+  end;
 end;
 
 procedure TFormJobProgressView.FormDestroy(Sender:TObject);
@@ -393,7 +416,6 @@ end;
 procedure TFormJobProgressView.FormClose(Sender: TObject;
   var CloseAction: TCloseAction);
 begin
-  ListViewJobs.Clear;
 end;
 
 procedure TFormJobProgressView.FormCreate(Sender: TObject);
@@ -406,6 +428,30 @@ begin
   except
 
   end;
+end;
+
+procedure TFormJobProgressView.ReloadJobList;
+begin
+  // Workaround for not showing first line
+  //Form.ListViewJobs.Items.Count := Jobs.Count + 1;
+  //Form.ListViewJobs.Refresh;
+
+  if ListViewJobs.Items.Count <> JobProgressView.Jobs.Count then
+    ListViewJobs.Items.Count := JobProgressView.Jobs.Count;
+  ListViewJobs.Refresh;
+  Application.ProcessMessages;
+  UpdateHeight;
+end;
+
+procedure TFormJobProgressView.FormShow(Sender: TObject);
+begin
+  ReloadJobList;
+end;
+
+procedure TFormJobProgressView.FormHide(Sender: TObject);
+begin
+  JobProgressView.Jobs.Clear;
+  ReloadJobList;
 end;
 
 procedure TJobProgressView.Stop;
@@ -488,19 +534,6 @@ begin
   end;
 end;
 
-procedure TJobProgressView.ReloadJobList;
-begin
-  UpdateHeight;
-  // Workaround for not showing first line
-  Form.ListViewJobs.Items.Count := Jobs.Count + 1;
-  Form.ListViewJobs.Refresh;
-
-  if Form.ListViewJobs.Items.Count <> Jobs.Count then
-    Form.ListViewJobs.Items.Count := Jobs.Count;
-  Form.ListViewJobs.Refresh;
-  //Application.ProcessMessages;
-end;
-
 constructor TJobProgressView.Create(TheOwner: TComponent);
 begin
   inherited;
@@ -508,7 +541,7 @@ begin
     Form := TFormJobProgressView.Create(Self);
     Form.JobProgressView := Self;
   end;
-  Jobs := TObjectList.Create;
+  Jobs := TJobs.Create;
   Log := TStringList.Create;
   //PanelOperationsTitle.Height := 80;
   ShowDelay := 0; //1000; // ms
@@ -534,6 +567,17 @@ begin
     FMax := AValue;
     if FMax < 1 then FMax := 1;
     if FValue >= FMax then FValue := FMax;
+  finally
+    FLock.Release;
+  end;
+end;
+
+procedure TProgress.SetText(AValue: string);
+begin
+  try
+    FLock.Acquire;
+    if FText = AValue then Exit;
+    FText := AValue;
   finally
     FLock.Release;
   end;

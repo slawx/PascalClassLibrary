@@ -1,59 +1,56 @@
 object FormJobProgressView: TFormJobProgressView
   Left = 467
-  Height = 246
+  Height = 345
   Top = 252
-  Width = 328
+  Width = 539
   BorderIcons = [biSystemMenu]
-  ClientHeight = 246
-  ClientWidth = 328
+  ClientHeight = 345
+  ClientWidth = 539
   DesignTimePPI = 120
-  Font.Height = -11
-  Font.Name = 'MS Sans Serif'
   OnClose = FormClose
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   OnDestroy = FormDestroy
+  OnHide = FormHide
+  OnShow = FormShow
   Position = poScreenCenter
   LCLVersion = '1.8.2.0'
   object PanelOperationsTitle: TPanel
     Left = 0
-    Height = 24
+    Height = 32
     Top = 0
-    Width = 328
+    Width = 539
     Align = alTop
     BevelOuter = bvNone
-    ClientHeight = 24
-    ClientWidth = 328
+    ClientHeight = 32
+    ClientWidth = 539
     FullRepaint = False
     TabOrder = 0
     object LabelOperation: TLabel
       Left = 8
-      Height = 13
+      Height = 20
       Top = 8
-      Width = 66
+      Width = 76
       Caption = 'Operations:'
-      Font.Height = -11
-      Font.Name = 'MS Sans Serif'
-      Font.Style = [fsBold]
       ParentColor = False
       ParentFont = False
     end
   end
   object PanelLog: TPanel
     Left = 0
-    Height = 122
-    Top = 124
-    Width = 328
+    Height = 133
+    Top = 212
+    Width = 539
     Align = alClient
     BevelOuter = bvSpace
-    ClientHeight = 122
-    ClientWidth = 328
+    ClientHeight = 133
+    ClientWidth = 539
     TabOrder = 1
     object MemoLog: TMemo
       Left = 8
-      Height = 106
+      Height = 117
       Top = 8
-      Width = 312
+      Width = 523
       Anchors = [akTop, akLeft, akRight, akBottom]
       ReadOnly = True
       ScrollBars = ssAutoBoth
@@ -62,54 +59,54 @@ object FormJobProgressView: TFormJobProgressView
   end
   object PanelProgress: TPanel
     Left = 0
-    Height = 38
-    Top = 50
-    Width = 328
+    Height = 54
+    Top = 106
+    Width = 539
     Align = alTop
     BevelOuter = bvNone
-    ClientHeight = 38
-    ClientWidth = 328
+    ClientHeight = 54
+    ClientWidth = 539
     TabOrder = 2
     object ProgressBarPart: TProgressBar
-      Left = 8
-      Height = 17
-      Top = 16
-      Width = 312
+      Left = 10
+      Height = 24
+      Top = 24
+      Width = 523
       Anchors = [akTop, akLeft, akRight]
       TabOrder = 0
     end
     object LabelEstimatedTimePart: TLabel
       Left = 8
-      Height = 13
+      Height = 20
       Top = -2
-      Width = 71
+      Width = 103
       Caption = 'Estimated time:'
       ParentColor = False
     end
   end
   object PanelOperations: TPanel
     Left = 0
-    Height = 26
-    Top = 24
-    Width = 328
+    Height = 42
+    Top = 64
+    Width = 539
     Align = alTop
     BevelOuter = bvNone
-    ClientHeight = 26
-    ClientWidth = 328
+    ClientHeight = 42
+    ClientWidth = 539
     FullRepaint = False
     TabOrder = 3
     object ListViewJobs: TListView
       Left = 8
-      Height = 16
+      Height = 32
       Top = 5
-      Width = 312
+      Width = 523
       Anchors = [akTop, akLeft, akRight, akBottom]
       AutoWidthLastColumn = True
       BorderStyle = bsNone
       Color = clBtnFace
       Columns = <      
         item
-          Width = 312
+          Width = 523
         end>
       OwnerData = True
       ReadOnly = True
@@ -122,29 +119,49 @@ object FormJobProgressView: TFormJobProgressView
   end
   object PanelProgressTotal: TPanel
     Left = 0
-    Height = 36
-    Top = 88
-    Width = 328
+    Height = 52
+    Top = 160
+    Width = 539
     Align = alTop
     BevelOuter = bvNone
-    ClientHeight = 36
-    ClientWidth = 328
+    ClientHeight = 52
+    ClientWidth = 539
     TabOrder = 4
     object LabelEstimatedTimeTotal: TLabel
       Left = 8
-      Height = 13
+      Height = 20
       Top = 0
-      Width = 97
+      Width = 141
       Caption = 'Total estimated time:'
       ParentColor = False
     end
     object ProgressBarTotal: TProgressBar
       Left = 8
-      Height = 16
-      Top = 16
-      Width = 312
+      Height = 24
+      Top = 24
+      Width = 523
       Anchors = [akTop, akLeft, akRight]
       TabOrder = 0
+    end
+  end
+  object PanelText: TPanel
+    Left = 0
+    Height = 32
+    Top = 32
+    Width = 539
+    Align = alTop
+    BevelOuter = bvNone
+    ClientHeight = 32
+    ClientWidth = 539
+    TabOrder = 5
+    object LabelText: TLabel
+      Left = 8
+      Height = 24
+      Top = 8
+      Width = 525
+      Anchors = [akTop, akLeft, akRight]
+      AutoSize = False
+      ParentColor = False
     end
   end
   object ImageList1: TImageList
