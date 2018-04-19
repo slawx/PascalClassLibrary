@@ -10,9 +10,9 @@ uses
 
 type
 
-  { TForm1 }
+  { TFormMain }
 
-  TForm1 = class(TForm)
+  TFormMain = class(TForm)
     ButtonTest: TButton;
     CheckBoxAutoClose: TCheckBox;
     CheckBoxTextProgress: TCheckBox;
@@ -31,18 +31,19 @@ type
   end;
 
 var
-  Form1: TForm1;
+  FormMain: TFormMain;
 
 implementation
 
 {$R *.lfm}
 
-{ TForm1 }
+{ TFormMain }
 
-procedure TForm1.ButtonTestClick(Sender: TObject);
+procedure TFormMain.ButtonTestClick(Sender: TObject);
 var
   I: Integer;
 begin
+  ButtonTest.Enabled := False;
   with JobProgressView1 do begin
     AutoClose := CheckBoxAutoClose.Checked;
     ShowDelay := SpinEditShowDelay.Value;
@@ -51,9 +52,10 @@ begin
       AddJob('Job ' + IntToStr(I + 1), JobMethod);
     Start;
   end;
+  ButtonTest.Enabled := True;
 end;
 
-procedure TForm1.JobMethod(Job: TJob);
+procedure TFormMain.JobMethod(Job: TJob);
 var
   Count: Integer;
   I: Integer;

@@ -1,7 +1,7 @@
-object Form1: TForm1
-  Left = 515
+object FormMain: TFormMain
+  Left = 501
   Height = 480
-  Top = 252
+  Top = 296
   Width = 743
   Caption = 'JobProgressView demo'
   ClientHeight = 480
@@ -88,7 +88,7 @@ object Form1: TForm1
     OwnerDraw = False
     ShowDelay = 0
     AutoClose = False
-    left = 488
-    top = 72
+    left = 480
+    top = 120
   end
 end
