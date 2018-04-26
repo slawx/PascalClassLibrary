@@ -1,22 +1,36 @@
 object FormMain: TFormMain
-  Left = 609
-  Height = 300
-  Top = 492
-  Width = 400
-  Caption = 'FormMain'
-  ClientHeight = 300
-  ClientWidth = 400
+  Left = 463
+  Height = 457
+  Top = 335
+  Width = 810
+  Caption = 'BigInt test'
+  ClientHeight = 457
+  ClientWidth = 810
   DesignTimePPI = 120
   OnShow = FormShow
-  LCLVersion = '1.8.0.6'
-  object Memo1: TMemo
-    Left = 16
-    Height = 249
-    Top = 40
-    Width = 376
-    Anchors = [akTop, akLeft, akRight, akBottom]
+  LCLVersion = '1.8.2.0'
+  object ListView1: TListView
+    Left = 0
+    Height = 457
+    Top = 0
+    Width = 810
+    Align = alClient
+    Columns = <    
+      item
+        Caption = 'Test'
+        Width = 200
+      end    
+      item
+        Caption = 'Result'
+        Width = 100
+      end    
+      item
+        Caption = 'Value'
+        Width = 100
+      end>
     ReadOnly = True
-    ScrollBars = ssAutoBoth
+    RowSelect = True
     TabOrder = 0
+    ViewStyle = vsReport
   end
 end
