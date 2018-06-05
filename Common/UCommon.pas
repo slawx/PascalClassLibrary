@@ -72,7 +72,7 @@ function GetDirCount(Dir: string): Integer;
 function MergeArray(A, B: array of string): TArrayOfString;
 function LoadFileToStr(const FileName: TFileName): AnsiString;
 procedure SearchFiles(AList: TStrings; Dir: string;
-  FilterMethod: TFilterMethodMethod);
+  FilterMethod: TFilterMethodMethod = nil);
 function GetStringPart(var Text: string; Separator: string): string;
 
 
@@ -523,7 +523,7 @@ begin
 end;
 
 procedure SearchFiles(AList: TStrings; Dir: string;
-  FilterMethod: TFilterMethodMethod);
+  FilterMethod: TFilterMethodMethod = nil);
 var
   SR: TSearchRec;
 begin
@@ -531,8 +531,8 @@ begin
   if FindFirst(Dir + '*', faAnyFile, SR) = 0 then
     try
       repeat
-        if (SR.Name = '.') or (SR.Name = '..') or not FilterMethod(SR.Name) or
-          not FilterMethod(Copy(Dir, 3, Length(Dir)) + SR.Name) then Continue;
+        if (SR.Name = '.') or (SR.Name = '..') or (Assigned(FilterMethod) and (not FilterMethod(SR.Name) or
+          not FilterMethod(Copy(Dir, 3, Length(Dir)) + SR.Name))) then Continue;
         AList.Add(Dir + SR.Name);
         if (SR.Attr and faDirectory) <> 0 then
           SearchFiles(AList, Dir + SR.Name, FilterMethod);

@@ -7,7 +7,8 @@ unit UPersistentForm;
 interface
 
 uses
-  Classes, SysUtils, Forms, URegistry, LCLIntf, Registry, Controls, ComCtrls;
+  Classes, SysUtils, Forms, URegistry, LCLIntf, Registry, Controls, ComCtrls,
+  ExtCtrls;
 
 type
 
@@ -70,6 +71,24 @@ begin
     end;
   end;
 
+  if (Control is TPanel) then begin
+    with Form, TRegistryEx.Create do
+    try
+      RootKey := RegistryContext.RootKey;
+      OpenKey(RegistryContext.Key + '\Forms\' + Form.Name + '\' + Control.Name, True);
+      if (TPanel(Control).Align = alRight) or (TPanel(Control).Align = alLeft) then begin
+        if ValueExists('Width') then
+          TPanel(Control).Width := ReadInteger('Width');
+      end;
+      if (TPanel(Control).Align = alTop) or (TPanel(Control).Align = alBottom) then begin
+        if ValueExists('Height') then
+          TPanel(Control).Height := ReadInteger('Height');
+      end;
+    finally
+      Free;
+    end;
+  end;
+
   if Control is TWinControl then begin
     WinControl := TWinControl(Control);
     if WinControl.ControlCount > 0 then begin
@@ -94,6 +113,22 @@ begin
       OpenKey(RegistryContext.Key + '\Forms\' + Form.Name + '\' + Control.Name, True);
       for I := 0 to TListView(Control).Columns.Count - 1 do begin
         WriteInteger('ColWidth' + IntToStr(I), TListView(Control).Columns[I].Width);
+      end;
+    finally
+      Free;
+    end;
+  end;
+
+  if (Control is TPanel) then begin
+    with Form, TRegistryEx.Create do
+    try
+      RootKey := RegistryContext.RootKey;
+      OpenKey(RegistryContext.Key + '\Forms\' + Form.Name + '\' + Control.Name, True);
+      if (TPanel(Control).Align = alRight) or (TPanel(Control).Align = alLeft) then begin
+        WriteInteger('Width', TPanel(Control).Width);
+      end;
+      if (TPanel(Control).Align = alTop) or (TPanel(Control).Align = alBottom) then begin
+        WriteInteger('Height', TPanel(Control).Height);
       end;
     finally
       Free;

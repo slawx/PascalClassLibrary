@@ -157,6 +157,10 @@ begin
       for I := 0 to TPageControl(Component).PageCount - 1 do
         ApplyTheme(TPageControl(Component).Pages[I]);
     end;
+
+    if Control is TCoolBar then begin
+      (Control as TCoolBar).Themed := False;
+    end;
   end;
 end;
 
