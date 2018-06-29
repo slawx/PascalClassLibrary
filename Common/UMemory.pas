@@ -23,6 +23,8 @@ type
     procedure Assign(Source: TMemory);
     constructor Create;
     destructor Destroy; override;
+    procedure WriteMemory(Position: Integer; Memory: TMemory);
+    procedure ReadMemory(Position: Integer; Memory: TMemory);
     property Data: PByte read FData;
     property Size: Integer read FSize write SetSize;
     property Items[Index: Integer]: Byte read GetItem write SetItem; default;
@@ -105,6 +107,16 @@ destructor TMemory.Destroy;
 begin
   Size := 0;
   inherited Destroy;
+end;
+
+procedure TMemory.WriteMemory(Position: Integer; Memory: TMemory);
+begin
+  Move(Memory.FData, PByte(@FData + Position)^, Memory.Size);
+end;
+
+procedure TMemory.ReadMemory(Position: Integer; Memory: TMemory);
+begin
+  Move(PByte(@FData + Position)^, Memory.FData, Memory.Size);
 end;
 
 end.
