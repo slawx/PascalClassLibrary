@@ -74,6 +74,10 @@ function LoadFileToStr(const FileName: TFileName): AnsiString;
 procedure SearchFiles(AList: TStrings; Dir: string;
   FilterMethod: TFilterMethodMethod = nil);
 function GetStringPart(var Text: string; Separator: string): string;
+function PosFromIndex(SubStr: string; Text: string;
+  StartIndex: Integer): Integer;
+function PosFromIndexReverse(SubStr: string; Text: string;
+  StartIndex: Integer): Integer;
 
 
 implementation
@@ -558,7 +562,50 @@ begin
   Text := Trim(Text);
 end;
 
+function PosFromIndex(SubStr: string; Text: string;
+  StartIndex: Integer): Integer;
+var
+  I, MaxLen: SizeInt;
+  Ptr: PAnsiChar;
+begin
+  Result := 0;
+  if (StartIndex < 1) or (StartIndex > Length(Text) - Length(SubStr)) then Exit;
+  if Length(SubStr) > 0 then begin
+    MaxLen := Length(Text) - Length(SubStr) + 1;
+    I := StartIndex;
+    Ptr := @Text[StartIndex];
+    while (I <= MaxLen) do begin
+      if (SubStr[1] = Ptr^) and (CompareByte(Substr[1], Ptr^, Length(SubStr)) = 0) then begin
+        Result := I;
+        Exit;
+      end;
+      Inc(I);
+      Inc(Ptr);
+    end;
+  end;
+end;
 
+function PosFromIndexReverse(SubStr: string; Text: string;
+  StartIndex: Integer): Integer;
+var
+  I: SizeInt;
+  Ptr: PAnsiChar;
+begin
+  Result := 0;
+  if (StartIndex < 1) or (StartIndex > Length(Text)) then Exit;
+  if Length(SubStr) > 0 then begin
+    I := StartIndex;
+    Ptr := @Text[StartIndex];
+    while (I > 0) do begin
+      if (SubStr[1] = Ptr^) and (CompareByte(Substr[1], Ptr^, Length(SubStr)) = 0) then begin
+        Result := I;
+        Exit;
+      end;
+      Dec(I);
+      Dec(Ptr);
+    end;
+  end;
+end;
 
 initialization
 
