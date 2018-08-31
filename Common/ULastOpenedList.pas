@@ -29,6 +29,7 @@ type
     procedure LoadFromXMLConfig(XMLConfig: TXMLConfig; Path: string);
     procedure SaveToXMLConfig(XMLConfig: TXMLConfig; Path: string);
     procedure AddItem(FileName: string);
+    function GetFirstFileName: string;
   published
     property MaxCount: Integer read FMaxCount write SetMaxCount;
     property OnChange: TNotifyEvent read FOnChange write FOnChange;
@@ -182,6 +183,12 @@ begin
   Items.Insert(0, FileName);
   LimitMaxCount;
   DoChange;
+end;
+
+function TLastOpenedList.GetFirstFileName: string;
+begin
+  if Items.Count > 0 then Result := Items[0]
+    else Result := '';
 end;
 
 end.

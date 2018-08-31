@@ -6,7 +6,7 @@ interface
 
 uses
   {$IFDEF WINDOWS}Windows,{$ENDIF}
-  Classes, SysUtils, DateUtils, DOM;
+  Classes, SysUtils, DateUtils, DOM, xmlread;
 
 function XMLTimeToDateTime(XMLDateTime: string): TDateTime;
 function DateTimeToXMLTime(Value: TDateTime; ApplyLocalBias: Boolean = True): string;
@@ -20,9 +20,29 @@ function ReadInt64(Node: TDOMNode; Name: string; DefaultValue: Int64): Int64;
 function ReadBoolean(Node: TDOMNode; Name: string; DefaultValue: Boolean): Boolean;
 function ReadString(Node: TDOMNode; Name: string; DefaultValue: string): string;
 function ReadDateTime(Node: TDOMNode; Name: string; DefaultValue: TDateTime): TDateTime;
+procedure ReadXMLFileParser(out Doc: TXMLDocument; FileName: string);
 
 
 implementation
+
+procedure ReadXMLFileParser(out Doc: TXMLDocument; FileName: string);
+var
+  Parser: TDOMParser;
+  Src: TXMLInputSource;
+  InFile: TFileStream;
+begin
+  try
+    InFile := TFileStream.Create(FileName, fmOpenRead);
+    Src := TXMLInputSource.Create(InFile);
+    Parser := TDOMParser.Create;
+    Parser.Options.PreserveWhitespace := True;
+    Parser.Parse(Src, Doc);
+  finally
+    Src.Free;
+    Parser.Free;
+    InFile.Free;
+  end;
+end;
 
 function GetTimeZoneBias: Integer;
 {$IFDEF WINDOWS}

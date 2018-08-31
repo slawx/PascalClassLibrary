@@ -288,6 +288,19 @@ var
   //OldAnchors: TAnchors;
   //OldAutoSize: Boolean;
 begin
+  //if not (Control is TCustomPage) then
+  // Resize childs first
+  if Control is TWinControl then begin
+    WinControl := TWinControl(Control);
+    if WinControl.ControlCount > 0 then begin
+      for I := 0 to WinControl.ControlCount - 1 do begin
+        if WinControl.Controls[I] is TControl then begin
+          ScaleControl(WinControl.Controls[I], FromDPI);
+        end;
+      end;
+    end;
+  end;
+
   //if Control is TMemo then Exit;
   //if Control is TForm then
   //  Control.DisableAutoSizing;
@@ -339,17 +352,6 @@ begin
     end;
   end;
 
-  //if not (Control is TCustomPage) then
-  if Control is TWinControl then begin
-    WinControl := TWinControl(Control);
-    if WinControl.ControlCount > 0 then begin
-      for I := 0 to WinControl.ControlCount - 1 do begin
-        if WinControl.Controls[I] is TControl then begin
-          ScaleControl(WinControl.Controls[I], FromDPI);
-        end;
-      end;
-    end;
-  end;
   //if Control is TForm then
   //  Control.EnableAutoSizing;
 end;

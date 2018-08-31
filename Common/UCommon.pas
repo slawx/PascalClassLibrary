@@ -71,9 +71,11 @@ function OccurenceOfChar(What: Char; Where: string): Integer;
 function GetDirCount(Dir: string): Integer;
 function MergeArray(A, B: array of string): TArrayOfString;
 function LoadFileToStr(const FileName: TFileName): AnsiString;
+procedure SaveStringToFile(S, FileName: string);
 procedure SearchFiles(AList: TStrings; Dir: string;
   FilterMethod: TFilterMethodMethod = nil);
 function GetStringPart(var Text: string; Separator: string): string;
+function StripTags(const S: string): string;
 function PosFromIndex(SubStr: string; Text: string;
   StartIndex: Integer): Integer;
 function PosFromIndexReverse(SubStr: string; Text: string;
@@ -526,6 +528,19 @@ begin
   Result := True;
 end;
 
+procedure SaveStringToFile(S, FileName: string);
+var
+  F: TextFile;
+begin
+  AssignFile(F, FileName);
+  try
+    ReWrite(F);
+    Write(F, S);
+  finally
+    CloseFile(F);
+  end;
+end;
+
 procedure SearchFiles(AList: TStrings; Dir: string;
   FilterMethod: TFilterMethodMethod = nil);
 var
@@ -560,6 +575,37 @@ begin
   end;
   Result := Trim(Result);
   Text := Trim(Text);
+end;
+
+function StripTags(const S: string): string;
+var
+  Len: Integer;
+
+  function ReadUntil(const ReadFrom: Integer; const C: Char): Integer;
+  var
+    J: Integer;
+  begin
+    for J := ReadFrom to Len do
+      if (S[j] = C) then
+      begin
+        Result := J;
+        Exit;
+      end;
+    Result := Len + 1;
+  end;
+
+var
+  I, APos: Integer;
+begin
+  Len := Length(S);
+  I := 0;
+  Result := '';
+  while (I <= Len) do begin
+    Inc(I);
+    APos := ReadUntil(I, '<');
+    Result := Result + Copy(S, I, APos - i);
+    I := ReadUntil(APos + 1, '>');
+  end;
 end;
 
 function PosFromIndex(SubStr: string; Text: string;
@@ -606,6 +652,7 @@ begin
     end;
   end;
 end;
+
 
 initialization
 
