@@ -11,4 +11,4 @@ Email: robie@centrum.cz
 
 
 Main subversion repository:
-http://svn.zdechov.net/svn/PascalClassLibrary/Generics/TemplateGenerics
+https://svn.zdechov.net/PascalClassLibrary/Generics/TemplateGenerics

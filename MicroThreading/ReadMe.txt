@@ -15,7 +15,7 @@
 
 ==Download==
 
-SVN repository: http://svn.zdechov.net/svn/PascalClassLibrary/MicroThreading
+SVN repository: https://svn.zdechov.net/PascalClassLibrary/MicroThreading
 
 Author: Chronos
 

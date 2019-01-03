@@ -6,7 +6,7 @@ Is form docking system for Lazarus IDE.
 
 You can download source from SVN repository:
 
-http://svn.zdechov.net/svn/PascalClassLibrary/Docking/CoolDocking
+https://svn.zdechov.net/PascalClassLibrary/Docking/CoolDocking
 
 
 =Features=
