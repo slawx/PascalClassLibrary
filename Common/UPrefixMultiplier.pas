@@ -20,9 +20,9 @@ type
 
   { TPrefixMultiplier }
 
-  TPrefixMultiplier = class
+  TPrefixMultiplier = class(TComponent)
   private
-    function TruncateDigits(Value:Double;Digits:Integer=3):Double;
+    function TruncateDigits(Value: Double; Digits: Integer = 3): Double;
   public
     function Add(Value: Double; PrefixMultipliers: TPrefixMultiplierDef;
       UnitText: string; Digits: Integer = 3): string;
@@ -71,7 +71,15 @@ const
     (ShortText: 'tisíciletí'; FullText: 'tisíciletí'; Value: 3153600000)
   );
 
+procedure Register;
+
+
 implementation
+
+procedure Register;
+begin
+  RegisterComponents('Common', [TPrefixMultiplier]);
+end;
 
 { TPrefixMultiplier }
 
@@ -91,8 +99,8 @@ begin
   end;
 end;
 
-function TPrefixMultiplier.Add(Value:Double;PrefixMultipliers:TPrefixMultiplierDef
-  ;UnitText:string;Digits:Integer):string;
+function TPrefixMultiplier.Add(Value: Double; PrefixMultipliers: TPrefixMultiplierDef
+  ; UnitText:string; Digits: Integer): string;
 var
   I: Integer;
 begin

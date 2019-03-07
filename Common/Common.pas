@@ -19,6 +19,7 @@ implementation
 procedure Register;
 begin
   RegisterUnit('UDebugLog', @UDebugLog.Register);
+  RegisterUnit('UPrefixMultiplier', @UPrefixMultiplier.Register);
   RegisterUnit('ULastOpenedList', @ULastOpenedList.Register);
   RegisterUnit('UJobProgressView', @UJobProgressView.Register);
   RegisterUnit('UApplicationInfo', @UApplicationInfo.Register);

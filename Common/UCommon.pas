@@ -27,7 +27,9 @@ type
     unfNameServicePrincipal = 10,  // Generalized service principal name
     unfDNSDomainName = 11);
 
-  TFilterMethodMethod = function (FileName: string): Boolean of object;
+  TFilterMethod = function (FileName: string): Boolean of object;
+  TFileNameMethod = procedure (FileName: string) of object;
+
 var
   ExceptionHandler: TExceptionEvent;
   DLLHandle1: HModule;
@@ -73,13 +75,14 @@ function MergeArray(A, B: array of string): TArrayOfString;
 function LoadFileToStr(const FileName: TFileName): AnsiString;
 procedure SaveStringToFile(S, FileName: string);
 procedure SearchFiles(AList: TStrings; Dir: string;
-  FilterMethod: TFilterMethodMethod = nil);
+  FilterMethod: TFilterMethod = nil; FileNameMethod: TFileNameMethod = nil);
 function GetStringPart(var Text: string; Separator: string): string;
 function StripTags(const S: string): string;
 function PosFromIndex(SubStr: string; Text: string;
   StartIndex: Integer): Integer;
 function PosFromIndexReverse(SubStr: string; Text: string;
   StartIndex: Integer): Integer;
+procedure CopyStringArray(Dest: TStringArray; Source: array of string);
 
 
 implementation
@@ -107,6 +110,7 @@ function BinToHexString(Source: AnsiString): string;
 var
   I: Integer;
 begin
+  Result := '';
   for I := 1 to Length(Source) do begin
     Result := Result + LowerCase(IntToHex(Ord(Source[I]), 2));
   end;
@@ -542,7 +546,7 @@ begin
 end;
 
 procedure SearchFiles(AList: TStrings; Dir: string;
-  FilterMethod: TFilterMethodMethod = nil);
+  FilterMethod: TFilterMethod = nil; FileNameMethod: TFileNameMethod = nil);
 var
   SR: TSearchRec;
 begin
@@ -552,6 +556,8 @@ begin
       repeat
         if (SR.Name = '.') or (SR.Name = '..') or (Assigned(FilterMethod) and (not FilterMethod(SR.Name) or
           not FilterMethod(Copy(Dir, 3, Length(Dir)) + SR.Name))) then Continue;
+        if Assigned(FileNameMethod) then
+          FileNameMethod(Dir + SR.Name);
         AList.Add(Dir + SR.Name);
         if (SR.Attr and faDirectory) <> 0 then
           SearchFiles(AList, Dir + SR.Name, FilterMethod);
@@ -651,6 +657,15 @@ begin
       Dec(Ptr);
     end;
   end;
+end;
+
+procedure CopyStringArray(Dest: TStringArray; Source: array of string);
+var
+  I: Integer;
+begin
+  SetLength(Dest, Length(Source));
+  for I := 0 to Length(Dest) - 1 do
+    Dest[I] := Source[I];
 end;
 
 

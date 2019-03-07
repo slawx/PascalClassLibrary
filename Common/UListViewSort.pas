@@ -8,7 +8,7 @@ interface
 
 uses
   {$IFDEF Windows}Windows, CommCtrl, {$ENDIF}Classes, Graphics, ComCtrls, SysUtils,
-  Controls, DateUtils, Dialogs, SpecializedList, Forms, Grids, StdCtrls, ExtCtrls,
+  Controls, DateUtils, Dialogs, fgl, Forms, Grids, StdCtrls, ExtCtrls,
   LclIntf, LMessages, LclType, LResources;
 
 type
@@ -51,8 +51,8 @@ type
     procedure NewListViewWindowProc(var AMsg: TMessage);
     {$ENDIF}
   public
-    List: TListObject;
-    Source: TListObject;
+    List: TFPGObjectList<TObject>;
+    Source: TFPGObjectList<TObject>;
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     function CompareTime(Time1, Time2: TDateTime): Integer;
@@ -97,6 +97,24 @@ type
     property BorderSpacing;
   end;
 
+  { TListViewEx }
+
+  TListViewEx = class(TWinControl)
+  private
+    FFilter: TListViewFilter;
+    FListView: TListView;
+    FListViewSort: TListViewSort;
+    procedure ResizeHanlder;
+  public
+    constructor Create(TheOwner: TComponent); override;
+    destructor Destroy; override;
+  published
+    property ListView: TListView read FListView write FListView;
+    property ListViewSort: TListViewSort read FListViewSort write FListViewSort;
+    property Filter: TListViewFilter read FFilter write FFilter;
+    property Visible;
+  end;
+
 procedure Register;
 
 
@@ -104,7 +122,31 @@ implementation
 
 procedure Register;
 begin
-  RegisterComponents('Common', [TListViewSort, TListViewFilter]);
+  RegisterComponents('Common', [TListViewSort, TListViewFilter, TListViewEx]);
+end;
+
+{ TListViewEx }
+
+procedure TListViewEx.ResizeHanlder;
+begin
+end;
+
+constructor TListViewEx.Create(TheOwner: TComponent);
+begin
+  inherited Create(TheOwner);
+  Filter := TListViewFilter.Create(Self);
+  Filter.Parent := Self;
+  Filter.Align := alBottom;
+  ListView := TListView.Create(Self);
+  ListView.Parent := Self;
+  ListView.Align := alClient;
+  ListViewSort := TListViewSort.Create(Self);
+  ListViewSort.ListView := ListView;
+end;
+
+destructor TListViewEx.Destroy;
+begin
+  inherited Destroy;
 end;
 
 { TListViewFilter }
@@ -276,10 +318,21 @@ begin
   {$ENDIF}
 end;
 
+var
+  ListViewSortCompare: TCompareEvent;
+
+function ListViewCompare(const Item1, Item2: TObject): Integer;
+begin
+  Result := ListViewSortCompare(Item1, Item2);
+end;
+
 procedure TListViewSort.Sort(Compare: TCompareEvent);
 begin
+  // TODO: Because TFLGObjectList compare handler is not class method,
+  // it is necessary to use simple function compare handler with local variable
+  ListViewSortCompare := Compare;
   if (List.Count > 0) then
-    List.Sort(Compare);
+    List.Sort(ListViewCompare);
 end;
 
 procedure TListViewSort.Refresh;
@@ -342,8 +395,8 @@ end;
 constructor TListViewSort.Create(AOwner: TComponent);
 begin
   inherited;
-  List := TListObject.Create;
-  List.OwnsObjects := False;
+  List := TFPGObjectList<TObject>.Create;
+  List.FreeObjects := False;
 end;
 
 destructor TListViewSort.Destroy;

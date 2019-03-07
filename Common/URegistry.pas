@@ -28,10 +28,13 @@ type
     function GetCurrentContext: TRegistryContext;
     procedure SetCurrentContext(AValue: TRegistryContext);
   public
+    function ReadChar(const Name: string): Char;
+    procedure WriteChar(const Name: string; Value: Char);
     function ReadBoolWithDefault(const Name: string;
       DefaultValue: Boolean): Boolean;
     function ReadIntegerWithDefault(const Name: string; DefaultValue: Integer): Integer;
     function ReadStringWithDefault(const Name: string; DefaultValue: string): string;
+    function ReadCharWithDefault(const Name: string; DefaultValue: Char): Char;
     function ReadFloatWithDefault(const Name: string;
       DefaultValue: Double): Double;
     function DeleteKeyRecursive(const Key: string): Boolean;
@@ -88,6 +91,16 @@ begin
     end;
 end;
 
+function TRegistryEx.ReadCharWithDefault(const Name: string; DefaultValue: Char
+  ): Char;
+begin
+  if ValueExists(Name) then Result := ReadChar(Name)
+    else begin
+      WriteChar(Name, DefaultValue);
+      Result := DefaultValue;
+    end;
+end;
+
 function TRegistryEx.ReadFloatWithDefault(const Name: string;
   DefaultValue: Double): Double;
 begin
@@ -134,6 +147,20 @@ procedure TRegistryEx.SetCurrentContext(AValue: TRegistryContext);
 begin
   RootKey := AValue.RootKey;
   OpenKey(AValue.Key, True);
+end;
+
+function TRegistryEx.ReadChar(const Name: string): Char;
+var
+  S: string;
+begin
+  S := ReadString(Name);
+  if Length(S) > 0 then Result := S[1]
+    else Result := #0;
+end;
+
+procedure TRegistryEx.WriteChar(const Name: string; Value: Char);
+begin
+  WriteString(Name, Value);
 end;
 
 function TRegistryEx.ReadBoolWithDefault(const Name: string;

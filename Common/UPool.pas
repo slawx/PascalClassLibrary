@@ -5,7 +5,7 @@ unit UPool;
 interface
 
 uses
-  Classes, SysUtils, syncobjs, SpecializedList, UThreading;
+  Classes, SysUtils, syncobjs, fgl, UThreading;
 
 type
   TPoolItemClass = class of TObject;
@@ -21,8 +21,8 @@ type
   protected
     function NewItemObject: TObject; virtual;
   public
-    Items: TListObject;
-    FreeItems: TListObject;
+    Items: TFPGObjectList<TObject>;
+    FreeItems: TFPGObjectList<TObject>;
     function Acquire: TObject; virtual;
     procedure Release(Item: TObject); virtual;
     constructor Create; virtual;
@@ -184,9 +184,9 @@ end;
 constructor TPool.Create;
 begin
   inherited;
-  Items := TListObject.Create;
-  FreeItems := TListObject.Create;
-  FreeItems.OwnsObjects := False;
+  Items := TFPGObjectList<TObject>.Create;
+  FreeItems := TFPGObjectList<TObject>.Create;
+  FreeItems.FreeObjects := False;
   FReleaseEvent := TEvent.Create(nil, False, False, '');
 end;
 
