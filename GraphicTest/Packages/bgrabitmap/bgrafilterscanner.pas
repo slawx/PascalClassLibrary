@@ -60,8 +60,8 @@ type
       const Buffers: array of PBGRAPixel; BufferWidth: integer;
       ADest: PBGRAPixel; ACount: integer); override;
   public
-    constructor Create(ASource: IBGRAScanner; ABounds: TRect);
-    constructor Create(ASource: TBGRACustomBitmap);
+    constructor Create(ASource: IBGRAScanner; ABounds: TRect); overload;
+    constructor Create(ASource: TBGRACustomBitmap); overload;
     property SourceBorderColor: TBGRAPixel read FSourceBorderColor write FSourceBorderColor;
     property DestinationBorderColor: TBGRAPixel read FDestinationBorderColor write FDestinationBorderColor;
     property AutoSourceBorderColor: boolean read FAutoSourceBorderColor write FAutoSourceBorderColor;
@@ -78,9 +78,9 @@ type
     function DoFilter3X3(PTop,PMiddle,PBottom: PBGRAPixel): TBGRAPixel; override;
   public
     constructor Create(ASource: IBGRAScanner; ABounds: TRect;
-                       AGammaCorrection: boolean = False);
+                       AGammaCorrection: boolean = False); overload;
     constructor Create(ASource: TBGRACustomBitmap;
-                       AGammaCorrection: boolean = False);
+                       AGammaCorrection: boolean = False); overload;
     property Opacity: Byte read FOpacity write FOpacity;
   end;
 
@@ -92,9 +92,9 @@ type
     function DoFilter3X3(PTop,PMiddle,PBottom: PBGRAPixel): TBGRAPixel; override;
   public
     constructor Create(ASource: IBGRAScanner; ABounds: TRect;
-                       AAmount: integer = 256);
+                       AAmount: integer = 256); overload;
     constructor Create(ASource: TBGRACustomBitmap;
-                       AAmount: integer = 256);
+                       AAmount: integer = 256); overload;
   end;
 
   { TBGRAEmbossHightlightScanner }
@@ -107,8 +107,8 @@ type
     function DoFilter3X3(PTop,PMiddle,PBottom: PBGRAPixel): TBGRAPixel; override;
     procedure SetSourceChannel(AValue: TChannel);
   public
-    constructor Create(ASource: IBGRAScanner; ABounds: TRect; ABoundsVisible: Boolean);
-    constructor Create(ASource: TBGRACustomBitmap; ABoundsVisible: Boolean);
+    constructor Create(ASource: IBGRAScanner; ABounds: TRect; ABoundsVisible: Boolean); overload;
+    constructor Create(ASource: TBGRACustomBitmap; ABoundsVisible: Boolean); overload;
     property FillSelection: boolean read FFillSelection write FFillSelection;
     property SourceChannel: TChannel read FSourceChannel write SetSourceChannel;
   end;
@@ -137,9 +137,12 @@ var
   slope,h: byte;
   highlight: TBGRAPixel;
 begin
-  sum := (PByte(PTop)+FChannelOffset)^ + (PByte(PTop+1)+FChannelOffset)^+
-         (PByte(PMiddle)+FChannelOffset)^ - (PByte(PMiddle+2)+FChannelOffset)^ -
-         (PByte(PBottom+1)+FChannelOffset)^ - (PByte(PBottom+2)+FChannelOffset)^;
+  sum := NativeInt((PByte(PTop)+FChannelOffset)^) +
+         NativeInt((PByte(PTop+1)+FChannelOffset)^) +
+         NativeInt((PByte(PMiddle)+FChannelOffset)^) -
+         NativeInt((PByte(PMiddle+2)+FChannelOffset)^) -
+         NativeInt((PByte(PBottom+1)+FChannelOffset)^) -
+         NativeInt((PByte(PBottom+2)+FChannelOffset)^);
   sum := 128 - sum div 3;
   if sum > 255 then
     slope := 255
@@ -710,7 +713,7 @@ begin
       while ACount > 0 do
       begin
         if ADest^.alpha <> 0 then
-          DWord(ADest^) := DWord(ADest^) xor (not ($ff shl TBGRAPixel_AlphaShift));
+          DWord(ADest^) := DWord(ADest^) xor ($ffffffff and not ($ff shl TBGRAPixel_AlphaShift));
         Inc(ADest);
         dec(ACount);
       end;
@@ -737,7 +740,7 @@ begin
         if ASource^.alpha = 0 then
           ADest^ := BGRAPixelTransparent
         else
-          DWord(ADest^) := DWord(ASource^) xor (not ($ff shl TBGRAPixel_AlphaShift));
+          DWord(ADest^) := DWord(ASource^) xor ($ffffffff and not ($ff shl TBGRAPixel_AlphaShift));
         inc(ASource);
         Inc(ADest);
         dec(ACount);

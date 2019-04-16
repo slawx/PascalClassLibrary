@@ -8,7 +8,7 @@
       <Version Value="11"/>
       <PathDelim Value="\"/>
       <SearchPaths>
-        <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)\$(FPCVer)"/>
+        <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)-$(BuildMode)"/>
       </SearchPaths>
       <Parsing>
         <SyntaxOptions>
@@ -17,7 +17,7 @@
       </Parsing>
       <CodeGeneration>
         <Optimizations>
-          <OptimizationLevel Value="3"/>
+          <OptimizationLevel Value="0"/>
           <VariablesInRegisters Value="True"/>
         </Optimizations>
       </CodeGeneration>
@@ -29,8 +29,8 @@
     </CompilerOptions>
     <Description Value="Drawing routines with alpha blending and antialiasing"/>
     <License Value="modified LGPL"/>
-    <Version Major="9" Minor="3"/>
-    <Files Count="108">
+    <Version Major="9" Minor="9" Release="3"/>
+    <Files Count="120">
       <Item1>
         <Filename Value="bgraanimatedgif.pas"/>
         <UnitName Value="BGRAAnimatedGif"/>
@@ -453,7 +453,7 @@
       </Item105>
       <Item106>
         <Filename Value="bgramultifiletype.pas"/>
-        <UnitName Value="bgramultifiletype"/>
+        <UnitName Value="BGRAMultiFileType"/>
       </Item106>
       <Item107>
         <Filename Value="bgrawinresource.pas"/>
@@ -463,6 +463,54 @@
         <Filename Value="bgralazresource.pas"/>
         <UnitName Value="BGRALazResource"/>
       </Item108>
+      <Item109>
+        <Filename Value="bgraiconcursor.pas"/>
+        <UnitName Value="BGRAIconCursor"/>
+      </Item109>
+      <Item110>
+        <Filename Value="bgrablurgl.pas"/>
+        <UnitName Value="BGRABlurGL"/>
+      </Item110>
+      <Item111>
+        <Filename Value="bgrareadtiff.pas"/>
+        <UnitName Value="BGRAReadTiff"/>
+      </Item111>
+      <Item112>
+        <Filename Value="bgralazpaint.pas"/>
+        <UnitName Value="BGRALazPaint"/>
+      </Item112>
+      <Item113>
+        <Filename Value="bgramemdirectory.pas"/>
+        <UnitName Value="BGRAMemDirectory"/>
+      </Item113>
+      <Item114>
+        <Filename Value="bgraunicode.pas"/>
+        <UnitName Value="BGRAUnicode"/>
+      </Item114>
+      <Item115>
+        <Filename Value="bgratextbidi.pas"/>
+        <UnitName Value="BGRATextBidi"/>
+      </Item115>
+      <Item116>
+        <Filename Value="bgralayeroriginal.pas"/>
+        <UnitName Value="BGRALayerOriginal"/>
+      </Item116>
+      <Item117>
+        <Filename Value="bgrasvgoriginal.pas"/>
+        <UnitName Value="BGRASVGOriginal"/>
+      </Item117>
+      <Item118>
+        <Filename Value="bgragradientoriginal.pas"/>
+        <UnitName Value="BGRAGradientOriginal"/>
+      </Item118>
+      <Item119>
+        <Filename Value="bgrapixel.inc"/>
+        <Type Value="Include"/>
+      </Item119>
+      <Item120>
+        <Filename Value="bezier.inc"/>
+        <Type Value="Binary"/>
+      </Item120>
     </Files>
     <RequiredPkgs Count="2">
       <Item1>
@@ -478,7 +526,6 @@
     </UsageOptions>
     <PublishOptions>
       <Version Value="2"/>
-      <IgnoreBinaries Value="False"/>
     </PublishOptions>
     <CustomOptions Items="ExternHelp" Version="2">
       <_ExternHelp Items="Count"/>

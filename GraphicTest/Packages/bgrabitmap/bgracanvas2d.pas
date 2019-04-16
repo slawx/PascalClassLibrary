@@ -31,6 +31,9 @@ type
     procedure addColorStop(APosition: single; AColor: TColor);
     procedure addColorStop(APosition: single; AColor: string);
     procedure setColors(ACustomGradient: TBGRACustomGradient);
+    function GetGammaCorrection: boolean;
+    procedure SetGammaCorrection(AValue: boolean);
+    property gammaCorrection: boolean read GetGammaCorrection write SetGammaCorrection;
   end;
 
   { TBGRACanvasTextureProvider2D }
@@ -50,6 +53,7 @@ type
     strokeColor: TBGRAPixel;
     strokeTextureProvider: IBGRACanvasTextureProvider2D;
     fillColor: TBGRAPixel;
+    fillMode: TFillMode;
     fillTextureProvider: IBGRACanvasTextureProvider2D;
     globalAlpha: byte;
 
@@ -90,6 +94,14 @@ type
     FPixelCenteredCoordinates: boolean;
     FPathPoints: array of TPointF;
     FPathPointCount: integer;
+    FTextPaths: array of record
+        Text: string;
+        FontName: string;
+        FontMatrix: TAffineMatrix;
+        FontAlign: TAlignment;
+        FontAnchor: TFontVerticalAnchor;
+        FontStyle: TFontStyles;
+      end;
     FFontRenderer: TBGRACustomFontRenderer;
     FLastCoord, FStartCoord: TPointF;
     function GetCurrentPathAsPoints: ArrayOfTPointF;
@@ -118,6 +130,7 @@ type
     function GetTextAlign: string;
     function GetTextAlignLCL: TAlignment;
     function GetTextBaseline: string;
+    function GetFillMode: TFillMode;
     function GetWidth: Integer;
     procedure SetFontName(AValue: string);
     procedure SetFontRenderer(AValue: TBGRACustomFontRenderer);
@@ -130,6 +143,7 @@ type
     procedure SetLineJoin(const AValue: string);
     procedure FillPoly(const points: array of TPointF);
     procedure FillStrokePoly(const points: array of TPointF; fillOver: boolean);
+    procedure FillTexts(AErase: boolean);
     procedure SetLineJoinLCL(AValue: TPenJoinStyle);
     procedure SetLineWidth(const AValue: single);
     procedure SetMatrix(AValue: TAffineMatrix);
@@ -144,8 +158,10 @@ type
     procedure SetTextAlign(AValue: string);
     procedure SetTextAlignLCL(AValue: TAlignment);
     procedure SetTextBaseine(AValue: string);
+    procedure SetFillMode(mode: TFillMode);
     procedure StrokePoly(const points: array of TPointF);
-    procedure DrawShadow(const points, points2: array of TPointF);
+    procedure DrawShadow(const points, points2: array of TPointF; AFillMode: TFillMode = fmWinding);
+    procedure DrawShadowMask(X,Y: integer; AMask: TBGRACustomBitmap; AMaskOwned: boolean);
     procedure ClearPoly(const points: array of TPointF);
     function ApplyTransform(const points: array of TPointF; matrix: TAffineMatrix): ArrayOfTPointF; overload;
     function ApplyTransform(const points: array of TPointF): ArrayOfTPointF; overload;
@@ -162,7 +178,7 @@ type
     function getPoints(AMatrix: TAffineMatrix): ArrayOfTPointF; //IBGRAPath
     function getCursor: TBGRACustomPathCursor; //IBGRAPath
   public
-    antialiasing, linearBlend: boolean;
+    antialiasing, linearBlend, gradientGammaCorrection: boolean;
     constructor Create(ASurface: TBGRACustomBitmap);
     destructor Destroy; override;
 
@@ -201,10 +217,17 @@ type
     procedure shadowColor(color: string); overload;
     procedure shadowNone;
     function getShadowColor: TBGRAPixel;
+
     function createLinearGradient(x0,y0,x1,y1: single): IBGRACanvasGradient2D; overload;
     function createLinearGradient(p0,p1: TPointF): IBGRACanvasGradient2D; overload;
     function createLinearGradient(x0,y0,x1,y1: single; Colors: TBGRACustomGradient): IBGRACanvasGradient2D; overload;
     function createLinearGradient(p0,p1: TPointF; Colors: TBGRACustomGradient): IBGRACanvasGradient2D; overload;
+
+    function createRadialGradient(x0,y0,r0,x1,y1,r1: single; flipGradient: boolean=false): IBGRACanvasGradient2D; overload;
+    function createRadialGradient(p0: TPointF; r0: single; p1: TPointF; r1: single; flipGradient: boolean=false): IBGRACanvasGradient2D; overload;
+    function createRadialGradient(x0,y0,r0,x1,y1,r1: single; Colors: TBGRACustomGradient; flipGradient: boolean=false): IBGRACanvasGradient2D; overload;
+    function createRadialGradient(p0: TPointF; r0: single; p1: TPointF; r1: single; Colors: TBGRACustomGradient; flipGradient: boolean=false): IBGRACanvasGradient2D; overload;
+
     function createPattern(image: TBGRACustomBitmap; repetition: string): IBGRACanvasTextureProvider2D; overload;
     function createPattern(texture: IBGRAScanner): IBGRACanvasTextureProvider2D; overload;
 
@@ -221,13 +244,13 @@ type
     procedure toSpline(closed: boolean; style: TSplineStyle= ssOutside);
     procedure moveTo(x,y: single); overload;
     procedure lineTo(x,y: single); overload;
-    procedure moveTo(const pt: TPointF); overload;
-    procedure lineTo(const pt: TPointF); overload;
+    procedure moveTo(constref pt: TPointF); overload;
+    procedure lineTo(constref pt: TPointF); overload;
     procedure polylineTo(const pts: array of TPointF);
     procedure quadraticCurveTo(cpx,cpy,x,y: single); overload;
-    procedure quadraticCurveTo(const cp,pt: TPointF); overload;
+    procedure quadraticCurveTo(constref cp,pt: TPointF); overload;
     procedure bezierCurveTo(cp1x,cp1y,cp2x,cp2y,x,y: single); overload;
-    procedure bezierCurveTo(const cp1,cp2,pt: TPointF); overload;
+    procedure bezierCurveTo(constref cp1,cp2,pt: TPointF); overload;
     procedure rect(x,y,w,h: single);
     procedure roundRect(x,y,w,h,radius: single); overload;
     procedure roundRect(x,y,w,h,rx,ry: single); overload;
@@ -239,7 +262,7 @@ type
     procedure arc(x, y, radius, startAngleRadCW, endAngleRadCW: single); overload;
     procedure arc(cx, cy, rx,ry, xAngleRadCW, startAngleRadCW, endAngleRadCW: single; anticlockwise: boolean); overload;
     procedure arc(cx, cy, rx,ry, xAngleRadCW, startAngleRadCW, endAngleRadCW: single); overload;
-    procedure arc(const arcDef: TArcDef); overload;
+    procedure arc(constref arcDef: TArcDef); overload;
     procedure arcTo(x1, y1, x2, y2, radius: single); overload;
     procedure arcTo(p1,p2: TPointF; radius: single); overload;
     procedure arcTo(rx, ry, xAngleRadCW: single; largeArc,anticlockwise: boolean; x, y: single);
@@ -296,6 +319,8 @@ type
     property textAlignLCL: TAlignment read GetTextAlignLCL write SetTextAlignLCL;
     property textAlign: string read GetTextAlign write SetTextAlign;
     property textBaseline: string read GetTextBaseline write SetTextBaseine;
+    
+    property fillMode: TFillMode read GetFillMode write SetFillMode;
 
     property currentPath: ArrayOfTPointF read GetCurrentPathAsPoints;
     property fontRenderer: TBGRACustomFontRenderer read GetFontRenderer write SetFontRenderer;
@@ -326,12 +351,17 @@ type
     colorStops: array of TColorStop;
     nbColorStops: integer;
     FCustomGradient: TBGRACustomGradient;
+    FGammaCorrection: boolean;
   protected
     scanner: TBGRAGradientScanner;
     procedure CreateScanner; virtual; abstract;
     function getColorArray: TGradientArrayOfColors;
     function getPositionArray: TGradientArrayOfPositions;
+    procedure GetBGRAGradient(out ABGRAGradient: TBGRACustomGradient; out AOwned: boolean);
+    function GetGammaCorrection: boolean;
+    procedure SetGammaCorrection(AValue: boolean);
   public
+    constructor Create;
     function getTexture: IBGRAScanner; override;
     destructor Destroy; override;
     procedure addColorStop(APosition: single; AColor: TBGRAPixel);
@@ -340,6 +370,7 @@ type
     procedure setColors(ACustomGradient: TBGRACustomGradient);
     property texture: IBGRAScanner read GetTexture;
     property colorStopCount: integer read nbColorStops;
+    property gammaCorrection: boolean read GetGammaCorrection write SetGammaCorrection;
   end;
 
   { TBGRACanvasLinearGradient2D }
@@ -347,10 +378,25 @@ type
   TBGRACanvasLinearGradient2D = class(TBGRACanvasGradient2D)
   protected
     o1,o2: TPointF;
+    FTransform: TAffineMatrix;
     procedure CreateScanner; override;
   public
-    constructor Create(x0,y0,x1,y1: single);
-    constructor Create(p0,p1: TPointF);
+    constructor Create(x0,y0,x1,y1: single; transform: TAffineMatrix);
+    constructor Create(p0,p1: TPointF; transform: TAffineMatrix);
+  end;
+
+  { TBGRACanvasRadialGradient2D }
+
+  TBGRACanvasRadialGradient2D = class(TBGRACanvasGradient2D)
+  protected
+    c0,c1: TPointF;
+    cr0,cr1: single;
+    FFlipGradient: boolean;
+    FTransform: TAffineMatrix;
+    procedure CreateScanner; override;
+  public
+    constructor Create(x0,y0,r0,x1,y1,r1: single; transform: TAffineMatrix; flipGradient: boolean=false);
+    constructor Create(p0: TPointF; r0: single; p1: TPointF; r1: single; transform: TAffineMatrix; flipGradient: boolean=false);
   end;
 
   { TBGRACanvasPattern2D }
@@ -451,36 +497,83 @@ procedure TBGRACanvasLinearGradient2D.CreateScanner;
 var GradientOwner: boolean;
     GradientColors: TBGRACustomGradient;
 begin
-  if FCustomGradient = nil then
-  begin
-    GradientColors := TBGRAMultiGradient.Create(getColorArray,getPositionArray,False,False);
-    GradientOwner := true;
-  end else
-  begin
-    GradientColors := FCustomGradient;
-    GradientOwner := false;
-  end;
+  GetBGRAGradient(GradientColors,GradientOwner);
   scanner := TBGRAGradientScanner.Create(GradientColors,gtLinear,o1,o2,False,GradientOwner);
+  scanner.Transform := FTransform;
 end;
 
-constructor TBGRACanvasLinearGradient2D.Create(x0, y0, x1, y1: single);
+constructor TBGRACanvasLinearGradient2D.Create(x0, y0, x1, y1: single; transform: TAffineMatrix);
 begin
   o1 := PointF(x0,y0);
   o2 := PointF(x1,y1);
+  FTransform := transform;
 end;
 
-constructor TBGRACanvasLinearGradient2D.Create(p0, p1: TPointF);
+constructor TBGRACanvasLinearGradient2D.Create(p0, p1: TPointF; transform: TAffineMatrix);
 begin
   o1 := p0;
   o2 := p1;
+  FTransform := transform;
+end;
+
+{ TBGRACanvasRadialGradient2D }
+
+procedure TBGRACanvasRadialGradient2D.CreateScanner;
+var GradientOwner: boolean;
+    GradientColors: TBGRACustomGradient;
+begin
+  GetBGRAGradient(GradientColors,GradientOwner);
+  scanner := TBGRAGradientScanner.Create(GradientColors,c0,cr0,c1,cr1,GradientOwner);
+  scanner.FlipGradient := not FFlipGradient;
+  scanner.Transform := FTransform;
+end;
+
+constructor TBGRACanvasRadialGradient2D.Create(x0, y0, r0, x1, y1, r1: single;
+  transform: TAffineMatrix; flipGradient: boolean);
+begin
+  self.c0 := PointF(x0,y0);
+  self.cr0 := r0;
+  self.c1 := PointF(x1,y1);
+  self.cr1 := r1;
+  FTransform := transform;
+  FFlipGradient := flipGradient;
+end;
+
+constructor TBGRACanvasRadialGradient2D.Create(p0: TPointF; r0: single;
+  p1: TPointF; r1: single; transform: TAffineMatrix; flipGradient: boolean);
+begin
+  self.c0 := p0;
+  self.cr0 := r0;
+  self.c1 := p1;
+  self.cr1 := r1;
+  FTransform := transform;
+  FFlipGradient := flipGradient;
 end;
 
 { TBGRACanvasGradient2D }
 
-function TBGRACanvasGradient2D.GetTexture: IBGRAScanner;
+function TBGRACanvasGradient2D.getTexture: IBGRAScanner;
 begin
   if scanner = nil then CreateScanner;
   result := scanner;
+end;
+
+function TBGRACanvasGradient2D.GetGammaCorrection: boolean;
+begin
+  result := FGammaCorrection;
+end;
+
+procedure TBGRACanvasGradient2D.SetGammaCorrection(AValue: boolean);
+begin
+  FGammaCorrection:= AValue;
+  FreeAndNil(scanner);
+end;
+
+constructor TBGRACanvasGradient2D.Create;
+begin
+  inherited Create;
+  scanner := nil;
+  FGammaCorrection:= false;
 end;
 
 function TBGRACanvasGradient2D.getColorArray: TGradientArrayOfColors;
@@ -499,6 +592,28 @@ begin
   setlength(result, nbColorStops);
   for i := 0 to nbColorStops-1 do
     result[i] := colorStops[i].position;
+end;
+
+procedure TBGRACanvasGradient2D.GetBGRAGradient(out
+  ABGRAGradient: TBGRACustomGradient; out AOwned: boolean);
+begin
+  if FCustomGradient = nil then
+  begin
+    if (colorStopCount = 2) and (colorStops[0].position = 0) and (colorStops[1].position = 1) then
+    begin
+      if FGammaCorrection then
+        ABGRAGradient := TBGRASimpleGradientWithGammaCorrection.Create(colorStops[0].color, colorStops[1].color)
+      else
+        ABGRAGradient := TBGRASimpleGradientWithoutGammaCorrection.Create(colorStops[0].color, colorStops[1].color);
+    end
+    else
+      ABGRAGradient := TBGRAMultiGradient.Create(getColorArray,getPositionArray,FGammaCorrection,False);
+    AOwned := true;
+  end else
+  begin
+    ABGRAGradient := FCustomGradient;
+    AOwned := false;
+  end;
 end;
 
 destructor TBGRACanvasGradient2D.Destroy;
@@ -592,6 +707,7 @@ begin
   result.strokeColor := strokeColor;
   result.strokeTextureProvider := strokeTextureProvider;
   result.fillColor := fillColor;
+  result.fillMode := fillMode;
   result.fillTextureProvider := fillTextureProvider;
   result.globalAlpha := globalAlpha;
 
@@ -944,10 +1060,12 @@ end;
 
 procedure TBGRACanvas2D.FillPoly(const points: array of TPointF);
 var
+  bfill: boolean;
   tempScan: TBGRACustomScanner;
 begin
   if (length(points) = 0) or (surface = nil) then exit;
-  If hasShadow then DrawShadow(points,[]);
+  If hasShadow then DrawShadow(points,[],fillMode);
+  bfill:= currentState.fillMode = fmWinding;
   if currentState.clipMaskReadOnly <> nil then
   begin
     if currentState.fillTextureProvider <> nil then
@@ -955,9 +1073,9 @@ begin
     else
       tempScan := TBGRASolidColorMaskScanner.Create(currentState.clipMaskReadOnly,Point(0,0),ApplyGlobalAlpha(currentState.fillColor));
     if self.antialiasing then
-      BGRAPolygon.FillPolyAntialiasWithTexture(surface, points, tempScan, true, linearBlend)
+      BGRAPolygon.FillPolyAntialiasWithTexture(surface, points, tempScan, bfill, linearBlend)
     else
-      BGRAPolygon.FillPolyAliasedWithTexture(surface, points, tempScan, true, GetDrawMode);
+      BGRAPolygon.FillPolyAliasedWithTexture(surface, points, tempScan, bfill, GetDrawMode);
     tempScan.free;
   end else
   begin
@@ -967,24 +1085,24 @@ begin
       begin
         tempScan := TBGRAOpacityScanner.Create(currentState.fillTextureProvider.texture, currentState.globalAlpha);
         if self.antialiasing then
-          BGRAPolygon.FillPolyAntialiasWithTexture(surface, points, tempScan, true, linearBlend)
+          BGRAPolygon.FillPolyAntialiasWithTexture(surface, points, tempScan, bfill, linearBlend)
         else
-          BGRAPolygon.FillPolyAliasedWithTexture(surface, points, tempScan, true, GetDrawMode);
+          BGRAPolygon.FillPolyAliasedWithTexture(surface, points, tempScan, bfill, GetDrawMode);
         tempScan.Free;
       end else
       begin
         if self.antialiasing then
-          BGRAPolygon.FillPolyAntialiasWithTexture(surface, points, currentState.fillTextureProvider.texture, true, linearBlend)
+          BGRAPolygon.FillPolyAntialiasWithTexture(surface, points, currentState.fillTextureProvider.texture, bfill, linearBlend)
         else
-          BGRAPolygon.FillPolyAliasedWithTexture(surface, points, currentState.fillTextureProvider.texture, true, GetDrawMode);
+          BGRAPolygon.FillPolyAliasedWithTexture(surface, points, currentState.fillTextureProvider.texture, bfill, GetDrawMode);
       end
     end
     else
     begin
       if self.antialiasing then
-        BGRAPolygon.FillPolyAntialias(surface, points, ApplyGlobalAlpha(currentState.fillColor), false, true, linearBlend)
+        BGRAPolygon.FillPolyAntialias(surface, points, ApplyGlobalAlpha(currentState.fillColor), false, bfill, linearBlend)
       else
-        BGRAPolygon.FillPolyAliased(surface, points, ApplyGlobalAlpha(currentState.fillColor), false, true, GetDrawMode)
+        BGRAPolygon.FillPolyAliased(surface, points, ApplyGlobalAlpha(currentState.fillColor), false, bfill, GetDrawMode)
     end
   end;
 end;
@@ -996,12 +1114,13 @@ var
   multi: TBGRAMultishapeFiller;
   contour : array of TPointF;
   texture: IBGRAScanner;
+  idxContour: Integer;
 begin
   if (length(points) = 0) or (surface = nil) then exit;
   tempScan := nil;
   tempScan2 := nil;
   multi := TBGRAMultishapeFiller.Create;
-  multi.FillMode := fmWinding;
+  multi.FillMode := self.fillMode;
   if currentState.clipMaskReadOnly <> nil then
   begin
     if currentState.fillTextureProvider <> nil then
@@ -1034,17 +1153,18 @@ begin
         tempScan2 := TBGRATextureMaskScanner.Create(currentState.clipMaskReadOnly,Point(0,0),currentState.strokeTextureProvider.texture,currentState.globalAlpha)
       else
         tempScan2 := TBGRASolidColorMaskScanner.Create(currentState.clipMaskReadOnly,Point(0,0),ApplyGlobalAlpha(currentState.strokeColor));
-      multi.AddPolygon(contour,tempScan);
+      idxContour := multi.AddPolygon(contour,tempScan);
     end else
     begin
       if currentState.strokeTextureProvider <> nil then
         texture := currentState.strokeTextureProvider.texture else
         texture := nil;
       if texture = nil then
-        multi.AddPolygon(contour,ApplyGlobalAlpha(currentState.strokeColor))
+        idxContour := multi.AddPolygon(contour,ApplyGlobalAlpha(currentState.strokeColor))
       else
-        multi.AddPolygon(contour,texture);
+        idxContour := multi.AddPolygon(contour,texture);
     end;
+    multi.OverrideFillMode(idxContour, fmWinding);
     If hasShadow then DrawShadow(points,contour);
   end else
     If hasShadow then DrawShadow(points,[]);
@@ -1055,6 +1175,130 @@ begin
   tempScan.free;
   tempScan2.free;
   multi.Free;
+end;
+
+procedure TBGRACanvas2D.FillTexts(AErase: boolean);
+var
+  i,j: Integer;
+  hy,hx,h: single;
+  bmp,bmpTransf,shadowBmp: TBGRACustomBitmap;
+  tempScan: TBGRACustomScanner;
+  m: TAffineMatrix;
+  s: TSize;
+  surfaceBounds, shadowBounds: TRect;
+  rf: TResampleFilter;
+  pad: TSize;
+  p: PBGRAPixel;
+begin
+  for i := 0 to High(FTextPaths) do
+  with FTextPaths[i] do
+  begin
+    hx := VectLen(FontMatrix[1,1],FontMatrix[2,1]);
+    hy := VectLen(FontMatrix[1,2],FontMatrix[2,2]);
+    h := max(hx,hy);
+    if self.antialiasing then h := round(h);
+    if h<=0 then continue;
+    m := FontMatrix*AffineMatrixScale(hx/sqr(h),hy/sqr(h));
+    if pixelCenteredCoordinates then m := AffineMatrixTranslation(0.5,0.5)*m;
+    bmp := BGRABitmapFactory.Create;
+    try
+      bmp.FontName := FontName;
+      bmp.FontStyle:= FontStyle;
+      bmp.FontHeight:= round(h);
+      if self.antialiasing then
+        bmp.FontQuality := fqFineAntialiasing
+      else
+        bmp.FontQuality:= fqSystem;
+
+      bmp.FontVerticalAnchor:= FontAnchor;
+      m := m*AffineMatrixTranslation(0,-bmp.FontVerticalAnchorOffset);
+      bmp.FontVerticalAnchor:= fvaTop;
+
+      s := bmp.TextSize(Text);
+      case FontAlign of
+        taCenter: m := m*AffineMatrixTranslation(-s.cx/2,0);
+        taRightJustify: m := m*AffineMatrixTranslation(-s.cx,0);
+      end;
+
+      pad := Size(round(h/3), round(h/3));
+      m := m*AffineMatrixTranslation(-pad.cx,-pad.cy);
+      surfaceBounds := surface.GetImageAffineBounds(m, Types.Rect(0,0,s.cx+pad.cx*2,s.cy+pad.cy*2));
+      if hasShadow then
+      begin
+        shadowBounds := surfaceBounds;
+        shadowBounds.Inflate(ceil(shadowBlur),ceil(shadowBlur));
+        shadowBounds.Offset(round(shadowOffsetX),round(shadowOffsetY));
+        shadowBounds.Intersect(surface.ClipRect);
+        if not IsRectEmpty(shadowBounds) then
+        begin
+          shadowBounds.Offset(-round(shadowOffsetX),-round(shadowOffsetY));
+          UnionRect(surfaceBounds, surfaceBounds, shadowBounds);
+        end;
+      end;
+      if not IsRectEmpty(surfaceBounds) then
+      begin
+        bmp.SetSize(s.cx+pad.cx*2,s.cy+pad.cy*2);
+        bmp.Fill(BGRABlack);
+        bmp.TextOut(pad.cx,pad.cy,Text,BGRAWhite);
+        if self.antialiasing then bmp.ConvertToLinearRGB else
+        begin
+          p := bmp.Data;
+          for j := bmp.NbPixels-1 downto 0 do
+          begin
+            if p^.green<128 then p^ := BGRABlack else p^ := BGRAWhite;
+            inc(p);
+          end;
+        end;
+
+        bmpTransf := BGRABitmapFactory.Create(surfaceBounds.Width,surfaceBounds.Height,BGRABlack);
+        try
+          m := AffineMatrixTranslation(-surfaceBounds.Left,-surfaceBounds.Top)*m;
+          if self.antialiasing then rf:= rfCosine else rf := rfBox;
+          bmpTransf.PutImageAffine(m, bmp, rf, GetDrawMode);
+          FreeAndNil(bmp);
+
+          if AErase then
+            surface.EraseMask(surfaceBounds.Left,surfaceBounds.Top, bmpTransf) else
+          begin
+            if hasShadow then
+            begin
+              shadowBmp := BGRABitmapFactory.Create(bmpTransf.Width,bmpTransf.Height);
+              shadowBmp.FillMask(0,0, bmpTransf, getShadowColor, GetDrawMode);
+              DrawShadowMask(surfaceBounds.Left+round(shadowOffsetX),surfaceBounds.Top+round(shadowOffsetY), shadowBmp, true);
+            end;
+
+            if currentState.clipMaskReadOnly <> nil then
+            begin
+              if currentState.fillTextureProvider <> nil then
+                tempScan := TBGRATextureMaskScanner.Create(currentState.clipMaskReadOnly,Point(0,0),currentState.fillTextureProvider.texture,currentState.globalAlpha)
+              else
+                tempScan := TBGRASolidColorMaskScanner.Create(currentState.clipMaskReadOnly,Point(0,0),ApplyGlobalAlpha(currentState.fillColor));
+              surface.FillMask(surfaceBounds.Left,surfaceBounds.Top, bmpTransf, tempScan, GetDrawMode);
+              tempScan.free;
+            end else
+            begin
+              if currentState.fillTextureProvider <> nil then
+              begin
+                if currentState.globalAlpha <> 255 then
+                begin
+                  tempScan := TBGRAOpacityScanner.Create(currentState.fillTextureProvider.texture, currentState.globalAlpha);
+                  surface.FillMask(surfaceBounds.Left,surfaceBounds.Top, bmpTransf, tempScan, GetDrawMode);
+                  tempScan.Free;
+                end else
+                  surface.FillMask(surfaceBounds.Left,surfaceBounds.Top, bmpTransf, currentState.fillTextureProvider.texture, GetDrawMode);
+              end
+              else
+                surface.FillMask(surfaceBounds.Left,surfaceBounds.Top, bmpTransf, ApplyGlobalAlpha(currentState.fillColor), GetDrawMode);
+            end;
+          end;
+        finally
+          bmpTransf.Free;
+        end;
+      end;
+    finally
+      bmp.Free;
+    end;
+  end;
 end;
 
 procedure TBGRACanvas2D.SetLineJoinLCL(AValue: TPenJoinStyle);
@@ -1217,12 +1461,12 @@ begin
   end;
 end;
 
-procedure TBGRACanvas2D.DrawShadow(const points, points2: array of TPointF);
-const invSqrt2 = 1/sqrt(2);
+procedure TBGRACanvas2D.DrawShadow(const points, points2: array of TPointF;
+  AFillMode: TFillMode = fmWinding);
 var ofsPts,ofsPts2: array of TPointF;
     offset: TPointF;
     i: Integer;
-    tempBmp,blurred: TBGRACustomBitmap;
+    tempBmp: TBGRACustomBitmap;
     maxRect: TRect;
     foundRect: TRect;
     firstFound: boolean;
@@ -1278,34 +1522,41 @@ begin
   end;
 
   tempBmp := surface.NewBitmap(foundRect.Right-foundRect.Left,foundRect.Bottom-foundRect.Top,BGRAPixelTransparent);
-  tempBmp.FillMode := fmWinding;
+  tempBmp.FillMode := AFillMode;
   tempBmp.FillPolyAntialias(ofsPts, getShadowColor);
   tempBmp.FillPolyAntialias(ofsPts2, getShadowColor);
+  DrawShadowMask(foundRect.Left,foundRect.Top, tempBmp, true);
+end;
+
+procedure TBGRACanvas2D.DrawShadowMask(X, Y: integer; AMask: TBGRACustomBitmap; AMaskOwned: boolean);
+const invSqrt2 = 1/sqrt(2);
+var
+  bmp: TBGRACustomBitmap;
+begin
+  bmp := AMask;
   if shadowBlur > 0 then
   begin
     if shadowFastest then
     begin
       if shadowBlur*invSqrt2 >= 0.5 then
-      begin
-        blurred := tempBmp.FilterBlurRadial(round(shadowBlur*invSqrt2),rbBox);
-        tempBmp.Free;
-        tempBmp := blurred;
-      end;
+        bmp := AMask.FilterBlurRadial(round(shadowBlur*invSqrt2),rbBox);
     end
     else
     begin
       if (shadowBlur < 5) and (abs(shadowBlur-round(shadowBlur)) > 1e-6) then
-        blurred := tempBmp.FilterBlurRadial(round(shadowBlur*10),rbPrecise)
+        bmp := AMask.FilterBlurRadial(round(shadowBlur*10),rbPrecise)
       else
-        blurred := tempBmp.FilterBlurRadial(round(shadowBlur),rbFast);
-      tempBmp.Free;
-      tempBmp := blurred;
+        bmp := AMask.FilterBlurRadial(round(shadowBlur),rbFast);
     end;
   end;
   if currentState.clipMaskReadOnly <> nil then
-    tempBmp.ApplyMask(currentState.clipMaskReadOnly);
-  surface.PutImage(foundRect.Left,foundRect.Top,tempBmp,GetDrawMode,currentState.globalAlpha);
-  tempBmp.Free;
+  begin
+    if (bmp = AMask) and not AMaskOwned then bmp := AMask.Duplicate;
+    bmp.ApplyMask(currentState.clipMaskReadOnly);
+  end;
+  surface.PutImage(X,Y,bmp,GetDrawMode,currentState.globalAlpha);
+  if bmp <> AMask then bmp.Free;
+  if AMaskOwned then AMask.Free;
 end;
 
 procedure TBGRACanvas2D.ClearPoly(const points: array of TPointF);
@@ -1435,6 +1686,7 @@ begin
   currentState := TBGRACanvasState2D.Create(AffineMatrixIdentity,nil,true);
   pixelCenteredCoordinates := false;
   antialiasing := true;
+  gradientGammaCorrection := false;
 end;
 
 destructor TBGRACanvas2D.Destroy;
@@ -1605,6 +1857,16 @@ begin
   currentState.strokeTextureProvider := provider;
 end;
 
+function TBGRACanvas2D.GetFillMode: TFillMode;
+begin
+  result := currentState.fillMode;
+end;
+
+procedure TBGRACanvas2D.SetFillMode(mode: TFillMode);
+begin
+  currentState.fillMode := mode;
+end;     
+
 procedure TBGRACanvas2D.fillStyle(color: TBGRAPixel);
 begin
   currentState.fillColor := color;
@@ -1659,16 +1921,16 @@ begin
   result := currentState.shadowColor;
 end;
 
-function TBGRACanvas2D.createLinearGradient(x0, y0, x1, y1: single
-  ): IBGRACanvasGradient2D;
+function TBGRACanvas2D.createLinearGradient(x0, y0, x1, y1: single): IBGRACanvasGradient2D;
 begin
-  result := createLinearGradient(ApplyTransform(PointF(x0,y0)), ApplyTransform(PointF(x1,y1)));
+  result := createLinearGradient(PointF(x0,y0), PointF(x1,y1));
 end;
 
-function TBGRACanvas2D.createLinearGradient(p0, p1: TPointF
-  ): IBGRACanvasGradient2D;
+function TBGRACanvas2D.createLinearGradient(p0, p1: TPointF): IBGRACanvasGradient2D;
 begin
-  result := TBGRACanvasLinearGradient2D.Create(p0,p1);
+  result := TBGRACanvasLinearGradient2D.Create(p0,p1,
+            AffineMatrixTranslation(FCanvasOffset.x,FCanvasOffset.y)*currentState.matrix);
+  result.gammaCorrection := gradientGammaCorrection;
 end;
 
 function TBGRACanvas2D.createLinearGradient(x0, y0, x1, y1: single;
@@ -1682,6 +1944,35 @@ function TBGRACanvas2D.createLinearGradient(p0, p1: TPointF;
   Colors: TBGRACustomGradient): IBGRACanvasGradient2D;
 begin
   result := createLinearGradient(p0,p1);
+  result.setColors(Colors);
+end;
+
+function TBGRACanvas2D.createRadialGradient(x0, y0, r0, x1, y1, r1: single;
+  flipGradient: boolean): IBGRACanvasGradient2D;
+begin
+  result := createRadialGradient(PointF(x0,y0), r0, PointF(x1,y1), r1, flipGradient);
+end;
+
+function TBGRACanvas2D.createRadialGradient(p0: TPointF; r0: single;
+  p1: TPointF; r1: single; flipGradient: boolean): IBGRACanvasGradient2D;
+begin
+  result := TBGRACanvasRadialGradient2D.Create(p0,r0,p1,r1,
+            AffineMatrixTranslation(FCanvasOffset.x,FCanvasOffset.y)*currentState.matrix,
+            flipGradient);
+  result.gammaCorrection := gradientGammaCorrection;
+end;
+
+function TBGRACanvas2D.createRadialGradient(x0, y0, r0, x1, y1, r1: single;
+  Colors: TBGRACustomGradient; flipGradient: boolean): IBGRACanvasGradient2D;
+begin
+  result := createRadialGradient(x0,y0,r0,x1,y1,r1,flipGradient);
+  result.setColors(Colors);
+end;
+
+function TBGRACanvas2D.createRadialGradient(p0: TPointF; r0: single;
+  p1: TPointF; r1: single; Colors: TBGRACustomGradient; flipGradient: boolean): IBGRACanvasGradient2D;
+begin
+  result := createRadialGradient(p0,r0,p1,r1,flipGradient);
   result.setColors(Colors);
 end;
 
@@ -1770,6 +2061,7 @@ begin
   FPathPointCount := 0;
   FLastCoord := EmptyPointF;
   FStartCoord := EmptyPointF;
+  FTextPaths := nil;
 end;
 
 procedure TBGRACanvas2D.closePath;
@@ -1816,7 +2108,7 @@ begin
   lineTo(PointF(x,y));
 end;
 
-procedure TBGRACanvas2D.moveTo(const pt: TPointF);
+procedure TBGRACanvas2D.moveTo(constref pt: TPointF);
 begin
   if (FPathPointCount <> 0) and not isEmptyPointF(FPathPoints[FPathPointCount-1]) then
     AddPoint(EmptyPointF);
@@ -1825,7 +2117,7 @@ begin
   FLastCoord := pt;
 end;
 
-procedure TBGRACanvas2D.lineTo(const pt: TPointF);
+procedure TBGRACanvas2D.lineTo(constref pt: TPointF);
 begin
   AddPoint(ApplyTransform(pt));
   FLastCoord := pt;
@@ -1851,7 +2143,7 @@ begin
   FLastCoord := PointF(x,y);
 end;
 
-procedure TBGRACanvas2D.quadraticCurveTo(const cp, pt: TPointF);
+procedure TBGRACanvas2D.quadraticCurveTo(constref cp, pt: TPointF);
 begin
   quadraticCurveTo(cp.x,cp.y,pt.x,pt.y);
 end;
@@ -1868,7 +2160,7 @@ begin
   FLastCoord := PointF(x,y);
 end;
 
-procedure TBGRACanvas2D.bezierCurveTo(const cp1, cp2, pt: TPointF);
+procedure TBGRACanvas2D.bezierCurveTo(constref cp1, cp2, pt: TPointF);
 begin
   bezierCurveTo(cp1.x,cp1.y,cp2.x,cp2.y,pt.x,pt.y);
 end;
@@ -2035,7 +2327,7 @@ begin
   arc(ArcDef(cx,cy,rx,ry,xAngleRadCW,startAngleRadCW,endAngleRadCW,false))
 end;
 
-procedure TBGRACanvas2D.arc(const arcDef: TArcDef);
+procedure TBGRACanvas2D.arc(constref arcDef: TArcDef);
 var previousMatrix: TAffineMatrix;
 begin
   if (arcDef.radius.x = 0) and (arcDef.radius.y = 0) then
@@ -2083,28 +2375,45 @@ end;
 procedure TBGRACanvas2D.text(AText: string; x, y: single);
 var renderer : TBGRACustomFontRenderer;
   previousMatrix: TAffineMatrix;
+  fva: TFontVerticalAnchor;
 begin
   renderer := fontRenderer;
+  if renderer = nil then exit;
   if renderer.FontEmHeight <= 0 then exit;
-  previousMatrix := currentState.matrix;
 
-  scale(currentState.fontEmHeight/renderer.FontEmHeight);
-  if (currentState.textBaseline <> 'top') and
-    (currentState.textBaseline <> 'hanging') then
-  with renderer.GetFontPixelMetric do
-  begin
-    if currentState.textBaseline = 'bottom' then
-       translate(0,-Lineheight)
-    else if currentState.textBaseline = 'middle' then
-       translate(0,-Lineheight/2)
-    else if currentState.textBaseline = 'alphabetic' then
-       translate(0,-baseline);
+  case currentState.textBaseline of
+    'bottom': fva := fvaBottom;
+    'middle': fva := fvaCenter;
+    'alphabetic': fva := fvaBaseline;
+    else {'top','hanging'}
+      fva := fvaTop;
   end;
 
-  if renderer <> nil then
-    renderer.CopyTextPathTo(self, x,y, AText, taLeftJustify);
+  if renderer.HandlesTextPath then
+  begin
+    previousMatrix := currentState.matrix;
+    translate(x,y);
+    scale(currentState.fontEmHeight/renderer.FontEmHeight);
+    if fva <> fvaTop then
+    with renderer.GetFontPixelMetric do
+    case fva of
+      fvaBottom: translate(0,-Lineheight);
+      fvaCenter: translate(0,-Lineheight/2);
+      fvaBaseline: translate(0,-baseline);
+    end;
+    renderer.CopyTextPathTo(self, 0,0, AText, textAlignLCL);
+    currentState.matrix := previousMatrix;
+  end else
+  begin
+    setlength(FTextPaths, length(FTextPaths)+1);
+    FTextPaths[high(FTextPaths)].Text := AText;
+    FTextPaths[high(FTextPaths)].FontName := fontName;
+    FTextPaths[high(FTextPaths)].FontMatrix := currentState.matrix*AffineMatrixTranslation(x,y)*AffineMatrixScale(fontEmHeight,fontEmHeight);
+    FTextPaths[high(FTextPaths)].FontStyle := fontStyle;
+    FTextPaths[high(FTextPaths)].FontAlign := textAlignLCL;
+    FTextPaths[high(FTextPaths)].FontAnchor := fva;
+  end;
 
-  currentState.matrix := previousMatrix;
   FLastCoord := EmptyPointF;
   FStartCoord := EmptyPointF;
 end;
@@ -2146,32 +2455,36 @@ end;
 
 procedure TBGRACanvas2D.fill;
 begin
-  if FPathPointCount = 0 then exit;
-  FillPoly(slice(FPathPoints,FPathPointCount));
+  if FPathPointCount > 0 then
+    FillPoly(slice(FPathPoints,FPathPointCount));
+  FillTexts(false);
 end;
 
 procedure TBGRACanvas2D.stroke;
 begin
-  if FPathPointCount = 0 then exit;
-  StrokePoly(slice(FPathPoints,FPathPointCount));
+  if FPathPointCount > 0 then
+    StrokePoly(slice(FPathPoints,FPathPointCount));
 end;
 
 procedure TBGRACanvas2D.fillOverStroke;
 begin
-  if FPathPointCount = 0 then exit;
-  FillStrokePoly(slice(FPathPoints,FPathPointCount),true);
+  if FPathPointCount > 0 then
+    FillStrokePoly(slice(FPathPoints,FPathPointCount),true);
+  FillTexts(false);
 end;
 
 procedure TBGRACanvas2D.strokeOverFill;
 begin
-  if FPathPointCount = 0 then exit;
-  FillStrokePoly(slice(FPathPoints,FPathPointCount),false);
+  FillTexts(false);
+  if FPathPointCount > 0 then
+    FillStrokePoly(slice(FPathPoints,FPathPointCount),false);
 end;
 
 procedure TBGRACanvas2D.clearPath;
 begin
-  if FPathPointCount = 0 then exit;
-  ClearPoly(slice(FPathPoints,FPathPointCount));
+  if FPathPointCount > 0 then
+    ClearPoly(slice(FPathPoints,FPathPointCount));
+  FillTexts(true);
 end;
 
 procedure TBGRACanvas2D.clip;
@@ -2218,7 +2531,7 @@ begin
   else
   begin
     setlength(FPathPoints,FPathPointCount);
-    result := IsPointInPolygon(FPathPoints,pt+FCanvasOffset,True);
+    result := IsPointInPolygon(FPathPoints,pt+FCanvasOffset, fillMode = fmWinding);
   end;
 end;
 

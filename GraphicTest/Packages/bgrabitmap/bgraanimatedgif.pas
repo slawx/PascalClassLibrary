@@ -38,6 +38,7 @@ type
     FImageChanged: boolean;
 
     procedure CheckFrameIndex(AIndex: integer);
+    function GetAverageDelayMs: integer;
     function GetCount: integer;
     function GetFrameDelayMs(AIndex: integer): integer;
     function GetFrameDisposeMode(AIndex: integer): TDisposeMode;
@@ -80,26 +81,42 @@ type
   public
     EraseColor:     TColor;
     BackgroundMode: TGifBackgroundMode;
+    LoopCount:      Word;
+    LoopDone:       Integer;
 
-    constructor Create(filenameUTF8: string);
-    constructor Create(stream: TStream);
-    constructor Create; override;
+    constructor Create(filenameUTF8: string); overload;
+    constructor Create(stream: TStream); overload;
+    constructor Create(stream: TStream; AMaxImageCount: integer); overload;
+    constructor Create; overload; override;
     function Duplicate: TBGRAAnimatedGif;
     function AddFrame(AImage: TFPCustomImage; X,Y: integer; ADelayMs: integer;
       ADisposeMode: TDisposeMode = dmErase; AHasLocalPalette: boolean = false) : integer;
-    procedure InsertFrame(AIndex: integer; AImage: TBGRABitmap; X,Y: integer; ADelayMs: integer;
+    procedure InsertFrame(AIndex: integer; AImage: TFPCustomImage; X,Y: integer; ADelayMs: integer;
       ADisposeMode: TDisposeMode = dmErase; AHasLocalPalette: boolean = false);
+    procedure DeleteFrame(AIndex: integer; AEnsureNextFrameDoesNotChange: boolean);
+
+    //add a frame that replaces completely the previous one
+    function AddFullFrame(AImage: TFPCustomImage; ADelayMs: integer;
+                          AHasLocalPalette: boolean = true): integer;
+    procedure InsertFullFrame(AIndex: integer;
+                              AImage: TFPCustomImage; ADelayMs: integer;
+                              AHasLocalPalette: boolean = true);
+    procedure ReplaceFullFrame(AIndex: integer;
+                              AImage: TFPCustomImage; ADelayMs: integer;
+                              AHasLocalPalette: boolean = true);
 
     {TGraphic}
-    procedure LoadFromStream(Stream: TStream); override;
-    procedure SaveToStream(Stream: TStream); override;
+    procedure LoadFromStream(Stream: TStream); overload; override;
+    procedure LoadFromStream(Stream: TStream; AMaxImageCount: integer); overload;
+    procedure LoadFromResource(AFilename: string);
+    procedure SaveToStream(Stream: TStream); overload; override;
     procedure LoadFromFile(const AFilenameUTF8: string); override;
     procedure SaveToFile(const AFilenameUTF8: string); override;
     class function GetFileExtensions: string; override;
 
     procedure SetSize(AWidth,AHeight: integer); virtual;
     procedure SaveToStream(Stream: TStream; AQuantizer: TBGRAColorQuantizerAny;
-      ADitheringAlgorithm: TDitheringAlgorithm); virtual; overload;
+      ADitheringAlgorithm: TDitheringAlgorithm); overload; virtual;
     procedure Clear; override;
     destructor Destroy; override;
     procedure Pause;
@@ -125,6 +142,7 @@ type
     property FrameDisposeMode[AIndex: integer]: TDisposeMode read GetFrameDisposeMode write SetFrameDisposeMode;
     property AspectRatio: single read FAspectRatio write SetAspectRatio;
     property TotalAnimationTimeMs: Int64 read FTotalAnimationTime;
+    property AverageDelayMs: integer read GetAverageDelayMs;
   end;
 
   { TBGRAReaderGIF }
@@ -183,6 +201,7 @@ begin
   data.AspectRatio := 1;
   data.BackgroundColor := BackgroundColor;
   data.Images := FImages;
+  data.LoopCount := LoopCount;
   GIFSaveToStream(data, Stream, AQuantizer, ADitheringAlgorithm);
 end;
 
@@ -232,13 +251,27 @@ begin
       FTimeAccumulator -= FImages[nextImage].DelayMs;
       Inc(nextImage);
       if nextImage >= Count then
-        nextImage := 0;
+      begin
+        if (LoopCount > 0) and (LoopDone >= LoopCount-1) then
+        begin
+          LoopDone := LoopCount;
+          dec(nextImage);
+          break;
+        end else
+        begin
+          nextImage := 0;
+          inc(LoopDone);
+        end;
+      end;
 
       if nextImage = previousImage then
       begin
-        Inc(nextImage);
-        if nextImage >= Count then
-          nextImage := 0;
+        if not ((LoopCount > 0) and (LoopDone >= LoopCount-1)) then
+        begin
+          Inc(nextImage);
+          if nextImage >= Count then
+            nextImage := 0;
+        end;
         break;
       end;
     end;
@@ -369,6 +402,20 @@ begin
   if (AIndex < 0) or (AIndex >= Count) then Raise ERangeError.Create('Index out of bounds');
 end;
 
+function TBGRAAnimatedGif.GetAverageDelayMs: integer;
+var sum: int64;
+  i: Integer;
+begin
+  if Count > 0 then
+  begin
+    sum := 0;
+    for i := 0 to Count-1 do
+      inc(sum, FrameDelayMs[i]);
+    result := sum div Count;
+  end else
+    result := 100; //default
+end;
+
 function TBGRAAnimatedGif.GetCount: integer;
 begin
   Result := length(FImages);
@@ -436,6 +483,13 @@ begin
   LoadFromStream(stream);
 end;
 
+constructor TBGRAAnimatedGif.Create(stream: TStream; AMaxImageCount: integer);
+begin
+  inherited Create;
+  Init;
+  LoadFromStream(stream, AMaxImageCount);
+end;
+
 constructor TBGRAAnimatedGif.Create;
 begin
   inherited Create;
@@ -477,7 +531,7 @@ begin
   inc(FTotalAnimationTime, ADelayMs);
 end;
 
-procedure TBGRAAnimatedGif.InsertFrame(AIndex: integer; AImage: TBGRABitmap; X,
+procedure TBGRAAnimatedGif.InsertFrame(AIndex: integer; AImage: TFPCustomImage; X,
   Y: integer; ADelayMs: integer; ADisposeMode: TDisposeMode;
   AHasLocalPalette: boolean);
 var i: integer;
@@ -490,7 +544,7 @@ begin
     FImages[i] := FImages[i-1];
   with FImages[AIndex] do
   begin
-    Image := AImage.Duplicate as TBGRABitmap;
+    Image := TBGRABitmap.Create(AImage);
     Position := Point(x,y);
     DelayMs := ADelayMs;
     HasLocalPalette := AHasLocalPalette;
@@ -499,11 +553,96 @@ begin
   inc(FTotalAnimationTime, ADelayMs);
 end;
 
+function TBGRAAnimatedGif.AddFullFrame(AImage: TFPCustomImage;
+  ADelayMs: integer; AHasLocalPalette: boolean): integer;
+begin
+  if (AImage.Width <> Width) or (AImage.Height <> Height) then
+    raise exception.Create('Size mismatch');
+  if Count > 0 then
+    FrameDisposeMode[Count-1] := dmErase;
+  result := AddFrame(AImage, 0,0, ADelayMs, dmErase, AHasLocalPalette);
+end;
+
+procedure TBGRAAnimatedGif.InsertFullFrame(AIndex: integer;
+  AImage: TFPCustomImage; ADelayMs: integer; AHasLocalPalette: boolean);
+var nextImage: TBGRABitmap;
+begin
+  if (AIndex < 0) or (AIndex > Count) then
+    raise ERangeError.Create('Index out of bounds');
+
+  if AIndex = Count then
+    AddFullFrame(AImage, ADelayMs, AHasLocalPalette)
+  else
+  begin
+    //if previous image did not clear up, ensure that
+    //next image will stay the same
+    if (AIndex > 0) and (FrameDisposeMode[AIndex-1] <> dmErase) then
+    begin
+      CurrentImage := AIndex;
+      nextImage := MemBitmap.Duplicate as TBGRABitmap;
+      FrameImagePos[AIndex] := Point(0,0);
+      FrameImage[AIndex] := nextImage;
+      FrameHasLocalPalette[AIndex] := true;
+      FreeAndNil(nextImage);
+
+      FrameDisposeMode[AIndex-1] := dmErase;
+    end;
+
+    InsertFrame(AIndex, AImage, 0,0, ADelayMs, dmErase, AHasLocalPalette);
+  end;
+end;
+
+procedure TBGRAAnimatedGif.ReplaceFullFrame(AIndex: integer;
+  AImage: TFPCustomImage; ADelayMs: integer; AHasLocalPalette: boolean);
+begin
+  DeleteFrame(AIndex, True);
+  if AIndex > 0 then FrameDisposeMode[AIndex-1] := dmErase;
+  InsertFrame(AIndex, AImage, 0,0, ADelayMs, dmErase, AHasLocalPalette);
+end;
+
+procedure TBGRAAnimatedGif.DeleteFrame(AIndex: integer;
+  AEnsureNextFrameDoesNotChange: boolean);
+var
+  nextImage: TBGRABitmap;
+  i: Integer;
+begin
+  CheckFrameIndex(AIndex);
+
+  //if this frame did not clear up, ensure that
+  //next image will stay the same
+  if AEnsureNextFrameDoesNotChange and
+    ((AIndex < Count-1) and (FrameDisposeMode[AIndex] <> dmErase)) then
+  begin
+    CurrentImage := AIndex+1;
+    nextImage := MemBitmap.Duplicate as TBGRABitmap;
+    FrameImagePos[AIndex+1] := Point(0,0);
+    FrameImage[AIndex+1] := nextImage;
+    FrameHasLocalPalette[AIndex+1] := true;
+    FreeAndNil(nextImage);
+  end;
+
+  dec(FTotalAnimationTime, FImages[AIndex].DelayMs);
+
+  FImages[AIndex].Image.FreeReference;
+  for i := AIndex to Count-2 do
+    FImages[i] := FImages[i+1];
+  SetLength(FImages, Count-1);
+
+  if (CurrentImage >= Count) then
+    CurrentImage := 0;
+end;
+
 procedure TBGRAAnimatedGif.LoadFromStream(Stream: TStream);
+begin
+  LoadFromStream(Stream, maxLongint);
+end;
+
+procedure TBGRAAnimatedGif.LoadFromStream(Stream: TStream;
+  AMaxImageCount: integer);
 var data: TGIFData;
   i: integer;
 begin
-  data := GIFLoadFromStream(Stream);
+  data := GIFLoadFromStream(Stream, AMaxImageCount);
 
   ClearViewer;
   Clear;
@@ -511,6 +650,8 @@ begin
   FHeight := data.Height;
   FBackgroundColor := data.BackgroundColor;
   FAspectRatio:= data.AspectRatio;
+  LoopDone := 0;
+  LoopCount := data.LoopCount;
 
   SetLength(FImages, length(data.Images));
   FTotalAnimationTime:= 0;
@@ -518,6 +659,18 @@ begin
   begin
     FImages[i] := data.Images[i];
     FTotalAnimationTime += FImages[i].DelayMs;
+  end;
+end;
+
+procedure TBGRAAnimatedGif.LoadFromResource(AFilename: string);
+var
+  stream: TStream;
+begin
+  stream := BGRAResource.GetResourceStream(AFilename);
+  try
+    LoadFromStream(stream);
+  finally
+    stream.Free;
   end;
 end;
 
@@ -657,6 +810,8 @@ begin
   for i := 0 to Count - 1 do
     FImages[i].Image.FreeReference;
   FImages := nil;
+  LoopDone := 0;
+  LoopCount := 0;
 end;
 
 destructor TBGRAAnimatedGif.Destroy;
@@ -958,6 +1113,8 @@ end;
 procedure TBGRAAnimatedGif.Init;
 begin
   BackgroundMode := gbmSaveBackgroundOnce;
+  LoopCount := 0;
+  LoopDone := 0;
 end;
 
 function TBGRAAnimatedGif.GetBitmap: TBitmap;
@@ -980,7 +1137,7 @@ var
   x, y: integer;
   Mem:  TBGRABitmap;
 begin
-  gif := TBGRAAnimatedGif.Create(Str);
+  gif := TBGRAAnimatedGif.Create(Str, 1);
   Mem := gif.MemBitmap;
   if Img is TBGRABitmap then
   begin

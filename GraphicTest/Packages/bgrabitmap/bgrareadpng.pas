@@ -39,7 +39,7 @@ Type
 
   { TBGRAReaderPNG }
 
-  TBGRAReaderPNG = class (TFPCustomImageReader)
+  TBGRAReaderPNG = class (TBGRAImageReader)
     private
 
       FHeader : THeaderChunk;
@@ -132,11 +132,13 @@ Type
       property VerticalShrinkFactor: integer read GetVerticalShrinkFactor;
       property OriginalWidth: integer read GetOriginalWidth;
       property OriginalHeight: integer read GetOriginalHeight;
+      function GetQuickInfo(AStream: TStream): TQuickImageInfo; override;
+      function GetBitmapDraft(AStream: TStream; {%H-}AMaxWidth, AMaxHeight: integer; out AOriginalWidth,AOriginalHeight: integer): TBGRACustomBitmap; override;
   end;
 
 implementation
 
-
+uses math;
 
 const StartPoints : array[0..7, 0..1] of word =
          ((0,0),(0,0),(4,0),(0,4),(2,0),(0,2),(1,0),(0,1));
@@ -162,8 +164,55 @@ begin
   inherited;
 end;
 
-procedure TBGRAReaderPNG.ReadChunk;
+function TBGRAReaderPNG.GetQuickInfo(AStream: TStream): TQuickImageInfo;
+const headerChunkSize = 13;
+var
+  {%H-}FileHeader : packed array[0..7] of byte;
+  {%H-}ChunkHeader : TChunkHeader;
+  {%H-}HeaderChunk : THeaderChunk;
+begin
+  fillchar({%H-}result, sizeof(result), 0);
+  if AStream.Read({%H-}FileHeader, sizeof(FileHeader))<> sizeof(FileHeader) then exit;
+  if QWord(FileHeader) <> QWord(PNGComn.Signature) then exit;
+  if AStream.Read({%H-}ChunkHeader, sizeof(ChunkHeader))<> sizeof(ChunkHeader) then exit;
+  if ChunkHeader.CType <> ChunkTypes[ctIHDR] then exit;
+  if BEtoN(ChunkHeader.CLength) < headerChunkSize then exit;
+  if AStream.Read({%H-}HeaderChunk, headerChunkSize) <> headerChunkSize then exit;
+  result.width:= BEtoN(HeaderChunk.Width);
+  result.height:= BEtoN(HeaderChunk.height);
+  case HeaderChunk.ColorType and 3 of
+    0,3: {grayscale, palette}
+      if HeaderChunk.BitDepth > 8 then
+        result.colorDepth := 8
+      else
+        result.colorDepth := HeaderChunk.BitDepth;
 
+    2: {color} result.colorDepth := HeaderChunk.BitDepth*3;
+  end;
+  if (HeaderChunk.ColorType and 4) = 4 then
+    result.alphaDepth := HeaderChunk.BitDepth
+  else
+    result.alphaDepth := 0;
+end;
+
+function TBGRAReaderPNG.GetBitmapDraft(AStream: TStream; AMaxWidth,
+  AMaxHeight: integer; out AOriginalWidth, AOriginalHeight: integer): TBGRACustomBitmap;
+var
+  png: TBGRAReaderPNG;
+begin
+  png:= TBGRAReaderPNG.Create;
+  result := BGRABitmapFactory.Create;
+  try
+    png.MinifyHeight := AMaxHeight;
+    result.LoadFromStream(AStream, png);
+    AOriginalWidth:= result.Width;
+    AOriginalHeight:= png.OriginalHeight;
+  finally
+    png.Free;
+  end;
+end;
+
+procedure TBGRAReaderPNG.ReadChunk;
 var {%H-}ChunkHeader : TChunkHeader;
     readCRC : longword;
     l : longword;
@@ -519,6 +568,7 @@ var x, rx : integer;
 begin
   UsingBitGroup := 0;
   DataIndex := 0;
+  {$PUSH}{$RANGECHECKS OFF} //because PByteArray is limited to 32767
   if (UsingBitGroup = 0) and (Header.BitDepth <> 16) then
     case ByteWidth of
       1: if BitsUsed[0] = $ff then
@@ -582,6 +632,7 @@ begin
            exit;
          end;
     end;
+  {$POP}
 
   X := StartX;
   for rx := 0 to ScanlineLength[CurrentPass]-1 do
@@ -693,7 +744,7 @@ begin
     end
 end;
 
-function TBGRAReaderPNG.ColorGray1 (const CD:TColorDAta) : TFPColor;
+function TBGRAReaderPNG.ColorGray1(const CD: TColorData): TFPColor;
 begin
   if CD = 0 then
     result := colBlack
@@ -701,7 +752,7 @@ begin
     result := colWhite;
 end;
 
-function TBGRAReaderPNG.ColorGray2 (const CD:TColorDAta) : TFPColor;
+function TBGRAReaderPNG.ColorGray2(const CD: TColorData): TFPColor;
 var c : NativeUint;
 begin
   c := CD and 3;
@@ -717,7 +768,7 @@ begin
     end;
 end;
 
-function TBGRAReaderPNG.ColorGray4 (const CD:TColorDAta) : TFPColor;
+function TBGRAReaderPNG.ColorGray4(const CD: TColorData): TFPColor;
 var c : NativeUint;
 begin
   c := CD and $F;
@@ -732,7 +783,7 @@ begin
     end;
 end;
 
-function TBGRAReaderPNG.ColorGray8 (const CD:TColorDAta) : TFPColor;
+function TBGRAReaderPNG.ColorGray8(const CD: TColorData): TFPColor;
 var c : NativeUint;
 begin
   c := CD and $FF;
@@ -746,7 +797,7 @@ begin
     end;
 end;
 
-function TBGRAReaderPNG.ColorGray16 (const CD:TColorDAta) : TFPColor;
+function TBGRAReaderPNG.ColorGray16(const CD: TColorData): TFPColor;
 var c : NativeUint;
 begin
   c := CD and $FFFF;
@@ -1064,7 +1115,7 @@ procedure TBGRAReaderPNG.DoDecompress;
     dec(Count, Count4 shl 2);
     while Count4 > 0 do
     begin
-      {$push}{$r-}
+      {$push}{$r-}{$q-}
       PDWord(p)^ := (((PDWord(pPrev)^ and $00FF00FF) + (PDWord(p)^ and $00FF00FF)) and $00FF00FF)
         or (((PDWord(pPrev)^ and $FF00FF00) + (PDWord(p)^ and $FF00FF00)) and $FF00FF00);
       {$pop}
@@ -1306,7 +1357,8 @@ begin
     end;
     // Check IHDR
     ReadChunk;
-    move (chunk.data^, FHeader, sizeof(Header));
+    fillchar(FHeader, sizeof(FHeader), 0);
+    move (chunk.data^, FHeader, min(sizeof(Header), chunk.alength));
     with header do
       begin
       {$IFDEF ENDIAN_LITTLE}

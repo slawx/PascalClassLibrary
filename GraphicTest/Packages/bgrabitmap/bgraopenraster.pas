@@ -36,20 +36,23 @@ type
     function CopyBitmapToMemoryStream(ABitmap: TBGRABitmap; AFilename: string): boolean;
     procedure SetMemoryStreamAsString(AFilename: string; AContent: string);
     function GetMemoryStreamAsString(AFilename: string): string;
-    procedure UnzipFromStream(AStream: TStream);
+    procedure UnzipFromStream(AStream: TStream; AFileList: TStrings = nil);
     procedure UnzipFromFile(AFilenameUTF8: string);
     procedure ZipToFile(AFilenameUTF8: string);
     procedure ZipToStream(AStream: TStream);
     procedure CopyThumbnailToMemoryStream(AMaxWidth, AMaxHeight: integer);
-    procedure AnalyzeZip;
-    procedure PrepareZipToSave;
+    procedure AnalyzeZip; virtual;
+    procedure PrepareZipToSave; virtual;
     function GetMimeType: string; override;
 
   public
-    constructor Create; override; overload;
-    constructor Create(AWidth, AHeight: integer); override; overload;
+    constructor Create; overload; override;
+    constructor Create(AWidth, AHeight: integer); overload; override;
     procedure Clear; override;
     function CheckMimeType(AStream: TStream): boolean;
+    procedure LoadFlatImageFromStream(AStream: TStream;
+              out ANbLayers: integer;
+              out ABitmap: TBGRABitmap);
     procedure LoadFromStream(AStream: TStream); override;
     procedure LoadFromFile(const filenameUTF8: string); override;
     procedure SaveToFile(const filenameUTF8: string); override;
@@ -85,6 +88,10 @@ implementation
 
 uses XMLRead, XMLWrite, FPReadPNG, BGRABitmapTypes, zstream, BGRAUTF8,
   UnzipperExt;
+
+const
+  MergedImageFilename = 'mergedimage.png';
+  LayerStackFilename = 'stack.xml';
 
 function IsZipStream(stream: TStream): boolean;
 var
@@ -139,7 +146,7 @@ begin
   if Stream=nil then exit;
   oldPos := stream.Position;
   {$PUSH}{$HINTS OFF}
-  BytesRead := Stream.Read(magic,sizeof(magic));
+  BytesRead := Stream.Read({%H-}magic,sizeof(magic));
   {$POP}
   stream.Position:= OldPos;
   if BytesRead<>sizeof(magic) then exit;
@@ -162,12 +169,20 @@ begin
   FNbLayers:= 0;
   layeredImage := TBGRAOpenRasterDocument.Create;
   try
-    layeredImage.LoadFromStream(Stream);
-    flat := layeredImage.ComputeFlatImage;
-    try
+    layeredImage.LoadFlatImageFromStream(Stream, FNbLayers, flat);
+    if Assigned(flat) then
+    begin
+      FWidth := flat.Width;
+      FHeight := flat.Height;
+    end else
+    begin
+      layeredImage.LoadFromStream(Stream);
+      flat := layeredImage.ComputeFlatImage;
       FWidth:= layeredImage.Width;
       FHeight:= layeredImage.Height;
       FNbLayers:= layeredImage.NbLayers;
+    end;
+    try
       if Img is TBGRACustomBitmap then
         TBGRACustomBitmap(img).Assign(flat)
       else
@@ -180,7 +195,7 @@ begin
     finally
       flat.free;
     end;
-    layeredImage.Free;
+    FreeAndNil(layeredImage);
   except
     on ex: Exception do
     begin
@@ -202,10 +217,12 @@ var StackStream: TMemoryStream;
   opstr : string;
   gammastr: string;
 begin
+  inherited Clear;
+
   if MimeType <> OpenRasterMimeType then
     raise Exception.Create('Invalid mime type');
 
-  StackStream := GetMemoryStream('stack.xml');
+  StackStream := GetMemoryStream(LayerStackFilename);
   if StackStream = nil then
     raise Exception.Create('Layer stack not found');
 
@@ -224,9 +241,9 @@ begin
     begin
       attr := imagenode.Attributes[i];
       if lowercase(attr.NodeName) = 'w' then
-        w := strToInt(attr.NodeValue) else
+        w := strToInt(string(attr.NodeValue)) else
       if lowercase(attr.NodeName) = 'h' then
-        h := strToInt(attr.NodeValue) else
+        h := strToInt(string(attr.NodeValue)) else
       if lowercase(attr.NodeName) = 'gamma-correction' then
         linearBlend := (attr.NodeValue = 'no') or (attr.NodeValue = '0');
     end;
@@ -264,7 +281,7 @@ begin
             end;
           end else
           if lowercase(attr.NodeName) = 'gamma-correction' then
-            gammastr := attr.NodeValue else
+            gammastr := string(attr.NodeValue) else
           if lowercase(attr.NodeName) = 'visibility' then
             LayerVisible[idx] := (attr.NodeValue = 'visible') or (attr.NodeValue = 'yes') or (attr.NodeValue = '1') else
           if (lowercase(attr.NodeName) = 'x') or (lowercase(attr.NodeName) = 'y') then
@@ -282,7 +299,7 @@ begin
             LayerName[idx] := UTF8Encode(attr.NodeValue) else
           if lowercase(attr.NodeName) = 'composite-op' then
           begin
-            opstr := StringReplace(lowercase(attr.NodeValue),'_','-',[rfReplaceAll]);
+            opstr := StringReplace(lowercase(string(attr.NodeValue)),'_','-',[rfReplaceAll]);
             if (pos(':',opstr) = 0) and (opstr <> 'xor') then opstr := 'svg:'+opstr;
             //parse composite op
             if (opstr = 'svg:src-over') or (opstr = 'krita:dissolve') then
@@ -372,8 +389,8 @@ begin
   FStackXML := TXMLDocument.Create;
   imageNode := TDOMElement(StackXML.CreateElement('image'));
   StackXML.AppendChild(imageNode);
-  imageNode.SetAttribute('w',inttostr(Width));
-  imageNode.SetAttribute('h',inttostr(Height));
+  imageNode.SetAttribute('w',widestring(inttostr(Width)));
+  imageNode.SetAttribute('h',widestring(inttostr(Height)));
   if LinearBlend then
     imageNode.SetAttribute('gamma-correction','no')
   else
@@ -394,14 +411,14 @@ begin
       stackNode.AppendChild(layerNode);
       layerNode.SetAttribute('name', UTF8Decode(LayerName[i]));
       str(LayerOpacity[i]/255:0:3,strval);
-      layerNode.SetAttribute('opacity',strval);
-      layerNode.SetAttribute('src',layerFilename);
+      layerNode.SetAttribute('opacity',widestring(strval));
+      layerNode.SetAttribute('src',widestring(layerFilename));
       if LayerVisible[i] then
         layerNode.SetAttribute('visibility','visible')
       else
         layerNode.SetAttribute('visibility','hidden');
-      layerNode.SetAttribute('x',inttostr(LayerOffset[i].x));
-      layerNode.SetAttribute('y',inttostr(LayerOffset[i].y));
+      layerNode.SetAttribute('x',widestring(inttostr(LayerOffset[i].x)));
+      layerNode.SetAttribute('y',widestring(inttostr(LayerOffset[i].y)));
       strval := '';
       case BlendOperation[i] of
         boLighten: strval := 'svg:lighten';
@@ -427,13 +444,13 @@ begin
         boSvgSoftLight: strval := 'svg:soft-light';
         else strval := 'svg:src-over';
       end;
-      layerNode.SetAttribute('composite-op',strval);
+      layerNode.SetAttribute('composite-op',widestring(strval));
       if BlendOperation[i] <> boTransparent then //in 'transparent' case, linear blending depends on general setting
       begin
         if BlendOperation[i] in[boAdditive,boDarkOverlay,boDifference,boSubtractInverse,
              boSubtract,boExclusion,boNegation] then
           strval := 'yes' else strval := 'no';
-        layerNode.SetAttribute('gamma-correction',strval);
+        layerNode.SetAttribute('gamma-correction',widestring(strval));
       end;
     end;
   end;
@@ -457,12 +474,14 @@ procedure TBGRAOpenRasterDocument.SaveToFile(const filenameUTF8: string);
 begin
   PrepareZipToSave;
   ZipToFile(filenameUTF8);
+  ClearFiles;
 end;
 
 procedure TBGRAOpenRasterDocument.SaveToStream(AStream: TStream);
 begin
   PrepareZipToSave;
   ZipToStream(AStream);
+  ClearFiles;
 end;
 
 function TBGRAOpenRasterDocument.GetMimeType: string;
@@ -592,10 +611,11 @@ begin
   str.Free;
 end;
 
-procedure TBGRAOpenRasterDocument.UnzipFromStream(AStream: TStream);
+procedure TBGRAOpenRasterDocument.UnzipFromStream(AStream: TStream;
+          AFileList: TStrings = nil);
 var unzip: TUnZipper;
 begin
-  Clear;
+  ClearFiles;
   unzip := TUnZipper.Create;
   try
     unzip.OnCreateStream := @ZipOnCreateStream;
@@ -603,7 +623,12 @@ begin
     unzip.OnOpenInputStream := @ZipOnOpenInputStream;
     unzip.OnCloseInputStream := @ZipOnCloseInputStream;
     FZipInputStream := AStream;
-    unzip.UnZipAllFiles;
+    if Assigned(AFileList) then
+    begin
+      if AFileList.Count > 0 then
+        unzip.UnZipFiles(AFileList);
+    end else
+      unzip.UnZipAllFiles;
   finally
     FZipInputStream := nil;
     unzip.Free;
@@ -613,7 +638,7 @@ end;
 procedure TBGRAOpenRasterDocument.UnzipFromFile(AFilenameUTF8: string);
 var unzip: TUnZipper;
 begin
-  Clear;
+  ClearFiles;
   unzip := TUnZipper.Create;
   try
     unzip.FileName := Utf8ToAnsi(AFilenameUTF8);
@@ -660,7 +685,7 @@ var thumbnail: TBGRABitmap;
 begin
   if (Width = 0) or (Height = 0) then exit;
   thumbnail := ComputeFlatImage;
-  CopyBitmapToMemoryStream(thumbnail,'mergedimage.png');
+  CopyBitmapToMemoryStream(thumbnail,MergedImageFilename);
   if (thumbnail.Width > AMaxWidth) or
    (thumbnail.Height > AMaxHeight) then
   begin
@@ -708,6 +733,49 @@ begin
   astream.Position:= OldPos;
 end;
 
+procedure TBGRAOpenRasterDocument.LoadFlatImageFromStream(AStream: TStream; out
+  ANbLayers: integer; out ABitmap: TBGRABitmap);
+var fileList: TStringList;
+  imgStream, stackStream: TMemoryStream;
+  imageNode, stackNode: TDOMNode;
+  i: integer;
+begin
+  fileList := TStringList.Create;
+  fileList.Add(MergedImageFilename);
+  fileList.Add(LayerStackFilename);
+  imgStream := nil;
+  try
+    UnzipFromStream(AStream, fileList);
+    imgStream := GetMemoryStream(MergedImageFilename);
+    if imgStream = nil then
+      ABitmap := nil
+    else
+      ABitmap := TBGRABitmap.Create(imgStream);
+    ANbLayers := 1;
+
+    stackStream := GetMemoryStream(LayerStackFilename);
+    ReadXMLFile(FStackXML, StackStream);
+    imageNode := StackXML.FindNode('image');
+    if Assigned(imagenode) then
+    begin
+      stackNode := imageNode.FindNode('stack');
+      if Assigned(stackNode) then
+      begin
+        ANbLayers:= 0;
+        for i := stackNode.ChildNodes.Length-1 downto 0 do
+        begin
+          if stackNode.ChildNodes[i].NodeName = 'layer' then
+            inc(ANbLayers);
+        end;
+      end;
+    end;
+
+  finally
+    fileList.Free;
+    ClearFiles;
+  end;
+end;
+
 procedure TBGRAOpenRasterDocument.LoadFromStream(AStream: TStream);
 begin
   OnLayeredBitmapLoadFromStreamStart;
@@ -716,6 +784,7 @@ begin
     AnalyzeZip;
   finally
     OnLayeredBitmapLoaded;
+    ClearFiles;
   end;
 end;
 

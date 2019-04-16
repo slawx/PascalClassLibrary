@@ -93,8 +93,8 @@ type
     procedure UseProgram(AProgram: DWord); virtual; abstract;
     function GetUniformVariable(AProgram: DWord; AName: string): DWord; virtual; abstract;
     function GetAttribVariable(AProgram: DWord; AName: string): DWord; virtual; abstract;
-    procedure SetUniformSingle(AVariable: DWord; const AValue; ACount: integer); virtual; abstract;
-    procedure SetUniformInteger(AVariable: DWord; const AValue; ACount: integer); virtual; abstract;
+    procedure SetUniformSingle(AVariable: DWord; const AValue; AElementCount, AComponentCount: integer); virtual; abstract;
+    procedure SetUniformInteger(AVariable: DWord; const AValue; AElementCount, AComponentCount: integer); virtual; abstract;
     procedure BindAttribute(AAttribute: TAttributeVariable); virtual; abstract;
     procedure UnbindAttribute(AAttribute: TAttributeVariable); virtual; abstract;
     procedure FreeShaders;
@@ -109,17 +109,20 @@ type
 
   TBGLCustomCanvas = class
   private
+    FActiveFrameBuffer: TBGLCustomFrameBuffer;
     FHeight: integer;
     FWidth: integer;
     FNoClip: boolean;
     FClipRect: TRect;
   protected
-    procedure SwapRect(var r: TRect);
-    procedure SwapRect(var x1,y1,x2,y2: single);
+    procedure SwapRect(var r: TRect); overload;
+    procedure SwapRect(var x1,y1,x2,y2: single); overload;
     procedure InternalArc(cx,cy,rx,ry: single; const StartPoint,EndPoint: TPointF; ABorderColor,AOuterFillColor,ACenterFillColor: TBGRAPixel; AOptions: TArcOptions; ADrawChord: boolean = false); overload;
     procedure InternalArc(cx,cy,rx,ry: single; StartAngleRad,EndAngleRad: Single; ABorderColor,AOuterFillColor,ACenterFillColor: TBGRAPixel; AOptions: TArcOptions; ADrawChord: boolean = false); overload;
     procedure InternalArcInRect(r: TRect; StartAngleRad,EndAngleRad: Single; ABorderColor,AOuterFillColor,ACenterFillColor: TBGRAPixel; AOptions: TArcOptions; ADrawChord: boolean = false); overload;
     function ComputeEllipseC(r: TRect; AHasBorder: boolean; out cx,cy,rx,ry: single): boolean;
+    function GetHeight: integer; virtual;
+    function GetWidth: integer; virtual;
     procedure SetWidth(AValue: integer); virtual;
     procedure SetHeight(AValue: integer); virtual;
     function GetClipRect: TRect;
@@ -134,6 +137,7 @@ type
     function GetBlendMode: TOpenGLBlendMode; virtual; abstract;
     function GetFaceCulling: TFaceCulling; virtual; abstract;
     procedure SetFaceCulling(AValue: TFaceCulling); virtual; abstract;
+    procedure SetActiveFrameBuffer(AValue: TBGLCustomFrameBuffer); virtual;
 
     function GetLighting: TBGLCustomLighting; virtual;
 
@@ -141,11 +145,11 @@ type
     procedure InternalStartPolyline(const pt: TPointF); virtual; abstract;
     procedure InternalStartPolygon(const pt: TPointF); virtual; abstract;
     procedure InternalStartTriangleFan(const pt: TPointF); virtual; abstract;
-    procedure InternalContinueShape(const pt: TPointF); virtual; abstract;
+    procedure InternalContinueShape(const pt: TPointF); overload; virtual; abstract;
 
-    procedure InternalContinueShape(const {%H-}pt: TPoint3D); virtual; overload;
-    procedure InternalContinueShape(const {%H-}pt: TPoint3D_128); virtual; overload;
-    procedure InternalContinueShape(const {%H-}pt, {%H-}normal: TPoint3D_128); virtual; overload;
+    procedure InternalContinueShape(const {%H-}pt: TPoint3D); overload; virtual;
+    procedure InternalContinueShape(const {%H-}pt: TPoint3D_128); overload; virtual;
+    procedure InternalContinueShape(const {%H-}pt, {%H-}normal: TPoint3D_128); overload; virtual;
 
     procedure InternalEndShape; virtual; abstract;
     procedure InternalSetColor(const AColor: TBGRAPixel); virtual; abstract;
@@ -162,53 +166,53 @@ type
     constructor Create;
     procedure Fill(AColor: TBGRAPixel); virtual; abstract;
 
-    procedure PutPixels(const APoints: array of TPointF; AColor: TBGRAPixel); virtual; overload;
-    procedure PutPixels(const APoints: array of TPointF; const AColors: array of TBGRAPixel); virtual; overload;
+    procedure PutPixels(const APoints: array of TPointF; AColor: TBGRAPixel); overload; virtual;
+    procedure PutPixels(const APoints: array of TPointF; const AColors: array of TBGRAPixel); overload; virtual;
 
-    procedure Line(x1,y1,x2,y2: single; AColor: TBGRAPixel; ADrawLastPoint: boolean = true);
-    procedure Line(p1,p2: TPointF; AColor: TBGRAPixel; ADrawLastPoint: boolean = true);
+    procedure Line(x1,y1,x2,y2: single; AColor: TBGRAPixel; ADrawLastPoint: boolean = true); overload;
+    procedure Line(p1,p2: TPointF; AColor: TBGRAPixel; ADrawLastPoint: boolean = true); overload;
     procedure Polylines(const APoints: array of TPointF; AColor: TBGRAPixel; ADrawLastPoints: boolean = true); virtual;
 
     procedure Polygons(const APoints: array of TPointF; AColor: TBGRAPixel); virtual;
     procedure FillPolyConvex(const APoints: array of TPointF; AColor: TBGRAPixel; APixelCenteredCoordinates: boolean = true);
 
-    procedure FillTriangleLinearColor(pt1,pt2,pt3: TPointF; c1,c2,c3: TBGRAPixel; APixelCenteredCoordinates: boolean = true);
-    procedure FillTriangles(const APoints: array of TPointF; AColor: TBGRAPixel; APixelCenteredCoordinates: boolean = true); virtual;
-    procedure FillTrianglesLinearColor(const APoints: array of TPointF; const AColors: array of TBGRAPixel; APixelCenteredCoordinates: boolean = true); virtual; overload;
-    procedure FillTrianglesLinearColor(const APoints: array of TPoint3D; const AColors: array of TBGRAPixel); virtual; overload;
-    procedure FillTrianglesLinearColor(const APoints: array of TPoint3D_128; const AColors: array of TBGRAPixel); virtual; overload;
-    procedure FillTrianglesLinearColor(const APoints, ANormals: array of TPoint3D_128; const AColors: array of TBGRAPixel); virtual; overload;
-    procedure FillTrianglesFan(const APoints: array of TPointF; ACenterColor, ABorderColor: TBGRAPixel; APixelCenteredCoordinates: boolean = true); virtual;
+    procedure FillTriangleLinearColor(pt1,pt2,pt3: TPointF; c1,c2,c3: TBGRAPixel; APixelCenteredCoordinates: boolean = true); overload;
+    procedure FillTriangles(const APoints: array of TPointF; AColor: TBGRAPixel; APixelCenteredCoordinates: boolean = true); overload; virtual;
+    procedure FillTrianglesLinearColor(const APoints: array of TPointF; const AColors: array of TBGRAPixel; APixelCenteredCoordinates: boolean = true); overload; virtual;
+    procedure FillTrianglesLinearColor(const APoints: array of TPoint3D; const AColors: array of TBGRAPixel); overload; virtual;
+    procedure FillTrianglesLinearColor(const APoints: array of TPoint3D_128; const AColors: array of TBGRAPixel); overload; virtual;
+    procedure FillTrianglesLinearColor(const APoints, ANormals: array of TPoint3D_128; const AColors: array of TBGRAPixel); overload; virtual;
+    procedure FillTrianglesFan(const APoints: array of TPointF; ACenterColor, ABorderColor: TBGRAPixel; APixelCenteredCoordinates: boolean = true); overload; virtual;
 
-    procedure FillTriangleLinearColor(pt1,pt2,pt3: TPointF; c1,c2,c3: TColorF; APixelCenteredCoordinates: boolean = true);
-    procedure FillTriangles(const APoints: array of TPointF; AColor: TColorF; APixelCenteredCoordinates: boolean = true); virtual;
-    procedure FillTrianglesLinearColor(const APoints: array of TPointF; const AColors: array of TColorF; APixelCenteredCoordinates: boolean = true); virtual; overload;
-    procedure FillTrianglesLinearColor(const APoints: array of TPoint3D; const AColors: array of TColorF); virtual; overload;
-    procedure FillTrianglesLinearColor(const APoints: array of TPoint3D_128; const AColors: array of TColorF); virtual; overload;
-    procedure FillTrianglesLinearColor(const APoints, ANormals: array of TPoint3D_128; const AColors: array of TColorF); virtual; overload;
-    procedure FillTrianglesFan(const APoints: array of TPointF; ACenterColor, ABorderColor: TColorF; APixelCenteredCoordinates: boolean = true); virtual;
+    procedure FillTriangleLinearColor(pt1,pt2,pt3: TPointF; c1,c2,c3: TColorF; APixelCenteredCoordinates: boolean = true); overload;
+    procedure FillTriangles(const APoints: array of TPointF; AColor: TColorF; APixelCenteredCoordinates: boolean = true); overload; virtual;
+    procedure FillTrianglesLinearColor(const APoints: array of TPointF; const AColors: array of TColorF; APixelCenteredCoordinates: boolean = true); overload; virtual;
+    procedure FillTrianglesLinearColor(const APoints: array of TPoint3D; const AColors: array of TColorF); overload; virtual;
+    procedure FillTrianglesLinearColor(const APoints: array of TPoint3D_128; const AColors: array of TColorF); overload; virtual;
+    procedure FillTrianglesLinearColor(const APoints, ANormals: array of TPoint3D_128; const AColors: array of TColorF); overload; virtual;
+    procedure FillTrianglesFan(const APoints: array of TPointF; ACenterColor, ABorderColor: TColorF; APixelCenteredCoordinates: boolean = true); overload; virtual;
 
-    procedure FillQuadLinearColor(pt1,pt2,pt3,pt4: TPointF; c1,c2,c3,c4: TBGRAPixel; APixelCenteredCoordinates: boolean = true);
-    procedure FillQuads(const APoints: array of TPointF; AColor: TBGRAPixel; APixelCenteredCoordinates: boolean = true); virtual;
-    procedure FillQuadsLinearColor(const APoints: array of TPointF; const AColors: array of TBGRAPixel; APixelCenteredCoordinates: boolean = true); virtual; overload;
-    procedure FillQuadsLinearColor(const APoints: array of TPoint3D; const AColors: array of TBGRAPixel); virtual; overload;
-    procedure FillQuadsLinearColor(const APoints: array of TPoint3D_128; const AColors: array of TBGRAPixel); virtual; overload;
-    procedure FillQuadsLinearColor(const APoints, ANormals: array of TPoint3D_128; const AColors: array of TBGRAPixel); virtual; overload;
+    procedure FillQuadLinearColor(pt1,pt2,pt3,pt4: TPointF; c1,c2,c3,c4: TBGRAPixel; APixelCenteredCoordinates: boolean = true); overload;
+    procedure FillQuads(const APoints: array of TPointF; AColor: TBGRAPixel; APixelCenteredCoordinates: boolean = true); overload; virtual;
+    procedure FillQuadsLinearColor(const APoints: array of TPointF; const AColors: array of TBGRAPixel; APixelCenteredCoordinates: boolean = true); overload; virtual;
+    procedure FillQuadsLinearColor(const APoints: array of TPoint3D; const AColors: array of TBGRAPixel); overload; virtual;
+    procedure FillQuadsLinearColor(const APoints: array of TPoint3D_128; const AColors: array of TBGRAPixel); overload; virtual;
+    procedure FillQuadsLinearColor(const APoints, ANormals: array of TPoint3D_128; const AColors: array of TBGRAPixel); overload; virtual;
 
-    procedure FillQuadLinearColor(pt1,pt2,pt3,pt4: TPointF; c1,c2,c3,c4: TColorF; APixelCenteredCoordinates: boolean = true);
-    procedure FillQuads(const APoints: array of TPointF; AColor: TColorF; APixelCenteredCoordinates: boolean = true); virtual;
-    procedure FillQuadsLinearColor(const APoints: array of TPointF; const AColors: array of TColorF; APixelCenteredCoordinates: boolean = true); virtual; overload;
-    procedure FillQuadsLinearColor(const APoints: array of TPoint3D; const AColors: array of TColorF); virtual; overload;
-    procedure FillQuadsLinearColor(const APoints: array of TPoint3D_128; const AColors: array of TColorF); virtual; overload;
-    procedure FillQuadsLinearColor(const APoints, ANormals: array of TPoint3D_128; const AColors: array of TColorF); virtual; overload;
+    procedure FillQuadLinearColor(pt1,pt2,pt3,pt4: TPointF; c1,c2,c3,c4: TColorF; APixelCenteredCoordinates: boolean = true); overload;
+    procedure FillQuads(const APoints: array of TPointF; AColor: TColorF; APixelCenteredCoordinates: boolean = true); overload; virtual;
+    procedure FillQuadsLinearColor(const APoints: array of TPointF; const AColors: array of TColorF; APixelCenteredCoordinates: boolean = true); overload; virtual;
+    procedure FillQuadsLinearColor(const APoints: array of TPoint3D; const AColors: array of TColorF); overload; virtual;
+    procedure FillQuadsLinearColor(const APoints: array of TPoint3D_128; const AColors: array of TColorF); overload; virtual;
+    procedure FillQuadsLinearColor(const APoints, ANormals: array of TPoint3D_128; const AColors: array of TColorF); overload; virtual;
 
     procedure DrawPath(APath: TBGLPath; c: TBGRAPixel);
     procedure FillPathConvex(APath: TBGLPath; c: TBGRAPixel; APixelCenteredCoordinates: boolean = true);
 
-    procedure FillRectLinearColor(r: TRect; ATopLeftColor, ATopRightColor, ABottomRightColor, ABottomLeftColor: TBGRAPixel); virtual; overload;
+    procedure FillRectLinearColor(r: TRect; ATopLeftColor, ATopRightColor, ABottomRightColor, ABottomLeftColor: TBGRAPixel); overload; virtual;
     procedure FillRectLinearColor(x1,y1,x2,y2: single;
          ATopLeftColor, ATopRightColor, ABottomRightColor, ABottomLeftColor: TBGRAPixel;
-         APixelCenteredCoordinates: boolean = true); virtual; overload;
+         APixelCenteredCoordinates: boolean = true); overload; virtual;
 
     procedure Ellipse(cx,cy,rx,ry: single; AColor: TBGRAPixel); overload;
     procedure EllipseInRect(r: TRect; AColor: TBGRAPixel); overload;
@@ -246,7 +250,7 @@ type
     procedure FillRect(x1,y1,x2,y2: single; AColor: TBGRAPixel; APixelCenteredCoordinates: boolean = true); overload;
     procedure FillRect(r: TRect; AColor: TBGRAPixel); overload;
     procedure FillRect(r: TRectF; AColor: TBGRAPixel; APixelCenteredCoordinates: boolean = false); overload;
-    procedure FillRect(r: TRect; AScanner: IBGRAScanner); virtual; overload;
+    procedure FillRect(r: TRect; AScanner: IBGRAScanner); overload; virtual;
     procedure RoundRect(x1,y1,x2,y2,rx,ry: single; ABorderColor: TBGRAPixel; options: TRoundRectangleOptions = []); overload;
     procedure RoundRect(x1,y1,x2,y2,rx,ry: single; ABorderColor,AFillColor: TBGRAPixel; options: TRoundRectangleOptions = []); overload;
     procedure FillRoundRect(x,y,x2,y2,rx,ry: single; AFillColor: TBGRAPixel; options: TRoundRectangleOptions = []; APixelCenteredCoordinates: boolean = true);
@@ -274,15 +278,19 @@ type
     procedure RotateRad(angleCCW: single); virtual;
     procedure ResetTransform; virtual;
 
-    procedure UseOrthoProjection; virtual; overload;
-    procedure UseOrthoProjection(AMinX,AMinY,AMaxX,AMaxY: single); virtual; overload;
+    procedure UseOrthoProjection; overload; virtual;
+    procedure UseOrthoProjection(AMinX,AMinY,AMaxX,AMaxY: single); overload; virtual;
     procedure StartZBuffer; virtual;
     procedure EndZBuffer; virtual;
     procedure WaitForGPU({%H-}AOption: TWaitForGPUOption); virtual;
 
+    function GetImage({%H-}x,{%H-}y,{%H-}w,{%H-}h: integer): TBGRACustomBitmap; virtual;
+    function CreateFrameBuffer({%H-}AWidth,{%H-}AHeight: integer): TBGLCustomFrameBuffer; virtual;
+
     procedure NoClip;
-    property Width: integer read FWidth write SetWidth;
-    property Height: integer read FHeight write SetHeight;
+    property ActiveFrameBuffer: TBGLCustomFrameBuffer read FActiveFrameBuffer write SetActiveFrameBuffer;
+    property Width: integer read GetWidth write SetWidth;
+    property Height: integer read GetHeight write SetHeight;
     property ClipRect: TRect read GetClipRect write SetClipRect;
     property Matrix: TAffineMatrix read GetMatrix write SetMatrix;
     property ProjectionMatrix: TMatrix4D read GetProjectionMatrix write SetProjectionMatrix;
@@ -345,6 +353,7 @@ end;
 function TBGLCustomLighting.GetShader(AName: string): TBGLCustomShader;
 var index: integer;
 begin
+  if ShaderList = nil then ShaderList := TStringList.Create;
   index := ShaderList.IndexOf(AName);
   if index = -1 then
     result := nil
@@ -355,6 +364,7 @@ end;
 procedure TBGLCustomLighting.SetShader(AName: string; AValue: TBGLCustomShader);
 var index: integer;
 begin
+  if ShaderList = nil then ShaderList := TStringList.Create;
   index := ShaderList.IndexOf(AName);
   if AValue = nil then
   begin
@@ -458,6 +468,22 @@ begin
     if ry < 0 then ry := 0;
   end;
   result := true;
+end;
+
+function TBGLCustomCanvas.GetHeight: integer;
+begin
+  if FActiveFrameBuffer = nil then
+    result := FHeight
+  else
+    result := FActiveFrameBuffer.Height;
+end;
+
+function TBGLCustomCanvas.GetWidth: integer;
+begin
+  if FActiveFrameBuffer = nil then
+    result := FWidth
+  else
+    result := FActiveFrameBuffer.Width;
 end;
 
 procedure TBGLCustomCanvas.SetWidth(AValue: integer);
@@ -1188,6 +1214,16 @@ begin
   APath.fillConvex(self, c, 0.1, APixelCenteredCoordinates);
 end;
 
+procedure TBGLCustomCanvas.SetActiveFrameBuffer(AValue: TBGLCustomFrameBuffer);
+begin
+  if FActiveFrameBuffer=AValue then Exit;
+  if FActiveFrameBuffer <> nil then
+    FActiveFrameBuffer.SetCanvas(nil);
+  FActiveFrameBuffer:=AValue;
+  if FActiveFrameBuffer <> nil then
+    FActiveFrameBuffer.SetCanvas(self);
+end;
+
 procedure TBGLCustomCanvas.SwapRect(var r: TRect);
 var
   temp: LongInt;
@@ -1713,13 +1749,17 @@ end;
 procedure TBGLCustomCanvas.PutImageAffine(const Origin, HAxis, VAxis: TPointF;
   ATexture: IBGLTexture; AAlpha: byte);
 begin
+  {$PUSH}{$OPTIMIZATION OFF}
   ATexture.DrawAffine(Origin, HAxis, VAxis, AAlpha);
+  {$POP}
 end;
 
 procedure TBGLCustomCanvas.PutImageAffine(const Origin, HAxis, VAxis: TPointF;
   ATexture: IBGLTexture; AColor: TBGRAPixel);
 begin
+  {$PUSH}{$OPTIMIZATION OFF}
   ATexture.DrawAffine(Origin, HAxis, VAxis, AColor);
+  {$POP}
 end;
 
 procedure TBGLCustomCanvas.PutImageAffine(x, y: single; ATexture: IBGLTexture;
@@ -1781,6 +1821,17 @@ end;
 
 procedure TBGLCustomCanvas.WaitForGPU(AOption: TWaitForGPUOption);
 begin
+  raise exception.Create('Not implemented');
+end;
+
+function TBGLCustomCanvas.GetImage(x, y, w, h: integer): TBGRACustomBitmap;
+begin
+  result := nil;
+end;
+
+function TBGLCustomCanvas.CreateFrameBuffer(AWidth, AHeight: integer): TBGLCustomFrameBuffer;
+begin
+  result := nil;
   raise exception.Create('Not implemented');
 end;
 

@@ -5,7 +5,7 @@ unit BGRAWinResource;
 interface
 
 uses
-  Classes, SysUtils, BGRAMultiFileType, BGRABitmapTypes;
+  Classes, SysUtils, BGRAMultiFileType, BGRABitmapTypes, BGRAReadBMP;
 
 const
   RT_CURSOR = 1;
@@ -30,6 +30,9 @@ const
   RT_ANIICON = 22;
   RT_HTML = 23;
   RT_MANIFEST = 24;
+
+  ICON_OR_CURSOR_FILE_ICON_TYPE = 1;
+  ICON_OR_CURSOR_FILE_CURSOR_TYPE = 2;
 
 type
   TNameOrId = record
@@ -94,7 +97,7 @@ type
   public
     constructor Create(AContainer: TMultiFileContainer; ATypeNameOrId: TNameOrId; AEntryNameOrId: TNameOrId; const AResourceInfo: TResourceInfo; ADataStream: TStream);
     destructor Destroy; override;
-    function CopyTo(ADestination: TStream): integer; override;
+    function CopyTo(ADestination: TStream): int64; override;
   end;
 
   { TBitmapResourceEntry }
@@ -105,7 +108,7 @@ type
     function GetExtension: utf8string; override;
   public
     constructor Create(AContainer: TMultiFileContainer; AEntryNameOrId: TNameOrId; const AResourceInfo: TResourceInfo; ADataStream: TStream);
-    function CopyTo(ADestination: TStream): integer; override;
+    function CopyTo(ADestination: TStream): int64; override;
     procedure CopyFrom(ASource: TStream);
   end;
 
@@ -150,7 +153,7 @@ type
     constructor Create(AContainer: TMultiFileContainer; ATypeNameOrId: TNameOrId; AEntryNameOrId: TNameOrId; const AResourceInfo: TResourceInfo; ADataStream: TStream);
     constructor Create(AContainer: TMultiFileContainer; ATypeNameOrId: TNameOrId; AEntryNameOrId: TNameOrId; const AResourceInfo: TResourceInfo);
     procedure Clear;
-    function CopyTo(ADestination: TStream): integer; override;
+    function CopyTo(ADestination: TStream): int64; override;
     procedure CopyFrom(ASource: TStream);
     property NbIcons: integer read GetNbIcons;
   end;
@@ -205,7 +208,7 @@ type
 
 implementation
 
-uses Math, BMPcomn, BGRAUTF8;
+uses Math, BGRAUTF8;
 
 operator =(const ANameOrId1, ANameOrId2: TNameOrId): boolean;
 begin
@@ -215,13 +218,13 @@ begin
     result := ANameOrId2.Id = ANameOrId1.Id;
 end;
 
-function NameOrId(AName: string): TNameOrId;
+function NameOrId(AName: string): TNameOrId; overload;
 begin
   result.Id := -1;
   result.Name := AName;
 end;
 
-function NameOrId(AId: integer): TNameOrId;
+function NameOrId(AId: integer): TNameOrId; overload;
 begin
   result.Id := AId;
   result.Name := IntToStr(AId);
@@ -236,7 +239,7 @@ end;
 
 function TGroupCursorEntry.ExpectedResourceType: word;
 begin
-  result := 2;
+  result := ICON_OR_CURSOR_FILE_CURSOR_TYPE;
 end;
 
 constructor TGroupCursorEntry.Create(AContainer: TMultiFileContainer;
@@ -261,7 +264,7 @@ end;
 
 function TGroupIconEntry.ExpectedResourceType: word;
 begin
-  result := 1;
+  result := ICON_OR_CURSOR_FILE_ICON_TYPE;
 end;
 
 constructor TGroupIconEntry.Create(AContainer: TMultiFileContainer;
@@ -370,7 +373,7 @@ begin
   FGroupIconHeader.ImageCount := 0;
 end;
 
-function TGroupIconOrCursorEntry.CopyTo(ADestination: TStream): integer;
+function TGroupIconOrCursorEntry.CopyTo(ADestination: TStream): int64;
 var
   fileDir: packed array of TIconFileDirEntry;
   offset, written, i: integer;
@@ -514,46 +517,16 @@ begin
   inherited Create(AContainer, NameOrId(RT_BITMAP), AEntryNameOrId, AResourceInfo, ADataStream);
 end;
 
-function TBitmapResourceEntry.CopyTo(ADestination: TStream): integer;
-var header: PBitMapInfoHeader;
-  fileHeader: TBitMapFileHeader;
-  headerSize: integer;
-  extraSize: integer;
-
+function TBitmapResourceEntry.CopyTo(ADestination: TStream): int64;
+var fileHeader: TBitMapFileHeader;
 begin
   result := 0;
   FDataStream.Position := 0;
-  headerSize := LEtoN(FDataStream.ReadDWord);
-  if (headerSize < 16) or (headerSize > FDataStream.Size) then
-    raise exception.Create('Invalid header size');
-  getmem(header, headerSize);
-  try
-    fillchar(header^, headerSize,0);
-    header^.Size := NtoLE(headerSize);
-    FDataStream.ReadBuffer((PByte(header)+4)^, headerSize-4);
-    if LEtoN(header^.Compression) = BI_BITFIELDS then
-      extraSize := 4*3
-    else if LEtoN(header^.BitCount) in [1,4,8] then
-    begin
-      if header^.ClrUsed > 0 then
-        extraSize := 4*header^.ClrUsed
-      else
-        extraSize := 4*(1 shl header^.BitCount);
-    end else
-      extraSize := 0;
-    fileHeader.bfType:= Word('BM');
-    fileHeader.bfSize := NtoLE(Integer(sizeof(TBitMapFileHeader) + FDataStream.Size));
-    fileHeader.bfReserved:= 0;
-    fileHeader.bfOffset := NtoLE(Integer(sizeof(TBitMapFileHeader) + headerSize + extraSize));
-    ADestination.WriteBuffer(fileHeader, sizeof(fileHeader));
-    result += sizeof(fileHeader);
-    ADestination.WriteBuffer(header^, headerSize);
-    result += headerSize;
-    if FDataStream.Size - headerSize > 0 then
-      result += ADestination.CopyFrom(FDataStream, FDataStream.Size - headerSize);
-  finally
-    freemem(header);
-  end;
+  fileHeader := MakeBitmapFileHeader(FDataStream);
+  ADestination.WriteBuffer(fileHeader, sizeof(fileHeader));
+  result += sizeof(fileHeader);
+  FDataStream.Position := 0;
+  result += ADestination.CopyFrom(FDataStream, FDataStream.Size);
 end;
 
 procedure TBitmapResourceEntry.CopyFrom(ASource: TStream);
@@ -632,7 +605,7 @@ begin
   inherited Destroy;
 end;
 
-function TUnformattedResourceEntry.CopyTo(ADestination: TStream): integer;
+function TUnformattedResourceEntry.CopyTo(ADestination: TStream): int64;
 begin
   if FDataStream.Size > 0 then
   begin
@@ -1038,15 +1011,21 @@ begin
   case UTF8LowerCase(AExtension) of
   'ico': begin
            result := TGroupIconEntry.Create(self, entryName, resourceInfo);
+           AContent.Position:= 0;
            TGroupIconEntry(result).CopyFrom(AContent);
+           AContent.Free;
          end;
   'cur': begin
            result := TGroupCursorEntry.Create(self, entryName, resourceInfo);
+           AContent.Position:= 0;
            TGroupCursorEntry(result).CopyFrom(AContent);
+           AContent.Free;
          end;
   'bmp': begin
            result := TBitmapResourceEntry.Create(self, entryName, resourceInfo, AContent);
+           AContent.Position:= 0;
            TBitmapResourceEntry(result).CopyFrom(AContent);
+           AContent.Free;
          end;
   'dat': result := TUnformattedResourceEntry.Create(self, NameOrId(RT_RCDATA), entryName, resourceInfo, AContent);
   'html','htm': result := TUnformattedResourceEntry.Create(self, NameOrId(RT_HTML), entryName, resourceInfo, AContent);

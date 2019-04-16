@@ -7,7 +7,7 @@ uses
   cthreads,
   {$ENDIF}{$ENDIF}
   Interfaces, // this includes the LCL widgetset
-  Forms, openglcontext, UMainForm, UPlatform, UDrawMethod, UFastBitmap,
+  Forms, SysUtils, openglcontext, UMainForm, UPlatform, UDrawMethod, UFastBitmap,
   UDrawForm, bgrabitmappack,
   {$IFDEF GRAPHICS32}GR32_L,{$ENDIF}
   UCanvasPixels, UCanvasPixelsUpdateLock,
@@ -17,7 +17,18 @@ uses
 
 {$R *.res}
 
+{$if declared(UseHeapTrace)}
+const
+  HeapTraceLog = 'heaptrclog.trc';
+{$ENDIF}
+
 begin
+  {$if declared(UseHeapTrace)}
+  // Heap trace
+  DeleteFile(ExtractFilePath(ParamStr(0)) + HeapTraceLog);
+  SetHeapTraceOutput(ExtractFilePath(ParamStr(0)) + HeapTraceLog);
+  {$ENDIF}
+
   RequireDerivedFormResource := True;
   Application.Initialize;
   Application.CreateForm(TMainForm, MainForm);

@@ -12,23 +12,8 @@ uses
 type
   { Contains an affine matrix, i.e. a matrix to transform linearly and translate TPointF coordinates }
   TAffineMatrix = BGRABitmapTypes.TAffineMatrix;
-
-  { TAffineBox }
-
-  TAffineBox = object
-  private
-    function GetAsPolygon: ArrayOfTPointF;
-    function GetBottomRight: TPointF;
-    function GetIsEmpty: boolean;
-  public
-    TopLeft, TopRight,
-    BottomLeft: TPointF;
-    class function EmptyBox: TAffineBox;
-    class function AffineBox(ATopLeft, ATopRight, ABottomLeft: TPointF): TAffineBox;
-    property BottomRight: TPointF read GetBottomRight;
-    property IsEmpty: boolean read GetIsEmpty;
-    property AsPolygon: ArrayOfTPointF read GetAsPolygon;
-  end;
+  { Contains an affine base and information on the resulting box }
+  TAffineBox = BGRABitmapTypes.TAffineBox;
 
   { TBGRAAffineScannerTransform allow to transform any scanner. To use it,
     create this object with a scanner as parameter, call transformation
@@ -86,8 +71,8 @@ type
     FIncludeEdges: boolean;
     procedure Init(ABitmap: TBGRACustomBitmap; ARepeatImageX: Boolean= false; ARepeatImageY: Boolean= false; AResampleFilter: TResampleFilter = rfLinear; AIncludeEdges: boolean = false);
   public
-    constructor Create(ABitmap: TBGRACustomBitmap; ARepeatImage: Boolean= false; AResampleFilter: TResampleFilter = rfLinear; AIncludeEdges: boolean = false);
-    constructor Create(ABitmap: TBGRACustomBitmap; ARepeatImageX: Boolean; ARepeatImageY: Boolean; AResampleFilter: TResampleFilter = rfLinear; AIncludeEdges: boolean = false);
+    constructor Create(ABitmap: TBGRACustomBitmap; ARepeatImage: Boolean= false; AResampleFilter: TResampleFilter = rfLinear; AIncludeEdges: boolean = false); overload;
+    constructor Create(ABitmap: TBGRACustomBitmap; ARepeatImageX: Boolean; ARepeatImageY: Boolean; AResampleFilter: TResampleFilter = rfLinear; AIncludeEdges: boolean = false); overload;
     destructor Destroy; override;
     function InternalScanCurrentPixel: TBGRAPixel; override;
     procedure ScanPutPixels(pdest: PBGRAPixel; count: integer; mode: TDrawMode); override;
@@ -136,10 +121,10 @@ type
     function ScanNextPixel: TBGRAPixel; override;
     constructor Create(ASource: IBGRAScanner;
       ASourceMatrix: TAffineMatrix; const APoints: array of TPointF;
-      ATextureInterpolation: boolean = true);
+      ATextureInterpolation: boolean = true); overload;
     constructor Create(ASource: IBGRAScanner;
       const ATexCoords: array of TPointF; const APoints: array of TPointF;
-      ATextureInterpolation: boolean = true);
+      ATextureInterpolation: boolean = true); overload;
     destructor Destroy; override;
     property Culling: TFaceCulling read GetCulling write SetCulling;
   end;
@@ -190,7 +175,8 @@ type
 
 {---------------------- Affine matrix functions -------------------}
 //fill a matrix
-function AffineMatrix(m11,m12,m13,m21,m22,m23: single): TAffineMatrix;
+function AffineMatrix(m11,m12,m13,m21,m22,m23: single): TAffineMatrix; overload;
+function AffineMatrix(AU,AV: TPointF; ATranslation: TPointF): TAffineMatrix; overload;
 
 //matrix multiplication
 operator *(M,N: TAffineMatrix): TAffineMatrix;
@@ -199,6 +185,7 @@ operator =(M,N: TAffineMatrix): boolean;
 //matrix multiplication by a vector (apply transformation to that vector)
 operator *(M: TAffineMatrix; V: TPointF): TPointF;
 operator *(M: TAffineMatrix; A: array of TPointF): ArrayOfTPointF;
+operator *(M: TAffineMatrix; ab: TAffineBox): TAffineBox;
 
 //check if matrix is inversible
 function IsAffineMatrixInversible(M: TAffineMatrix): boolean;
@@ -220,6 +207,8 @@ function AffineMatrixTranslation(OfsX,OfsY: Single): TAffineMatrix;
 
 //define a scaling matrix
 function AffineMatrixScale(sx,sy: single): TAffineMatrix;
+function AffineMatrixScaledRotation(ASourceVector, ATargetVector: TPointF): TAffineMatrix;
+function AffineMatrixScaledRotation(ASourcePoint, ATargetPoint, AOrigin: TPointF): TAffineMatrix;
 
 function AffineMatrixSkewXDeg(AngleCW: single): TAffineMatrix;
 function AffineMatrixSkewYDeg(AngleCW: single): TAffineMatrix;
@@ -227,7 +216,8 @@ function AffineMatrixSkewXRad(AngleCCW: single): TAffineMatrix;
 function AffineMatrixSkewYRad(AngleCCW: single): TAffineMatrix;
 
 //define a linear matrix
-function AffineMatrixLinear(v1,v2: TPointF): TAffineMatrix;
+function AffineMatrixLinear(v1,v2: TPointF): TAffineMatrix; overload;
+function AffineMatrixLinear(const AMatrix: TAffineMatrix): TAffineMatrix; overload;
 
 //define a rotation matrix (positive radians are counter-clockwise)
 //(assuming the y-axis is pointing down)
@@ -241,6 +231,7 @@ function AffineMatrixRotationDeg(AngleCW: Single): TAffineMatrix;
 function AffineMatrixIdentity: TAffineMatrix;
 
 function IsAffineMatrixOrthogonal(M: TAffineMatrix): boolean;
+function IsAffineMatrixScaledRotation(M: TAffineMatrix): boolean;
 
 type
   { TBGRATriangleLinearMapping is a scanner that provides
@@ -277,8 +268,8 @@ type
     function GetIncludeOppositePlane: boolean;
     procedure SetIncludeOppositePlane(AValue: boolean);
   public
-    constructor Create(texture: IBGRAScanner; texCoord1,texCoord2: TPointF; const quad: array of TPointF);
-    constructor Create(texture: IBGRAScanner; const texCoordsQuad: array of TPointF; const quad: array of TPointF);
+    constructor Create(texture: IBGRAScanner; texCoord1,texCoord2: TPointF; const quad: array of TPointF); overload;
+    constructor Create(texture: IBGRAScanner; const texCoordsQuad: array of TPointF; const quad: array of TPointF); overload;
     destructor Destroy; override;
     procedure ScanMoveTo(X, Y: Integer); override;
     function ScanAt(X, Y: Single): TBGRAPixel; override;
@@ -297,9 +288,9 @@ type
     procedure Init;
   public
     constructor Create; overload;
-    constructor Create(x1,y1,x2,y2: single; const quad: array of TPointF);
-    constructor Create(const quad: array of TPointF; x1,y1,x2,y2: single);
-    constructor Create(const srcQuad,destQuad: array of TPointF);
+    constructor Create(x1,y1,x2,y2: single; const quad: array of TPointF); overload;
+    constructor Create(const quad: array of TPointF; x1,y1,x2,y2: single); overload;
+    constructor Create(const srcQuad,destQuad: array of TPointF); overload;
     function MapQuadToQuad(const srcQuad,destQuad: array of TPointF): boolean;
     function MapRectToQuad(x1,y1,x2,y2: single; const quad: array of TPointF): boolean;
     function MapQuadToRect(const quad: array of TPointF; x1,y1,x2,y2: single): boolean;
@@ -385,6 +376,12 @@ begin
   result[2,3] := m23;
 end;
 
+function AffineMatrix(AU, AV: TPointF; ATranslation: TPointF): TAffineMatrix;
+begin
+  result:= AffineMatrix(AU.x, AV.x, ATranslation.x,
+                        AU.y, AV.y, ATranslation.y);
+end;
+
 operator *(M, N: TAffineMatrix): TAffineMatrix;
 begin
   result[1,1] := M[1,1]*N[1,1] + M[1,2]*N[2,1];
@@ -426,6 +423,13 @@ begin
   end else
     for i := 0 to high(A) do
       result[i] := M*A[i];
+end;
+
+operator*(M: TAffineMatrix; ab: TAffineBox): TAffineBox;
+begin
+  result.TopLeft := M*ab.TopLeft;
+  result.TopRight := M*ab.TopRight;
+  result.BottomLeft := M*ab.BottomLeft;
 end;
 
 function IsAffineMatrixInversible(M: TAffineMatrix): boolean;
@@ -474,6 +478,34 @@ begin
                          0,  sy,  0);
 end;
 
+function AffineMatrixScaledRotation(ASourceVector, ATargetVector: TPointF): TAffineMatrix;
+var
+  prevScale, newScale, scale: Single;
+  u1,v1,u2,v2,w: TPointF;
+begin
+  prevScale := VectLen(ASourceVector);
+  newScale := VectLen(ATargetVector);
+  if (prevScale = 0) or (newScale = 0) then
+    result := AffineMatrixIdentity
+  else
+  begin
+    scale := newScale/prevScale;
+    u1 := ASourceVector*(1/prevScale);
+    v1 := PointF(-u1.y,u1.x);
+    w := ATargetVector*(1/newScale);
+    u2 := PointF(w*u1, w*v1);
+    v2 := PointF(-u2.y,u2.x);
+    result := AffineMatrix(scale*u2,scale*v2,PointF(0,0));
+  end;
+end;
+
+function AffineMatrixScaledRotation(ASourcePoint, ATargetPoint, AOrigin: TPointF): TAffineMatrix;
+begin
+  result := AffineMatrixTranslation(AOrigin.x,AOrigin.y)*
+         AffineMatrixScaledRotation(ASourcePoint-AOrigin, ATargetPoint-AOrigin)*
+         AffineMatrixTranslation(-AOrigin.x,-AOrigin.y);
+end;
+
 function AffineMatrixSkewXDeg(AngleCW: single): TAffineMatrix;
 begin
   result := AffineMatrix(1,tan(AngleCW*Pi/180),0,
@@ -505,6 +537,12 @@ begin
                          v1.y, v2.y, 0);
 end;
 
+function AffineMatrixLinear(const AMatrix: TAffineMatrix): TAffineMatrix;
+begin
+  result := AffineMatrix(AMatrix[1,1],AMatrix[1,2],0,
+                         AMatrix[2,1],AMatrix[2,2],0);
+end;
+
 function AffineMatrixRotationRad(AngleCCW: Single): TAffineMatrix;
 begin
   result := AffineMatrix(cos(AngleCCW),  sin(AngleCCW), 0,
@@ -526,6 +564,12 @@ end;
 function IsAffineMatrixOrthogonal(M: TAffineMatrix): boolean;
 begin
   result := PointF(M[1,1],M[2,1])*PointF(M[1,2],M[2,2]) = 0;
+end;
+
+function IsAffineMatrixScaledRotation(M: TAffineMatrix): boolean;
+begin
+  result := IsAffineMatrixOrthogonal(M) and
+           (VectLen(PointF(M[1,1],M[2,1]))=VectLen(PointF(M[1,2],M[2,2])));
 end;
 
 { TBGRAVerticalCylinderDeformationScanner }
@@ -607,40 +651,6 @@ begin
   if x > FBounds.Right-1 then x := FBounds.Right-1;
   if y > FBounds.Bottom-1 then y := FBounds.Bottom-1;
   result := FSource.ScanAt(X,Y);
-end;
-
-{ TAffineBox }
-
-function TAffineBox.GetAsPolygon: ArrayOfTPointF;
-begin
-  result := PointsF([TopLeft,TopRight,BottomRight,BottomLeft]);
-end;
-
-function TAffineBox.GetBottomRight: TPointF;
-begin
-  if IsEmpty then
-    result := EmptyPointF
-  else
-    result := TopRight + (BottomLeft-TopLeft);
-end;
-
-function TAffineBox.GetIsEmpty: boolean;
-begin
-  result := isEmptyPointF(TopRight) or isEmptyPointF(BottomLeft) or isEmptyPointF(TopLeft);
-end;
-
-class function TAffineBox.EmptyBox: TAffineBox;
-begin
-  result.TopLeft := EmptyPointF;
-  result.TopRight := EmptyPointF;
-  result.BottomLeft := EmptyPointF;
-end;
-
-class function TAffineBox.AffineBox(ATopLeft, ATopRight, ABottomLeft: TPointF): TAffineBox;
-begin
-  result.TopLeft := ATopLeft;
-  result.TopRight := ATopRight;
-  result.BottomLeft := ABottomLeft;
 end;
 
 { TBGRAScannerOffset }

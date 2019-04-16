@@ -5,7 +5,7 @@ unit UMainForm;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, SynHighlighterPas, SynMemo, Forms, Controls,
+  Classes, SysUtils, LazFileUtils, SynHighlighterPas, SynMemo, Forms, Controls,
   Graphics, Dialogs, ComCtrls, ExtCtrls, StdCtrls, DateUtils, UPlatform,
   LCLType, IntfGraphics, fpImage, Math, GraphType, Contnrs, LclIntf, Spin,
   ActnList, Menus, StdActns, UFastBitmap, UDrawMethod, typinfo;
@@ -336,7 +336,7 @@ begin
     FileName := 'Methods' + DirectorySeparator + 'U' +
     Copy(TDrawMethod(DrawMethods[ListViewMethods.Selected.Index]).ClassName, 2, High(Integer)) + '.pas';
 
-    if FileExistsUTF8(FileName) then
+    if FileExists(FileName) then
       SynMemo1.Lines.LoadFromFile(FileName)
       else SynMemo1.Lines.Clear;
     Memo1.Lines.Assign(TDrawMethod(DrawMethods[ListViewMethods.Selected.Index]).Description);

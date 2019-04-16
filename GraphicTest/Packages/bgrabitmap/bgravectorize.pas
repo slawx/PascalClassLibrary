@@ -62,17 +62,20 @@ type
     ShadowRadius: integer;
     ShadowOffset: TPoint;
 
-    constructor Create;
-    constructor Create(ADirectoryUTF8: string);
+    constructor Create; overload;
+    constructor Create(ADirectoryUTF8: string); overload;
     function GetFontPixelMetric: TFontPixelMetric; override;
-    procedure TextOutAngle(ADest: TBGRACustomBitmap; x, y: single; orientation: integer; s: string; c: TBGRAPixel; align: TAlignment); override;
-    procedure TextOutAngle(ADest: TBGRACustomBitmap; x, y: single; orientation: integer; s: string; texture: IBGRAScanner; align: TAlignment); override;
-    procedure TextOut(ADest: TBGRACustomBitmap; x, y: single; s: string; texture: IBGRAScanner; align: TAlignment); override;
-    procedure TextOut(ADest: TBGRACustomBitmap; x, y: single; s: string; c: TBGRAPixel; align: TAlignment); override;
-    procedure TextRect(ADest: TBGRACustomBitmap; ARect: TRect; x, y: integer; s: string; style: TTextStyle; c: TBGRAPixel); override;
-    procedure TextRect(ADest: TBGRACustomBitmap; ARect: TRect; x, y: integer; s: string; style: TTextStyle; texture: IBGRAScanner); override;
+    procedure TextOutAngle(ADest: TBGRACustomBitmap; x, y: single; orientation: integer; s: string; c: TBGRAPixel; align: TAlignment); overload; override;
+    procedure TextOutAngle(ADest: TBGRACustomBitmap; x, y: single; orientation: integer; s: string; texture: IBGRAScanner; align: TAlignment); overload; override;
+    procedure TextOut(ADest: TBGRACustomBitmap; x, y: single; s: string; texture: IBGRAScanner; align: TAlignment); overload; override;
+    procedure TextOut(ADest: TBGRACustomBitmap; x, y: single; s: string; c: TBGRAPixel; align: TAlignment); overload; override;
+    procedure TextRect(ADest: TBGRACustomBitmap; ARect: TRect; x, y: integer; s: string; style: TTextStyle; c: TBGRAPixel); overload; override;
+    procedure TextRect(ADest: TBGRACustomBitmap; ARect: TRect; x, y: integer; s: string; style: TTextStyle; texture: IBGRAScanner); overload; override;
     procedure CopyTextPathTo(ADest: IBGRAPath; x, y: single; s: string; align: TAlignment); override;
+    function HandlesTextPath: boolean; override;
     function TextSize(s: string): TSize; override;
+    function TextSize(sUTF8: string; AMaxWidth: integer; {%H-}ARightToLeft: boolean): TSize; override;
+    function TextFitInfo(sUTF8: string; AMaxWidth: integer): integer; override;
     destructor Destroy; override;
   end;
 
@@ -150,8 +153,8 @@ type
     procedure SetDirectory(const AValue: string);
   public
     UnderlineDecoration,StrikeOutDecoration: boolean;
-    constructor Create;
-    constructor Create(AVectorizeLCL: boolean);
+    constructor Create; overload;
+    constructor Create(AVectorizeLCL: boolean); overload;
     destructor Destroy; override;
     function GetGlyphSize(AIdentifier:string): TPointF;
     function GetTextGlyphSizes(AText:string): TGlyphSizes;
@@ -161,11 +164,11 @@ type
     procedure CopyTextPathTo(ADest: IBGRAPath; ATextUTF8: string; X, Y: Single;
       AAlign: TBGRATypeWriterAlignment=twaTopLeft); override;
     procedure DrawTextWordBreak(ADest: TBGRACanvas2D; ATextUTF8: string; X, Y, MaxWidth: Single; AAlign: TBGRATypeWriterAlignment=twaTopLeft);
-    procedure DrawTextRect(ADest: TBGRACanvas2D; ATextUTF8: string; X1,Y1,X2,Y2: Single; AAlign: TBGRATypeWriterAlignment=twaTopLeft);
-    procedure DrawTextRect(ADest: TBGRACanvas2D; ATextUTF8: string; ATopLeft,ABottomRight: TPointF; AAlign: TBGRATypeWriterAlignment=twaTopLeft);
+    procedure DrawTextRect(ADest: TBGRACanvas2D; ATextUTF8: string; X1,Y1,X2,Y2: Single; AAlign: TBGRATypeWriterAlignment=twaTopLeft); overload;
+    procedure DrawTextRect(ADest: TBGRACanvas2D; ATextUTF8: string; ATopLeft,ABottomRight: TPointF; AAlign: TBGRATypeWriterAlignment=twaTopLeft); overload;
     function GetTextWordBreakGlyphBoxes(ATextUTF8: string; X,Y, MaxWidth: Single; AAlign: TBGRATypeWriterAlignment = twaTopLeft): TGlyphBoxes;
-    function GetTextRectGlyphBoxes(ATextUTF8: string; X1,Y1,X2,Y2: Single; AAlign: TBGRATypeWriterAlignment=twaTopLeft): TGlyphBoxes;
-    function GetTextRectGlyphBoxes(ATextUTF8: string; ATopLeft,ABottomRight: TPointF; AAlign: TBGRATypeWriterAlignment=twaTopLeft): TGlyphBoxes;
+    function GetTextRectGlyphBoxes(ATextUTF8: string; X1,Y1,X2,Y2: Single; AAlign: TBGRATypeWriterAlignment=twaTopLeft): TGlyphBoxes; overload;
+    function GetTextRectGlyphBoxes(ATextUTF8: string; ATopLeft,ABottomRight: TPointF; AAlign: TBGRATypeWriterAlignment=twaTopLeft): TGlyphBoxes; overload;
     procedure UpdateDirectory;
     function LoadGlyphsInfo(AFilenameUTF8: string): TBGRAGlyphsInfo;
 
@@ -189,7 +192,7 @@ type
 
 implementation
 
-uses BGRAUTF8;
+uses BGRAUTF8, math;
 
 function VectorizeMonochrome(ASource: TBGRACustomBitmap; zoom: single; PixelCenteredCoordinates: boolean): ArrayOfTPointF;
 const unitShift = 6;
@@ -233,7 +236,7 @@ var
     end;
     inc(nbpoints);
   end;
-  procedure AddLine(x1,y1,x2,y2: integer);
+  procedure AddLine(x1,y1,x2,y2: integer); overload;
   var i,j,k: integer;
   begin
     for i := PointsPreviousLineStart to nbpoints-1 do
@@ -266,18 +269,18 @@ var
     k := addpoint(x1,y1,-1,-1);
     points[k].next := addpoint(x2,y2,k,-1);
   end;
-  procedure AddLine(x1,y1,x2,y2,x3,y3: integer);
+  procedure AddLine(x1,y1,x2,y2,x3,y3: integer); overload;
   begin
     AddLine(x1,y1,x2,y2);
     AddLine(x2,y2,x3,y3);
   end;
-  procedure AddLine(x1,y1,x2,y2,x3,y3,x4,y4: integer);
+  procedure AddLine(x1,y1,x2,y2,x3,y3,x4,y4: integer); overload;
   begin
     AddLine(x1,y1,x2,y2);
     AddLine(x2,y2,x3,y3);
     AddLine(x3,y3,x4,y4);
   end;
-  procedure AddLine(x1,y1,x2,y2,x3,y3,x4,y4,x5,y5: integer);
+  procedure AddLine(x1,y1,x2,y2,x3,y3,x4,y4,x5,y5: integer); overload;
   begin
     AddLine(x1,y1,x2,y2);
     AddLine(x2,y2,x3,y3);
@@ -1224,6 +1227,11 @@ begin
   FVectorizedFont.CopyTextPathTo(ADest, s, ofs.x,ofs.y, twAlign);
 end;
 
+function TBGRAVectorizedFontRenderer.HandlesTextPath: boolean;
+begin
+  Result:= true;
+end;
+
 function TBGRAVectorizedFontRenderer.TextSize(s: string): TSize;
 var sizeF: TPointF;
 begin
@@ -1231,6 +1239,37 @@ begin
   sizeF := FVectorizedFont.GetTextSize(s);
   result.cx := round(sizeF.x);
   result.cy := round(sizeF.y);
+end;
+
+function TBGRAVectorizedFontRenderer.TextSize(sUTF8: string;
+  AMaxWidth: integer; ARightToLeft: boolean): TSize;
+var
+  remains: string;
+  w,h,totalH: single;
+begin
+  UpdateFont;
+
+  result.cx := 0;
+  totalH := 0;
+  h := FVectorizedFont.FullHeight;
+  repeat
+    FVectorizedFont.SplitText(sUTF8, AMaxWidth, remains);
+    w := FVectorizedFont.GetTextSize(sUTF8).x;
+    if round(w)>result.cx then result.cx := round(w);
+    totalH += h;
+    sUTF8 := remains;
+  until remains = '';
+  result.cy := ceil(totalH);
+end;
+
+function TBGRAVectorizedFontRenderer.TextFitInfo(sUTF8: string;
+  AMaxWidth: integer): integer;
+var
+  remains: string;
+begin
+  UpdateFont;
+  FVectorizedFont.SplitText(sUTF8, AMaxWidth, remains);
+  result := length(sUTF8);
 end;
 
 destructor TBGRAVectorizedFontRenderer.Destroy;
@@ -1350,7 +1389,7 @@ begin
       OldHeight := FFont.Height;
       FFont.Height := FontEmHeightSign * 100;
       lEmHeight := BGRATextSize(FFont, fqSystem, 'Hg', 1).cy;
-      FFont.Height := FontFullHeightSign * 100;
+      FFont.Height := FixLCLFontFullHeight(FFont.Name, FontFullHeightSign * 100);
       lFullHeight := BGRATextSize(FFont, fqSystem, 'Hg', 1).cy;
       if lEmHeight = 0 then
         FFontEmHeightRatio := 1
@@ -1391,7 +1430,8 @@ begin
     ClearGlyphs;
     FFont.Name := FName;
     FFont.Style := FStyle;
-    FFont.Height := FontFullHeightSign * FResolution;
+    FFont.Height := FixLCLFontFullHeight(FFont.Name, FontFullHeightSign * FResolution);
+    FFont.Quality := fqNonAntialiased;
     FFontEmHeightRatio := 1;
     FFontEmHeightRatioComputed := false;
     fillchar(FFontPixelMetric,sizeof(FFontPixelMetric),0);
@@ -1959,7 +1999,6 @@ begin
     FBuffer.SetSize(size.cx+size.cy,size.cy);
     FBuffer.Fill(BGRAWhite);
     FBuffer.Canvas.Font := FFont;
-    FBuffer.Canvas.Font.Quality := fqNonAntialiased;
     FBuffer.Canvas.Font.Color := clBlack;
     FBuffer.Canvas.TextOut(size.cy div 2,0,AIdentifier);
     g.SetPoints(VectorizeMonochrome(FBuffer,1/FResolution,False));

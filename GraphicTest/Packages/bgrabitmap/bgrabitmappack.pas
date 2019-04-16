@@ -4,6 +4,7 @@
 
 unit BGRABitmapPack;
 
+{$warn 5023 off : no warning about unused units}
 interface
 
 uses
@@ -23,7 +24,10 @@ uses
   BGRAGifFormat, BGRAGraphics, BGRASceneTypes, BGRARenderer3D, 
   BGRAWriteBmpMioMap, BGRAOpenGLType, BGRASpriteGL, BGRAOpenGL, BGRACanvasGL, 
   BGRAFontGL, BGRAOpenGL3D, BGRAPhoxo, BGRAFilterScanner, BGRAFilterType, 
-  BGRAFilterBlur, BGRAMultiFileType, BGRAWinResource, BGRALazResource;
+  BGRAFilterBlur, BGRAMultiFileType, BGRAWinResource, BGRALazResource, 
+  BGRAIconCursor, BGRABlurGL, BGRAReadTiff, BGRALazPaint, BGRAMemDirectory, 
+  BGRAUnicode, BGRATextBidi, BGRALayerOriginal, BGRASVGOriginal, 
+  BGRAGradientOriginal;
 
 implementation
 
