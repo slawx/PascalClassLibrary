@@ -55,7 +55,7 @@ function CombineReg_ASM(X, Y, W: TColor32): TColor32; {$IFDEF FPC} assembler; {$
 procedure CombineMem_ASM(X: TColor32; var Y: TColor32; W: TColor32); {$IFDEF FPC} assembler; {$ENDIF}
 
 {$IFDEF TARGET_x86}
-function MergeReg_ASM(F, B: TColor32): TColor32; {$IFDEF FPC} assembler; nostackframe; {$ENDIF}
+function MergeReg_ASM(F, B: TColor32): TColor32; {$IFDEF FPC} assembler; {$ENDIF}
 {$ENDIF}
 
 procedure EMMS_ASM; {$IFDEF FPC} assembler; {$ENDIF}

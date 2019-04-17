@@ -55,14 +55,13 @@
             <CompilerMessages>
               <IgnoredMessages idx5024="True"/>
             </CompilerMessages>
-            <CustomOptions Value="-dopengl
--dGRAPHICS32"/>
+            <CustomOptions Value="-dOPENGL"/>
           </Other>
         </CompilerOptions>
       </Item2>
       <SharedMatrixOptions Count="2">
-        <Item1 ID="838068306737" Targets="GR32_L, bgrabitmappack" Modes="Debug" Value="-g -gl -gh -CirotR -O1"/>
-        <Item2 ID="108912769980" Targets="GR32_L, bgrabitmappack" Modes="Release" Value="-CX -XX -O3"/>
+        <Item1 ID="838068306737" Targets="GR32_Lazarus, bgrabitmappack" Modes="Debug" Value="-g -gl -gh -CirotR -O1"/>
+        <Item2 ID="108912769980" Targets="GR32_Lazarus, bgrabitmappack" Modes="Release" Value="-CX -XX -O3"/>
       </SharedMatrixOptions>
     </BuildModes>
     <PublishOptions>
@@ -221,7 +220,7 @@
       <CompilerMessages>
         <IgnoredMessages idx5024="True"/>
       </CompilerMessages>
-      <CustomOptions Value="-dOPENGL -dGRAPHICS32"/>
+      <CustomOptions Value="-dOPENGL"/>
     </Other>
   </CompilerOptions>
   <Debugging>
