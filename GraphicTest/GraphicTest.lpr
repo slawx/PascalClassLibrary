@@ -7,8 +7,8 @@ uses
   cthreads,
   {$ENDIF}{$ENDIF}
   Interfaces, // this includes the LCL widgetset
-  Forms, SysUtils, openglcontext, UMainForm, UPlatform, UDrawMethod, UFastBitmap,
-  UDrawForm, bgrabitmappack,
+  Forms, SysUtils, openglcontext, UFormMain, UPlatform, UDrawMethod, UFastBitmap,
+  UFormDraw, bgrabitmappack,
   UCanvasPixels, UCanvasPixelsUpdateLock,
   ULazIntfImageColorsCopy, ULazIntfImageColorsNoCopy, UBGRABitmapPaintBox,
   UBitmapRawImageDataPaintBox, UBitmapRawImageData, UDummyMethod,
@@ -31,8 +31,8 @@ begin
   RequireDerivedFormResource := True;
   Application.Scaled:=True;
   Application.Initialize;
-  Application.CreateForm(TMainForm, MainForm);
-  Application.CreateForm(TDrawForm, DrawForm);
+  Application.CreateForm(TFormMain, FormMain);
+  Application.CreateForm(TFormDraw, FormDraw);
   Application.Run;
 end.
 

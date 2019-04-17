@@ -1,10 +1,11 @@
-object DrawForm: TDrawForm
+object FormDraw: TFormDraw
   Left = 758
-  Height = 244
+  Height = 305
   Top = 208
-  Width = 327
+  Width = 409
   Caption = 'Draw frame'
+  DesignTimePPI = 120
   FormStyle = fsStayOnTop
   OnCreate = FormCreate
-  LCLVersion = '1.5'
+  LCLVersion = '2.0.0.4'
 end

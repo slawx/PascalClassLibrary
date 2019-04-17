@@ -22,7 +22,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="Methods"/>
+            <OtherUnitFiles Value="Methods;Forms"/>
             <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)-$(BuildMode)"/>
           </SearchPaths>
           <Parsing>
@@ -92,15 +92,15 @@
         <PackageName Value="LCL"/>
       </Item5>
     </RequiredPackages>
-    <Units Count="19">
+    <Units Count="18">
       <Unit0>
         <Filename Value="GraphicTest.lpr"/>
         <IsPartOfProject Value="True"/>
       </Unit0>
       <Unit1>
-        <Filename Value="UMainForm.pas"/>
+        <Filename Value="Forms/UFormMain.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="MainForm"/>
+        <ComponentName Value="FormMain"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
       </Unit1>
@@ -117,9 +117,9 @@
         <IsPartOfProject Value="True"/>
       </Unit4>
       <Unit5>
-        <Filename Value="UDrawForm.pas"/>
+        <Filename Value="Forms/UFormDraw.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="DrawForm"/>
+        <ComponentName Value="FormDraw"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
       </Unit5>
@@ -171,10 +171,6 @@
         <Filename Value="Methods/UGraphics32Method.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit17>
-      <Unit18>
-        <Filename Value="Packages/Graphics32/Packages/GR32_Lazarus.lpk"/>
-        <IsPartOfProject Value="True"/>
-      </Unit18>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -184,7 +180,7 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
-      <OtherUnitFiles Value="Methods"/>
+      <OtherUnitFiles Value="Methods;Forms"/>
       <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)-$(BuildMode)"/>
     </SearchPaths>
     <Parsing>

@@ -1,7 +1,7 @@
-object MainForm: TMainForm
-  Left = 63
+object FormMain: TFormMain
+  Left = 315
   Height = 721
-  Top = 49
+  Top = 64
   Width = 1248
   Caption = 'Graphic test'
   ClientHeight = 696
@@ -581,7 +581,7 @@ object MainForm: TMainForm
         end>
       OwnerData = True
       ParentFont = False
-      PopupMenu = PopupMenu1
+      PopupMenu = PopupMenuMethod
       ReadOnly = True
       RowSelect = True
       TabOrder = 0
@@ -790,21 +790,21 @@ object MainForm: TMainForm
       Hint = 'Exit'
       ShortCut = 32883
     end
-    object ATestStop: TAction
-      Caption = 'Stop'
-      Hint = 'Stop'
-      OnExecute = ATestStopExecute
-      ShortCut = 114
-    end
     object ATestAllMethods: TAction
       Caption = 'Test all methods'
       Hint = 'Test all methods'
       OnExecute = ATestAllMethodsExecute
       ShortCut = 114
     end
-    object AShowDrawForm: TAction
+    object ATestStop: TAction
+      Caption = 'Stop'
+      Hint = 'Stop'
+      OnExecute = ATestStopExecute
+      ShortCut = 114
+    end
+    object AFormDrawShow: TAction
       Caption = 'Draw form'
-      OnExecute = AShowDrawFormExecute
+      OnExecute = AFormDrawShowExecute
     end
   end
   object MainMenu1: TMainMenu
@@ -834,7 +834,7 @@ object MainForm: TMainForm
     object MenuItem4: TMenuItem
       Caption = 'View'
       object MenuItem8: TMenuItem
-        Action = AShowDrawForm
+        Action = AFormDrawShow
       end
     end
   end
@@ -843,7 +843,7 @@ object MainForm: TMainForm
     left = 385
     top = 95
   end
-  object PopupMenu1: TPopupMenu
+  object PopupMenuMethod: TPopupMenu
     left = 501
     top = 220
     object MenuItem9: TMenuItem
@@ -854,6 +854,7 @@ object MainForm: TMainForm
     end
     object MenuItem11: TMenuItem
       Action = ATestStop
+      ShortCut = 115
     end
   end
   object TimerUpdateSettings: TTimer

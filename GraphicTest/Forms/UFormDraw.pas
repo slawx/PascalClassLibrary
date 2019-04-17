@@ -1,4 +1,4 @@
-unit UDrawForm;
+unit UFormDraw;
 
 {$mode delphi}
 
@@ -10,9 +10,9 @@ uses
 
 type
 
-  { TDrawForm }
+  { TFormDraw }
 
-  TDrawForm = class(TForm)
+  TFormDraw = class(TForm)
     procedure FormCreate(Sender: TObject);
   private
 
@@ -23,25 +23,25 @@ type
   end;
 
 var
-  DrawForm: TDrawForm;
+  FormDraw: TFormDraw;
 
 implementation
 
-{ TDrawForm }
+{ TFormDraw }
 
-procedure TDrawForm.FormCreate(Sender: TObject);
+procedure TFormDraw.FormCreate(Sender: TObject);
 begin
   DoubleBuffered := True;
 end;
 
-procedure TDrawForm.EraseBackground(DC: HDC);
+procedure TFormDraw.EraseBackground(DC: HDC);
 begin
   if EraseBackgroundEnabled then
     inherited EraseBackground(DC);
 end;
 
 initialization
-  {$I UDrawForm.lrs}
+  {$I UFormDraw.lrs}
 
 end.
 
