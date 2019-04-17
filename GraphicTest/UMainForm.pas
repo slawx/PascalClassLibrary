@@ -120,7 +120,7 @@ uses
   UDrawForm, ULazIntfImageColorsCopy, ULazIntfImageColorsNoCopy, UCanvasPixels,
   UCanvasPixelsUpdateLock, UBGRABitmapPaintBox, UBitmapRawImageDataPaintBox,
   UBitmapRawImageData, UBitmapRawImageDataMove, UDummyMethod, UOpenGLMethod,
-  UOpenGLPBOMethod, UGraphics32Method;
+  UOpenGLPBOMethod{$IFDEF GRAPHICS32}, UGraphics32Method{$ENDIF};
 
 { TMainForm }
 

@@ -117,7 +117,7 @@ type
 implementation
 
 uses
-  GR32_Lowlevel, GR32_Blend, GR32_Transforms, GR32_Math, SysUtils;
+  GR32_Lowlevel, GR32_Math, SysUtils;
 
 resourcestring
   RCStrCantAllocateVectorMap = 'Can''t allocate VectorMap!';
@@ -248,14 +248,14 @@ begin
     WY := TFixedRec(Y).Frac;
     {$IFDEF HAS_NATIVEINT}
     Result := CombineVectorsReg(CombineVectorsReg(PFixedPoint(P)^,
-      PFixedPoint(NativeUInt(P) + H)^, WX), CombineVectorsReg(
-      PFixedPoint(NativeUInt(P) + W)^, PFixedPoint(NativeUInt(P) + W + H)^, WX),
-      WY);
+      PFixedPoint(NativeUInt(P) + NativeUInt(H))^, WX), CombineVectorsReg(
+      PFixedPoint(NativeUInt(P) + NativeUInt(W))^,
+      PFixedPoint(NativeUInt(P) + NativeUInt(W + H))^, WX), WY);
     {$ELSE}
     Result := CombineVectorsReg(CombineVectorsReg(PFixedPoint(P)^,
-      PFixedPoint(Cardinal(P) + H)^, WX), CombineVectorsReg(
-      PFixedPoint(Cardinal(P) + W)^, PFixedPoint(Cardinal(P) + W + H)^, WX),
-      WY);
+      PFixedPoint(Cardinal(P) + Cardinal(H))^, WX), CombineVectorsReg(
+      PFixedPoint(Cardinal(P) + Cardinal(W))^,
+      PFixedPoint(Cardinal(P) + Cardinal(W) + Cardinal(H))^, WX), WY);
     {$ENDIF}
   end else
   begin
@@ -321,7 +321,7 @@ begin
     AssignFile(MeshFile, FileName);
     Reset(MeshFile, 1);
     BlockRead(MeshFile, Header, SizeOf(TPSLiquifyMeshHeader));
-    if Lowercase(String(Header.Ident)) <> Lowercase(MeshIdent) then
+    if LowerCase(string(Header.Ident)) <> LowerCase(MeshIdent) then
       Exception.Create(RCStrBadFormat);
     with Header do
     begin
@@ -432,13 +432,25 @@ procedure TVectorMap.SaveToFile(const FileName: string);
   procedure ConvertVerticesF;
   var
     I: Integer;
+{$IFDEF COMPILERRX1}
+    f: single;
+{$ENDIF}
   begin
     for I := 0 to Length(FVectors) - 1 do
     begin
       //Not a mistake! Converting physical mem. directly to avoid temporary floating point buffer
       //Do no change to PFloat.. the type is relative to the msh format.
+
+//Workaround for Delphi 10.1 Internal Error C6949 ...
+{$IFDEF COMPILERRX1}
+      f := FVectors[I].X * FixedToFloat;
+      FVectors[I].X := PInteger(@f)^;
+      f := FVectors[I].Y * FixedToFloat;
+      FVectors[I].Y := PInteger(@f)^;
+{$ELSE}
       PSingle(@FVectors[I].X)^ := FVectors[I].X * FixedToFloat;
       PSingle(@FVectors[I].Y)^ := FVectors[I].Y * FixedToFloat;
+{$ENDIF}
     end;
   end;
 
@@ -588,12 +600,12 @@ begin
       if Int64(VectorPtr^) <> 0 then goto TopDone;
       Inc(VectorPtr);
       Inc(Top);
-    until Top = Width * Height;
+    until Top = Self.Width * Self.Height;
 
-    TopDone: Top := Top div Width;
+    TopDone: Top := Top div Self.Width;
 
     //Find Bottom
-    Bottom := Width * Height - 1;
+    Bottom := Self.Width * Self.Height - 1;
     VectorPtr := @Vectors[Bottom];
     repeat
       if Int64(VectorPtr^) <> 0 then goto BottomDone;
@@ -601,7 +613,7 @@ begin
       Dec(Bottom);
     until Bottom < 0;
 
-    BottomDone: Bottom := Bottom div Width - 1;
+    BottomDone: Bottom := Bottom div Self.Width - 1;
 
     //Find Left
     Left := 0;
@@ -612,12 +624,12 @@ begin
         Inc(J);
       until J >= Bottom;
       Inc(Left)
-    until Left >= Width;
+    until Left >= Self.Width;
 
     LeftDone:
 
     //Find Right
-    Right := Width - 1;
+    Right := Self.Width - 1;
     repeat
       J := Bottom;
       repeat
@@ -627,11 +639,10 @@ begin
       Dec(Right)
     until Right <= Left;
 
-
   end;
   RightDone:
   if IsRectEmpty(Result) then
-    Result := Rect(0,0,0,0);
+    Result := Rect(0, 0, 0, 0);
 end;
 
 end.

@@ -9,7 +9,6 @@ uses
   Interfaces, // this includes the LCL widgetset
   Forms, SysUtils, openglcontext, UMainForm, UPlatform, UDrawMethod, UFastBitmap,
   UDrawForm, bgrabitmappack,
-  {$IFDEF GRAPHICS32}GR32_L,{$ENDIF}
   UCanvasPixels, UCanvasPixelsUpdateLock,
   ULazIntfImageColorsCopy, ULazIntfImageColorsNoCopy, UBGRABitmapPaintBox,
   UBitmapRawImageDataPaintBox, UBitmapRawImageData, UDummyMethod,
@@ -30,6 +29,7 @@ begin
   {$ENDIF}
 
   RequireDerivedFormResource := True;
+  Application.Scaled:=True;
   Application.Initialize;
   Application.CreateForm(TMainForm, MainForm);
   Application.CreateForm(TDrawForm, DrawForm);

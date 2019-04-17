@@ -5,7 +5,11 @@
     <General>
       <SessionStorage Value="InProjectDir"/>
       <MainUnit Value="0"/>
+      <Scaled Value="True"/>
       <UseXPManifest Value="True"/>
+      <XPManifest>
+        <DpiAware Value="True"/>
+      </XPManifest>
       <Icon Value="0"/>
     </General>
     <BuildModes Count="2">
@@ -51,6 +55,8 @@
             <CompilerMessages>
               <IgnoredMessages idx5024="True"/>
             </CompilerMessages>
+            <CustomOptions Value="-dopengl
+-dGRAPHICS32"/>
           </Other>
         </CompilerOptions>
       </Item2>
@@ -70,15 +76,15 @@
     </RunParams>
     <RequiredPackages Count="5">
       <Item1>
-        <PackageName Value="lazopenglcontext"/>
+        <PackageName Value="GR32_Lazarus"/>
+        <DefaultFilename Value="Packages/Graphics32/Packages/GR32_Lazarus.lpk" Prefer="True"/>
       </Item1>
       <Item2>
-        <PackageName Value="BGRABitmapPack"/>
-        <DefaultFilename Value="Packages/bgrabitmap/bgrabitmappack.lpk" Prefer="True"/>
+        <PackageName Value="lazopenglcontext"/>
       </Item2>
       <Item3>
-        <PackageName Value="GR32_L"/>
-        <DefaultFilename Value="Packages/Graphics32/Packages/GR32_L.lpk" Prefer="True"/>
+        <PackageName Value="BGRABitmapPack"/>
+        <DefaultFilename Value="Packages/bgrabitmap/bgrabitmappack.lpk" Prefer="True"/>
       </Item3>
       <Item4>
         <PackageName Value="SynEdit"/>
@@ -87,7 +93,7 @@
         <PackageName Value="LCL"/>
       </Item5>
     </RequiredPackages>
-    <Units Count="18">
+    <Units Count="19">
       <Unit0>
         <Filename Value="GraphicTest.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -166,6 +172,10 @@
         <Filename Value="Methods/UGraphics32Method.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit17>
+      <Unit18>
+        <Filename Value="Packages/Graphics32/Packages/GR32_Lazarus.lpk"/>
+        <IsPartOfProject Value="True"/>
+      </Unit18>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -211,7 +221,7 @@
       <CompilerMessages>
         <IgnoredMessages idx5024="True"/>
       </CompilerMessages>
-      <CustomOptions Value="-dopengl"/>
+      <CustomOptions Value="-dOPENGL -dGRAPHICS32"/>
     </Other>
   </CompilerOptions>
   <Debugging>
