@@ -1,0 +1,8 @@
+{"version":1,"strings":[
+{"hash":236902671,"name":"tmainform.caption","sourcebytes":[84,114,97,110,115,108,97,116,111,114,32,68,101,109,111],"value":"Translator Demo"},
+{"hash":237240837,"name":"tmainform.button1.caption","sourcebytes":[83,104,111,119,32,77,97,105,110,70,111,114,109,46,78,97,109,101],"value":"Show MainForm.Name"},
+{"hash":134403005,"name":"tmainform.label1.caption","sourcebytes":[77,97,105,110,70,111,114,109],"value":"MainForm"},
+{"hash":7233274,"name":"tmainform.label2.caption","sourcebytes":[70,111,114,109,32,110,97,109,101,32,97,115,32,108,97,98,101,108,32,99,97,112,116,105,111,110,58],"value":"Form name as label caption:"},
+{"hash":255703178,"name":"tmainform.label3.caption","sourcebytes":[76,97,110,103,117,97,103,101,32,108,105,115,116,58],"value":"Language list:"},
+{"hash":171696266,"name":"tmainform.label4.caption","sourcebytes":[69,120,99,108,117,100,101,115,58],"value":"Excludes:"}
+]}

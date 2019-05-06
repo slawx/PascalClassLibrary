@@ -9,11 +9,6 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: tform1.form1.caption
-msgctxt "TFORM1.FORM1.CAPTION"
-msgid "Translator Demo"
-msgstr "Ukázka Translatoru"
-
 #: tmainform.button1.caption
 msgid "Show MainForm.Name"
 msgstr "Ukázat MainForm.Name"

@@ -1,11 +1,6 @@
 msgid ""
 msgstr "Content-Type: text/plain; charset=UTF-8"
 
-#: tform1.form1.caption
-msgctxt "TFORM1.FORM1.CAPTION"
-msgid "Translator Demo"
-msgstr ""
-
 #: tmainform.button1.caption
 msgid "Show MainForm.Name"
 msgstr ""

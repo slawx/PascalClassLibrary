@@ -126,6 +126,7 @@ procedure TCoolTranslator.Translate;
 var
   I, J: Integer;
   Po: TPoFile;
+  Item: TPOFileItem;
 begin
   TranslateComponentRecursive(Application);
 
@@ -135,9 +136,11 @@ begin
     for I := 0 to FPOFiles.Count - 1 do
     with TPoFile(FPoFiles[I]) do
       for J := 0 to Items.Count - 1 do
-      with TPoFileItem(Items[J]) do
-        Po.Add(IdentifierLow, Original, Translation, Comments, Context,
+      with TPoFileItem(Items[J]) do begin
+        Item := nil;
+        Po.FillItem(Item, IdentifierLow, Original, Translation, Comments, Context,
           Flags, PreviousID);
+      end;
     Translations.TranslateResourceStrings(Po);
   finally
     Po.Free;
@@ -196,7 +199,6 @@ var
   I, Count: Integer;
   PropInfo: PPropInfo;
   PropList: PPropList;
-  Excludes: TComponentExcludes;
 begin
   Count := GetTypeData(Component.ClassInfo)^.PropCount;
   if Count > 0 then begin
@@ -249,7 +251,7 @@ begin
         tkString, tkLString, tkWString, tkAString: begin
           if (UpperCase(PropType.Name) = 'TTRANSLATESTRING') then
           //if not IsExcluded(Component, PropInfo^.Name) then
-              SetStrProp(Component, PropInfo, TranslateText(PropInfo^.Name, GetWideStrProp(Component, PropInfo)));
+              SetStrProp(Component, PropInfo, TranslateText(PropInfo^.Name, string(GetWideStrProp(Component, PropInfo))));
         end;
         tkClass: begin
           Obj := TObject(GetOrdProp(Component, PropInfo));
@@ -294,7 +296,7 @@ function TCoolTranslator.GetLangFileDir: string;
 begin
   Result := FPOFilesFolder;
   if Copy(Result, 1, 1) <> DirectorySeparator then
-    Result := ExtractFileDir(UTF8Encode(Application.ExeName)) +
+    Result := ExtractFileDir(Application.ExeName) +
       DirectorySeparator + Result;
 end;
 
@@ -411,8 +413,10 @@ begin
         (ParamStr(i) = '--lang') then
         Lang := ParamStr(i + 1);
   end;
-  if Lang = '' then
+  if Lang = '' then begin
+    T := '';
     LazGetLanguageIDs(Lang, T);
+  end;
 
   if Assigned(Language) and (Language.Code = '') and Assigned(FOnAutomaticLanguage) then begin
     Lang := FOnAutomaticLanguage(Lang);
@@ -428,7 +432,6 @@ end;
 
 function TCoolTranslator.FindLocaleFileName(LCExt: string): string;
 var
-  T: string;
   Lang: string;
 begin
   Result := '';
