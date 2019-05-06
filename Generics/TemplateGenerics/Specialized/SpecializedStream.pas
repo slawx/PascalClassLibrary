@@ -112,7 +112,7 @@ end;
 
 function TMemoryStreamByte.WriteBuffer(var Buffer; Count: Integer): Integer;
 begin
-
+  Result := 0;
 end;
 
 function TMemoryStreamByte.Read: Byte;
@@ -136,13 +136,13 @@ end;
 
 function TMemoryStreamByte.ReadBuffer(var Buffer; Count: Integer): Integer;
 begin
-
+  Result := 0;
 end;
 
 function TMemoryStreamByte.ReadStream(Stream: TBaseStreamByte; Count: Integer
   ): Integer;
 begin
-
+  Result := 0;
 end;
 
 function TMemoryStreamByte.Insert(Count: Integer): Integer;
