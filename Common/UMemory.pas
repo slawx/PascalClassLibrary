@@ -111,12 +111,12 @@ end;
 
 procedure TMemory.WriteMemory(Position: Integer; Memory: TMemory);
 begin
-  Move(Memory.FData, PByte(@FData + Position)^, Memory.Size);
+  Move(Memory.FData, PByte(PByte(@FData) + Position)^, Memory.Size);
 end;
 
 procedure TMemory.ReadMemory(Position: Integer; Memory: TMemory);
 begin
-  Move(PByte(@FData + Position)^, Memory.FData, Memory.Size);
+  Move(PByte(PByte(@FData) + Position)^, Memory.FData, Memory.Size);
 end;
 
 end.
