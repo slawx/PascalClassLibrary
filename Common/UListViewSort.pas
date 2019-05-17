@@ -1,15 +1,15 @@
 unit UListViewSort;
 
-// Date: 2010-11-03
+// Date: 2019-05-17
 
 {$mode delphi}
 
 interface
 
 uses
-  {$IFDEF Windows}Windows, CommCtrl, {$ENDIF}Classes, Graphics, ComCtrls, SysUtils,
+  {$IFDEF Windows}Windows, CommCtrl, LMessages, {$ENDIF}Classes, Graphics, ComCtrls, SysUtils,
   Controls, DateUtils, Dialogs, fgl, Forms, Grids, StdCtrls, ExtCtrls,
-  LclIntf, LMessages, LclType, LResources;
+  LclIntf, LclType, LResources;
 
 type
   TSortOrder = (soNone, soUp, soDown);

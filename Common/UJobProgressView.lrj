@@ -1,0 +1,5 @@
+{"version":1,"strings":[
+{"hash":150620650,"name":"tformjobprogressview.labeloperation.caption","sourcebytes":[79,112,101,114,97,116,105,111,110,115,58],"value":"Operations:"},
+{"hash":226051482,"name":"tformjobprogressview.labelestimatedtimepart.caption","sourcebytes":[69,115,116,105,109,97,116,101,100,32,116,105,109,101,58],"value":"Estimated time:"},
+{"hash":115826426,"name":"tformjobprogressview.labelestimatedtimetotal.caption","sourcebytes":[84,111,116,97,108,32,101,115,116,105,109,97,116,101,100,32,116,105,109,101,58],"value":"Total estimated time:"}
+]}
