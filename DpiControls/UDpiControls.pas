@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, LCLProc, LResources, Forms, FormEditingIntf, ProjectIntf,
-  Controls, StdCtrls, fgl, Graphics, ComCtrls, ExtCtrls;
+  Controls, StdCtrls, fgl, Graphics, ComCtrls, ExtCtrls, LCLType;
 
 type
    { TDpiFormFileDesc }
@@ -25,17 +25,30 @@ type
   private
     FOnChange: TNotifyEvent;
     FSize: Integer;
+    function GetColor: TColor;
+    function GetName: string;
+    function GetPixelsPerInch: Integer;
+    function GetStyle: TFontStyles;
+    procedure SetColor(AValue: TColor);
+    procedure SetName(AValue: string);
     procedure SetOnChange(AValue: TNotifyEvent);
+    procedure SetPixelsPerInch(AValue: Integer);
     procedure SetSize(AValue: Integer);
     procedure DoChange;
+    procedure SetStyle(AValue: TFontStyles);
   protected
     procedure ScreenChanged;
   public
     VclFont: TFont;
     constructor Create;
     destructor Destroy; override;
+    procedure Assign(Source: TDpiFont);
   published
+    property Color: TColor read GetColor write SetColor;
+    property Name: string read GetName write SetName;
+    property Style: TFontStyles read GetStyle write SetStyle;
     property Size: Integer read FSize write SetSize;
+    property PixelsPerInch: Integer read GetPixelsPerInch write SetPixelsPerInch;
     property OnChange: TNotifyEvent read FOnChange write SetOnChange;
   end;
 
@@ -51,12 +64,22 @@ type
     FOnChangeBounds: TNotifyEvent;
     FOnResize: TNotifyEvent;
     FTop: Integer;
-    FVisible: Boolean;
     FWidth: Integer;
     FParent: TDpiWinControl;
+    function GetBoundsRect: TRect;
+    function GetClientHeight: Integer;
+    function GetClientWidth: Integer;
+    function GetEnabled: Boolean;
+    function GetOnClick: TNotifyEvent;
+    function GetShowHint: Boolean;
+    function GetVisible: Boolean;
+    procedure SetBoundsRect(AValue: TRect);
+    procedure SetEnabled(AValue: Boolean);
     procedure SetFont(AValue: TDpiFont);
     procedure SetOnChangeBounds(AValue: TNotifyEvent);
+    procedure SetOnClick(AValue: TNotifyEvent);
     procedure SetOnResize(AValue: TNotifyEvent);
+    procedure SetShowHint(AValue: Boolean);
     procedure VclFormResize(Sender: TObject);
     procedure VclChangeBounds(Sender: TObject);
     procedure DoFormResize;
@@ -74,39 +97,109 @@ type
     procedure SetWidth(AValue: Integer); virtual;
     function GetVclControl: TControl; virtual;
     procedure UpdateVclControl; virtual;
+    procedure MouseDown(Button: TMouseButton; Shift: TShiftState;
+      X, Y: Integer); virtual;
+    procedure MouseUp(Button: TMouseButton; Shift: TShiftState;
+      X, Y: Integer); virtual;
+    procedure MouseMove(Shift: TShiftState; X, Y: Integer); virtual;
   public
     procedure ScreenChanged; virtual;
     procedure SetBounds(ALeft, ATop, AWidth, AHeight: Integer); virtual;
     procedure Show;
     procedure Hide;
+    procedure Invalidate;
+    procedure Repaint;
     constructor Create(TheOwner: TComponent); override;
     destructor Destroy; override;
     property Parent: TDpiWinControl read FParent write SetParent;
+    property BoundsRect: TRect read GetBoundsRect write SetBoundsRect;
+    property ClientWidth: Integer read GetClientWidth;
+    property ClientHeight: Integer read GetClientHeight;
   published
     property Top: Integer read FTop write SetTop;
     property Left: Integer read FLeft write SetLeft;
     property Width: Integer read FWidth write SetWidth;
     property Height: Integer read FHeight write SetHeight;
-    property Visible: Boolean read FVisible write SetVisible;
+    property Visible: Boolean read GetVisible write SetVisible;
     property Caption: string read GetCaption write SetCaption;
+    property Enabled: Boolean read GetEnabled write SetEnabled;
+    property ShowHint: Boolean read GetShowHint write SetShowHint;
     property Font: TDpiFont read FFont write SetFont;
     property OnResize: TNotifyEvent read FOnResize write SetOnResize;
     property OnChangeBounds: TNotifyEvent read FOnChangeBounds write SetOnChangeBounds;
+    property OnClick: TNotifyEvent read GetOnClick write SetOnClick;
   end;
 
   TDpiControls = specialize TFPGObjectList<TDpiControl>;
+
+  { TDpiCanvas }
+
+  TDpiCanvas = class
+  private
+    FFont: TDpiFont;
+    function GetBrush: TBrush;
+    function GetHandle: HDC;
+    function GetHeight: Integer;
+    function GetPen: TPen;
+    function GetPixel(X, Y: Integer): TColor;
+    function GetWidth: Integer;
+    procedure SetBrush(AValue: TBrush);
+    procedure SetFont(AValue: TDpiFont);
+    procedure SetHandle(AValue: HDC);
+    procedure SetPen(AValue: TPen);
+    procedure SetPixel(X, Y: Integer; AValue: TColor);
+  public
+    VclCanvas: TCanvas;
+    procedure FrameRect(Rect: TRect);
+    function TextWidth(Text: string): Integer;
+    function TextHeight(Text: string): Integer;
+    procedure TextOut(X, Y: Integer; Text: string);
+    procedure MoveTo(X, Y: Integer);
+    procedure LineTo(X, Y: Integer);
+    procedure FillRect(ARect: TRect);
+    procedure FillRect(X1, Y1, X2, Y2: Integer);
+    constructor Create;
+    destructor Destroy; override;
+    property Handle: HDC read GetHandle write SetHandle;
+    property Pixels[X, Y: Integer]: TColor read GetPixel write SetPixel;
+    property Width: Integer read GetWidth;
+    property Height: Integer read GetHeight;
+  published
+    property Brush: TBrush read GetBrush write SetBrush;
+    property Pen: TPen read GetPen write SetPen;
+    property Font: TDpiFont read FFont write SetFont;
+  end;
+
+  { TDpiGraphicControl }
+
+  TDpiGraphicControl = class(TDpiControl)
+  private
+    FCanvas: TDpiCanvas;
+    procedure SetCanvas(AValue: TDpiCanvas);
+  protected
+    procedure Paint; virtual;
+  public
+    constructor Create(TheOwner: TComponent); override;
+    destructor Destroy; override;
+  published
+    property Canvas: TDpiCanvas read FCanvas write SetCanvas;
+  end;
 
   { TDpiWinControl }
 
   TDpiWinControl = class(TDpiControl)
   private
+    function GetHandle: HWND;
+    procedure SetHandle(AValue: HWND);
   protected
     function GetVclWinControl: TWinControl; virtual;
   public
     Controls: TDpiControls;
     procedure ScreenChanged; override;
+    function ControlCount: Integer;
     constructor Create(TheOwner: TComponent); override;
     destructor Destroy; override;
+    property Handle: HWND read GetHandle write SetHandle;
   published
   end;
 
@@ -114,10 +207,13 @@ type
 
   TDpiForm = class(TDpiWinControl)
   private
+    function GetBorderStyle: TBorderStyle;
+    function GetCanvas: TDpiCanvas;
     function GetOnCreate: TNotifyEvent;
     function GetOnDestroy: TNotifyEvent;
     function GetOnHide: TNotifyEvent;
     function GetOnShow: TNotifyEvent;
+    procedure SetBorderStyle(AValue: TBorderStyle);
     procedure SetOnCreate(AValue: TNotifyEvent);
     procedure SetOnDestroy(AValue: TNotifyEvent);
     procedure SetOnHide(AValue: TNotifyEvent);
@@ -129,9 +225,11 @@ type
     function GetVclWinControl: TWinControl; override;
   public
     VclForm: TForm;
+    property Canvas: TDpiCanvas read GetCanvas;
     constructor Create(TheOwner: TComponent); override;
     destructor Destroy; override;
   published
+    property BorderStyle: TBorderStyle read GetBorderStyle write SetBorderStyle;
     property OnShow: TNotifyEvent read GetOnShow write SetOnShow;
     property OnHide: TNotifyEvent read GetOnHide write SetOnHide;
     property OnCreate: TNotifyEvent read GetOnCreate write SetOnCreate;
@@ -144,32 +242,76 @@ type
 
   TDpiButton = class(TDpiControl)
   private
-    FOnClick: TNotifyEvent;
-    procedure SetOnClick(AValue: TNotifyEvent);
   protected
     function GetVclControl: TControl; override;
   public
     VclButton: TButton;
-    constructor Create(TheOwner: TComponent); override;
     destructor Destroy; override;
   published
-    property OnClick: TNotifyEvent read FOnClick write SetOnClick;
+  end;
+
+  { TDpiListBox }
+
+  TDpiListBox = class(TDpiControl)
+  private
+  protected
+    function GetVclControl: TControl; override;
+  public
+    VclListBox: TListBox;
+    destructor Destroy; override;
+  end;
+
+  { TDpiBitmap }
+
+  TDpiBitmap = class
+  private
+    FCanvas: TDpiCanvas;
+  published
+    property Canvas: TDpiCanvas read FCanvas;
+  end;
+
+  { TDpiPicture }
+
+  TDpiPicture = class(TPersistent)
+  private
+    FBitmap: TDpiBitmap;
+    procedure SetBitmap(AValue: TDpiBitmap);
+  published
+    procedure LoadFromFile(FileName: string);
+    property Bitmpa: TDpiBitmap read FBitmap write SetBitmap;
   end;
 
   { TDpiImage }
 
   TDpiImage = class(TDpiControl)
   private
+    FDpiPicture: TDpiPicture;
     FStretch: Boolean;
+    procedure SetPicture(AValue: TDpiPicture);
     procedure SetStretch(AValue: Boolean);
   protected
   public
     VclImage: TImage;
     function GetVclControl: TControl; override;
-    constructor Create(TheOwner: TComponent); override;
     destructor Destroy; override;
   published
     property Stretch: Boolean read FStretch write SetStretch;
+    property Picture: TDpiPicture read FDpiPicture write SetPicture;
+  end;
+
+  { TDpiPaintBox }
+
+  TDpiPaintBox = class(TDpiGraphicControl)
+  private
+    function GetOnPaint: TNotifyEvent;
+    procedure SetOnPaint(AValue: TNotifyEvent);
+  public
+    VclPaintBox: TPaintBox;
+    function GetVclControl: TControl; override;
+    constructor Create(TheOwner: TComponent); override;
+    destructor Destroy; override;
+  published
+    property OnPaint: TNotifyEvent read GetOnPaint write SetOnPaint;
   end;
 
   { TDpiScreen }
@@ -209,7 +351,7 @@ begin
   FormEditingHook.RegisterDesignerBaseClass(TDpiForm);
   DpiFormFileDesc := TDpiFormFileDesc.Create;
   RegisterProjectFileDescriptor(DpiFormFileDesc);
-  RegisterComponents('DpiControls', [TDpiButton, TDpiImage]);
+  RegisterComponents('DpiControls', [TDpiButton, TDpiImage, TDpiPaintBox, TDpiListBox]);
 end;
 
 function ScaleToVcl(Value: Integer): Integer;
@@ -222,6 +364,216 @@ begin
   Result := Round(Value * 96 / DpiScreen.Dpi);
 end;
 
+function ScaleRectToVcl(Value: TRect): TRect;
+begin
+  Result.Left := ScaleToVcl(Value.Left);
+  Result.Top := ScaleToVcl(Value.Top);
+  Result.Right := ScaleToVcl(Value.Right);
+  Result.Bottom := ScaleToVcl(Value.Bottom);
+end;
+
+function ScaleRectFromVcl(Value: TRect): TRect;
+begin
+  Result.Left := ScaleFromVcl(Value.Left);
+  Result.Top := ScaleFromVcl(Value.Top);
+  Result.Right := ScaleFromVcl(Value.Right);
+  Result.Bottom := ScaleFromVcl(Value.Bottom);
+end;
+
+{ TDpiListBox }
+
+function TDpiListBox.GetVclControl: TControl;
+begin
+  if not Assigned(VclListBox) then VclListBox := TListBox.Create(nil);
+  Result := VclListBox;
+end;
+
+destructor TDpiListBox.Destroy;
+begin
+  FreeAndNil(VclListBox);
+  inherited Destroy;
+end;
+
+{ TDpiPaintBox }
+
+function TDpiPaintBox.GetOnPaint: TNotifyEvent;
+begin
+  Result := VclPaintBox.OnPaint;
+end;
+
+procedure TDpiPaintBox.SetOnPaint(AValue: TNotifyEvent);
+begin
+  VclPaintBox.OnPaint := AValue;
+end;
+
+function TDpiPaintBox.GetVclControl: TControl;
+begin
+  if not Assigned(VclPaintBox) then VclPaintBox := TPaintBox.Create(nil);
+  Result := VclPaintBox;
+end;
+
+constructor TDpiPaintBox.Create(TheOwner: TComponent);
+begin
+  inherited;
+  Canvas := TDpiCanvas.Create;
+  Canvas.VclCanvas := VclPaintBox.Canvas;
+  Canvas.Font.VclFont := VclPaintBox.Canvas.Font;
+  UpdateVclControl;
+  ScreenChanged;
+end;
+
+destructor TDpiPaintBox.Destroy;
+begin
+  FreeAndNil(VclPaintBox);
+  inherited;
+end;
+
+{ TDpiPicture }
+
+procedure TDpiPicture.SetBitmap(AValue: TDpiBitmap);
+begin
+  if FBitmap = AValue then Exit;
+  FBitmap := AValue;
+end;
+
+procedure TDpiPicture.LoadFromFile(FileName: string);
+begin
+end;
+
+
+{ TDpiCanvas }
+
+function TDpiCanvas.GetBrush: TBrush;
+begin
+  Result := VclCanvas.Brush;
+end;
+
+function TDpiCanvas.GetHandle: HDC;
+begin
+  Result := VclCanvas.Handle;
+end;
+
+function TDpiCanvas.GetHeight: Integer;
+begin
+  Result := ScaleFromVcl(VclCanvas.Height);
+end;
+
+function TDpiCanvas.GetPen: TPen;
+begin
+  Result := VclCanvas.Pen;
+end;
+
+function TDpiCanvas.GetPixel(X, Y: Integer): TColor;
+begin
+  Result := VclCanvas.Pixels[ScaleToVcl(X), ScaleToVcl(Y)];
+end;
+
+function TDpiCanvas.GetWidth: Integer;
+begin
+  Result := ScaleFromVcl(VclCanvas.Width);
+end;
+
+procedure TDpiCanvas.SetBrush(AValue: TBrush);
+begin
+  VclCanvas.Brush := AValue;
+end;
+
+procedure TDpiCanvas.SetFont(AValue: TDpiFont);
+begin
+  if FFont = AValue then Exit;
+  FFont := AValue;
+end;
+
+procedure TDpiCanvas.SetHandle(AValue: HDC);
+begin
+  VclCanvas.Handle := AValue;
+end;
+
+procedure TDpiCanvas.SetPen(AValue: TPen);
+begin
+  VclCanvas.Pen := AValue;
+end;
+
+procedure TDpiCanvas.SetPixel(X, Y: Integer; AValue: TColor);
+begin
+  VclCanvas.Pixels[ScaleToVcl(X), ScaleToVcl(Y)] := AValue;
+end;
+
+procedure TDpiCanvas.FrameRect(Rect: TRect);
+begin
+  VclCanvas.FrameRect(ScaleRectToVcl(Rect));
+end;
+
+function TDpiCanvas.TextWidth(Text: string): Integer;
+begin
+  Result := ScaleFromVcl(VclCanvas.TextWidth(Text));
+end;
+
+function TDpiCanvas.TextHeight(Text: string): Integer;
+begin
+  Result := ScaleFromVcl(VclCanvas.TextHeight(Text));
+end;
+
+procedure TDpiCanvas.TextOut(X, Y: Integer; Text: string);
+begin
+  VclCanvas.TextOut(ScaleToVcl(X), ScaleToVcl(Y), Text);
+end;
+
+procedure TDpiCanvas.MoveTo(X, Y: Integer);
+begin
+  VclCanvas.MoveTo(ScaleToVcl(X), ScaleToVcl(Y));
+end;
+
+procedure TDpiCanvas.LineTo(X, Y: Integer);
+begin
+  VclCanvas.LineTo(ScaleToVcl(X), ScaleToVcl(Y));
+end;
+
+procedure TDpiCanvas.FillRect(ARect: TRect);
+begin
+  VclCanvas.FillRect(ScaleRectToVcl(ARect));
+end;
+
+procedure TDpiCanvas.FillRect(X1, Y1, X2, Y2: Integer);
+begin
+  VclCanvas.FillRect(ScaleToVcl(X1), ScaleToVcl(Y1), ScaleToVcl(X2), ScaleToVcl(Y2));
+end;
+
+constructor TDpiCanvas.Create;
+begin
+  FFont := TDpiFont.Create;
+end;
+
+destructor TDpiCanvas.Destroy;
+begin
+  FreeAndNil(FFont);
+  inherited;
+end;
+
+{ TDpiGraphicControl }
+
+procedure TDpiGraphicControl.SetCanvas(AValue: TDpiCanvas);
+begin
+  if FCanvas = AValue then Exit;
+  FCanvas := AValue;
+end;
+
+procedure TDpiGraphicControl.Paint;
+begin
+end;
+
+constructor TDpiGraphicControl.Create(TheOwner: TComponent);
+begin
+  inherited;
+  FCanvas := TDpiCanvas.Create;
+end;
+
+destructor TDpiGraphicControl.Destroy;
+begin
+  FreeAndNil(FCanvas);
+  inherited;
+end;
+
 
 { TDpiImage }
 
@@ -232,15 +584,16 @@ begin
   VclImage.Stretch := AValue;
 end;
 
-function TDpiImage.GetVclControl: TControl;
+procedure TDpiImage.SetPicture(AValue: TDpiPicture);
 begin
-  Result := VclImage;
+  if FDpiPicture = AValue then Exit;
+  FDpiPicture := AValue;
 end;
 
-constructor TDpiImage.Create(TheOwner: TComponent);
+function TDpiImage.GetVclControl: TControl;
 begin
-  inherited;
-  VclImage := TImage.Create(nil);
+  if not Assigned(VclImage) then VclImage := TImage.Create(nil);
+  Result := VclImage;
 end;
 
 destructor TDpiImage.Destroy;
@@ -263,6 +616,11 @@ begin
   if Assigned(FOnChange) then FOnChange(Self);
 end;
 
+procedure TDpiFont.SetStyle(AValue: TFontStyles);
+begin
+  VclFont.Style := AValue;
+end;
+
 procedure TDpiFont.ScreenChanged;
 begin
   DoChange;
@@ -274,19 +632,69 @@ begin
   FOnChange := AValue;
 end;
 
+procedure TDpiFont.SetPixelsPerInch(AValue: Integer);
+begin
+  VclFont.PixelsPerInch := PixelsPerInch;
+end;
+
+function TDpiFont.GetName: string;
+begin
+  Result := VclFont.Name;
+end;
+
+function TDpiFont.GetColor: TColor;
+begin
+  Result := VclFont.Color;
+end;
+
+function TDpiFont.GetPixelsPerInch: Integer;
+begin
+  Result := VclFont.PixelsPerInch;
+end;
+
+function TDpiFont.GetStyle: TFontStyles;
+begin
+  Result := VclFont.Style;
+end;
+
+procedure TDpiFont.SetColor(AValue: TColor);
+begin
+  VclFont.Color := AValue;
+end;
+
+procedure TDpiFont.SetName(AValue: string);
+begin
+  VclFont.Name := AValue;
+end;
+
 constructor TDpiFont.Create;
 begin
-  VclFont := TFont.Create;
   Size := 8;
 end;
 
 destructor TDpiFont.Destroy;
 begin
-  FreeAndNil(VclFont);
   inherited Destroy;
 end;
 
+procedure TDpiFont.Assign(Source: TDpiFont);
+begin
+  VclFont.Assign(Source.VclFont);
+  Size := Source.Size;
+  FOnChange := Source.FOnChange;
+end;
+
 { TDpiWinControl }
+
+function TDpiWinControl.GetHandle: HWND;
+begin
+  Result := GetVclWinControl.Handle;
+end;
+
+procedure TDpiWinControl.SetHandle(AValue: HWND);
+begin
+  GetVclWinControl.Handle := AValue;
+end;
 
 function TDpiWinControl.GetVclWinControl: TWinControl;
 begin
@@ -302,11 +710,16 @@ begin
     Controls[I].ScreenChanged;
 end;
 
+function TDpiWinControl.ControlCount: Integer;
+begin
+  Result := Controls.Count;
+end;
+
 constructor TDpiWinControl.Create(TheOwner: TComponent);
 begin
-  inherited;
   Controls := TDpiControls.Create;
   Controls.FreeObjects := False;
+  inherited;
 end;
 
 destructor TDpiWinControl.Destroy;
@@ -360,23 +773,10 @@ end;
 
 { TDpiButton }
 
-procedure TDpiButton.SetOnClick(AValue: TNotifyEvent);
-begin
-  if FOnClick = AValue then Exit;
-  FOnClick := AValue;
-  VclButton.OnClick := AValue;
-end;
-
 function TDpiButton.GetVclControl: TControl;
 begin
+  if not Assigned(VclButton) then VclButton := TButton.Create(nil);
   Result := VclButton;
-end;
-
-constructor TDpiButton.Create(TheOwner: TComponent);
-begin
-  inherited;
-  VclButton := TButton.Create(nil);
-  ScreenChanged;
 end;
 
 destructor TDpiButton.Destroy;
@@ -396,8 +796,6 @@ end;
 
 procedure TDpiControl.SetVisible(AValue: Boolean);
 begin
-  if FVisible = AValue then Exit;
-  FVisible := AValue;
   GetVclControl.Visible := AValue;
 end;
 
@@ -417,6 +815,23 @@ procedure TDpiControl.UpdateVclControl;
 begin
   GetVclControl.OnResize := @VclFormResize;
   GetVclControl.OnChangeBounds := @VclChangeBounds;
+end;
+
+procedure TDpiControl.MouseDown(Button: TMouseButton; Shift: TShiftState; X,
+  Y: Integer);
+begin
+  // TODO
+end;
+
+procedure TDpiControl.MouseUp(Button: TMouseButton; Shift: TShiftState; X,
+  Y: Integer);
+begin
+  // TODO
+end;
+
+procedure TDpiControl.MouseMove(Shift: TShiftState; X, Y: Integer);
+begin
+  // TODO
 end;
 
 procedure TDpiControl.ScreenChanged;
@@ -444,11 +859,26 @@ begin
   Visible := False;
 end;
 
+procedure TDpiControl.Invalidate;
+begin
+  GetVclControl.Invalidate;
+end;
+
+procedure TDpiControl.Repaint;
+begin
+  GetVclControl.Repaint;
+end;
+
 constructor TDpiControl.Create(TheOwner: TComponent);
 begin
   inherited;
   FFont := TDpiFont.Create;
   FFont.OnChange := @FontChanged;
+  if Assigned(TheOwner) and (TheOwner is TDpiWinControl) then
+    Parent := TDpiWinControl(TheOwner);
+  GetVclControl;
+  UpdateVclControl;
+  ScreenChanged;
 end;
 
 destructor TDpiControl.Destroy;
@@ -491,10 +921,63 @@ begin
   FFont := AValue;
 end;
 
+function TDpiControl.GetBoundsRect: TRect;
+begin
+  Result.Left := Left;
+  Result.Top := Top;
+  Result.Right := Left + Width;
+  Result.Bottom := Top + Height;
+end;
+
+function TDpiControl.GetClientHeight: Integer;
+begin
+  Result := ScaleFromVcl(GetVclControl.ClientHeight);
+end;
+
+function TDpiControl.GetClientWidth: Integer;
+begin
+  Result := ScaleFromVcl(GetVclControl.ClientWidth);
+end;
+
+function TDpiControl.GetEnabled: Boolean;
+begin
+  Result := GetVclControl.Enabled;
+end;
+
+function TDpiControl.GetOnClick: TNotifyEvent;
+begin
+  Result := GetVclControl.OnClick;
+end;
+
+function TDpiControl.GetShowHint: Boolean;
+begin
+  Result := GetVclControl.ShowHint;
+end;
+
+function TDpiControl.GetVisible: Boolean;
+begin
+  Result := GetVclControl.Visible;
+end;
+
+procedure TDpiControl.SetBoundsRect(AValue: TRect);
+begin
+  SetBounds(AValue.Left, AValue.Top, AValue.Right - AValue.Left, AValue.Bottom - AValue.Top);
+end;
+
+procedure TDpiControl.SetEnabled(AValue: Boolean);
+begin
+  GetVclControl.Enabled := AValue;
+end;
+
 procedure TDpiControl.SetOnChangeBounds(AValue: TNotifyEvent);
 begin
   if FOnChangeBounds = AValue then Exit;
   FOnChangeBounds := AValue;
+end;
+
+procedure TDpiControl.SetOnClick(AValue: TNotifyEvent);
+begin
+  GetVclControl.OnClick := AValue;
 end;
 
 procedure TDpiControl.SetOnResize(AValue: TNotifyEvent);
@@ -503,17 +986,20 @@ begin
   FOnResize := AValue;
 end;
 
+procedure TDpiControl.SetShowHint(AValue: Boolean);
+begin
+  GetVclControl.ShowHint := AValue;
+end;
+
 procedure TDpiControl.VclFormResize(Sender: TObject);
 begin
-  SetBounds(ScaleFromVcl(GetVclControl.Left), ScaleFromVcl(GetVclControl.Top),
-    ScaleFromVcl(GetVclControl.Width), ScaleFromVcl(GetVclControl.Height));
+  BoundsRect := ScaleRectFromVcl(GetVclControl.BoundsRect);
   DoFormResize;
 end;
 
 procedure TDpiControl.VclChangeBounds(Sender: TObject);
 begin
-  SetBounds(ScaleFromVcl(GetVclControl.Left), ScaleFromVcl(GetVclControl.Top),
-    ScaleFromVcl(GetVclControl.Width), ScaleFromVcl(GetVclControl.Height));
+  BoundsRect := ScaleRectFromVcl(GetVclControl.BoundsRect);
   DoChangeBounds;
 end;
 
@@ -539,7 +1025,7 @@ end;
 
 procedure TDpiControl.UpdateBounds;
 begin
-  GetVclControl.SetBounds(ScaleToVcl(Left), ScaleToVcl(Top), ScaleToVcl(Width), ScaleToVcl(Height));
+  GetVclControl.BoundsRect := ScaleRectToVcl(BoundsRect);
 end;
 
 procedure TDpiControl.SetHeight(AValue: Integer);
@@ -577,6 +1063,16 @@ end;
 
 { TDpiForm }
 
+function TDpiForm.GetBorderStyle: TBorderStyle;
+begin
+  Result := VclForm.BorderStyle;
+end;
+
+function TDpiForm.GetCanvas: TDpiCanvas;
+begin
+  Result := Canvas;
+end;
+
 function TDpiForm.GetOnCreate: TNotifyEvent;
 begin
   Result := VclForm.OnCreate;
@@ -595,6 +1091,11 @@ end;
 function TDpiForm.GetOnShow: TNotifyEvent;
 begin
   Result := VclForm.OnShow;
+end;
+
+procedure TDpiForm.SetBorderStyle(AValue: TBorderStyle);
+begin
+  VclForm.BorderStyle := AValue;
 end;
 
 procedure TDpiForm.SetOnCreate(AValue: TNotifyEvent);
@@ -641,11 +1142,12 @@ end;
 
 function TDpiForm.GetVclControl: TControl;
 begin
-  Result := VclForm;
+  Result := GetVclWinControl;
 end;
 
 function TDpiForm.GetVclWinControl: TWinControl;
 begin
+  if not Assigned(VclForm) then VclForm := TForm.Create(nil);
   Result := VclForm;
 end;
 
@@ -653,8 +1155,6 @@ end;
 constructor TDpiForm.Create(TheOwner: TComponent);
 begin
   inherited;
-  VclForm := TForm.Create(nil);
-  ScreenChanged;
   DebugLn(['TDpiForm.Create ', DbgSName(TheOwner)]);
   GlobalNameSpace.BeginWrite;
   try
@@ -667,6 +1167,7 @@ begin
   finally
     GlobalNameSpace.EndWrite;
   end;
+  ScreenChanged;
   UpdateVclControl;
   DoOnCreate;
 end;

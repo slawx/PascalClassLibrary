@@ -5,18 +5,18 @@ unit UDpiFormMain;
 interface
 
 uses
-  Classes, SysUtils, UDpiControls, Dialogs;
+  Classes, SysUtils, UDpiControls, Dialogs, Graphics;
 
 type
 
   { TDpiFormMain }
 
   TDpiFormMain = class(TDpiForm)
-    DpiButton1: TDpiButton;
+    DpiPaintBox1: TDpiPaintBox;
     procedure DpiButton1Click(Sender: TObject);
     procedure DpiFormMainCreate(Sender: TObject);
+    procedure DpiPaintBox1Paint(Sender: TObject);
   private
-
   public
 
   end;
@@ -32,22 +32,52 @@ implementation
 
 procedure TDpiFormMain.DpiFormMainCreate(Sender: TObject);
 var
-  DpiButton: TDpiButton;
-  DpiImage: TDpiImage;
+  Button: TDpiButton;
+  Image: TDpiImage;
+  ListBox: TDpiListBox;
+  I: Integer;
+  PaintBox: TDpiPaintBox;
 begin
-  DpiButton := TDpiButton.Create(DpiFormMain);
-  DpiButton.Parent := Self;
-  DpiButton.SetBounds(10, 10, 100, 30);
-  DpiButton.Caption := 'Click me';
-  DpiButton.Visible := True;
-  DpiButton1.Parent := Self;
+  Button := TDpiButton.Create(DpiFormMain);
+  Button.Parent := Self;
+  Button.SetBounds(10, 10, 100, 30);
+  Button.Caption := 'Click me';
+  Button.Visible := True;
 
-  DpiImage := TDpiImage.Create(DpiFormMain);
-  DpiImage.Parent := Self;
-  DpiImage.SetBounds(150, 10, 100, 100);
-  DpiImage.Visible := True;
-  DpiImage.Stretch := True;
-  DpiImage.VclImage.Picture.LoadFromFile('dance.jpg');
+  Image := TDpiImage.Create(DpiFormMain);
+  Image.Parent := Self;
+  Image.SetBounds(150, 10, 100, 100);
+  Image.Visible := True;
+  Image.Stretch := True;
+  Image.VclImage.Picture.LoadFromFile('dance.jpg');
+  //Image.Picture.LoadFromFile('dance.jpg');
+
+  ListBox := TDpiListBox.Create(DpiFormMain);
+  for I := 0 to 10 do
+    ListBox.VclListBox.Items.Add('Item ' + IntToStr(I));
+  ListBox.Parent := Self;
+  ListBox.SetBounds(250, 10, 100, 100);
+  ListBox.Visible := True;
+
+  DpiPaintBox1.BoundsRect := Rect(0, 0, 100, 100);
+  DpiPaintBox1.VclPaintBox.Parent := VclForm;
+  DpiPaintBox1.Repaint;
+end;
+
+procedure TDpiFormMain.DpiPaintBox1Paint(Sender: TObject);
+begin
+  with DpiPaintBox1.Canvas do begin
+    Brush.Color := clWhite;
+    Brush.Style := bsSolid;
+    FillRect(Rect(0, 0, 100, 100));
+    Caption := IntToStr(Width);
+    Pen.Color := clGreen;
+    Pen.Style := psSolid;
+    MoveTo(0, 0);
+    LineTo(100, 100);
+    Font.Color := clRed;
+    TextOut(40, 10, 'Scaled text');
+  end;
 end;
 
 procedure TDpiFormMain.DpiButton1Click(Sender: TObject);

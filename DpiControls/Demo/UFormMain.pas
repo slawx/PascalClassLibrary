@@ -15,14 +15,16 @@ type
   TFormMain = class(TForm)
     ButtonNewDpiForm: TButton;
     Label1: TLabel;
+    Timer1: TTimer;
     TrackBar1: TTrackBar;
     procedure ButtonNewDpiFormClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure Timer1Timer(Sender: TObject);
     procedure TrackBar1Change(Sender: TObject);
   private
 
   public
-
+    Redraw: Boolean;
   end;
 
 var
@@ -41,6 +43,12 @@ begin
   ButtonNewDpiFormClick(nil);
 end;
 
+procedure TFormMain.Timer1Timer(Sender: TObject);
+begin
+  Redraw := False;
+  DpiScreen.Dpi := TrackBar1.Position;
+end;
+
 procedure TFormMain.ButtonNewDpiFormClick(Sender: TObject);
 var
   DpiForm: TDpiForm;
@@ -54,7 +62,7 @@ end;
 
 procedure TFormMain.TrackBar1Change(Sender: TObject);
 begin
-  DpiScreen.Dpi := TrackBar1.Position;
+  Redraw := True;
 end;
 
 end.

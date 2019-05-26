@@ -4,14 +4,20 @@ object DpiFormMain: TDpiFormMain
   Width = 0
   Height = 0
   Visible = True
+  Enabled = True
+  ShowHint = False
+  BorderStyle = Controls
   OnCreate = DpiFormMainCreate
-  object DpiButton1: TDpiButton
-    Top = 128
-    Left = 8
-    Width = 150
-    Height = 40
+  object DpiPaintBox1: TDpiPaintBox
+    Top = 161
+    Left = 124
+    Width = 100
+    Height = 100
     Visible = True
-    Caption = 'Test'
-    OnClick = DpiButton1Click
+    Enabled = True
+    ShowHint = False
+    OnPaint = DpiPaintBox1Paint
+    left = 88
+    top = 248
   end
 end
