@@ -45,18 +45,26 @@ type
 
   TDpiControl = class(TComponent)
   private
-    FCaption: string;
     FFont: TDpiFont;
     FHeight: Integer;
     FLeft: Integer;
+    FOnChangeBounds: TNotifyEvent;
+    FOnResize: TNotifyEvent;
     FTop: Integer;
     FVisible: Boolean;
     FWidth: Integer;
     FParent: TDpiWinControl;
     procedure SetFont(AValue: TDpiFont);
+    procedure SetOnChangeBounds(AValue: TNotifyEvent);
+    procedure SetOnResize(AValue: TNotifyEvent);
+    procedure VclFormResize(Sender: TObject);
+    procedure VclChangeBounds(Sender: TObject);
+    procedure DoFormResize;
+    procedure DoChangeBounds;
   protected
     procedure UpdateBounds; virtual;
     procedure FontChanged(Sender: TObject); virtual;
+    function GetCaption: string; virtual;
     procedure SetParent(AValue: TDpiWinControl); virtual;
     procedure SetCaption(AValue: string); virtual;
     procedure SetHeight(AValue: Integer); virtual;
@@ -65,12 +73,12 @@ type
     procedure SetVisible(AValue: Boolean); virtual;
     procedure SetWidth(AValue: Integer); virtual;
     function GetVclControl: TControl; virtual;
+    procedure UpdateVclControl; virtual;
   public
     procedure ScreenChanged; virtual;
     procedure SetBounds(ALeft, ATop, AWidth, AHeight: Integer); virtual;
     procedure Show;
     procedure Hide;
-    function Scale(Value: Integer): Integer;
     constructor Create(TheOwner: TComponent); override;
     destructor Destroy; override;
     property Parent: TDpiWinControl read FParent write SetParent;
@@ -80,8 +88,10 @@ type
     property Width: Integer read FWidth write SetWidth;
     property Height: Integer read FHeight write SetHeight;
     property Visible: Boolean read FVisible write SetVisible;
-    property Caption: string read FCaption write SetCaption;
+    property Caption: string read GetCaption write SetCaption;
     property Font: TDpiFont read FFont write SetFont;
+    property OnResize: TNotifyEvent read FOnResize write SetOnResize;
+    property OnChangeBounds: TNotifyEvent read FOnChangeBounds write SetOnChangeBounds;
   end;
 
   TDpiControls = specialize TFPGObjectList<TDpiControl>;
@@ -104,8 +114,15 @@ type
 
   TDpiForm = class(TDpiWinControl)
   private
-    FOnShow: TNotifyEvent;
+    function GetOnCreate: TNotifyEvent;
+    function GetOnDestroy: TNotifyEvent;
+    function GetOnHide: TNotifyEvent;
+    function GetOnShow: TNotifyEvent;
+    procedure SetOnCreate(AValue: TNotifyEvent);
+    procedure SetOnDestroy(AValue: TNotifyEvent);
+    procedure SetOnHide(AValue: TNotifyEvent);
     procedure SetOnShow(AValue: TNotifyEvent);
+    procedure DoOnCreate;
   protected
     procedure GetChildren(Proc: TGetChildProc; Root: TComponent); override;
     function GetVclControl: TControl; override;
@@ -115,7 +132,10 @@ type
     constructor Create(TheOwner: TComponent); override;
     destructor Destroy; override;
   published
-    property OnShow: TNotifyEvent read FOnShow write SetOnShow;
+    property OnShow: TNotifyEvent read GetOnShow write SetOnShow;
+    property OnHide: TNotifyEvent read GetOnHide write SetOnHide;
+    property OnCreate: TNotifyEvent read GetOnCreate write SetOnCreate;
+    property OnDestroy: TNotifyEvent read GetOnDestroy write SetOnDestroy;
   end;
 
   TDpiForms = specialize TFPGObjectList<TDpiForm>;
@@ -157,6 +177,8 @@ type
   TDpiScreen = class
   private
     FDpi: Integer;
+    function GetHeight: Integer;
+    function GetWidth: Integer;
     procedure SetDpi(AValue: Integer);
     procedure UpdateForms;
   public
@@ -165,6 +187,8 @@ type
     destructor Destroy; override;
   published
     property Dpi: Integer read FDpi write SetDpi;
+    property Width: Integer read GetWidth;
+    property Height: Integer read GetHeight;
   end;
 
 var
@@ -187,6 +211,17 @@ begin
   RegisterProjectFileDescriptor(DpiFormFileDesc);
   RegisterComponents('DpiControls', [TDpiButton, TDpiImage]);
 end;
+
+function ScaleToVcl(Value: Integer): Integer;
+begin
+  Result := Round(Value * DpiScreen.Dpi / 96);
+end;
+
+function ScaleFromVcl(Value: Integer): Integer;
+begin
+  Result := Round(Value * 96 / DpiScreen.Dpi);
+end;
+
 
 { TDpiImage }
 
@@ -289,6 +324,16 @@ begin
   UpdateForms;
 end;
 
+function TDpiScreen.GetWidth: Integer;
+begin
+  Result := ScaleFromVcl(Screen.Width);
+end;
+
+function TDpiScreen.GetHeight: Integer;
+begin
+  Result := ScaleFromVcl(Screen.Height);
+end;
+
 procedure TDpiScreen.UpdateForms;
 var
   I: Integer;
@@ -353,7 +398,7 @@ procedure TDpiControl.SetVisible(AValue: Boolean);
 begin
   if FVisible = AValue then Exit;
   FVisible := AValue;
-  GetVclControl.Visible := AValue;;
+  GetVclControl.Visible := AValue;
 end;
 
 procedure TDpiControl.SetWidth(AValue: Integer);
@@ -366,6 +411,12 @@ end;
 function TDpiControl.GetVclControl: TControl;
 begin
   Result := nil;
+end;
+
+procedure TDpiControl.UpdateVclControl;
+begin
+  GetVclControl.OnResize := @VclFormResize;
+  GetVclControl.OnChangeBounds := @VclChangeBounds;
 end;
 
 procedure TDpiControl.ScreenChanged;
@@ -393,11 +444,6 @@ begin
   Visible := False;
 end;
 
-function TDpiControl.Scale(Value: Integer): Integer;
-begin
-  Scale := Round(Value * DpiScreen.Dpi / 96);
-end;
-
 constructor TDpiControl.Create(TheOwner: TComponent);
 begin
   inherited;
@@ -420,8 +466,6 @@ end;
 
 procedure TDpiControl.SetCaption(AValue: string);
 begin
-  if FCaption = AValue then Exit;
-  FCaption := AValue;
   GetVclControl.Caption := AValue;
 end;
 
@@ -447,14 +491,55 @@ begin
   FFont := AValue;
 end;
 
+procedure TDpiControl.SetOnChangeBounds(AValue: TNotifyEvent);
+begin
+  if FOnChangeBounds = AValue then Exit;
+  FOnChangeBounds := AValue;
+end;
+
+procedure TDpiControl.SetOnResize(AValue: TNotifyEvent);
+begin
+  if FOnResize = AValue then Exit;
+  FOnResize := AValue;
+end;
+
+procedure TDpiControl.VclFormResize(Sender: TObject);
+begin
+  SetBounds(ScaleFromVcl(GetVclControl.Left), ScaleFromVcl(GetVclControl.Top),
+    ScaleFromVcl(GetVclControl.Width), ScaleFromVcl(GetVclControl.Height));
+  DoFormResize;
+end;
+
+procedure TDpiControl.VclChangeBounds(Sender: TObject);
+begin
+  SetBounds(ScaleFromVcl(GetVclControl.Left), ScaleFromVcl(GetVclControl.Top),
+    ScaleFromVcl(GetVclControl.Width), ScaleFromVcl(GetVclControl.Height));
+  DoChangeBounds;
+end;
+
+procedure TDpiControl.DoFormResize;
+begin
+  if Assigned(FOnResize) then FOnResize(Self);
+end;
+
+procedure TDpiControl.DoChangeBounds;
+begin
+  if Assigned(FOnChangeBounds) then FOnChangeBounds(Self);
+end;
+
+function TDpiControl.GetCaption: string;
+begin
+  Result := GetVclControl.Caption;
+end;
+
 procedure TDpiControl.FontChanged(Sender: TObject);
 begin
-  GetVclControl.Font.Size := Scale(Font.Size);
+  GetVclControl.Font.Size := ScaleToVcl(Font.Size);
 end;
 
 procedure TDpiControl.UpdateBounds;
 begin
-  GetVclControl.SetBounds(Scale(Left), Scale(Top), Scale(Width), Scale(Height));
+  GetVclControl.SetBounds(ScaleToVcl(Left), ScaleToVcl(Top), ScaleToVcl(Width), ScaleToVcl(Height));
 end;
 
 procedure TDpiControl.SetHeight(AValue: Integer);
@@ -492,6 +577,52 @@ end;
 
 { TDpiForm }
 
+function TDpiForm.GetOnCreate: TNotifyEvent;
+begin
+  Result := VclForm.OnCreate;
+end;
+
+function TDpiForm.GetOnDestroy: TNotifyEvent;
+begin
+  Result := VclForm.OnDestroy;
+end;
+
+function TDpiForm.GetOnHide: TNotifyEvent;
+begin
+  Result := VclForm.OnHide;
+end;
+
+function TDpiForm.GetOnShow: TNotifyEvent;
+begin
+  Result := VclForm.OnShow;
+end;
+
+procedure TDpiForm.SetOnCreate(AValue: TNotifyEvent);
+begin
+  VclForm.OnCreate := AValue;
+end;
+
+procedure TDpiForm.SetOnDestroy(AValue: TNotifyEvent);
+begin
+  VclForm.OnDestroy := AValue;
+end;
+
+procedure TDpiForm.SetOnHide(AValue: TNotifyEvent);
+begin
+  VclForm.OnHide := AValue;
+end;
+
+procedure TDpiForm.SetOnShow(AValue: TNotifyEvent);
+begin
+  VclForm.OnShow := AValue;
+end;
+
+procedure TDpiForm.DoOnCreate;
+begin
+  if Assigned(VclForm.OnCreate) then
+    VclForm.OnCreate(Self);
+end;
+
 // This method is called by TWriter to retrieve the child components to write
 procedure TDpiForm.GetChildren(Proc: TGetChildProc; Root: TComponent);
 var
@@ -518,13 +649,6 @@ begin
   Result := VclForm;
 end;
 
-procedure TDpiForm.SetOnShow(AValue: TNotifyEvent);
-begin
-  if FOnShow = AValue then Exit;
-  FOnShow := AValue;
-  VclForm.OnShow := AValue;
-end;
-
 // Init the component with an IDE resource
 constructor TDpiForm.Create(TheOwner: TComponent);
 begin
@@ -543,6 +667,8 @@ begin
   finally
     GlobalNameSpace.EndWrite;
   end;
+  UpdateVclControl;
+  DoOnCreate;
 end;
 
 destructor TDpiForm.Destroy;

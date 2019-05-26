@@ -6,15 +6,17 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ComCtrls, StdCtrls,
-  ExtCtrls, UDpiForm, UDpiControls;
+  ExtCtrls, UDpiControls, UDpiFormMain;
 
 type
 
   { TFormMain }
 
   TFormMain = class(TForm)
+    ButtonNewDpiForm: TButton;
     Label1: TLabel;
     TrackBar1: TTrackBar;
+    procedure ButtonNewDpiFormClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure TrackBar1Change(Sender: TObject);
   private
@@ -36,13 +38,18 @@ procedure TFormMain.FormShow(Sender: TObject);
 begin
   DpiScreen.Dpi := 96 * 2;
   TrackBar1.Position := DpiScreen.Dpi;
+  ButtonNewDpiFormClick(nil);
+end;
 
-  DpiForm1 := TDpiForm1.Create(nil);
-  DpiForm1.Caption := DpiForm1.Name;
-  DpiForm1.SetBounds(100, 100, 400, 200);
-  DpiForm1.Show;
-
-  DpiScreen.Forms.Add(DpiForm1);
+procedure TFormMain.ButtonNewDpiFormClick(Sender: TObject);
+var
+  DpiForm: TDpiForm;
+begin
+  DpiForm := TDpiFormMain.Create(nil);
+  DpiForm.Caption := DpiForm.Name;
+  DpiForm.SetBounds(100, 100, 400, 200);
+  DpiForm.Show;
+  DpiScreen.Forms.Add(DpiForm);
 end;
 
 procedure TFormMain.TrackBar1Change(Sender: TObject);

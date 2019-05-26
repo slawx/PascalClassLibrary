@@ -1,10 +1,10 @@
 object FormMain: TFormMain
-  Left = 57
-  Height = 126
-  Top = 44
+  Left = 127
+  Height = 168
+  Top = 66
   Width = 472
   Caption = 'DpiControls demo'
-  ClientHeight = 126
+  ClientHeight = 168
   ClientWidth = 472
   DesignTimePPI = 144
   OnShow = FormShow
@@ -27,5 +27,14 @@ object FormMain: TFormMain
     Width = 35
     Caption = 'DPI:'
     ParentColor = False
+  end
+  object ButtonNewDpiForm: TButton
+    Left = 19
+    Height = 38
+    Top = 117
+    Width = 193
+    Caption = 'New DpiForm'
+    OnClick = ButtonNewDpiFormClick
+    TabOrder = 1
   end
 end

@@ -1,19 +1,17 @@
-object DpiForm1: TDpiForm1
+object DpiFormMain: TDpiFormMain
   Top = 504
   Left = 865
   Width = 0
   Height = 0
-  Visible = False
-  OnShow = DpiForm1Show
+  Visible = True
+  OnCreate = DpiFormMainCreate
   object DpiButton1: TDpiButton
-    Top = 154
-    Left = 20
+    Top = 128
+    Left = 8
     Width = 150
     Height = 40
     Visible = True
     Caption = 'Test'
     OnClick = DpiButton1Click
-    left = 88
-    top = 88
   end
 end

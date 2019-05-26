@@ -47,9 +47,9 @@
         <ResourceBaseClass Value="Form"/>
       </Unit1>
       <Unit2>
-        <Filename Value="UDpiForm.pas"/>
+        <Filename Value="UDpiFormMain.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="DpiForm1"/>
+        <ComponentName Value="DpiFormMain"/>
         <HasResources Value="True"/>
       </Unit2>
     </Units>
