@@ -5,14 +5,15 @@ unit UFormMain;
 interface
 
 uses
-  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ComCtrls, UDpiForm,
-  UDpiControls;
+  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ComCtrls, StdCtrls,
+  ExtCtrls, UDpiForm, UDpiControls;
 
 type
 
-  { TForm1 }
+  { TFormMain }
 
-  TForm1 = class(TForm)
+  TFormMain = class(TForm)
+    Label1: TLabel;
     TrackBar1: TTrackBar;
     procedure FormShow(Sender: TObject);
     procedure TrackBar1Change(Sender: TObject);
@@ -23,15 +24,15 @@ type
   end;
 
 var
-  Form1: TForm1;
+  FormMain: TFormMain;
 
 implementation
 
 {$R *.lfm}
 
-{ TForm1 }
+{ TFormMain }
 
-procedure TForm1.FormShow(Sender: TObject);
+procedure TFormMain.FormShow(Sender: TObject);
 begin
   DpiScreen.Dpi := 96 * 2;
   TrackBar1.Position := DpiScreen.Dpi;
@@ -44,7 +45,7 @@ begin
   DpiScreen.Forms.Add(DpiForm1);
 end;
 
-procedure TForm1.TrackBar1Change(Sender: TObject);
+procedure TFormMain.TrackBar1Change(Sender: TObject);
 begin
   DpiScreen.Dpi := TrackBar1.Position;
 end;

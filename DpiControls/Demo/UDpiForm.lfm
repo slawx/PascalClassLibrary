@@ -6,12 +6,14 @@ object DpiForm1: TDpiForm1
   Visible = False
   OnShow = DpiForm1Show
   object DpiButton1: TDpiButton
-    Top = 104
-    Left = 120
+    Top = 154
+    Left = 20
     Width = 150
     Height = 40
     Visible = True
     Caption = 'Test'
     OnClick = DpiButton1Click
+    left = 88
+    top = 88
   end
 end

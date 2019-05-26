@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, LCLProc, LResources, Forms, FormEditingIntf, ProjectIntf,
-  Controls, StdCtrls, fgl, Graphics;
+  Controls, StdCtrls, fgl, Graphics, ComCtrls, ExtCtrls;
 
 type
    { TDpiFormFileDesc }
@@ -28,6 +28,8 @@ type
     procedure SetOnChange(AValue: TNotifyEvent);
     procedure SetSize(AValue: Integer);
     procedure DoChange;
+  protected
+    procedure ScreenChanged;
   public
     VclFont: TFont;
     constructor Create;
@@ -62,6 +64,7 @@ type
     procedure SetTop(AValue: Integer); virtual;
     procedure SetVisible(AValue: Boolean); virtual;
     procedure SetWidth(AValue: Integer); virtual;
+    function GetVclControl: TControl; virtual;
   public
     procedure ScreenChanged; virtual;
     procedure SetBounds(ALeft, ATop, AWidth, AHeight: Integer); virtual;
@@ -87,6 +90,8 @@ type
 
   TDpiWinControl = class(TDpiControl)
   private
+  protected
+    function GetVclWinControl: TWinControl; virtual;
   public
     Controls: TDpiControls;
     procedure ScreenChanged; override;
@@ -102,11 +107,9 @@ type
     FOnShow: TNotifyEvent;
     procedure SetOnShow(AValue: TNotifyEvent);
   protected
-    procedure FontChanged(Sender: TObject); override;
-    procedure UpdateBounds; override;
     procedure GetChildren(Proc: TGetChildProc; Root: TComponent); override;
-    procedure SetVisible(AValue: Boolean); override;
-    procedure SetCaption(AValue: string); override;
+    function GetVclControl: TControl; override;
+    function GetVclWinControl: TWinControl; override;
   public
     VclForm: TForm;
     constructor Create(TheOwner: TComponent); override;
@@ -124,17 +127,29 @@ type
     FOnClick: TNotifyEvent;
     procedure SetOnClick(AValue: TNotifyEvent);
   protected
-    procedure FontChanged(Sender: TObject); override;
-    procedure UpdateBounds; override;
-    procedure SetVisible(AValue: Boolean); override;
-    procedure SetCaption(AValue: string); override;
-    procedure SetParent(AValue: TDpiWinControl); override;
+    function GetVclControl: TControl; override;
   public
     VclButton: TButton;
     constructor Create(TheOwner: TComponent); override;
     destructor Destroy; override;
   published
     property OnClick: TNotifyEvent read FOnClick write SetOnClick;
+  end;
+
+  { TDpiImage }
+
+  TDpiImage = class(TDpiControl)
+  private
+    FStretch: Boolean;
+    procedure SetStretch(AValue: Boolean);
+  protected
+  public
+    VclImage: TImage;
+    function GetVclControl: TControl; override;
+    constructor Create(TheOwner: TComponent); override;
+    destructor Destroy; override;
+  published
+    property Stretch: Boolean read FStretch write SetStretch;
   end;
 
   { TDpiScreen }
@@ -170,7 +185,33 @@ begin
   FormEditingHook.RegisterDesignerBaseClass(TDpiForm);
   DpiFormFileDesc := TDpiFormFileDesc.Create;
   RegisterProjectFileDescriptor(DpiFormFileDesc);
-  RegisterComponents('DpiControls', [TDpiButton]);
+  RegisterComponents('DpiControls', [TDpiButton, TDpiImage]);
+end;
+
+{ TDpiImage }
+
+procedure TDpiImage.SetStretch(AValue: Boolean);
+begin
+  if FStretch = AValue then Exit;
+  FStretch := AValue;
+  VclImage.Stretch := AValue;
+end;
+
+function TDpiImage.GetVclControl: TControl;
+begin
+  Result := VclImage;
+end;
+
+constructor TDpiImage.Create(TheOwner: TComponent);
+begin
+  inherited;
+  VclImage := TImage.Create(nil);
+end;
+
+destructor TDpiImage.Destroy;
+begin
+  FreeAndNil(VclImage);
+  inherited Destroy;
 end;
 
 { TDpiFont }
@@ -185,6 +226,11 @@ end;
 procedure TDpiFont.DoChange;
 begin
   if Assigned(FOnChange) then FOnChange(Self);
+end;
+
+procedure TDpiFont.ScreenChanged;
+begin
+  DoChange;
 end;
 
 procedure TDpiFont.SetOnChange(AValue: TNotifyEvent);
@@ -206,6 +252,11 @@ begin
 end;
 
 { TDpiWinControl }
+
+function TDpiWinControl.GetVclWinControl: TWinControl;
+begin
+  Result := nil;
+end;
 
 procedure TDpiWinControl.ScreenChanged;
 var
@@ -271,41 +322,16 @@ begin
   VclButton.OnClick := AValue;
 end;
 
-procedure TDpiButton.FontChanged(Sender: TObject);
+function TDpiButton.GetVclControl: TControl;
 begin
-  inherited;
-  VclButton.Font.Size := Scale(Font.Size);
-end;
-
-procedure TDpiButton.UpdateBounds;
-begin
-  inherited;
-  VclButton.SetBounds(Scale(Left), Scale(Top), Scale(Width), Scale(Height));
-end;
-
-procedure TDpiButton.SetVisible(AValue: Boolean);
-begin
-  inherited;
-  VclButton.Visible := AValue;
-end;
-
-procedure TDpiButton.SetCaption(AValue: string);
-begin
-  inherited;
-  VclButton.Caption := AValue;
-end;
-
-procedure TDpiButton.SetParent(AValue: TDpiWinControl);
-begin
-  inherited;
-  if Assigned(Owner) and (Owner is TDpiForm) then
-    VclButton.Parent := TDpiForm(Owner).VclForm;
+  Result := VclButton;
 end;
 
 constructor TDpiButton.Create(TheOwner: TComponent);
 begin
   inherited;
   VclButton := TButton.Create(nil);
+  ScreenChanged;
 end;
 
 destructor TDpiButton.Destroy;
@@ -327,6 +353,7 @@ procedure TDpiControl.SetVisible(AValue: Boolean);
 begin
   if FVisible = AValue then Exit;
   FVisible := AValue;
+  GetVclControl.Visible := AValue;;
 end;
 
 procedure TDpiControl.SetWidth(AValue: Integer);
@@ -336,10 +363,15 @@ begin
   UpdateBounds;
 end;
 
+function TDpiControl.GetVclControl: TControl;
+begin
+  Result := nil;
+end;
+
 procedure TDpiControl.ScreenChanged;
 begin
   UpdateBounds;
-  FontChanged(nil);
+  Font.ScreenChanged;
 end;
 
 procedure TDpiControl.SetBounds(ALeft, ATop, AWidth, AHeight: Integer);
@@ -388,16 +420,25 @@ end;
 
 procedure TDpiControl.SetCaption(AValue: string);
 begin
-  if FCaption=AValue then Exit;
-  FCaption:=AValue;
+  if FCaption = AValue then Exit;
+  FCaption := AValue;
+  GetVclControl.Caption := AValue;
 end;
 
 procedure TDpiControl.SetParent(AValue: TDpiWinControl);
 begin
   if FParent = AValue then Exit;
-  if Assigned(FParent) then FParent.Controls.Remove(Self);
+  if Assigned(FParent) then begin
+    FParent.Controls.Remove(Self);
+    if Assigned(FParent) and (FParent is TDpiWinControl) then
+      GetVclControl.Parent := nil;
+  end;
   FParent := AValue;
-  if Assigned(FParent) then FParent.Controls.Add(Self);
+  if Assigned(FParent) then begin
+    FParent.Controls.Add(Self);
+    if Assigned(FParent) and (FParent is TDpiWinControl) then
+      GetVclControl.Parent := TDpiWinControl(FParent).GetVclWinControl;
+  end;
 end;
 
 procedure TDpiControl.SetFont(AValue: TDpiFont);
@@ -408,10 +449,12 @@ end;
 
 procedure TDpiControl.FontChanged(Sender: TObject);
 begin
+  GetVclControl.Font.Size := Scale(Font.Size);
 end;
 
 procedure TDpiControl.UpdateBounds;
 begin
+  GetVclControl.SetBounds(Scale(Left), Scale(Top), Scale(Width), Scale(Height));
 end;
 
 procedure TDpiControl.SetHeight(AValue: Integer);
@@ -465,16 +508,14 @@ begin
   end;
 end;
 
-procedure TDpiForm.SetVisible(AValue: Boolean);
+function TDpiForm.GetVclControl: TControl;
 begin
-  inherited SetVisible(AValue);
-  VclForm.Visible := AValue;
+  Result := VclForm;
 end;
 
-procedure TDpiForm.SetCaption(AValue: string);
+function TDpiForm.GetVclWinControl: TWinControl;
 begin
-  inherited;
-  VclForm.Caption:= AValue;
+  Result := VclForm;
 end;
 
 procedure TDpiForm.SetOnShow(AValue: TNotifyEvent);
@@ -484,26 +525,15 @@ begin
   VclForm.OnShow := AValue;
 end;
 
-procedure TDpiForm.FontChanged(Sender: TObject);
-begin
-  inherited;
-  VclForm.Font.Size := Scale(Font.Size);
-end;
-
-procedure TDpiForm.UpdateBounds;
-begin
-  inherited;
-  VclForm.SetBounds(Scale(Left), Scale(Top), Scale(Width), Scale(Height));
-end;
-
 // Init the component with an IDE resource
 constructor TDpiForm.Create(TheOwner: TComponent);
 begin
+  inherited;
   VclForm := TForm.Create(nil);
+  ScreenChanged;
   DebugLn(['TDpiForm.Create ', DbgSName(TheOwner)]);
   GlobalNameSpace.BeginWrite;
   try
-    inherited Create(TheOwner);
     if (ClassType <> TDpiForm) and not (csDesigning in ComponentState)
     then begin
       if not InitResourceComponent(Self, TDataModule) then begin
