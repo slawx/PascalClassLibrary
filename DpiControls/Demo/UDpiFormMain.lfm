@@ -1,23 +1,32 @@
 object DpiFormMain: TDpiFormMain
   Top = 504
   Left = 865
-  Width = 0
-  Height = 0
+  Width = 1
+  Height = 1
   Visible = True
   Enabled = True
   ShowHint = False
+  Font.Color = clDefault
+  Font.PixelsPerInch = 144
+  Align = alNone
+  Color = clDefault
+  DesignTimePPI = 96
   BorderStyle = Controls
+  BorderIcons = [biSystemMenu, biMinimize, biMaximize]
   OnCreate = DpiFormMainCreate
+  OnDestroy = DpiFormMainDestroy
   object DpiPaintBox1: TDpiPaintBox
-    Top = 161
-    Left = 124
+    Top = 248
+    Left = 88
     Width = 100
     Height = 100
     Visible = True
     Enabled = True
     ShowHint = False
-    OnPaint = DpiPaintBox1Paint
-    left = 88
-    top = 248
+    Font.Color = clDefault
+    Font.Name = 'jjjdefault'
+    Font.PixelsPerInch = 144
+    Align = alNone
+    Color = clDefault
   end
 end

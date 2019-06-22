@@ -7,6 +7,7 @@ object FormMain: TFormMain
   ClientHeight = 168
   ClientWidth = 472
   DesignTimePPI = 144
+  OnDestroy = FormDestroy
   OnShow = FormShow
   LCLVersion = '2.0.2.0'
   object TrackBar1: TTrackBar

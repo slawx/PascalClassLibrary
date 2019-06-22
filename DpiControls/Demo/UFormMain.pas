@@ -18,11 +18,12 @@ type
     Timer1: TTimer;
     TrackBar1: TTrackBar;
     procedure ButtonNewDpiFormClick(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure Timer1Timer(Sender: TObject);
     procedure TrackBar1Change(Sender: TObject);
   private
-
+    DpiForm: TDpiForm;
   public
     Redraw: Boolean;
   end;
@@ -50,14 +51,17 @@ begin
 end;
 
 procedure TFormMain.ButtonNewDpiFormClick(Sender: TObject);
-var
-  DpiForm: TDpiForm;
 begin
   DpiForm := TDpiFormMain.Create(nil);
   DpiForm.Caption := DpiForm.Name;
   DpiForm.SetBounds(100, 100, 400, 200);
   DpiForm.Show;
   DpiScreen.Forms.Add(DpiForm);
+end;
+
+procedure TFormMain.FormDestroy(Sender: TObject);
+begin
+  FreeAndNil(DpiForm);
 end;
 
 procedure TFormMain.TrackBar1Change(Sender: TObject);

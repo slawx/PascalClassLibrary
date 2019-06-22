@@ -15,8 +15,13 @@ type
     DpiPaintBox1: TDpiPaintBox;
     procedure DpiButton1Click(Sender: TObject);
     procedure DpiFormMainCreate(Sender: TObject);
+    procedure DpiFormMainDestroy(Sender: TObject);
     procedure DpiPaintBox1Paint(Sender: TObject);
   private
+    Button: TDpiButton;
+    Image: TDpiImage;
+    ListBox: TDpiListBox;
+    PaintBox: TDpiPaintBox;
   public
 
   end;
@@ -32,11 +37,7 @@ implementation
 
 procedure TDpiFormMain.DpiFormMainCreate(Sender: TObject);
 var
-  Button: TDpiButton;
-  Image: TDpiImage;
-  ListBox: TDpiListBox;
   I: Integer;
-  PaintBox: TDpiPaintBox;
 begin
   Button := TDpiButton.Create(DpiFormMain);
   Button.Parent := Self;
@@ -62,6 +63,13 @@ begin
   DpiPaintBox1.BoundsRect := Rect(0, 0, 100, 100);
   DpiPaintBox1.VclPaintBox.Parent := VclForm;
   DpiPaintBox1.Repaint;
+end;
+
+procedure TDpiFormMain.DpiFormMainDestroy(Sender: TObject);
+begin
+  FreeAndNil(Button);
+  FreeAndNil(Image);
+  FreeAndNil(ListBox);
 end;
 
 procedure TDpiFormMain.DpiPaintBox1Paint(Sender: TObject);
