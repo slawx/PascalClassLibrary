@@ -1,68 +1,70 @@
 object FormMain: TFormMain
   Left = 354
-  Height = 568
+  Height = 682
   Top = 285
-  Width = 884
+  Width = 1061
   Caption = 'General registry editor'
-  ClientHeight = 543
-  ClientWidth = 884
-  DesignTimePPI = 120
+  ClientHeight = 648
+  ClientWidth = 1061
+  DesignTimePPI = 144
   Menu = MainMenu1
   OnShow = FormShow
   LCLVersion = '2.0.2.0'
   object StatusBar1: TStatusBar
     Left = 0
     Height = 28
-    Top = 515
-    Width = 884
+    Top = 620
+    Width = 1061
     Panels = <>
     ParentFont = False
   end
   object TreeView1: TTreeView
     Left = 0
-    Height = 515
+    Height = 620
     Top = 0
-    Width = 280
+    Width = 336
     Align = alLeft
     ParentFont = False
     TabOrder = 1
   end
   object Splitter1: TSplitter
-    Left = 280
-    Height = 515
+    Left = 336
+    Height = 620
     Top = 0
-    Width = 6
+    Width = 7
   end
   object ListView1: TListView
-    Left = 286
-    Height = 515
+    Left = 343
+    Height = 620
     Top = 0
-    Width = 598
+    Width = 718
     Align = alClient
     Columns = <    
       item
         Caption = 'Name'
-        Width = 188
+        Width = 226
       end    
       item
         Caption = 'Type'
-        Width = 188
+        Width = 226
       end    
       item
         Caption = 'Value'
-        Width = 125
+        Width = 251
       end>
     OwnerData = True
     ParentFont = False
+    PopupMenu = PopupMenuValue
     ReadOnly = True
     RowSelect = True
     TabOrder = 3
     ViewStyle = vsReport
     OnData = ListView1Data
+    OnDblClick = ListView1DblClick
   end
   object MainMenu1: TMainMenu
-    left = 160
-    top = 90
+    left = 192
+    top = 108
     object MenuItem1: TMenuItem
       Caption = 'File'
       object MenuItem2: TMenuItem
@@ -74,8 +76,8 @@ object FormMain: TFormMain
     end
   end
   object ActionList1: TActionList
-    left = 160
-    top = 160
+    left = 192
+    top = 192
     object AImport: TAction
       Caption = 'Import'
     end
@@ -84,6 +86,7 @@ object FormMain: TFormMain
     end
     object AConnectionAdd: TAction
       Caption = 'Add connection'
+      OnExecute = AConnectionAddExecute
     end
     object AConnectionDelete: TAction
       Caption = 'Delete connection'
@@ -97,14 +100,16 @@ object FormMain: TFormMain
     end
     object AValueDelete: TAction
       Caption = 'Delete'
+      OnExecute = AValueDeleteExecute
     end
     object AValueEdit: TAction
       Caption = 'Edit'
+      OnExecute = AValueEditExecute
     end
   end
-  object PopupMenu1: TPopupMenu
-    left = 492
-    top = 177
+  object PopupMenuValue: TPopupMenu
+    left = 590
+    top = 212
     object MenuItem4: TMenuItem
       Action = AValueAdd
     end

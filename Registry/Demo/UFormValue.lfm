@@ -1,0 +1,136 @@
+object FormValue: TFormValue
+  Left = 870
+  Height = 360
+  Top = 283
+  Width = 480
+  Caption = 'Value'
+  ClientHeight = 360
+  ClientWidth = 480
+  DesignTimePPI = 144
+  OnCreate = FormCreate
+  OnShow = FormShow
+  LCLVersion = '2.0.2.0'
+  object ComboBoxType: TComboBox
+    Left = 128
+    Height = 42
+    Top = 72
+    Width = 272
+    ItemHeight = 0
+    OnSelect = ComboBoxTypeSelect
+    Style = csDropDownList
+    TabOrder = 0
+  end
+  object Label1: TLabel
+    Left = 16
+    Height = 26
+    Top = 80
+    Width = 45
+    Caption = 'Type:'
+    ParentColor = False
+  end
+  object Label3: TLabel
+    Left = 16
+    Height = 26
+    Top = 29
+    Width = 56
+    Caption = 'Name:'
+    ParentColor = False
+  end
+  object EditName: TEdit
+    Left = 128
+    Height = 43
+    Top = 16
+    Width = 272
+    TabOrder = 1
+  end
+  object PageControl1: TPageControl
+    Left = 26
+    Height = 143
+    Top = 132
+    Width = 428
+    ActivePage = TabSheetBoolean
+    Anchors = [akTop, akLeft, akRight]
+    ShowTabs = False
+    TabIndex = 2
+    TabOrder = 2
+    object TabSheetInteger: TTabSheet
+      Caption = 'Integer'
+      ClientHeight = 139
+      ClientWidth = 418
+      object Label5: TLabel
+        Left = 16
+        Height = 26
+        Top = 29
+        Width = 52
+        Caption = 'Value:'
+        ParentColor = False
+      end
+      object SpinEditValue: TSpinEdit
+        Left = 102
+        Height = 43
+        Top = 23
+        Width = 259
+        MaxValue = 100000000
+        TabOrder = 0
+      end
+    end
+    object TabSheetString: TTabSheet
+      Caption = 'String'
+      ClientHeight = 139
+      ClientWidth = 418
+      object Label4: TLabel
+        Left = 16
+        Height = 26
+        Top = 29
+        Width = 52
+        Caption = 'Value:'
+        ParentColor = False
+      end
+      object EditValue: TEdit
+        Left = 128
+        Height = 43
+        Top = 16
+        Width = 272
+        TabOrder = 0
+      end
+    end
+    object TabSheetBoolean: TTabSheet
+      Caption = 'Boolean'
+      ClientHeight = 139
+      ClientWidth = 418
+      object Label6: TLabel
+        Left = 16
+        Height = 26
+        Top = 29
+        Width = 52
+        Caption = 'Value:'
+        ParentColor = False
+      end
+      object CheckBoxValue: TCheckBox
+        Left = 96
+        Height = 23
+        Top = 29
+        Width = 23
+        TabOrder = 0
+      end
+    end
+  end
+  object ButtonOk: TButton
+    Left = 112
+    Height = 38
+    Top = 307
+    Width = 113
+    Caption = 'OK'
+    ModalResult = 1
+    TabOrder = 3
+  end
+  object ButtonCancel: TButton
+    Left = 264
+    Height = 38
+    Top = 307
+    Width = 113
+    Caption = 'Cancel'
+    ModalResult = 2
+    TabOrder = 4
+  end
+end

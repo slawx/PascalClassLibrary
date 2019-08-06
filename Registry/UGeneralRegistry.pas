@@ -146,8 +146,6 @@ type
   TMemoryRegistry = class(TBaseRegistry)
   end;
 
-  {$IFDEF Windows}
-
   { TWinRegistry }
 
   TWinRegistry = class(TBaseRegistry)
@@ -186,7 +184,6 @@ type
     constructor Create;
     destructor Destroy; override;
   end;
-  {$ENDIF}
 
 const
   RegValueTypeName: array[TRegValueType] of string = ('Unknown', 'Integer', 'String',
@@ -205,9 +202,6 @@ begin
   RegisterComponents('Samples', [TGeneralRegistry]);
 end;
 
-{ TBaseRegistry }
-
-{$IFDEF Windows}
 { TWinRegistry }
 
 procedure TWinRegistry.SetCurrentKey(const AValue: string);
@@ -418,7 +412,6 @@ begin
   Registry.Free;
   inherited Destroy;
 end;
-{$ENDIF}
 
 { TIniRegistry }
 
@@ -685,19 +678,12 @@ end;
 
 constructor TGeneralRegistry.Create(AOwner: TComponent);
 begin
-  {$IFDEF Windows}
   Backend := TWinRegistry.Create;
   TWinRegistry(Backend).CurrentRoot := HKEY_CURRENT_USER;
   TWinRegistry(Backend).CurrentKey := 'Software\Company\' +
     ApplicationName;
 //  TWinRegistry(Backend).CurrentKey := 'Software\' + VendorName + '\' +
 //    ApplicationName;
-  {$ENDIF}
-  {$IFDEF Linux}
-  Backend := TXMLRegistry.Create;
-  //TXMLRegistry(Backend).FileName := HomeDir + DirectorySeparator + ApplicationName +
-  //  ExtensionSeparator + '.xml';
-  {$ENDIF}
   inherited Create(AOwner);
 end;
 
