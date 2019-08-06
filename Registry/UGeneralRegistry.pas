@@ -5,10 +5,7 @@ unit UGeneralRegistry;
 interface
 
 uses
-  Classes, SysUtils, IniFiles, XMLRead, XMLWrite, DOM
-  {$IFDEF Windows}
-  , WinRegistry
-  {$ENDIF};
+  Classes, SysUtils, IniFiles, XMLRead, XMLWrite, DOM, Registry;
 
 type
   TRegistryRoot = (rrUnknown, rrApplicationUser, rrApplicationGlobal,
@@ -245,7 +242,7 @@ end;
 
 function TWinRegistry.GetKeyInfo(var Value: TRegKeyInfo): Boolean;
 var
-  KeyInfo: WinRegistry.TRegKeyInfo;
+  KeyInfo: Registry.TRegKeyInfo;
 begin
   Result := Registry.GetKeyInfo(KeyInfo);
   if Result then begin
@@ -261,7 +258,7 @@ end;
 
 function TWinRegistry.GetValueInfo(const Name: string; var Value: TRegValueInfo): Boolean;
 var
-  ValueInfo: WinRegistry.TRegDataInfo;
+  ValueInfo: Registry.TRegDataInfo;
 begin
   Result := Registry.GetDataInfo(Name, ValueInfo);
   if Result then begin
@@ -398,8 +395,12 @@ begin
 end;
 
 procedure TWinRegistry.GetKeyNames(Strings: TStrings);
+var
+  I: Integer;
 begin
   Registry.GetKeyNames(Strings);
+//  for I := 0 to Strings.Count - 1 do
+//    Strings[I] := AnsiToUtf8(Strings[I]);
 end;
 
 procedure TWinRegistry.GetValueNames(Strings: TStrings);
@@ -686,9 +687,11 @@ constructor TGeneralRegistry.Create(AOwner: TComponent);
 begin
   {$IFDEF Windows}
   Backend := TWinRegistry.Create;
-  //TWinRegistry(Backend).RootKey := HKEY_CURRENT_USER;
-  //TWinRegistry(Backend).BaseKey := 'Software\' + CompanyName + '\' +
-  //  ApplicationName;
+  TWinRegistry(Backend).CurrentRoot := HKEY_CURRENT_USER;
+  TWinRegistry(Backend).CurrentKey := 'Software\Company\' +
+    ApplicationName;
+//  TWinRegistry(Backend).CurrentKey := 'Software\' + VendorName + '\' +
+//    ApplicationName;
   {$ENDIF}
   {$IFDEF Linux}
   Backend := TXMLRegistry.Create;

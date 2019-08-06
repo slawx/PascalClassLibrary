@@ -16,6 +16,9 @@ type
     AConnectionAdd: TAction;
     AConnectionDelete: TAction;
     AConnectionModify: TAction;
+    AValueAdd: TAction;
+    AValueEdit: TAction;
+    AValueDelete: TAction;
     AImport: TAction;
     AExport: TAction;
     ActionList1: TActionList;
@@ -24,14 +27,20 @@ type
     MenuItem1: TMenuItem;
     MenuItem2: TMenuItem;
     MenuItem3: TMenuItem;
+    MenuItem4: TMenuItem;
+    MenuItem5: TMenuItem;
+    MenuItem6: TMenuItem;
+    PopupMenu1: TPopupMenu;
     Splitter1: TSplitter;
     StatusBar1: TStatusBar;
     TreeView1: TTreeView;
+    procedure AValueAddExecute(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure ListView1Data(Sender: TObject; Item: TListItem);
   private
     function RegValueToString(Name: string): string;
     procedure LoadNode(Node: TTreeNode; Key: TRegKey);
+    procedure ReloadTreeNode(Node: TTreeNode; Reg: TGeneralRegistry);
   public
     procedure ReloadValues;
     procedure ReloadKeys;
@@ -74,6 +83,11 @@ procedure TFormMain.FormShow(Sender: TObject);
 begin
   ReloadKeys;
   ReloadValues;
+end;
+
+procedure TFormMain.AValueAddExecute(Sender: TObject);
+begin
+//  Core.ActiveRegistry.Write;
 end;
 
 function TFormMain.RegValueToString(Name: string): string;
@@ -119,11 +133,30 @@ begin
   ListView1.Refresh;
 end;
 
+procedure TFormMain.ReloadTreeNode(Node: TTreeNode; Reg: TGeneralRegistry);
+var
+  Keys: TStrings;
+  I: Integer;
+  NewNode: TTreeNode;
+begin
+  Keys := TStringList.Create;
+  Reg.GetKeyNames(Keys);
+  for I := 0 to Keys.Count - 1 do begin
+    NewNode := Node.TreeNodes.AddChild(Node, Keys[I]);
+    Reg.OpenKey(Keys[I], False);
+    ReloadTreeNode(NewNode, Reg);
+  end;
+  Keys.Free;
+end;
+
 procedure TFormMain.ReloadKeys;
 var
   NewNode: TTreeNode;
 begin
+  TreeView1.Items.Clear;
   NewNode := TreeView1.Items.AddChild(nil, 'Local computer');
+  ReloadTreeNode(NewNode, Core.ActiveRegistry);
+  NewNode.Expand(True);
 end;
 
 end.

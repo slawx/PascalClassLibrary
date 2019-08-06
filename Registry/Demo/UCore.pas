@@ -30,6 +30,7 @@ implementation
 
 procedure TCore.DataModuleCreate(Sender: TObject);
 begin
+  TWinRegistry(ActiveRegistry.Backend).OpenKey('\Software\Chronosoft\RegistryDemo', True);
 end;
 
 end.

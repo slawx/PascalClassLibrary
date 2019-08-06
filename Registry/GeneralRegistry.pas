@@ -4,10 +4,11 @@
 
 unit GeneralRegistry;
 
+{$warn 5023 off : no warning about unused units}
 interface
 
 uses
-  UGeneralRegistry, UTest, LazarusPackageIntf;
+  UGeneralRegistry, LazarusPackageIntf;
 
 implementation
 
