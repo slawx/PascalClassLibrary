@@ -12,7 +12,7 @@ uses
   UMemory, UResetableThread, UPool, ULastOpenedList, URegistry, 
   UJobProgressView, UXMLUtils, UApplicationInfo, USyncCounter, UListViewSort, 
   UPersistentForm, UFindFile, UScaleDPI, UTheme, UStringTable, UMetaCanvas, 
-  LazarusPackageIntf;
+  UGeometric, UTranslator, ULanguages, LazarusPackageIntf;
 
 implementation
 
@@ -28,6 +28,7 @@ begin
   RegisterUnit('UFindFile', @UFindFile.Register);
   RegisterUnit('UScaleDPI', @UScaleDPI.Register);
   RegisterUnit('UTheme', @UTheme.Register);
+  RegisterUnit('UTranslator', @UTranslator.Register);
 end;
 
 initialization
