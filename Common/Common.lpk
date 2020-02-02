@@ -39,7 +39,7 @@
     <Description Value="Various libraries"/>
     <License Value="GNU/GPL"/>
     <Version Minor="7"/>
-    <Files Count="22">
+    <Files Count="24">
       <Item1>
         <Filename Value="StopWatch.pas"/>
         <UnitName Value="StopWatch"/>
@@ -138,6 +138,14 @@
         <Filename Value="UStringTable.pas"/>
         <UnitName Value="UStringTable"/>
       </Item22>
+      <Item23>
+        <Filename Value="UMetaCanvas.pas"/>
+        <UnitName Value="UMetaCanvas"/>
+      </Item23>
+      <Item24>
+        <Filename Value="UGeometric.pas"/>
+        <UnitName Value="UGeometric"/>
+      </Item24>
     </Files>
     <i18n>
       <EnableI18N Value="True"/>
