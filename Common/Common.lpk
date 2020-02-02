@@ -39,7 +39,7 @@
     <Description Value="Various libraries"/>
     <License Value="GNU/GPL"/>
     <Version Minor="7"/>
-    <Files Count="24">
+    <Files Count="26">
       <Item1>
         <Filename Value="StopWatch.pas"/>
         <UnitName Value="StopWatch"/>
@@ -146,6 +146,15 @@
         <Filename Value="UGeometric.pas"/>
         <UnitName Value="UGeometric"/>
       </Item24>
+      <Item25>
+        <Filename Value="UTranslator.pas"/>
+        <HasRegisterProc Value="True"/>
+        <UnitName Value="UTranslator"/>
+      </Item25>
+      <Item26>
+        <Filename Value="ULanguages.pas"/>
+        <UnitName Value="ULanguages"/>
+      </Item26>
     </Files>
     <i18n>
       <EnableI18N Value="True"/>

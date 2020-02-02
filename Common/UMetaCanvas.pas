@@ -38,6 +38,7 @@ type
     Pen: TPen;
     Brush: TBrush;
     BoundingRect: TRect;
+    Rounded: TPoint;
     procedure Paint(Canvas: TCanvas); override;
     procedure Zoom(Factor: Double); override;
     procedure Move(Delta: TPoint); override;
@@ -132,6 +133,10 @@ type
     procedure DoLineTo(X, Y: Integer); override;
   public
     Objects: TObjectList;
+    procedure FillRect(const ARect: TRect); overload; override;
+    procedure FillRect(X1,Y1,X2,Y2: Integer); overload;
+    procedure RoundRect(X1, Y1, X2, Y2: Integer; RX,RY: Integer); overload; override;
+    procedure RoundRect(const Rect: TRect; RX,RY: Integer); overload;
     procedure TextOut(X,Y: Integer; const Text: String); override;
     procedure Polygon(Points: PPoint; NumPts: Integer; Winding: boolean = False); override;
     procedure Ellipse(x1, y1, x2, y2: Integer); override;
@@ -151,7 +156,7 @@ type
 implementation
 
 uses
-  UGeometric;
+  UGeometric, LCLIntf;
 
 { TCanvasPie }
 
@@ -339,7 +344,9 @@ procedure TCanvasRectangle.Paint(Canvas: TCanvas);
 begin
   Canvas.Pen.Assign(Pen);
   Canvas.Brush.Assign(Brush);
-  Canvas.Rectangle(BoundingRect);
+
+  if Rounded <> Point(0, 0) then Canvas.RoundRect(BoundingRect, Rounded.X, Rounded.Y)
+    else Canvas.Rectangle(BoundingRect);
 end;
 
 procedure TCanvasRectangle.Zoom(Factor: Double);
@@ -353,13 +360,14 @@ end;
 
 procedure TCanvasRectangle.Move(Delta: TPoint);
 begin
-  ShiftRect(BoundingRect, Delta);
+  BoundingRect := ShiftRect(BoundingRect, Delta);
 end;
 
 constructor TCanvasRectangle.Create;
 begin
   Pen := TPen.Create;
   Brush := TBrush.Create;
+  Rounded := Point(0, 0);
 end;
 
 destructor TCanvasRectangle.Destroy;
@@ -546,8 +554,15 @@ begin
 end;
 
 function TMetaCanvas.TextExtent(const Text: string): TSize;
+var
+  Canvas: TCanvas;
 begin
-  Result := Size(0, 0);
+  Canvas := TCanvas.Create;
+  Canvas.Handle := CreateCompatibleDC(0);
+  Canvas.Font.Assign(Font);
+  Result := Canvas.TextExtent(Text);
+  DeleteDC(Canvas.Handle);
+  Canvas.Free;
 end;
 
 procedure TMetaCanvas.DoMoveTo(X, Y: Integer);
@@ -559,6 +574,33 @@ procedure TMetaCanvas.DoLineTo(X, Y: Integer);
 begin
   DoLine(FPenPos.X, FPenPos.Y, X, Y);
   DoMoveTo(X, Y);
+end;
+
+procedure TMetaCanvas.FillRect(const ARect: TRect);
+begin
+  DoRectangleFill(ARect);
+end;
+
+procedure TMetaCanvas.FillRect(X1, Y1, X2, Y2: Integer);
+begin
+  FillRect(Rect(X1, Y1, X2, Y2));
+end;
+
+procedure TMetaCanvas.RoundRect(X1, Y1, X2, Y2: Integer; RX, RY: Integer);
+begin
+  RoundRect(Rect(X1, Y1, X2, Y2), RX, RY);
+end;
+
+procedure TMetaCanvas.RoundRect(const Rect: TRect; RX, RY: Integer);
+var
+  NewObj: TCanvasRectangle;
+begin
+  NewObj := TCanvasRectangle.Create;
+  NewObj.Brush.Assign(Brush);
+  NewObj.Pen.Assign(Pen);
+  NewObj.BoundingRect := Rect;
+  NewObj.Rounded := Point(RX, RY);
+  Objects.Add(NewObj);
 end;
 
 procedure TMetaCanvas.Pie(EllipseX1, EllipseY1, EllipseX2, EllipseY2, StartX,
